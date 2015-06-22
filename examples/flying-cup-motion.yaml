@@ -1,0 +1,133 @@
+#
+# EXAMPLE MOTION GOAL FOR MOVING A FLYING MUG IN GAZEBO OVER A STOVE
+#
+# BOTH OBJECTS HAVE FRAMES ATTACHED TO THEMSELVES WHICH
+# CAN BE QUERYIED FROM THE SIMULATOR W.R.T. WORLD-FRAME
+#
+
+# INPUTS USED TO DEFINE RELATIONS 
+inputs:
+  # A 6-DOF INPUT (MACRO), COMES WITH IMPLICIT EXPRESSION
+  - name: cup frame
+    type: INPUT-FRAME
+    lower-velocity-limits: [-0.1, -0.1, -0.1, -0.05, -0.05, -0.05]
+    upper-velocity-limits: [0.1, 0.1, 0.1, 0.05, 0.05, 0.05]
+    weights: [1.0, 1.0, 1.0, 2.0, 2.0, 2.0]
+  # EXPLICIT WAY OF DEFINING A 6-DOF INPUT, WITHOUT EXPRESSION
+  - name: stove frame translation-x
+    type: INPUT-VARIABLE
+    lower-velocity-limit: -0.1
+    upper-velocity-limit: 0.1
+    weight: 1.0
+  - name: stove frame translation-y
+    type: INPUT-VARIABLE
+    lower-velocity-limit: -0.1
+    upper-velocity-limit: 0.1
+    weight: 1.0
+  - name: stove frame translation-z
+    type: INPUT-VARIABLE
+    lower-velocity-limit: -0.1
+    upper-velocity-limit: 0.1
+    weight: 1.0
+  - name: stove frame rotation-x
+    type: INPUT-VARIABLE
+    lower-velocity-limit: -0.05
+    upper-velocity-limit: 0.05
+    weight: 2.0
+  - name: stove frame rotation-y
+    type: INPUT-VARIABLE
+    lower-velocity-limit: -0.05
+    upper-velocity-limit: 0.05
+    weight: 2.0
+  - name: stove frame rotation-z
+    type: INPUT-VARIABLE
+    lower-velocity-limit: -0.05
+    upper-velocity-limit: 0.05
+    weight: 2.0
+
+# RELATIONS USED TO DEFINE THE CONSTRAINTS
+expressions:
+  # REST OF 6-DOF INPUT DEFINITION
+  - name: stove frame
+    type: MULTIPLICATION
+    inputs:
+    - type: FRAME
+      inputs:
+      - type: TRANSLATION-X
+        inputs: [stove frame translation-x]
+    - type: FRAME
+      inputs:
+      - type: TRANSLATION-Y
+        inputs: [stove frame translation-y]
+    - type: FRAME
+      inputs:
+      - type: TRANSLATION-Z
+        inputs: [stove frame translation-z]
+    - type: FRAME
+      inputs:
+      - type: ROTATION-X
+        inputs: [stove frame rotation-x]
+    - type: FRAME
+      inputs:
+      - type: ROTATION-Y
+        inputs: [stove frame rotation-y]
+    - type: FRAME
+      inputs:
+      - type: ROTATION-Z
+        inputs: [stove frame rotation-z]
+  # DEFINITIONS OF OTHER EXPRESSIONS USING INPUTS
+  - name: cup bottom centroid
+    type: TRANSLATION-OF
+    inputs: [cup frame]
+  - name: stove top centroid
+    type: MULTIPLICATION
+    inputs: 
+    - stove frame
+    - type: VECTOR3
+      inputs: [0.0, 0.0, 0.03]
+  - name: cup top centroid
+    type: MULTIPLICATION
+    inputs:
+    - cup frame
+    - type: VECTOR3
+      inputs: [0.0, 0.0, 0.05]
+  - name: height of cup bottom above stove top
+    type: SUBTRACTION
+    inputs:
+    - type: Z-COORDINATE-OF
+      inputs: [cup bottom centroid]
+    - type: Z-COORDINATE-OF
+      inputs: [stove top centroid]
+  - name: distance between cup bottom and stove top
+    type: VECTOR3-NORM
+    inputs:
+    - type: SUBTRACTION
+      inputs: [cup bottom centroid, stove top centroid]
+  - name: cup upright
+    type: SUBTRACTION
+    inputs:
+    - type: Z-COORDINATE-OF
+      inputs: [cup top centroid]
+    - type: Z-COORDINATE-OF
+      inputs: [cup bottom centroid]
+
+# CONSTRAINTS DEFINING A MOTION GOAL
+constraints:
+  - name: height of cup bottom above stove top contraint
+    expression: height of cup bottom above stove top
+    lower: 0.1
+    upper: 0.15
+    weight: 1.0
+    gain: 2.0
+  - name: distance between cup bottom and stove top constraint
+    expression: distance between cup bottom and stove top
+    lower: 0.11
+    upper: 0.13
+    weight: 5.0
+    gain: 2.0
+  - name: cup upright constraint
+    expression: cup upright
+    lower: 0.04
+    upper: 0.06
+    weight: 1.0
+    gain: 2.0
