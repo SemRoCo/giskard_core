@@ -6,48 +6,69 @@
 #
 
 # INPUTS USED TO DEFINE RELATIONS 
+# HERE, ALTOGETHER 12-DOF INPUT (6-DOF FOR EACH OBJECT)
 inputs:
-  # A 6-DOF INPUT (MACRO), COMES WITH IMPLICIT EXPRESSION
+  # A 6-DOF INPUT (MACRO)
   - name: cup frame
     type: INPUT-FRAME
-    lower-velocity-limits: [-0.1, -0.1, -0.1, -0.05, -0.05, -0.05]
-    upper-velocity-limits: [0.1, 0.1, 0.1, 0.05, 0.05, 0.05]
-    weights: [1.0, 1.0, 1.0, 2.0, 2.0, 2.0]
-  # EXPLICIT WAY OF DEFINING A 6-DOF INPUT, WITHOUT EXPRESSION
+  # EXPLICIT WAY OF DEFINING A 6-DOF INPUT
   - name: stove frame translation-x
     type: INPUT-VARIABLE
-    lower-velocity-limit: -0.1
-    upper-velocity-limit: 0.1
-    weight: 1.0
   - name: stove frame translation-y
     type: INPUT-VARIABLE
-    lower-velocity-limit: -0.1
-    upper-velocity-limit: 0.1
-    weight: 1.0
   - name: stove frame translation-z
     type: INPUT-VARIABLE
+  - name: stove frame rotation-x
+    type: INPUT-VARIABLE
+  - name: stove frame rotation-y
+    type: INPUT-VARIABLE
+  - name: stove frame rotation-z
+    type: INPUT-VARIABLE
+
+# OUTPUTS TO BE CONTROLLED
+# HERE; 6-DOF OUTPUT; ONLY THE CUP IS CONTROLLED
+outputs:
+  - name: cup frame translation-x
     lower-velocity-limit: -0.1
     upper-velocity-limit: 0.1
     weight: 1.0
-  - name: stove frame rotation-x
-    type: INPUT-VARIABLE
+  - name: cup frame translation-y
+    lower-velocity-limit: -0.1
+    upper-velocity-limit: 0.1
+    weight: 1.0
+  - name: cup frame translation-z
+    lower-velocity-limit: -0.1
+    upper-velocity-limit: 0.1
+    weight: 1.0
+  - name: cup frame rotation-x
     lower-velocity-limit: -0.05
     upper-velocity-limit: 0.05
     weight: 2.0
-  - name: stove frame rotation-y
-    type: INPUT-VARIABLE
+  - name: cup frame rotation-y
     lower-velocity-limit: -0.05
     upper-velocity-limit: 0.05
     weight: 2.0
-  - name: stove frame rotation-z
-    type: INPUT-VARIABLE
+  - name: cup frame rotation-z
     lower-velocity-limit: -0.05
     upper-velocity-limit: 0.05
     weight: 2.0
 
 # RELATIONS USED TO DEFINE THE CONSTRAINTS
 expressions:
-  # REST OF 6-DOF INPUT DEFINITION
+  - name: cup frame
+    type: FRAME
+    inputs:
+    - type: VECTOR3
+      inputs:
+      - cup frame translation-x
+      - cup frame translation-y
+      - cup frame translation-z
+    - type: ROTATION3
+      inputs:
+      - cup frame rotation-x
+      - cup frame rotation-y
+      - cup frame rotation-z
+  # ANOTHER WAY OF DEFINING A 6-DOF EXPRESSION
   - name: stove frame
     type: MULTIPLICATION
     inputs:
