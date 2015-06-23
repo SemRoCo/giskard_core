@@ -14,6 +14,15 @@ namespace giskard
     return result;
   }
 
+  bool is_output_list(const YAML::Node& node)
+  {
+    bool result = node.IsMap() && node["outputs"] && node["outputs"].IsSequence();
+    for(unsigned int i=0; i<node["outputs"].size(); ++i)
+      result &= is_output_spec(node["outputs"][i]);
+
+    return result;
+  }
+
   bool is_input_frame(const YAML::Node& node)
   {
     return node.IsMap() && node["name"] && node["type"] &&
@@ -62,6 +71,18 @@ namespace giskard
     }
 
     return results;
+  }
+
+  std::vector<OutputSpec> parse_output_list(const YAML::Node& node)
+  {
+    if(!is_output_list(node))
+      throw YamlParserException("Given yaml-node does not represent an output-list.");
+
+    std::vector<OutputSpec> result;
+    for(unsigned int i=0; i<node["outputs"].size(); ++i)
+      result.push_back(parse_output_spec(node["outputs"][i]));
+
+    return result;
   }
 
   std::vector< KDL::Expression<double>::Ptr > parse_input_frame(

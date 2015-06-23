@@ -9,6 +9,8 @@ namespace giskard
 {
   bool is_input_list(const YAML::Node& node);
 
+  bool is_output_list(const YAML::Node& node);
+
   bool is_input_variable(const YAML::Node& node);
 
   bool is_input_frame(const YAML::Node& node);
@@ -16,6 +18,8 @@ namespace giskard
   bool is_output_spec(const YAML::Node& node);
 
   std::vector< KDL::Expression<double>::Ptr > parse_input_list(const YAML::Node& node);
+
+  std::vector<OutputSpec> parse_output_list(const YAML::Node& node);  
 
   std::vector< KDL::Expression<double>::Ptr > parse_input_frame(
       const YAML::Node& node, unsigned int start_var_index);

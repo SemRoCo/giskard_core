@@ -18,6 +18,8 @@ class YamlParserTest : public ::testing::Test
           ("my frame rotation-y")("my frame rotation-z");
 
       valid_output_spec = "{name: trans-x, weight: 1.2, lower-velocity-limit: -0.1, upper-velocity-limit: 0.15}";
+      valid_output_spec2 = "{name: trans-y, weight: 0.2, lower-velocity-limit: 0.1, upper-velocity-limit: 0.15}";
+      valid_output_list = "{outputs: [" + valid_output_spec + ", " + valid_output_spec2 + "]}";
     }
 
     virtual void TearDown(){}
@@ -28,7 +30,7 @@ class YamlParserTest : public ::testing::Test
     std::vector<std::string> input_names;
 
     // PARSING OF OUTPUTS
-    std::string valid_output_spec;
+    std::string valid_output_spec, valid_output_spec2, valid_output_list;
 };
 
 
@@ -150,4 +152,25 @@ TEST_F(YamlParserTest, ParseOutSpecification)
   EXPECT_DOUBLE_EQ(spec.weight_, 1.2);
   EXPECT_DOUBLE_EQ(spec.lower_vel_limit_, -0.1);
   EXPECT_DOUBLE_EQ(spec.upper_vel_limit_, 0.15);
+};
+
+TEST_F(YamlParserTest, ParseOutputList)
+{
+  // Making sure we can parse a proper description
+  YAML::Node node = YAML::Load(valid_output_list);
+  EXPECT_TRUE(giskard::is_output_list(node));
+
+  ASSERT_NO_THROW(giskard::parse_output_list(node));
+  std::vector<giskard::OutputSpec> outputs = giskard::parse_output_list(node);
+
+  EXPECT_EQ(outputs.size(), 2);
+  EXPECT_STREQ(outputs[0].name_.c_str(), "trans-x");
+  EXPECT_DOUBLE_EQ(outputs[0].weight_, 1.2);
+  EXPECT_DOUBLE_EQ(outputs[0].lower_vel_limit_, -0.1);
+  EXPECT_DOUBLE_EQ(outputs[0].upper_vel_limit_, 0.15);
+
+  EXPECT_STREQ(outputs[1].name_.c_str(), "trans-y");
+  EXPECT_DOUBLE_EQ(outputs[1].weight_, 0.2);
+  EXPECT_DOUBLE_EQ(outputs[1].lower_vel_limit_, 0.1);
+  EXPECT_DOUBLE_EQ(outputs[1].upper_vel_limit_, 0.15);
 };
