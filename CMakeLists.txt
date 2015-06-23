@@ -14,10 +14,14 @@ find_library(YAML_CPP_LIBRARIES NAMES yaml-cpp)
 
 catkin_package(
   INCLUDE_DIRS include
-#  LIBRARIES giskard
+  LIBRARIES ${PROJECT_NAME}
   CATKIN_DEPENDS expressiongraph
   DEPENDS yaml_cpp
 )
+
+##############
+## Building ##
+##############
 
 include_directories(
   include 
@@ -25,15 +29,12 @@ include_directories(
   ${YAML_CPP_INCLUDE_DIRS}
 )
 
-## Declare a cpp library
-# add_library(giskard
-#   src/${PROJECT_NAME}/giskard.cpp
-# )
+FILE(GLOB SRCS src/${PROJECT_NAME}/[^.]*.cpp)
 
-## Specify libraries to link a library or executable target against
-# target_link_libraries(giskard_node
-#   ${catkin_LIBRARIES}
-# )
+add_library(${PROJECT_NAME} ${SRCS})
+
+target_link_libraries(${PROJECT_NAME}
+  ${catkin_LIBRARIES} ${YAML_CPP_LIBRARIES})
 
 #############
 ## Testing ##
@@ -42,8 +43,7 @@ include_directories(
 FILE(GLOB TEST_SRCS test/[^.]*.cpp test/giskard/[^.]*.cpp)
 message(${TEST_SRCS})
 catkin_add_gtest(${PROJECT_NAME}-test ${TEST_SRCS})
-#catkin_add_gtest(${PROJECT_NAME}-test test/main.cpp test/giskard/yaml_parser.cpp)
 if(TARGET ${PROJECT_NAME}-test)
   target_link_libraries(${PROJECT_NAME}-test 
-      ${catkin_LIBRARIES} ${YAML_CPP_LIBRARIES})
+      ${catkin_LIBRARIES} ${YAML_CPP_LIBRARIES} ${PROJECT_NAME})
 endif()

@@ -1,5 +1,6 @@
 #include <gtest/gtest.h>
 #include <giskard/giskard.hpp>
+#include <boost/assign/list_of.hpp>
 
 class YamlParserTest : public ::testing::Test
 {
