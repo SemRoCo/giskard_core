@@ -15,6 +15,10 @@ namespace giskard
 
   std::vector< KDL::Expression<double>::Ptr > parse_input_frame(
       const YAML::Node& node, unsigned int start_var_index);
+
+  bool is_input_list(const YAML::Node& node);
+
+  std::vector< KDL::Expression<double>::Ptr > parse_input_list(const YAML::Node& node);
 }
 
 #endif // GISKARD_YAML_PARSER_HPP

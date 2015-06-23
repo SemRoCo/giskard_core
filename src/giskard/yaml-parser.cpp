@@ -22,10 +22,6 @@ namespace giskard
     return input;
   }
 
-  //
-  // parse input-frame description
-  //
-
   bool is_input_frame(const YAML::Node& node)
   {
     return node.IsMap() && node["name"] && node["type"] &&
@@ -51,6 +47,47 @@ namespace giskard
     }
     
     return result;
+  }
+
+  bool is_input_list(const YAML::Node& node)
+  {
+    bool result = node.IsMap() && node["inputs"] && node["inputs"].IsSequence();
+    for(unsigned int i=0; i<node["inputs"].size(); ++i)
+      result &= (is_input_variable(node["inputs"][i]) || is_input_frame(node["inputs"][i]));
+
+    return result;
+  }
+
+  std::vector< KDL::Expression<double>::Ptr > parse_input_list(const YAML::Node& node)
+  {
+    if(!is_input_list(node))
+      throw YamlParserException("Given yaml-node does not represent an input-list.");
+   
+    std::vector< KDL::Expression<double>::Ptr > results;
+
+    unsigned int input_number = 0;
+    for(unsigned int i=0; i<node["inputs"].size(); ++i)
+    {
+      if(is_input_variable(node["inputs"][i]))
+      {
+        results.push_back(parse_input_variable(node["inputs"][i], input_number));
+        input_number++;
+      }
+      else if(is_input_frame(node["inputs"][i]))
+      {
+        std::vector< KDL::Expression<double>::Ptr > new_inputs =
+            parse_input_frame(node["inputs"][i], i);
+
+        results.insert(results.end(), new_inputs.begin(), new_inputs.end());
+        input_number += 6;
+      }
+      else
+      {
+        throw YamlParserException("Encountered invalid entry in input-list.");
+      }
+    }
+
+    return results;
   }
 
 }
