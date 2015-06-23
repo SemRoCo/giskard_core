@@ -1,0 +1,19 @@
+# INPUTS USED TO DEFINE RELATIONS 
+# HERE, ALTOGETHER 12-DOF INPUT (6-DOF FOR EACH OBJECT)
+inputs:
+  # A 6-DOF INPUT (MACRO)
+  - name: cup frame
+    type: INPUT-FRAME
+  # EXPLICIT WAY OF DEFINING A 6-DOF INPUT
+  - name: stove frame translation-x
+    type: INPUT-VARIABLE
+  - name: stove frame translation-y
+    type: INPUT-VARIABLE
+  - name: stove frame translation-z
+    type: INPUT-VARIABLE
+  - name: stove frame rotation-x
+    type: INPUT-VARIABLE
+  - name: stove frame rotation-y
+    type: INPUT-VARIABLE
+  - name: stove frame rotation-z
+    type: INPUT-VARIABLE

@@ -42,7 +42,8 @@ target_link_libraries(${PROJECT_NAME}
 
 FILE(GLOB TEST_SRCS test/[^.]*.cpp test/giskard/[^.]*.cpp)
 message(${TEST_SRCS})
-catkin_add_gtest(${PROJECT_NAME}-test ${TEST_SRCS})
+catkin_add_gtest(${PROJECT_NAME}-test ${TEST_SRCS}
+  WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/test_data)
 if(TARGET ${PROJECT_NAME}-test)
   target_link_libraries(${PROJECT_NAME}-test 
       ${catkin_LIBRARIES} ${YAML_CPP_LIBRARIES} ${PROJECT_NAME})
