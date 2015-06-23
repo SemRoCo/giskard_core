@@ -16,6 +16,8 @@ class YamlParserTest : public ::testing::Test
       input_names = boost::assign::list_of("my frame translation-x")
           ("my frame translation-y")("my frame translation-z")("my frame rotation-x")
           ("my frame rotation-y")("my frame rotation-z");
+
+      valid_output_spec = "{name: trans-x, weight: 1.2, lower-velocity-limit: -0.1, upper-velocity-limit: 0.15}";
     }
 
     virtual void TearDown(){}
@@ -24,6 +26,9 @@ class YamlParserTest : public ::testing::Test
     std::string valid_input_variable, valid_input_variable2, 
         valid_input_frame, valid_input_list;
     std::vector<std::string> input_names;
+
+    // PARSING OF OUTPUTS
+    std::string valid_output_spec;
 };
 
 
@@ -130,4 +135,19 @@ TEST_F(YamlParserTest, ParseInputList)
     else
       EXPECT_STREQ(input->name.c_str(), input_names[i-1].c_str());
   }
+};
+
+TEST_F(YamlParserTest, ParseOutSpecification)
+{
+  // Making sure we can parse a proper description
+  YAML::Node valid_node = YAML::Load(valid_output_spec);
+  EXPECT_TRUE(giskard::is_output_spec(valid_node));
+
+  ASSERT_NO_THROW(giskard::parse_output_spec(valid_node));
+  giskard::OutputSpec spec = giskard::parse_output_spec(valid_node);
+
+  EXPECT_STREQ(spec.name_.c_str(), "trans-x");
+  EXPECT_DOUBLE_EQ(spec.weight_, 1.2);
+  EXPECT_DOUBLE_EQ(spec.lower_vel_limit_, -0.1);
+  EXPECT_DOUBLE_EQ(spec.upper_vel_limit_, 0.15);
 };

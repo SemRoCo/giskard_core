@@ -26,6 +26,12 @@ namespace giskard
       (node["type"].as<std::string>().compare("INPUT-VARIABLE") == 0);
   }
 
+  bool is_output_spec(const YAML::Node& node)
+  {
+    return node.IsMap() && node["name"] && node["lower-velocity-limit"] &&
+        node["upper-velocity-limit"] && node["weight"];
+  }
+
   std::vector< KDL::Expression<double>::Ptr > parse_input_list(const YAML::Node& node)
   {
     if(!is_input_list(node))
@@ -89,4 +95,19 @@ namespace giskard
     input->name = node["name"].as<std::string>();
     return input;
   }
+
+  OutputSpec parse_output_spec(const YAML::Node& node)
+  {
+    if(!is_output_spec(node))
+      throw YamlParserException("Given yaml-node does not represent an ouput specification.");
+
+    OutputSpec result;
+    result.name_ = node["name"].as<std::string>();
+    result.lower_vel_limit_ = node["lower-velocity-limit"].as<double>();
+    result.upper_vel_limit_ = node["upper-velocity-limit"].as<double>();
+    result.weight_ = node["weight"].as<double>();
+
+    return result;
+  }
+
 }
