@@ -13,9 +13,11 @@ class YamlParserTest : public ::testing::Test
       valid_input_list = "{inputs: [" + valid_input_variable + ", " + valid_input_frame
           + ", " + valid_input_variable2 + "]}";
 
-      input_names = boost::assign::list_of("my frame translation-x")
-          ("my frame translation-y")("my frame translation-z")("my frame rotation-x")
-          ("my frame rotation-y")("my frame rotation-z");
+      postfixes = boost::assign::list_of(" translation-x")(" translation-y")
+          (" translation-z")(" rotation-x")(" rotation-y")(" rotation-z");
+
+      for(unsigned int i=0; i<postfixes.size(); ++i)
+        input_names.push_back("my frame" + postfixes[i]);
 
       valid_output_spec = "{name: trans-x, weight: 1.2, lower-velocity-limit: -0.1, upper-velocity-limit: 0.15}";
       valid_output_spec2 = "{name: trans-y, weight: 0.2, lower-velocity-limit: 0.1, upper-velocity-limit: 0.15}";
@@ -27,7 +29,7 @@ class YamlParserTest : public ::testing::Test
     // PARSING OF INPUTS
     std::string valid_input_variable, valid_input_variable2, 
         valid_input_frame, valid_input_list;
-    std::vector<std::string> input_names;
+    std::vector<std::string> postfixes, input_names;
 
     // PARSING OF OUTPUTS
     std::string valid_output_spec, valid_output_spec2, valid_output_list;
@@ -138,6 +140,32 @@ TEST_F(YamlParserTest, ParseInputList)
       EXPECT_STREQ(input->name.c_str(), input_names[i-1].c_str());
   }
 };
+
+TEST_F(YamlParserTest, ParseInputListFromFile)
+{
+  YAML::Node node = YAML::LoadFile("input-list.yaml");
+  EXPECT_TRUE(giskard::is_input_list(node));
+
+  ASSERT_NO_THROW(giskard::parse_input_list(node));
+  std::vector< KDL::Expression<double>::Ptr > expressions =
+      giskard::parse_input_list(node);
+  EXPECT_EQ(expressions.size(), 12);
+
+  for(unsigned int i=0; i<expressions.size(); ++i)
+  {
+    KDL::InputTypePtr input = boost::static_pointer_cast< KDL::InputType >(expressions[i]);
+    EXPECT_EQ(input->variable_number, i);   
+    
+    std::string input_name;
+    if(i<6)
+      input_name = "cup frame" + postfixes[i];
+    else
+      input_name = "stove frame" + postfixes[i-6];
+    
+    EXPECT_STREQ(input->name.c_str(), input_name.c_str());
+  }
+};
+
 
 TEST_F(YamlParserTest, ParseOutSpecification)
 {
