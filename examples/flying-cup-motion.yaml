@@ -7,7 +7,7 @@
 
 # INPUTS USED TO DEFINE RELATIONS 
 # HERE, ALTOGETHER 12-DOF INPUT (6-DOF FOR EACH OBJECT)
-inputs:
+observables:
   # A 6-DOF INPUT (MACRO)
   - name: cup frame
     type: INPUT-FRAME
@@ -27,7 +27,7 @@ inputs:
 
 # OUTPUTS TO BE CONTROLLED
 # HERE; 6-DOF OUTPUT; ONLY THE CUP IS CONTROLLED
-outputs:
+controllables:
   - name: cup frame translation-x
     lower-velocity-limit: -0.1
     upper-velocity-limit: 0.1
