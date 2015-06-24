@@ -2,32 +2,69 @@
 #define GISKARD_YAML_PARSER_HPP
 
 #include <yaml-cpp/yaml.h>
-#include <kdl/expressiontree.hpp>
+#include <vector>
 #include <giskard/structs.hpp>
 
-namespace giskard 
-{
-  bool is_input_list(const YAML::Node& node);
+namespace YAML {
+  inline bool is_observable_spec(const Node& node)
+  {
+    return node.IsMap() && (node.size() == 2) &&
+        node["name"] && node["type"];
+  }
 
-  bool is_output_list(const YAML::Node& node);
+  inline bool is_controllable_spec(const Node& node)
+  {
+    return node.IsMap() && (node.size() == 4) &&
+        node["name"] && node["weight"] &&
+        node["lower_velocity_limit"] && 
+        node["upper_velocity_limit"];
+  }
 
-  bool is_input_variable(const YAML::Node& node);
+  template<>
+  struct convert<giskard::ObservableSpec> {
+    
+    static Node encode(const giskard::ObservableSpec& rhs) {
+      Node node;
+      node["name"] = rhs.name_;
+      node["type"] = rhs.type_;
+      return node;
+    }
+  
+    static bool decode(const Node& node, giskard::ObservableSpec& rhs) {
+      if(!is_observable_spec(node))
+        return false;
+  
+      rhs.name_ = node["name"].as<std::string>();
+      rhs.type_ = node["type"].as<std::string>();
+      return true;
+    }
+  };
 
-  bool is_input_frame(const YAML::Node& node);
+  template<>
+  struct convert<giskard::ControllableSpec> {
+    
+    static Node encode(const giskard::ControllableSpec& rhs) {
+      Node node;
+      node["name"] = rhs.name_;
+      node["lower_velocity_limit"] = rhs.lower_vel_limit_;
+      node["upper_velocity_limit"] = rhs.upper_vel_limit_;
+      node["weight"] = rhs.weight_;
+      return node;
+    }
+  
+    static bool decode(const Node& node, giskard::ControllableSpec& rhs) {
+      if(!is_controllable_spec(node))
+        return false;
+  
+      rhs.name_ = node["name"].as<std::string>();
+      rhs.lower_vel_limit_ = node["lower_velocity_limit"].as<double>();
+      rhs.upper_vel_limit_ = node["upper_velocity_limit"].as<double>();
+      rhs.weight_ = node["weight"].as<double>();
 
-  bool is_output_spec(const YAML::Node& node);
+      return true;
+    }
+  };
 
-  std::vector< KDL::Expression<double>::Ptr > parse_input_list(const YAML::Node& node);
-
-  std::vector<OutputSpec> parse_output_list(const YAML::Node& node);  
-
-  std::vector< KDL::Expression<double>::Ptr > parse_input_frame(
-      const YAML::Node& node, unsigned int start_var_index);
-
-  KDL::Expression<double>::Ptr parse_input_variable(const YAML::Node& node, 
-      unsigned int var_index);
-
-  OutputSpec parse_output_spec(const YAML::Node& node);  
 }
 
 #endif // GISKARD_YAML_PARSER_HPP

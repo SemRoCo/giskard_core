@@ -1,204 +1,118 @@
 #include <gtest/gtest.h>
 #include <giskard/giskard.hpp>
 #include <boost/assign/list_of.hpp>
+#include <boost/lexical_cast.hpp>
 
 class YamlParserTest : public ::testing::Test
 {
   protected:
-    virtual void SetUp()
-    {
-      valid_input_variable = "{name: trans-x, type: INPUT-VARIABLE}";
-      valid_input_variable2 = "{name: trans-y, type: INPUT-VARIABLE}";
-      valid_input_frame = "{name: my frame, type: INPUT-FRAME}";
-      valid_input_list = "{inputs: [" + valid_input_variable + ", " + valid_input_frame
-          + ", " + valid_input_variable2 + "]}";
-
-      postfixes = boost::assign::list_of(" translation-x")(" translation-y")
-          (" translation-z")(" rotation-x")(" rotation-y")(" rotation-z");
-
-      for(unsigned int i=0; i<postfixes.size(); ++i)
-        input_names.push_back("my frame" + postfixes[i]);
-
-      valid_output_spec = "{name: trans-x, weight: 1.2, lower-velocity-limit: -0.1, upper-velocity-limit: 0.15}";
-      valid_output_spec2 = "{name: trans-y, weight: 0.2, lower-velocity-limit: 0.1, upper-velocity-limit: 0.15}";
-      valid_output_list = "{outputs: [" + valid_output_spec + ", " + valid_output_spec2 + "]}";
-    }
-
+    virtual void SetUp(){}
     virtual void TearDown(){}
-
-    // PARSING OF INPUTS
-    std::string valid_input_variable, valid_input_variable2, 
-        valid_input_frame, valid_input_list;
-    std::vector<std::string> postfixes, input_names;
-
-    // PARSING OF OUTPUTS
-    std::string valid_output_spec, valid_output_spec2, valid_output_list;
 };
 
-
-TEST_F(YamlParserTest, ParseInputVariable)
+TEST_F(YamlParserTest, ParseObservables)
 {
-  // Making sure we can parse a proper description
-  YAML::Node valid_node = YAML::Load(valid_input_variable);
-  EXPECT_TRUE(giskard::is_input_variable(valid_node));
-  unsigned int input_index = 2;
-  std::string input_name = "trans-x";
+  // PARSING INPUT-VARIABLE
+  std::string obs_name1 = "trans-x";
+  std::string obs_type1 = "INPUT-VARIABLE";
+  std::string obs_input1 = "{name: " + obs_name1 + ", type: " + obs_type1 + "}";
+  YAML::Node node = YAML::Load(obs_input1);
 
-  KDL::Expression<double>::Ptr expression = 
-      giskard::parse_input_variable(valid_node, input_index);
-  KDL::InputTypePtr input = boost::static_pointer_cast< KDL::InputType >(expression);
- 
-  EXPECT_STREQ(input->name.c_str(), input_name.c_str());
-  EXPECT_EQ(input->variable_number, input_index);
+  ASSERT_NO_THROW(node.as<giskard::ObservableSpec>());
+  giskard::ObservableSpec obs = node.as<giskard::ObservableSpec>();
+  EXPECT_STREQ(obs.name_.c_str(), obs_name1.c_str());
+  EXPECT_STREQ(obs.type_.c_str(), obs_type1.c_str());
 
-  // Catching various improper descriptions
-  YAML::Node invalid_node1 = YAML::Load("{name: trans-x, type: INPUT-VAR}");
-  YAML::Node invalid_node2 = YAML::Load("{name: trans-x, types: INPUT-VARIABLE}");
-  YAML::Node invalid_node3 = YAML::Load("{type: INPUT-VAR}");
-  YAML::Node invalid_node4 = YAML::Load("{name: trans-x}");
-  YAML::Node invalid_node5 = YAML::Load("[1.0, 2.0]");
- 
-  EXPECT_FALSE(giskard::is_input_variable(invalid_node1));
-  EXPECT_FALSE(giskard::is_input_variable(invalid_node2));
-  EXPECT_FALSE(giskard::is_input_variable(invalid_node3));
-  EXPECT_FALSE(giskard::is_input_variable(invalid_node4));
-  EXPECT_FALSE(giskard::is_input_variable(invalid_node5));
+  // PARSING INPUT-FRAME
+  std::string obs_name2 = "cup frame";
+  std::string obs_type2 = "INPUT-FRAME";
+  std::string obs_input2 = "{name: " + obs_name2 + ", type: " + obs_type2 + "}";
+  node = YAML::Load(obs_input2);
 
-  EXPECT_THROW(giskard::parse_input_variable(invalid_node1, input_index),
-     giskard::YamlParserException); 
-  EXPECT_THROW(giskard::parse_input_variable(invalid_node2, input_index),
-     giskard::YamlParserException); 
-  EXPECT_THROW(giskard::parse_input_variable(invalid_node3, input_index),
-     giskard::YamlParserException); 
-  EXPECT_THROW(giskard::parse_input_variable(invalid_node4, input_index),
-     giskard::YamlParserException); 
-  EXPECT_THROW(giskard::parse_input_variable(invalid_node5, input_index),
-     giskard::YamlParserException); 
+  ASSERT_NO_THROW(node.as<giskard::ObservableSpec>());
+  obs = node.as<giskard::ObservableSpec>();
+  EXPECT_STREQ(obs.name_.c_str(), obs_name2.c_str());
+  EXPECT_STREQ(obs.type_.c_str(), obs_type2.c_str());
+
+  // PARSING LIST OF INPUTS
+  std::string obs_list_input = "[" + obs_input1 + ", " + obs_input2 + "]";
+  node = YAML::Load(obs_list_input);
+  std::vector<giskard::ObservableSpec> obs_list = 
+      node.as< std::vector<giskard::ObservableSpec> >();
+  ASSERT_EQ(obs_list.size(), 2);
+  EXPECT_STREQ(obs_list[0].name_.c_str(), obs_name1.c_str()); 
+  EXPECT_STREQ(obs_list[1].name_.c_str(), obs_name2.c_str()); 
+  EXPECT_STREQ(obs_list[0].type_.c_str(), obs_type1.c_str()); 
+  EXPECT_STREQ(obs_list[1].type_.c_str(), obs_type2.c_str()); 
+
+  // ROUNDTRIP WITH YAML GENERATION
+  YAML::Node node2;
+  node2 = obs_list;
+  std::vector<giskard::ObservableSpec> obs_list2 = 
+      node.as< std::vector<giskard::ObservableSpec> >();
+  ASSERT_EQ(obs_list2.size(), 2);
+  EXPECT_STREQ(obs_list2[0].name_.c_str(), obs_name1.c_str()); 
+  EXPECT_STREQ(obs_list2[1].name_.c_str(), obs_name2.c_str()); 
+  EXPECT_STREQ(obs_list2[0].type_.c_str(), obs_type1.c_str()); 
+  EXPECT_STREQ(obs_list2[1].type_.c_str(), obs_type2.c_str()); 
 };
 
-TEST_F(YamlParserTest, ParseInputFrame)
+TEST_F(YamlParserTest, ParseControllables)
 {
-  // Making sure we can parse a proper description
-  YAML::Node valid_node = YAML::Load(valid_input_frame);
-  EXPECT_TRUE(giskard::is_input_frame(valid_node));
+  std::string c1_name = "cup frame translation-z";
+  std::string c2_name = "cup frame rotation-x";
+  double c1_lower = -0.1;
+  double c2_lower = -0.05;
+  double c1_upper = 0.1;
+  double c2_upper= 0.05;
+  double c1_weight = 1.0;
+  double c2_weight = 2.0;
 
-  unsigned int start_index = 2;
-  std::vector< KDL::Expression<double>::Ptr > expressions = 
-      giskard::parse_input_frame(valid_node, start_index);
+  std::string c1_input = "{name: " + c1_name + ", lower_velocity_limit: " +
+      boost::lexical_cast<std::string>(c1_lower) + ", upper_velocity_limit: " + 
+      boost::lexical_cast<std::string>(c1_upper) + ", weight: " + 
+      boost::lexical_cast<std::string>(c1_weight) + "}";
+  std::string c2_input = "{name: " + c2_name + ", lower_velocity_limit: " +
+      boost::lexical_cast<std::string>(c2_lower) + ", upper_velocity_limit: " + 
+      boost::lexical_cast<std::string>(c2_upper) + ", weight: " + 
+      boost::lexical_cast<std::string>(c2_weight) + "}";
+  std::string c_list_input = "[" + c1_input + ", " + c2_input + "]";
 
-  ASSERT_EQ(expressions.size(), input_names.size() );
-  for(unsigned int i=0; i<input_names.size(); ++i)
-  {
-    KDL::InputTypePtr input = boost::static_pointer_cast< KDL::InputType >(expressions[i]);
-   
-    EXPECT_STREQ(input->name.c_str(), input_names[i].c_str());
-    EXPECT_EQ(input->variable_number, start_index + i);
-  }
+  // PARSING A CONTROLLABLE SPEC
+  YAML::Node node = YAML::Load(c1_input);
+  ASSERT_NO_THROW(node.as<giskard::ControllableSpec>());
+  giskard::ControllableSpec c1 = node.as<giskard::ControllableSpec>();
+  EXPECT_STREQ(c1.name_.c_str(), c1_name.c_str());
+  EXPECT_DOUBLE_EQ(c1.lower_vel_limit_, c1_lower);
+  EXPECT_DOUBLE_EQ(c1.upper_vel_limit_, c1_upper);
+  EXPECT_DOUBLE_EQ(c1.weight_, c1_weight);
 
-  // Catching various improper descriptions
-  YAML::Node invalid_node1 = YAML::Load("{name: my frame, type: INPUT}");
-  YAML::Node invalid_node2 = YAML::Load("{name: my frame}");
-  YAML::Node invalid_node3 = YAML::Load("{type: INPUT-FRAME}");
-  YAML::Node invalid_node4 = YAML::Load("[1.0, 2.0, 3.0]");
+  // PARSING A LIST OF CONTROLLABLE SPECS
+  node = YAML::Load(c_list_input);
+  std::vector<giskard::ControllableSpec> c_list = 
+      node.as< std::vector<giskard::ControllableSpec> >();
+  ASSERT_EQ(c_list.size(), 2);
+  EXPECT_STREQ(c_list[0].name_.c_str(), c1_name.c_str()); 
+  EXPECT_STREQ(c_list[1].name_.c_str(), c2_name.c_str()); 
+  EXPECT_DOUBLE_EQ(c_list[0].weight_, c1_weight);
+  EXPECT_DOUBLE_EQ(c_list[1].weight_, c2_weight);
+  EXPECT_DOUBLE_EQ(c_list[0].lower_vel_limit_, c1_lower);
+  EXPECT_DOUBLE_EQ(c_list[1].lower_vel_limit_, c2_lower);
+  EXPECT_DOUBLE_EQ(c_list[0].upper_vel_limit_, c1_upper);
+  EXPECT_DOUBLE_EQ(c_list[1].upper_vel_limit_, c2_upper);
 
-  EXPECT_FALSE(giskard::is_input_variable(invalid_node1));
-  EXPECT_FALSE(giskard::is_input_variable(invalid_node2));
-  EXPECT_FALSE(giskard::is_input_variable(invalid_node3));
-  EXPECT_FALSE(giskard::is_input_variable(invalid_node4));
-
-  EXPECT_THROW(giskard::parse_input_variable(invalid_node1, start_index),
-     giskard::YamlParserException); 
-  EXPECT_THROW(giskard::parse_input_variable(invalid_node2, start_index),
-     giskard::YamlParserException); 
-  EXPECT_THROW(giskard::parse_input_variable(invalid_node3, start_index),
-     giskard::YamlParserException); 
-  EXPECT_THROW(giskard::parse_input_variable(invalid_node4, start_index),
-     giskard::YamlParserException); 
-};
-
-TEST_F(YamlParserTest, ParseInputList)
-{
-  // Making sure we can parse a proper description
-  YAML::Node valid_node = YAML::Load(valid_input_list);
-  EXPECT_TRUE(giskard::is_input_list(valid_node));
-
-  ASSERT_NO_THROW(giskard::parse_input_list(valid_node));
-  std::vector< KDL::Expression<double>::Ptr > expressions =
-      giskard::parse_input_list(valid_node);
-  EXPECT_EQ(expressions.size(), 8);
-
-  for(unsigned int i=0; i<expressions.size(); ++i)
-  {
-    KDL::InputTypePtr input = boost::static_pointer_cast< KDL::InputType >(expressions[i]);
-    EXPECT_EQ(input->variable_number, i);   
-    
-    if(i==0)
-      EXPECT_STREQ(input->name.c_str(), "trans-x");
-    else if (i==7)
-      EXPECT_STREQ(input->name.c_str(), "trans-y");
-    else
-      EXPECT_STREQ(input->name.c_str(), input_names[i-1].c_str());
-  }
-};
-
-TEST_F(YamlParserTest, ParseInputListFromFile)
-{
-  YAML::Node node = YAML::LoadFile("input-list.yaml");
-  EXPECT_TRUE(giskard::is_input_list(node));
-
-  ASSERT_NO_THROW(giskard::parse_input_list(node));
-  std::vector< KDL::Expression<double>::Ptr > expressions =
-      giskard::parse_input_list(node);
-  EXPECT_EQ(expressions.size(), 12);
-
-  for(unsigned int i=0; i<expressions.size(); ++i)
-  {
-    KDL::InputTypePtr input = boost::static_pointer_cast< KDL::InputType >(expressions[i]);
-    EXPECT_EQ(input->variable_number, i);   
-    
-    std::string input_name;
-    if(i<6)
-      input_name = "cup frame" + postfixes[i];
-    else
-      input_name = "stove frame" + postfixes[i-6];
-    
-    EXPECT_STREQ(input->name.c_str(), input_name.c_str());
-  }
-};
-
-
-TEST_F(YamlParserTest, ParseOutSpecification)
-{
-  // Making sure we can parse a proper description
-  YAML::Node valid_node = YAML::Load(valid_output_spec);
-  EXPECT_TRUE(giskard::is_output_spec(valid_node));
-
-  ASSERT_NO_THROW(giskard::parse_output_spec(valid_node));
-  giskard::OutputSpec spec = giskard::parse_output_spec(valid_node);
-
-  EXPECT_STREQ(spec.name_.c_str(), "trans-x");
-  EXPECT_DOUBLE_EQ(spec.weight_, 1.2);
-  EXPECT_DOUBLE_EQ(spec.lower_vel_limit_, -0.1);
-  EXPECT_DOUBLE_EQ(spec.upper_vel_limit_, 0.15);
-};
-
-TEST_F(YamlParserTest, ParseOutputList)
-{
-  // Making sure we can parse a proper description
-  YAML::Node node = YAML::Load(valid_output_list);
-  EXPECT_TRUE(giskard::is_output_list(node));
-
-  ASSERT_NO_THROW(giskard::parse_output_list(node));
-  std::vector<giskard::OutputSpec> outputs = giskard::parse_output_list(node);
-
-  EXPECT_EQ(outputs.size(), 2);
-  EXPECT_STREQ(outputs[0].name_.c_str(), "trans-x");
-  EXPECT_DOUBLE_EQ(outputs[0].weight_, 1.2);
-  EXPECT_DOUBLE_EQ(outputs[0].lower_vel_limit_, -0.1);
-  EXPECT_DOUBLE_EQ(outputs[0].upper_vel_limit_, 0.15);
-
-  EXPECT_STREQ(outputs[1].name_.c_str(), "trans-y");
-  EXPECT_DOUBLE_EQ(outputs[1].weight_, 0.2);
-  EXPECT_DOUBLE_EQ(outputs[1].lower_vel_limit_, 0.1);
-  EXPECT_DOUBLE_EQ(outputs[1].upper_vel_limit_, 0.15);
+  // ROUNDTRIP WITH YAML GENERATION
+  YAML::Node node2;
+  node2 = c_list;
+  std::vector<giskard::ControllableSpec> c_list2 = 
+      node.as< std::vector<giskard::ControllableSpec> >();
+  ASSERT_EQ(c_list2.size(), 2);
+  EXPECT_STREQ(c_list2[0].name_.c_str(), c1_name.c_str()); 
+  EXPECT_STREQ(c_list2[1].name_.c_str(), c2_name.c_str()); 
+  EXPECT_DOUBLE_EQ(c_list2[0].weight_, c1_weight);
+  EXPECT_DOUBLE_EQ(c_list2[1].weight_, c2_weight);
+  EXPECT_DOUBLE_EQ(c_list2[0].lower_vel_limit_, c1_lower);
+  EXPECT_DOUBLE_EQ(c_list2[1].lower_vel_limit_, c2_lower);
+  EXPECT_DOUBLE_EQ(c_list2[0].upper_vel_limit_, c1_upper);
+  EXPECT_DOUBLE_EQ(c_list2[1].upper_vel_limit_, c2_upper);
 };
