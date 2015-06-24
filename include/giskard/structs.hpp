@@ -10,6 +10,11 @@ namespace giskard
   {
     public:
       std::string name_, type_;
+
+      void clear()
+      {
+        name_ = type_ = "";
+      }
   };
 
   class ControllableSpec
@@ -17,6 +22,12 @@ namespace giskard
     public:
       std::string name_;
       double lower_vel_limit_, upper_vel_limit_, weight_;
+
+      void clear()
+      {
+        name_ = "";
+        lower_vel_limit_ = upper_vel_limit_ = weight_ = 0.0;
+      }
   };
 
   class ExpressionSpec;
@@ -25,7 +36,15 @@ namespace giskard
   {
     public:
       std::string name_, type_;
-      std::vector<ExpressionSpec> inputs; 
+      double value_;
+      std::vector<ExpressionSpec> inputs_; 
+
+      void clear()
+      {
+        name_ = type_ = "";
+        value_ = 0.0;
+        inputs_.clear();
+      }
   };
 
   class ConstraintSpec
