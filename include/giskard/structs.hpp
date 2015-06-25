@@ -58,6 +58,23 @@ namespace giskard
     }
   };
 
+  class ControllerSpec
+  {
+    public:
+      std::vector<ObservableSpec> observables_;
+      std::vector<ExpressionSpec> expressions_;
+      std::vector<ControllableSpec> controllables_;
+      std::vector<ConstraintSpec> constraints_;
+   
+    void clear()
+    {
+      observables_.clear();
+      expressions_.clear();
+      controllables_.clear();
+      constraints_.clear();
+    }
+  };
+
   inline std::ostream& operator<<(std::ostream& os, const ObservableSpec& obs)
   {
     os << "name: " << obs.name_ << "\n";

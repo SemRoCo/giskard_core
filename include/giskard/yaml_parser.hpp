@@ -53,6 +53,15 @@ namespace YAML {
         node["gain"] && node["expression"];
   }
 
+  inline bool is_controller_spec(const Node& node)
+  {
+    return node.IsMap() && (node.size() == 4) && 
+      node["observables"] && node["observables"].IsSequence() && 
+      node["expressions"] && node["expressions"].IsSequence() && 
+      node["controllables"] && node["controllables"].IsSequence() && 
+      node["constraints"] && node["constraints"].IsSequence(); 
+  }
+
   template<>
   struct convert<giskard::ObservableSpec> {
     
@@ -202,6 +211,39 @@ namespace YAML {
       return false;
     }
   };
+
+  template<>
+  struct convert<giskard::ControllerSpec> 
+  {
+    
+    static Node encode(const giskard::ControllerSpec& rhs) 
+    {
+      Node node;
+      node["observables"] = rhs.observables_;
+      node["expressions"] = rhs.expressions_;
+      node["controllables"] = rhs.controllables_;
+      node["constraints"] = rhs.constraints_;
+
+      return node;
+    }
+  
+    static bool decode(const Node& node, giskard::ControllerSpec& rhs) 
+    {
+      if(is_controller_spec(node))
+      {
+        rhs.clear();
+        rhs.observables_ = node["observables"].as< std::vector<giskard::ObservableSpec> >();
+        rhs.expressions_ = node["expressions"].as< std::vector<giskard::ExpressionSpec> >();
+        rhs.controllables_ = node["controllables"].as< std::vector<giskard::ControllableSpec> >();
+        rhs.constraints_ = node["constraints"].as< std::vector<giskard::ConstraintSpec> >();
+ 
+        return true;
+      }
+      else
+        return false;
+    }
+  };
+
 }
 
 #endif // GISKARD_YAML_PARSER_HPP
