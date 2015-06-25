@@ -37,6 +37,22 @@ namespace YAML {
        is_anonymous_expression_spec(node);
   }
 
+  inline bool is_hard_constraint_spec(const Node& node)
+  {
+    return node.IsMap() && (node.size() == 6) && node["type"] &&
+        (node["type"].as<std::string>().compare("HARD-CONSTRAINT") == 0) &&
+        node["name"] && node["lower"] && node["upper"] && node["weight"] &&
+        node["expression"];
+  }
+
+  inline bool is_soft_constraint_spec(const Node& node)
+  {
+    return node.IsMap() && (node.size() == 7) && node["type"] &&
+        (node["type"].as<std::string>().compare("SOFT-CONSTRAINT") == 0) &&
+        node["name"] && node["lower"] && node["upper"] && node["weight"] &&
+        node["gain"] && node["expression"];
+  }
+
   template<>
   struct convert<giskard::ObservableSpec> {
     
@@ -137,6 +153,55 @@ namespace YAML {
     }
   };
 
+  template<>
+  struct convert<giskard::ConstraintSpec> {
+    
+    static Node encode(const giskard::ConstraintSpec& rhs) {
+      Node node;
+      node["name"] = rhs.name_;
+      node["type"] = rhs.type_;
+      node["expression"] = rhs.expression_;
+      node["lower"] = rhs.lower_;
+      node["upper"] = rhs.upper_;
+      node["weight"] = rhs.weight_;
+
+      if(rhs.type_.compare("SOFT-CONSTRAINT") == 0)
+        node["gain"] = rhs.gain_;
+
+      return node;
+    }
+  
+    static bool decode(const Node& node, giskard::ConstraintSpec& rhs) {
+      if(is_soft_constraint_spec(node))
+      {
+        rhs.clear();
+        rhs.name_ = node["name"].as<std::string>();
+        rhs.type_ = node["type"].as<std::string>();
+        rhs.expression_ = node["expression"].as<std::string>();
+        rhs.weight_ = node["weight"].as<double>();
+        rhs.lower_ = node["lower"].as<double>();
+        rhs.upper_ = node["upper"].as<double>();
+        rhs.gain_ = node["gain"].as<double>();
+ 
+        return true;
+      }
+
+      if(is_hard_constraint_spec(node))
+      {
+        rhs.clear();
+        rhs.name_ = node["name"].as<std::string>();
+        rhs.type_ = node["type"].as<std::string>();
+        rhs.expression_ = node["expression"].as<std::string>();
+        rhs.weight_ = node["weight"].as<double>();
+        rhs.lower_ = node["lower"].as<double>();
+        rhs.upper_ = node["upper"].as<double>();
+ 
+        return true;
+      }
+
+      return false;
+    }
+  };
 }
 
 #endif // GISKARD_YAML_PARSER_HPP

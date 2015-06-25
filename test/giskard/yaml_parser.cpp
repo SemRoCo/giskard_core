@@ -205,3 +205,101 @@ TEST_F(YamlParserTest, ParseExpressions)
   EXPECT_STREQ(exp2.inputs_[1].inputs_[0].name_.c_str(), cup_bottom_name.c_str());
   EXPECT_STREQ(exp2.inputs_[1].inputs_[0].type_.c_str(), "REFERENCE"); 
 };
+
+TEST_F(YamlParserTest, ParseConstraints)
+{
+  std::string sc_exp = "cup upright";
+  std::string sc_name = sc_exp + " constraint";
+  std::string sc_type = "SOFT-CONSTRAINT";
+  double sc_lower = 0.04;
+  double sc_upper = 0.06;
+  double sc_weight = 1.0;
+  double sc_gain = 10.0;
+  std::string sc_input = "{name: " + sc_name + ", type: " + sc_type +
+      ", expression: " + sc_exp + ", lower: " + boost::lexical_cast<std::string>(sc_lower) +
+      ", upper: " + boost::lexical_cast<std::string>(sc_upper) +
+      ", gain: " + boost::lexical_cast<std::string>(sc_gain) +
+      ", weight: " + boost::lexical_cast<std::string>(sc_weight) + "}";
+
+  std::string hc_exp = "cup frame translation-x velocity";
+  std::string hc_name = hc_exp + " limits";
+  std::string hc_type = "HARD-CONSTRAINT";
+  double hc_lower = -0.2;
+  double hc_upper = 0.2;
+  double hc_weight = 1.0;
+  std::string hc_input = "{name: " + hc_name + ", type: " + hc_type +
+      ", expression: " + hc_exp + ", lower: " + boost::lexical_cast<std::string>(hc_lower) +
+      ", upper: " + boost::lexical_cast<std::string>(hc_upper) +
+      ", weight: " + boost::lexical_cast<std::string>(hc_weight) + "}";
+
+  std::string input_list = "[" + hc_input + ", " + sc_input + "]";
+
+  // PARSING A SOFT CONSTRAINT
+  YAML::Node node = YAML::Load(sc_input);
+  ASSERT_NO_THROW(node.as<giskard::ConstraintSpec>());
+  giskard::ConstraintSpec c = node.as<giskard::ConstraintSpec>();
+  EXPECT_STREQ(c.name_.c_str(), sc_name.c_str());
+  EXPECT_STREQ(c.type_.c_str(), sc_type.c_str());
+  EXPECT_STREQ(c.expression_.c_str(), sc_exp.c_str());
+  EXPECT_DOUBLE_EQ(c.lower_, sc_lower);
+  EXPECT_DOUBLE_EQ(c.upper_, sc_upper);
+  EXPECT_DOUBLE_EQ(c.weight_, sc_weight);
+  EXPECT_DOUBLE_EQ(c.gain_, sc_gain);
+
+  // PARSING A HARD CONSTRAINT
+  node = YAML::Load(hc_input);
+  ASSERT_NO_THROW(node.as<giskard::ConstraintSpec>());
+  c = node.as<giskard::ConstraintSpec>();
+  EXPECT_STREQ(c.name_.c_str(), hc_name.c_str());
+  EXPECT_STREQ(c.type_.c_str(), hc_type.c_str());
+  EXPECT_STREQ(c.expression_.c_str(), hc_exp.c_str());
+  EXPECT_DOUBLE_EQ(c.lower_, hc_lower);
+  EXPECT_DOUBLE_EQ(c.upper_, hc_upper);
+  EXPECT_DOUBLE_EQ(c.weight_, hc_weight);
+  EXPECT_DOUBLE_EQ(c.gain_, 0.0);
+
+  // PARSING A LIST OF CONSTRAINTS
+  node = YAML::Load(input_list);
+  ASSERT_NO_THROW(node.as< std::vector<giskard::ConstraintSpec> >());
+  std::vector< giskard::ConstraintSpec > cs = node.as< std::vector<giskard::ConstraintSpec> >();
+  ASSERT_EQ(cs.size(), 2);
+  // hard constraint went into list, first
+  EXPECT_STREQ(cs[0].name_.c_str(), hc_name.c_str());
+  EXPECT_STREQ(cs[0].type_.c_str(), hc_type.c_str());
+  EXPECT_STREQ(cs[0].expression_.c_str(), hc_exp.c_str());
+  EXPECT_DOUBLE_EQ(cs[0].lower_, hc_lower);
+  EXPECT_DOUBLE_EQ(cs[0].upper_, hc_upper);
+  EXPECT_DOUBLE_EQ(cs[0].weight_, hc_weight);
+  EXPECT_DOUBLE_EQ(cs[0].gain_, 0.0);
+  // followed by soft constraint
+  EXPECT_STREQ(cs[1].name_.c_str(), sc_name.c_str());
+  EXPECT_STREQ(cs[1].type_.c_str(), sc_type.c_str());
+  EXPECT_STREQ(cs[1].expression_.c_str(), sc_exp.c_str());
+  EXPECT_DOUBLE_EQ(cs[1].lower_, sc_lower);
+  EXPECT_DOUBLE_EQ(cs[1].upper_, sc_upper);
+  EXPECT_DOUBLE_EQ(cs[1].weight_, sc_weight);
+  EXPECT_DOUBLE_EQ(cs[1].gain_, sc_gain);
+
+  // ROUNDTRIP WITH PRODUCTION OF YAML
+  YAML::Node node2;
+  node2 = cs;
+  ASSERT_NO_THROW(node2.as< std::vector<giskard::ConstraintSpec> >());
+  std::vector< giskard::ConstraintSpec> cs2 = node2.as< std::vector<giskard::ConstraintSpec> >();
+  ASSERT_EQ(cs2.size(), 2);
+  // hard constraint went into list, first
+  EXPECT_STREQ(cs2[0].name_.c_str(), hc_name.c_str());
+  EXPECT_STREQ(cs2[0].type_.c_str(), hc_type.c_str());
+  EXPECT_STREQ(cs2[0].expression_.c_str(), hc_exp.c_str());
+  EXPECT_DOUBLE_EQ(cs2[0].lower_, hc_lower);
+  EXPECT_DOUBLE_EQ(cs2[0].upper_, hc_upper);
+  EXPECT_DOUBLE_EQ(cs2[0].weight_, hc_weight);
+  EXPECT_DOUBLE_EQ(cs2[0].gain_, 0.0);
+  // followed by soft constraint
+  EXPECT_STREQ(cs2[1].name_.c_str(), sc_name.c_str());
+  EXPECT_STREQ(cs2[1].type_.c_str(), sc_type.c_str());
+  EXPECT_STREQ(cs2[1].expression_.c_str(), sc_exp.c_str());
+  EXPECT_DOUBLE_EQ(cs2[1].lower_, sc_lower);
+  EXPECT_DOUBLE_EQ(cs2[1].upper_, sc_upper);
+  EXPECT_DOUBLE_EQ(cs2[1].weight_, sc_weight);
+  EXPECT_DOUBLE_EQ(cs2[1].gain_, sc_gain);
+};

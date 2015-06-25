@@ -130,55 +130,55 @@ controllables:
 constraints:
   - name: height of cup bottom above stove top contraint
     expression: height of cup bottom above stove top
+    type: SOFT-CONSTRAINT
     lower: 0.1
     upper: 0.15
     weight: 1.0
-    slack: ON
     gain: 2.0
   - name: distance between cup bottom and stove top constraint
     expression: distance between cup bottom and stove top
+    type: SOFT-CONSTRAINT
     lower: 0.11
     upper: 0.13
     weight: 5.0
-    slack: ON
     gain: 2.0
   - name: cup upright constraint
     expression: cup upright
+    type: SOFT-CONSTRAINT
     lower: 0.04
     upper: 0.06
     weight: 1.0
-    slack: ON
     gain: 2.0
   - name: cup frame translation-x velocity limits
     expression: cup frame translation-x velocity
+    type: HARD-CONSTRAINT
     lower: -0.1
     upper: 0.1
     weight: 1.0
-    slack: OFF
   - name: cup frame translation-y velocity limits
     expression: cup frame translation-x velocity
+    type: HARD-CONSTRAINT
     lower: -0.1
     upper: 0.1
     weight: 1.0
-    slack: OFF
   - name: cup frame translation-z velocity limits
     expression: cup frame translation-x velocity
+    type: HARD-CONSTRAINT
     lower: -0.1
     upper: 0.1
     weight: 1.0
-    slack: OFF
   - name: cup frame rotation-x velocity limits
+    type: HARD-CONSTRAINT
     lower: -0.05
     upper: 0.05
     weight: 2.0
-    slack: OFF
   - name: cup frame rotation-y velocity limits
+    type: HARD-CONSTRAINT
     lower: -0.05
     upper: 0.05
     weight: 2.0
-    slack: OFF
   - name: cup frame rotation-z velocity limits
+    type: HARD-CONSTRAINT
     lower: -0.05
     upper: 0.05
     weight: 2.0
-    slack: OFF

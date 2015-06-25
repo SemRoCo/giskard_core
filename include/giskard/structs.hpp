@@ -48,8 +48,14 @@ namespace giskard
   class ConstraintSpec
   {
     public:
-      std::string name_, expression_;
-      double lower_, upper_, weight_, p_gain_;
+      std::string name_, expression_, type_;
+      double lower_, upper_, weight_, gain_;
+
+    void clear()
+    {
+      name_ = expression_ = type_ = "";
+      lower_ = upper_ = weight_ = gain_ = 0.0;
+    }
   };
 
   inline std::ostream& operator<<(std::ostream& os, const ObservableSpec& obs)
@@ -68,7 +74,6 @@ namespace giskard
 
     return os;
   }
-
 }
 
 #endif // GISKARD_STRUCTS_HPP
