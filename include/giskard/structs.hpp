@@ -20,13 +20,11 @@ namespace giskard
   class ControllableSpec
   {
     public:
-      std::string name_;
-      double lower_vel_limit_, upper_vel_limit_, weight_;
+      std::string name_, type_, reference_;
 
       void clear()
       {
-        name_ = "";
-        lower_vel_limit_ = upper_vel_limit_ = weight_ = 0.0;
+        name_ = type_ = reference_ = "";
       }
   };
 
@@ -65,9 +63,8 @@ namespace giskard
   inline std::ostream& operator<<(std::ostream& os, const ControllableSpec& obs)
   {
     os << "name: " << obs.name_ << "\n";
-    os << "lower_velocity_limit:: " << obs.lower_vel_limit_ << "\n";
-    os << "weight:: " << obs.upper_vel_limit_ << "\n";
-    os << "weight:: " << obs.weight_ << "\n";
+    os << "type: " << obs.type_ << "\n";
+    os << "reference: " << obs.reference_ << "\n";
 
     return os;
   }

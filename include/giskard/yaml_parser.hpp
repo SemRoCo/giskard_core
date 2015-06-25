@@ -14,10 +14,8 @@ namespace YAML {
 
   inline bool is_controllable_spec(const Node& node)
   {
-    return node.IsMap() && (node.size() == 4) &&
-        node["name"] && node["weight"] &&
-        node["lower_velocity_limit"] && 
-        node["upper_velocity_limit"];
+    return node.IsMap() && (node.size() == 3) &&
+        node["name"] && node["type"] && node["reference"];
   }
 
   inline bool is_named_expression_spec (const Node& node)
@@ -67,9 +65,8 @@ namespace YAML {
     static Node encode(const giskard::ControllableSpec& rhs) {
       Node node;
       node["name"] = rhs.name_;
-      node["lower_velocity_limit"] = rhs.lower_vel_limit_;
-      node["upper_velocity_limit"] = rhs.upper_vel_limit_;
-      node["weight"] = rhs.weight_;
+      node["type"] = rhs.type_;
+      node["reference"] = rhs.reference_;
       return node;
     }
   
@@ -80,9 +77,8 @@ namespace YAML {
       rhs.clear();
   
       rhs.name_ = node["name"].as<std::string>();
-      rhs.lower_vel_limit_ = node["lower_velocity_limit"].as<double>();
-      rhs.upper_vel_limit_ = node["upper_velocity_limit"].as<double>();
-      rhs.weight_ = node["weight"].as<double>();
+      rhs.type_ = node["type"].as<std::string>();
+      rhs.reference_ = node["reference"].as<std::string>();
 
       return true;
     }

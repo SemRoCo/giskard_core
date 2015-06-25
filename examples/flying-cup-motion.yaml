@@ -25,34 +25,6 @@ observables:
   - name: stove frame rotation-z
     type: INPUT-VARIABLE
 
-# OUTPUTS TO BE CONTROLLED
-# HERE; 6-DOF OUTPUT; ONLY THE CUP IS CONTROLLED
-controllables:
-  - name: cup frame translation-x
-    lower-velocity-limit: -0.1
-    upper-velocity-limit: 0.1
-    weight: 1.0
-  - name: cup frame translation-y
-    lower-velocity-limit: -0.1
-    upper-velocity-limit: 0.1
-    weight: 1.0
-  - name: cup frame translation-z
-    lower-velocity-limit: -0.1
-    upper-velocity-limit: 0.1
-    weight: 1.0
-  - name: cup frame rotation-x
-    lower-velocity-limit: -0.05
-    upper-velocity-limit: 0.05
-    weight: 2.0
-  - name: cup frame rotation-y
-    lower-velocity-limit: -0.05
-    upper-velocity-limit: 0.05
-    weight: 2.0
-  - name: cup frame rotation-z
-    lower-velocity-limit: -0.05
-    upper-velocity-limit: 0.05
-    weight: 2.0
-
 # RELATIONS USED TO DEFINE THE CONSTRAINTS
 expressions:
   - name: cup frame
@@ -132,6 +104,28 @@ expressions:
     - type: Z-COORDINATE-OF
       inputs: [cup bottom centroid]
 
+# OUTPUTS TO BE CONTROLLED
+# HERE; 6-DOF OUTPUT; ONLY THE CUP IS CONTROLLED
+controllables:
+  - name: cup frame translation-x velocity
+    type: VELOCITY-OF
+    reference: cup frame translation-x
+  - name: cup frame translation-y velocity
+    type: VELOCITY-OF
+    reference: cup frame translation-y
+  - name: cup frame translation-z velocity
+    type: VELOCITY-OF
+    reference: cup frame translation-z
+  - name: cup frame rotation-x velocity
+    type: VELOCITY-OF
+    reference: cup frame rotation-x
+  - name: cup frame rotation-y velocity
+    type: VELOCITY-OF
+    reference: cup frame rotation-y
+  - name: cup frame rotation-z velocity
+    type: VELOCITY-OF
+    reference: cup frame rotation-z
+
 # CONSTRAINTS DEFINING A MOTION GOAL
 constraints:
   - name: height of cup bottom above stove top contraint
@@ -139,16 +133,52 @@ constraints:
     lower: 0.1
     upper: 0.15
     weight: 1.0
+    slack: ON
     gain: 2.0
   - name: distance between cup bottom and stove top constraint
     expression: distance between cup bottom and stove top
     lower: 0.11
     upper: 0.13
     weight: 5.0
+    slack: ON
     gain: 2.0
   - name: cup upright constraint
     expression: cup upright
     lower: 0.04
     upper: 0.06
     weight: 1.0
+    slack: ON
     gain: 2.0
+  - name: cup frame translation-x velocity limits
+    expression: cup frame translation-x velocity
+    lower: -0.1
+    upper: 0.1
+    weight: 1.0
+    slack: OFF
+  - name: cup frame translation-y velocity limits
+    expression: cup frame translation-x velocity
+    lower: -0.1
+    upper: 0.1
+    weight: 1.0
+    slack: OFF
+  - name: cup frame translation-z velocity limits
+    expression: cup frame translation-x velocity
+    lower: -0.1
+    upper: 0.1
+    weight: 1.0
+    slack: OFF
+  - name: cup frame rotation-x velocity limits
+    lower: -0.05
+    upper: 0.05
+    weight: 2.0
+    slack: OFF
+  - name: cup frame rotation-y velocity limits
+    lower: -0.05
+    upper: 0.05
+    weight: 2.0
+    slack: OFF
+  - name: cup frame rotation-z velocity limits
+    lower: -0.05
+    upper: 0.05
+    weight: 2.0
+    slack: OFF
