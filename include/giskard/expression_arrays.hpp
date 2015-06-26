@@ -118,6 +118,8 @@ namespace KDL
       {
        std::set<int> input_vars = calculate_inputs();
        optimizer_.prepare(std::vector<int>(input_vars.begin(), input_vars.end()));
+       for(size_t i=0; i<expressions_.size(); ++i)
+         expressions_[i]->addToOptimizer(optimizer_);
       }
 
       std::set<int> calculate_inputs() const
