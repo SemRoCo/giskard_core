@@ -14,7 +14,7 @@ find_library(YAML_CPP_LIBRARIES NAMES yaml-cpp)
 
 catkin_package(
   INCLUDE_DIRS include
-  LIBRARIES ${PROJECT_NAME}
+#  LIBRARIES ${PROJECT_NAME}
   CATKIN_DEPENDS expressiongraph
   DEPENDS yaml_cpp
 )
@@ -31,10 +31,10 @@ include_directories(
 
 FILE(GLOB SRCS src/${PROJECT_NAME}/[^.]*.cpp)
 
-add_library(${PROJECT_NAME} ${SRCS})
-
-target_link_libraries(${PROJECT_NAME}
-  ${catkin_LIBRARIES} ${YAML_CPP_LIBRARIES})
+#add_library(${PROJECT_NAME} ${SRCS})
+#
+#target_link_libraries(${PROJECT_NAME}
+#  ${catkin_LIBRARIES} ${YAML_CPP_LIBRARIES})
 
 #############
 ## Testing ##
@@ -46,5 +46,7 @@ catkin_add_gtest(${PROJECT_NAME}-test ${TEST_SRCS}
   WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/test_data)
 if(TARGET ${PROJECT_NAME}-test)
   target_link_libraries(${PROJECT_NAME}-test 
-      ${catkin_LIBRARIES} ${YAML_CPP_LIBRARIES} ${PROJECT_NAME})
+      ${catkin_LIBRARIES} ${YAML_CPP_LIBRARIES} 
+#${PROJECT_NAME}
+)
 endif()
