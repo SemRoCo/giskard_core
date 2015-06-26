@@ -138,6 +138,7 @@ namespace KDL
 
       void copy_results()
       {
+        derivatives_.setZero();
         for(size_t i=0; i<expressions_.size(); ++i)
         {
           values_(i, 0) = expressions_[i]->value();
