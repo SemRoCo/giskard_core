@@ -11,6 +11,7 @@ namespace KDL
     public:
       typedef typename KDL::Expression<ResultType>::Ptr ExpressionTypePtr;
       typedef typename KDL::AutoDiffTrait<ResultType>::DerivType DerivType;
+      typedef typename KDL::Expression<DerivType>::Ptr DerivExpressionTypePtr;
 
       size_t num_expressions() const
       {
@@ -92,7 +93,15 @@ namespace KDL
       {
         return derivatives_;
       }
-      
+
+      std::vector<DerivExpressionTypePtr> get_derivative_expressions(size_t expression_index) const
+      {
+        std::vector<DerivExpressionTypePtr> result;
+        for(size_t i=0; i<expressions_[expression_index]->number_of_derivatives(); ++i)
+          result.push_back(expressions_[expression_index]->derivativeExpression(i));
+        return result;
+      }
+
     private:
       Eigen::Matrix<ResultType, Eigen::Dynamic, 1> values_;
       Eigen::Matrix<DerivType, Eigen::Dynamic, Eigen::Dynamic> derivatives_;
