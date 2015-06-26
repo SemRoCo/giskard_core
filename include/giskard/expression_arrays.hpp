@@ -12,8 +12,6 @@ namespace KDL
       typedef typename KDL::Expression<ResultType>::Ptr ExpressionTypePtr;
       typedef typename KDL::AutoDiffTrait<ResultType>::DerivType DerivType;
 
-      // TODO: constructors, etc.
-
       size_t num_expressions() const
       {
         return expressions_.size();
