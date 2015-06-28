@@ -64,7 +64,7 @@ namespace KDL
         prepare_internals();
       }
 
-      const ExpressionTypePtr& pop_expression()
+      ExpressionTypePtr pop_expression()
       {
         ExpressionTypePtr popped_expression = expressions_.back();
         expressions_.pop_back();
