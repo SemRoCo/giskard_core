@@ -31,8 +31,8 @@ class ExpressionArrayTest : public ::testing::Test
 
       vector_state.insert(vector_state.begin(), num_derivs, 1.0);
       using Eigen::operator<<;
-      eigen_state.resize(5,1);
-      eigen_state << 1.0, 1.0, 1.0, 1.0, 1.0;
+      eigen_state.resize(5,1.0);
+      eigen_state << 2.0, 2.0, 2.0, 2.0, 2.0;
     }
 
     virtual void TearDown(){}
@@ -48,13 +48,6 @@ class ExpressionArrayTest : public ::testing::Test
     std::vector<double> vector_state;
     Eigen::VectorXd eigen_state;
 };
-
-//void print_set(const std::set<int>& s)
-//{
-//  for (std::set<int>::iterator it=s.begin(); it!=s.end(); ++it)
-//    std::cout << ' ' << *it;
-//    std::cout << '\n';
-//}
 
 TEST_F(ExpressionArrayTest, Constructor)
 {
@@ -82,4 +75,154 @@ TEST_F(ExpressionArrayTest, ListInteraction)
   ASSERT_EQ(num_derivs, a.get_derivative_expressions(1).size());
   for(size_t i=0; i<num_exps; ++i)
     EXPECT_EQ(exps[i], a.get_expression(i));
+  EXPECT_TRUE(a.has_expression(exp1));
+  EXPECT_TRUE(a.has_expression(exp2));
+  EXPECT_TRUE(a.has_expression(exp3));
+  EXPECT_EQ(0, a.find_expression(exp1));
+  EXPECT_EQ(1, a.find_expression(exp2));
+  EXPECT_EQ(2, a.find_expression(exp3));
+}
+
+TEST_F(ExpressionArrayTest, PushPop)
+{
+  DoubleExpressionArray a;
+  a.push_expression(exp1);
+  EXPECT_EQ(1, a.num_expressions());
+  EXPECT_EQ(2, a.num_inputs());
+  EXPECT_EQ(exp1, a.get_expression(0));
+
+  EXPECT_EQ(exp1, a.pop_expression());
+  EXPECT_EQ(0, a.num_expressions());
+  EXPECT_EQ(0, a.num_inputs());
+
+  a.push_expression(exp1);
+  EXPECT_EQ(1, a.num_expressions());
+  EXPECT_EQ(2, a.num_inputs());
+  EXPECT_EQ(exp1, a.get_expression(0));
+
+  a.push_expression(exp2);
+  EXPECT_EQ(2, a.num_expressions());
+  EXPECT_EQ(4, a.num_inputs());
+  EXPECT_EQ(exp1, a.get_expression(0));
+  EXPECT_EQ(exp2, a.get_expression(1));
+
+  a.push_expression(exp3);
+  EXPECT_EQ(3, a.num_expressions());
+  EXPECT_EQ(5, a.num_inputs());
+  EXPECT_EQ(exp1, a.get_expression(0));
+  EXPECT_EQ(exp2, a.get_expression(1));
+  EXPECT_EQ(exp3, a.get_expression(2));
+
+  EXPECT_EQ(num_exps, a.num_expressions());
+  EXPECT_EQ(num_derivs, a.num_inputs());
+  ASSERT_EQ(num_exps, a.get_expressions().size());
+  EXPECT_EQ(num_exps, a.get_values().rows());
+  EXPECT_EQ(1, a.get_values().cols());
+  EXPECT_EQ(num_exps, a.get_derivatives().rows());
+  EXPECT_EQ(num_derivs, a.get_derivatives().cols());
+  ASSERT_EQ(num_derivs, a.get_derivative_expressions(1).size());
+  for(size_t i=0; i<num_exps; ++i)
+    EXPECT_EQ(exps[i], a.get_expression(i));
+  EXPECT_TRUE(a.has_expression(exp1));
+  EXPECT_TRUE(a.has_expression(exp2));
+  EXPECT_TRUE(a.has_expression(exp3));
+  EXPECT_EQ(0, a.find_expression(exp1));
+  EXPECT_EQ(1, a.find_expression(exp2));
+  EXPECT_EQ(2, a.find_expression(exp3));
+}
+
+TEST_F(ExpressionArrayTest, ValueCalculation)
+{
+  DoubleExpressionArray a;
+  a.set_expressions(exps);
+
+  a.update(vector_state); 
+  Eigen::VectorXd values = a.get_values();
+  ASSERT_EQ(values.rows(), num_exps);
+  ASSERT_EQ(values.cols(), 1);
+  EXPECT_DOUBLE_EQ(3.0, values(0));
+  EXPECT_DOUBLE_EQ(7.0, values(1));
+  EXPECT_DOUBLE_EQ(18.0, values(2));
+
+  a.update(eigen_state);
+  values = a.get_values();
+  ASSERT_EQ(values.rows(), num_exps);
+  ASSERT_EQ(values.cols(), 1);
+  EXPECT_DOUBLE_EQ(6.0, values(0));
+  EXPECT_DOUBLE_EQ(14.0, values(1));
+  EXPECT_DOUBLE_EQ(36.0, values(2));
+}
+
+TEST_F(ExpressionArrayTest, DerivativeCalculation)
+{
+  DoubleExpressionArray a;
+  a.set_expressions(exps);
+
+  a.update(vector_state); 
+  Eigen::MatrixXd derivatives = a.get_derivatives();
+  ASSERT_EQ(derivatives.rows(), num_exps);
+  ASSERT_EQ(derivatives.cols(), num_derivs);
+  EXPECT_DOUBLE_EQ(derivatives(0, 0), 1.0);
+  EXPECT_DOUBLE_EQ(derivatives(0, 1), 2.0);
+  EXPECT_DOUBLE_EQ(derivatives(0, 2), 0.0);
+  EXPECT_DOUBLE_EQ(derivatives(0, 3), 0.0);
+  EXPECT_DOUBLE_EQ(derivatives(0, 4), 0.0);
+  EXPECT_DOUBLE_EQ(derivatives(1, 0), 0.0);
+  EXPECT_DOUBLE_EQ(derivatives(1, 1), 0.0);
+  EXPECT_DOUBLE_EQ(derivatives(1, 2), 0.0);
+  EXPECT_DOUBLE_EQ(derivatives(1, 3), 3.0);
+  EXPECT_DOUBLE_EQ(derivatives(1, 4), 4.0);
+  EXPECT_DOUBLE_EQ(derivatives(2, 0), 0.0);
+  EXPECT_DOUBLE_EQ(derivatives(2, 1), 5.0);
+  EXPECT_DOUBLE_EQ(derivatives(2, 2), 6.0);
+  EXPECT_DOUBLE_EQ(derivatives(2, 3), 7.0);
+  EXPECT_DOUBLE_EQ(derivatives(2, 4), 0.0);
+
+  a.update(eigen_state); 
+  derivatives = a.get_derivatives();
+  ASSERT_EQ(derivatives.rows(), num_exps);
+  ASSERT_EQ(derivatives.cols(), num_derivs);
+  EXPECT_DOUBLE_EQ(derivatives(0, 0), 1.0);
+  EXPECT_DOUBLE_EQ(derivatives(0, 1), 2.0);
+  EXPECT_DOUBLE_EQ(derivatives(0, 2), 0.0);
+  EXPECT_DOUBLE_EQ(derivatives(0, 3), 0.0);
+  EXPECT_DOUBLE_EQ(derivatives(0, 4), 0.0);
+  EXPECT_DOUBLE_EQ(derivatives(1, 0), 0.0);
+  EXPECT_DOUBLE_EQ(derivatives(1, 1), 0.0);
+  EXPECT_DOUBLE_EQ(derivatives(1, 2), 0.0);
+  EXPECT_DOUBLE_EQ(derivatives(1, 3), 3.0);
+  EXPECT_DOUBLE_EQ(derivatives(1, 4), 4.0);
+  EXPECT_DOUBLE_EQ(derivatives(2, 0), 0.0);
+  EXPECT_DOUBLE_EQ(derivatives(2, 1), 5.0);
+  EXPECT_DOUBLE_EQ(derivatives(2, 2), 6.0);
+  EXPECT_DOUBLE_EQ(derivatives(2, 3), 7.0);
+  EXPECT_DOUBLE_EQ(derivatives(2, 4), 0.0);
+}
+
+TEST_F(ExpressionArrayTest, DerivativeExpressions)
+{
+  DoubleExpressionArray a;
+  a.set_expressions(exps);
+  ASSERT_EQ(3, a.num_expressions());
+  a.update(vector_state); 
+
+  std::vector< KDL::Expression<double>::Ptr > deriv_exps = a.get_derivative_expressions(0);
+  ASSERT_EQ(deriv_exps.size(), 2);
+  EXPECT_DOUBLE_EQ(deriv_exps[0]->value(), 1.0);
+  EXPECT_DOUBLE_EQ(deriv_exps[1]->value(), 2.0);
+
+  deriv_exps = a.get_derivative_expressions(1);
+  ASSERT_EQ(deriv_exps.size(), 5);
+  EXPECT_DOUBLE_EQ(deriv_exps[0]->value(), 0.0);
+  EXPECT_DOUBLE_EQ(deriv_exps[1]->value(), 0.0);
+  EXPECT_DOUBLE_EQ(deriv_exps[2]->value(), 0.0);
+  EXPECT_DOUBLE_EQ(deriv_exps[3]->value(), 3.0);
+  EXPECT_DOUBLE_EQ(deriv_exps[4]->value(), 4.0);
+
+  deriv_exps = a.get_derivative_expressions(2);
+  ASSERT_EQ(deriv_exps.size(), 4);
+  EXPECT_DOUBLE_EQ(deriv_exps[0]->value(), 0.0);
+  EXPECT_DOUBLE_EQ(deriv_exps[1]->value(), 5.0);
+  EXPECT_DOUBLE_EQ(deriv_exps[2]->value(), 6.0);
+  EXPECT_DOUBLE_EQ(deriv_exps[3]->value(), 7.0);
 }
