@@ -3,7 +3,7 @@
 
 #include <yaml-cpp/yaml.h>
 #include <vector>
-#include <giskard/structs.hpp>
+#include <giskard/specifications.hpp>
 
 namespace YAML {
   inline bool is_observable_spec(const Node& node)

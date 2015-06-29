@@ -1,5 +1,5 @@
-#ifndef GISKARD_STRUCTS_HPP
-#define GISKARD_STRUCTS_HPP
+#ifndef GISKARD_SPECIFICATIONS_HPP
+#define GISKARD_SPECIFICATIONS_HPP
 
 #include <string>
 #include <iostream>
@@ -93,4 +93,4 @@ namespace giskard
   }
 }
 
-#endif // GISKARD_STRUCTS_HPP
+#endif // GISKARD_SPECIFICATIONS_HPP
