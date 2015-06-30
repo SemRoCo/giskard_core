@@ -135,13 +135,26 @@ constraints:
     upper: 0.15
     weight: 1.0
     gain: 2.0
-  - name: distance between cup bottom and stove top constraint
+  - name: cup bottom above stove top constraint
     expression: distance between cup bottom and stove top
     type: SOFT-CONSTRAINT
-    lower: 0.11
-    upper: 0.13
+    lower: 
+      - type: MULTIPLICATION
+      - inputs:
+        - 2.0
+        - type: SUBTRACTION
+        - inputs:
+          - 0.11
+          - distance between cup bottom and stove top constraint
+    upper: 
+      - type: MULTIPLICATION
+      - inputs:
+        - 2.0
+        - type: SUBTRACTION
+        - inputs:
+          - 0.13
+          - distance between cup bottom and stove top constraint
     weight: 5.0
-    gain: 2.0
   - name: cup upright constraint
     expression: cup upright
     type: SOFT-CONSTRAINT
