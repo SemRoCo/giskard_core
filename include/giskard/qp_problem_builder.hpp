@@ -9,7 +9,9 @@ namespace giskard
   {
     public:
       typedef typename std::vector< KDL::Expression<double>::Ptr > DoubleExpressionVector;
-      
+      typedef typename Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> Matrix;
+      typedef typename Eigen::VectorXd Vector;
+     
       void init(const DoubleExpressionVector& controllable_lower_bounds,
           const DoubleExpressionVector& controllable_upper_bounds, const DoubleExpressionVector& controllable_weights,
           const DoubleExpressionVector& soft_expressions, const DoubleExpressionVector& soft_lower_bounds,
@@ -25,43 +27,43 @@ namespace giskard
         create_output_matrices();
       }
 
-      void update(const Eigen::VectorXd& observables)
+      void update(const Vector& observables)
       {
         update_expressions(observables);
         copy_values();
       }
 
-      const Eigen::MatrixXd& get_H() const
+      const Matrix& get_H() const
       {
         return H_;
       }
 
-      const Eigen::MatrixXd& get_A() const
+      const Matrix& get_A() const
       {
         return A_;
       }
 
-      const Eigen::VectorXd& get_g() const
+      const Vector& get_g() const
       {
         return g_;
       }
 
-      const Eigen::VectorXd& get_lb() const
+      const Vector& get_lb() const
       {
         return lb_;
       }     
 
-      const Eigen::VectorXd& get_ub() const
+      const Vector& get_ub() const
       {
         return ub_;
       }     
 
-      const Eigen::VectorXd& get_lbA() const
+      const Vector& get_lbA() const
       {
         return lbA_;
       }     
 
-      const Eigen::VectorXd& get_ubA() const
+      const Vector& get_ubA() const
       {
         return ubA_;
       }     
@@ -96,8 +98,8 @@ namespace giskard
          controllable_weights_, soft_expressions_, soft_lower_bounds_, soft_upper_bounds_,
          soft_weights_, hard_expressions_, hard_lower_bounds_, hard_upper_bounds_;
 
-      Eigen::MatrixXd H_, A_;
-      Eigen::VectorXd g_, lb_, ub_, lbA_, ubA_;
+      Matrix H_, A_;
+      Vector g_, lb_, ub_, lbA_, ubA_;
 
       void set_expressions(const DoubleExpressionVector& controllable_lower_bounds,
           const DoubleExpressionVector& controllable_upper_bounds, const DoubleExpressionVector& controllable_weights,
@@ -135,7 +137,7 @@ namespace giskard
         ubA_ = Eigen::VectorXd::Zero(num_constraints());
       }
 
-      void update_expressions(const Eigen::VectorXd& observables)
+      void update_expressions(const Vector& observables)
       {
         update_expressions(controllable_lower_bounds_, observables);
         update_expressions(controllable_upper_bounds_, observables);
@@ -177,7 +179,7 @@ namespace giskard
         ubA_.segment(num_hard_constraints(), num_soft_constraints()) = soft_upper_bounds_.get_values();
       }
 
-      void update_expressions(KDL::DoubleExpressionArray& expressions, const Eigen::VectorXd& values) const
+      void update_expressions(KDL::DoubleExpressionArray& expressions, const Vector& values) const
       {
         expressions.update(values.segment(0, expressions.num_inputs()));
       }
