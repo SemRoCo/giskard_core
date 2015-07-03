@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(giskard)
 
-find_package(catkin REQUIRED COMPONENTS expressiongraph)
+find_package(catkin REQUIRED COMPONENTS expressiongraph qpoases)
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
@@ -15,7 +15,7 @@ find_library(YAML_CPP_LIBRARIES NAMES yaml-cpp)
 catkin_package(
   INCLUDE_DIRS include
 #  LIBRARIES ${PROJECT_NAME}
-  CATKIN_DEPENDS expressiongraph
+  CATKIN_DEPENDS expressiongraph qpoases
   DEPENDS yaml_cpp
 )
 
@@ -26,27 +26,22 @@ catkin_package(
 include_directories(
   include 
   ${catkin_INCLUDE_DIRS}
-  ${YAML_CPP_INCLUDE_DIRS}
-)
-
-FILE(GLOB SRCS src/${PROJECT_NAME}/[^.]*.cpp)
-
-#add_library(${PROJECT_NAME} ${SRCS})
-#
-#target_link_libraries(${PROJECT_NAME}
-#  ${catkin_LIBRARIES} ${YAML_CPP_LIBRARIES})
+  ${YAML_CPP_INCLUDE_DIRS})
 
 #############
 ## Testing ##
 #############
 
-FILE(GLOB TEST_SRCS test/[^.]*.cpp test/giskard/[^.]*.cpp)
-message(${TEST_SRCS})
+set(TEST_SRCS
+  test/main.cpp
+  test/${PROJECT_NAME}/expression_arrays.cpp
+  test/${PROJECT_NAME}/qp_controller.cpp
+  test/${PROJECT_NAME}/qp_problem_builder.cpp
+  test/${PROJECT_NAME}/yaml_parser.cpp)
+
 catkin_add_gtest(${PROJECT_NAME}-test ${TEST_SRCS}
   WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/test_data)
 if(TARGET ${PROJECT_NAME}-test)
   target_link_libraries(${PROJECT_NAME}-test 
-      ${catkin_LIBRARIES} ${YAML_CPP_LIBRARIES} 
-#${PROJECT_NAME}
-)
+      ${catkin_LIBRARIES} ${YAML_CPP_LIBRARIES})
 endif()

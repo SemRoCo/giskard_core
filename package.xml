@@ -17,5 +17,6 @@
   <buildtool_depend>catkin</buildtool_depend>
   <depend>yaml_cpp</depend>
   <depend>expressiongraph</depend>
+  <depend>qpoases</depend>
   <test_depend>gtest</test_depend>
 </package>
