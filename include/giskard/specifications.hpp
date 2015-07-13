@@ -246,6 +246,30 @@ namespace giskard
 
   typedef typename boost::shared_ptr<InputDoubleExpressionDescription> InputDoubleExpressionDescriptionPtr;
 
+  class ReferenceDoubleExpressionDescription : public DoubleExpressionDescription
+  {
+    public:
+      const std::string& get_reference_name() const
+      {
+        return reference_name_;
+      }
+
+      void set_reference_name(const std::string& reference_name)
+      {
+        reference_name_ = reference_name;
+      }
+
+    private:
+      std::string reference_name_;
+
+      virtual KDL::Expression<double>::Ptr generate_expression(const giskard::ExpressionScope& scope)
+      {
+        return scope.find_double_expression(get_reference_name());
+      }
+  };
+
+  typedef typename boost::shared_ptr<ReferenceDoubleExpressionDescription> ReferenceDoubleExpressionDescriptionPtr;
+
   class AdditionDoubleExpressionDescription: public DoubleExpressionDescription
   {
     public:
@@ -274,6 +298,7 @@ namespace giskard
    };
 
   typedef typename boost::shared_ptr<AdditionDoubleExpressionDescription> AdditionDoubleExpressionDescriptionPtr;
+
 }
 
 #endif // GISKARD_SPECIFICATIONS_HPP
