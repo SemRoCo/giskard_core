@@ -1,0 +1,63 @@
+  <link name="torso_lift_link"/>
+  <joint name="l_shoulder_pan_joint" type="revolute">
+    <axis xyz="0 0 1"/>
+    <origin rpy="0 0 0" xyz="0.0 0.188 0.0"/>
+    <!-- transform from parent link to this joint frame -->
+    <parent link="torso_lift_link"/>
+    <child link="l_shoulder_pan_link"/>
+  </joint>
+  <link name="l_shoulder_pan_link"/>
+  <joint name="l_shoulder_lift_joint" type="revolute">
+    <axis xyz="0 1 0"/>
+    <origin rpy="0 0 0" xyz="0.1 0 0"/>
+    <parent link="l_shoulder_pan_link"/>
+    <child link="l_shoulder_lift_link"/>
+  </joint>
+  <link name="l_shoulder_lift_link"/>
+  <joint name="l_upper_arm_roll_joint" type="revolute">
+    <axis xyz="1 0 0"/>
+    <origin rpy="0 0 0" xyz="0 0 0"/>
+    <parent link="l_shoulder_lift_link"/>
+    <child link="l_upper_arm_roll_link"/>
+  </joint>
+  <link name="l_upper_arm_roll_link"/>
+  <joint name="l_upper_arm_joint" type="fixed">
+    <origin rpy="0 0 0" xyz="0 0 0"/>
+    <parent link="l_upper_arm_roll_link"/>
+    <child link="l_upper_arm_link"/>
+  </joint>
+  <link name="l_upper_arm_link"/>
+  <joint name="l_forearm_roll_joint" type="continuous">
+    <axis xyz="1 0 0"/>
+    <origin rpy="0 0 0" xyz="0 0 0"/>
+    <parent link="l_elbow_flex_link"/>
+    <child link="l_forearm_roll_link"/>
+  </joint>
+  <link name="l_forearm_roll_link"/>
+  <joint name="l_elbow_flex_joint" type="revolute">
+    <axis xyz="0 1 0"/>
+    <origin rpy="0 0 0" xyz="0.4 0 0"/>
+    <parent link="l_upper_arm_link"/>
+    <child link="l_elbow_flex_link"/>
+  </joint>
+  <link name="l_elbow_flex_link"/>
+  <joint name="l_forearm_joint" type="fixed">
+    <origin rpy="0 0 0" xyz="0 0 0"/>
+    <parent link="l_forearm_roll_link"/>
+    <child link="l_forearm_link"/>
+  </joint>
+  <link name="l_forearm_link"/>
+  <joint name="l_wrist_flex_joint" type="revolute">
+    <axis xyz="0 1 0"/>
+    <origin rpy="0 0 0" xyz="0.321 0 0"/>
+    <parent link="l_forearm_link"/>
+    <child link="l_wrist_flex_link"/>
+  </joint>
+  <link name="l_wrist_flex_link"/>
+  <joint name="l_wrist_roll_joint" type="continuous">
+    <axis xyz="1 0 0"/>
+    <origin rpy="0 0 0" xyz="0 0 0"/>
+    <parent link="l_wrist_flex_link"/>
+    <child link="l_wrist_roll_link"/>
+  </joint>
+  <link name="l_wrist_roll_link"/>
