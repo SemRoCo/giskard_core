@@ -150,6 +150,10 @@ namespace giskard
       std::map< std::string, KDL::Expression<KDL::Frame>::Ptr > frame_references_;
   };
 
+  ///
+  /// base of all descriptions of expressions
+  ///
+
   class ExpressionDescription
   { 
     public:
@@ -181,6 +185,10 @@ namespace giskard
 
   typedef typename boost::shared_ptr<ExpressionDescription> ExpressionDescriptionPtr;
 
+  ///
+  /// next level of expression descriptions
+  ///
+
   class DoubleExpressionDescription : public ExpressionDescription
   {
     public:
@@ -197,6 +205,27 @@ namespace giskard
   };
 
   typedef typename boost::shared_ptr<DoubleExpressionDescription> DoubleExpressionDescriptionPtr;
+
+  class VectorExpressionDescription : public ExpressionDescription
+  {
+    public:
+      KDL::Expression<KDL::Vector>::Ptr get_expression(const giskard::ExpressionScope& scope)
+      {
+        if(get_cached())
+          return KDL::cached<KDL::Vector>(generate_expression(scope));
+        else
+          return generate_expression(scope);
+      }
+
+    private:
+      virtual KDL::Expression<KDL::Vector>::Ptr generate_expression(const giskard::ExpressionScope& scope) = 0;
+  };
+
+  typedef typename boost::shared_ptr<VectorExpressionDescription> VectorExpressionDescriptionPtr;
+
+  ///
+  /// descriptions of double expressions
+  ///
 
   class ConstDoubleExpressionDescription : public DoubleExpressionDescription
   {
@@ -298,6 +327,55 @@ namespace giskard
    };
 
   typedef typename boost::shared_ptr<AdditionDoubleExpressionDescription> AdditionDoubleExpressionDescriptionPtr;
+
+  ///
+  /// descriptions of vector expressions
+  ///
+
+  class ConstructorVectorExpressionDescription: public VectorExpressionDescription
+  {
+    public:
+      const DoubleExpressionDescriptionPtr& get_x() const
+      {
+        return x_;
+      }
+
+      void set_x(const DoubleExpressionDescriptionPtr& x)
+      {
+        x_ = x;
+      }
+
+      const DoubleExpressionDescriptionPtr& get_y() const
+      {
+        return y_;
+      }
+
+      void set_y(const DoubleExpressionDescriptionPtr& y)
+      {
+        y_ = y;
+      }
+
+      const DoubleExpressionDescriptionPtr& get_z() const
+      {
+        return z_;
+      }
+
+      void set_z(const DoubleExpressionDescriptionPtr& z)
+      {
+        z_ = z;
+      }
+ 
+    private:
+      DoubleExpressionDescriptionPtr x_, y_, z_;
+
+      virtual KDL::Expression<KDL::Vector>::Ptr generate_expression(const giskard::ExpressionScope& scope)
+      {
+        return KDL::vector(get_x()->get_expression(scope), 
+            get_y()->get_expression(scope), get_z()->get_expression(scope));
+      }
+   };
+
+  typedef typename boost::shared_ptr<ConstructorVectorExpressionDescription> ConstructorVectorExpressionDescriptionPtr;
 
 }
 
