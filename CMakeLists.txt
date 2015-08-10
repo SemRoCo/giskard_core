@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(giskard)
 
-find_package(catkin REQUIRED COMPONENTS expressiongraph qpoases)
+find_package(catkin REQUIRED COMPONENTS expressiongraph qpoases kdl_parser)
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
