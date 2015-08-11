@@ -7,11 +7,6 @@
 
 namespace YAML {
 
-  inline bool is_const_double(const Node& node)
-  {
-    return node.IsScalar();
-  }
-
   template<>
   struct convert<giskard::ConstDoubleSpec> {
     
