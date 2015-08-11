@@ -178,6 +178,12 @@ namespace giskard
         cached_ = cached;
       }
 
+      virtual void clear()
+      {
+        set_name("");
+        set_cached(false);
+      }
+
     private:
       std::string name_;
       bool cached_;
@@ -240,6 +246,12 @@ namespace giskard
         value_ = value;
       } 
 
+      virtual void clear()
+      {
+        Specification::clear();
+        set_value(0.0);
+      }
+
     private:
       double value_;
 
@@ -262,6 +274,12 @@ namespace giskard
       void set_input_num(size_t input_num)
       {
         input_num_ = input_num;
+      }
+
+      virtual void clear()
+      {
+        Specification::clear();
+        set_input_num(0);
       }
 
     private:
@@ -288,6 +306,12 @@ namespace giskard
         reference_name_ = reference_name;
       }
 
+      virtual void clear()
+      {
+        Specification::clear();
+        set_reference_name("");
+      }
+
     private:
       std::string reference_name_;
 
@@ -310,6 +334,12 @@ namespace giskard
       void set_inputs(const std::vector<DoubleSpecificationPtr>& inputs)
       {
         inputs_ = inputs;
+      }
+
+      virtual void clear()
+      {
+        Specification::clear();
+        set_inputs(std::vector<DoubleSpecificationPtr>());
       }
 
     private:
@@ -364,7 +394,21 @@ namespace giskard
       {
         z_ = z;
       }
- 
+
+      void set(const DoubleSpecificationPtr& x, const DoubleSpecificationPtr& y, 
+          const DoubleSpecificationPtr& z)
+      {
+        set_x(x);
+        set_y(y);
+        set_z(z);
+      }
+
+      virtual void clear()
+      {
+        Specification::clear();
+        set(DoubleSpecificationPtr(), DoubleSpecificationPtr(), DoubleSpecificationPtr());
+      }
+
     private:
       DoubleSpecificationPtr x_, y_, z_;
 
