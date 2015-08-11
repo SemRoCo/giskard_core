@@ -151,10 +151,10 @@ namespace giskard
   };
 
   ///
-  /// base of all descriptions of expressions
+  /// base of all specifications of expressions
   ///
 
-  class ExpressionDescription
+  class Specification
   { 
     public:
 
@@ -183,13 +183,13 @@ namespace giskard
       bool cached_;
   };
 
-  typedef typename boost::shared_ptr<ExpressionDescription> ExpressionDescriptionPtr;
+  typedef typename boost::shared_ptr<Specification> SpecificationPtr;
 
   ///
-  /// next level of expression descriptions
+  /// next level of expression specifications
   ///
 
-  class DoubleExpressionDescription : public ExpressionDescription
+  class DoubleSpecification : public Specification
   {
     public:
       KDL::Expression<double>::Ptr get_expression(const giskard::Scope& scope)
@@ -204,9 +204,9 @@ namespace giskard
       virtual KDL::Expression<double>::Ptr generate_expression(const giskard::Scope& scope) = 0;
   };
 
-  typedef typename boost::shared_ptr<DoubleExpressionDescription> DoubleExpressionDescriptionPtr;
+  typedef typename boost::shared_ptr<DoubleSpecification> DoubleSpecificationPtr;
 
-  class VectorExpressionDescription : public ExpressionDescription
+  class VectorSpecification : public Specification
   {
     public:
       KDL::Expression<KDL::Vector>::Ptr get_expression(const giskard::Scope& scope)
@@ -221,13 +221,13 @@ namespace giskard
       virtual KDL::Expression<KDL::Vector>::Ptr generate_expression(const giskard::Scope& scope) = 0;
   };
 
-  typedef typename boost::shared_ptr<VectorExpressionDescription> VectorExpressionDescriptionPtr;
+  typedef typename boost::shared_ptr<VectorSpecification> VectorSpecificationPtr;
 
   ///
-  /// descriptions of double expressions
+  /// specifications of double expressions
   ///
 
-  class ConstDoubleExpressionDescription : public DoubleExpressionDescription
+  class ConstDoubleSpecification : public DoubleSpecification
   {
     public:
       double get_value() const
@@ -249,9 +249,9 @@ namespace giskard
       }
   };
 
-  typedef typename boost::shared_ptr<ConstDoubleExpressionDescription> ConstDoubleExpressionDescriptionPtr;
+  typedef typename boost::shared_ptr<ConstDoubleSpecification> ConstDoubleSpecificationPtr;
 
-  class InputDoubleExpressionDescription : public DoubleExpressionDescription
+  class InputDoubleSpecification : public DoubleSpecification
   {
     public:
       size_t get_input_num() const
@@ -273,9 +273,9 @@ namespace giskard
       }
   };
 
-  typedef typename boost::shared_ptr<InputDoubleExpressionDescription> InputDoubleExpressionDescriptionPtr;
+  typedef typename boost::shared_ptr<InputDoubleSpecification> InputDoubleSpecificationPtr;
 
-  class ReferenceDoubleExpressionDescription : public DoubleExpressionDescription
+  class ReferenceDoubleSpecification : public DoubleSpecification
   {
     public:
       const std::string& get_reference_name() const
@@ -297,23 +297,23 @@ namespace giskard
       }
   };
 
-  typedef typename boost::shared_ptr<ReferenceDoubleExpressionDescription> ReferenceDoubleExpressionDescriptionPtr;
+  typedef typename boost::shared_ptr<ReferenceDoubleSpecification> ReferenceDoubleSpecificationPtr;
 
-  class AdditionDoubleExpressionDescription: public DoubleExpressionDescription
+  class AdditionDoubleSpecification: public DoubleSpecification
   {
     public:
-      const std::vector<DoubleExpressionDescriptionPtr>& get_inputs() const
+      const std::vector<DoubleSpecificationPtr>& get_inputs() const
       {
         return inputs_;
       }
 
-      void set_inputs(const std::vector<DoubleExpressionDescriptionPtr>& inputs)
+      void set_inputs(const std::vector<DoubleSpecificationPtr>& inputs)
       {
         inputs_ = inputs;
       }
 
     private:
-      std::vector<DoubleExpressionDescriptionPtr> inputs_;
+      std::vector<DoubleSpecificationPtr> inputs_;
 
       virtual KDL::Expression<double>::Ptr generate_expression(const giskard::Scope& scope)
       {
@@ -326,47 +326,47 @@ namespace giskard
       }
    };
 
-  typedef typename boost::shared_ptr<AdditionDoubleExpressionDescription> AdditionDoubleExpressionDescriptionPtr;
+  typedef typename boost::shared_ptr<AdditionDoubleSpecification> AdditionDoubleSpecificationPtr;
 
   ///
-  /// descriptions of vector expressions
+  /// specifications of vector expressions
   ///
 
-  class ConstructorVectorExpressionDescription: public VectorExpressionDescription
+  class ConstructorVectorSpecification: public VectorSpecification
   {
     public:
-      const DoubleExpressionDescriptionPtr& get_x() const
+      const DoubleSpecificationPtr& get_x() const
       {
         return x_;
       }
 
-      void set_x(const DoubleExpressionDescriptionPtr& x)
+      void set_x(const DoubleSpecificationPtr& x)
       {
         x_ = x;
       }
 
-      const DoubleExpressionDescriptionPtr& get_y() const
+      const DoubleSpecificationPtr& get_y() const
       {
         return y_;
       }
 
-      void set_y(const DoubleExpressionDescriptionPtr& y)
+      void set_y(const DoubleSpecificationPtr& y)
       {
         y_ = y;
       }
 
-      const DoubleExpressionDescriptionPtr& get_z() const
+      const DoubleSpecificationPtr& get_z() const
       {
         return z_;
       }
 
-      void set_z(const DoubleExpressionDescriptionPtr& z)
+      void set_z(const DoubleSpecificationPtr& z)
       {
         z_ = z;
       }
  
     private:
-      DoubleExpressionDescriptionPtr x_, y_, z_;
+      DoubleSpecificationPtr x_, y_, z_;
 
       virtual KDL::Expression<KDL::Vector>::Ptr generate_expression(const giskard::Scope& scope)
       {
@@ -375,7 +375,7 @@ namespace giskard
       }
    };
 
-  typedef typename boost::shared_ptr<ConstructorVectorExpressionDescription> ConstructorVectorExpressionDescriptionPtr;
+  typedef typename boost::shared_ptr<ConstructorVectorSpecification> ConstructorVectorSpecificationPtr;
 
 }
 
