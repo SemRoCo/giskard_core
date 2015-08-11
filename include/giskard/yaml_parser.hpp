@@ -234,6 +234,66 @@ namespace YAML {
     }
   };
 
+  ///
+  /// parsing frame specifications
+  ///
+
+  inline bool is_constructor_frame(const Node& node)
+  {
+    return node.IsMap() && (node.size() == 3) && node["type"] &&
+        (node["type"].as<std::string>().compare("FRAME") == 0) &&
+        node["translation"] && node["rotation"];
+  }
+
+  template<>
+  struct convert<giskard::ConstructorFrameSpecPtr> 
+  {
+    static Node encode(const giskard::ConstructorFrameSpecPtr& rhs) 
+    {
+      Node node;
+      node["type"] = "FRAME";
+      node["translation"] = rhs->get_translation();
+      node["rotation"] = rhs->get_rotation();
+      return node;
+    }
+  
+    static bool decode(const Node& node, giskard::ConstructorFrameSpecPtr& rhs) 
+    {
+      if(!is_constructor_frame(node))
+        return false;
+
+      rhs = giskard::ConstructorFrameSpecPtr(new giskard::ConstructorFrameSpec()); 
+      rhs->set_translation(node["translation"].as<giskard::VectorSpecPtr>());
+      rhs->set_rotation(node["rotation"].as<giskard::RotationSpecPtr>());
+
+      return true;
+    }
+  };
+
+  template<>
+  struct convert<giskard::FrameSpecPtr> 
+  {
+    static Node encode(const giskard::FrameSpecPtr& rhs) 
+    {
+      Node node;
+
+      if(boost::dynamic_pointer_cast<giskard::ConstructorFrameSpec>(rhs).get())
+        node = boost::dynamic_pointer_cast<giskard::ConstructorFrameSpec>(rhs);
+
+      return node;
+    }
+  
+    static bool decode(const Node& node, giskard::FrameSpecPtr& rhs) 
+    {
+      if(is_constructor_frame(node))
+      {
+        rhs = node.as<giskard::ConstructorFrameSpecPtr>();
+        return true;
+      }
+      else
+        return false;
+    }
+  };
 
 }
 

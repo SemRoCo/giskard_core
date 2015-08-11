@@ -160,6 +160,23 @@ namespace giskard
 
   typedef typename boost::shared_ptr<RotationSpec> RotationSpecPtr;
 
+  class FrameSpec : public Spec
+  {
+    public:
+      KDL::Expression<KDL::Frame>::Ptr get_expression(const giskard::Scope& scope)
+      {
+        if(get_cached())
+          return KDL::cached<KDL::Frame>(generate_expression(scope));
+        else
+          return generate_expression(scope);
+      }
+
+    private:
+      virtual KDL::Expression<KDL::Frame>::Ptr generate_expression(const giskard::Scope& scope) = 0;
+  };
+
+  typedef typename boost::shared_ptr<FrameSpec> FrameSpecPtr;
+
   ///
   /// specifications of double expressions
   ///
@@ -402,6 +419,59 @@ namespace giskard
   };
 
   typedef typename boost::shared_ptr<AxisAngleSpec> AxisAngleSpecPtr;
+
+  ///
+  /// specifications for frame expresssions
+  ///
+
+  class ConstructorFrameSpec: public FrameSpec
+  {
+    public:
+      const giskard::VectorSpecPtr& get_translation() const
+      {
+        return translation_;
+      }
+
+      void set_translation(const giskard::VectorSpecPtr& translation)
+      {
+        translation_ = translation;
+      }
+
+      const giskard::RotationSpecPtr& get_rotation() const
+      {
+        return rotation_;
+      }
+
+      void set_rotation(const giskard::RotationSpecPtr& rotation)
+      {
+        rotation_ = rotation;
+      }
+
+      virtual void clear()
+      {
+        Spec::clear();
+        set_rotation(RotationSpecPtr());
+        set_translation(VectorSpecPtr());
+      }
+
+    private:
+      VectorSpecPtr translation_;
+      RotationSpecPtr rotation_;
+
+      virtual KDL::Expression<KDL::Frame>::Ptr generate_expression(const giskard::Scope& scope)
+      {
+std::cout << "a";
+        KDL::Expression<KDL::Rotation>::Ptr rot = get_rotation()->get_expression(scope);
+std::cout << "b";
+
+        KDL::Expression<KDL::Vector>::Ptr trans = get_translation()->get_expression(scope);
+std::cout << "c";
+        return KDL::frame(rot, trans);
+      }
+  };
+
+  typedef typename boost::shared_ptr<ConstructorFrameSpec> ConstructorFrameSpecPtr;
+
 }
 
 #endif // GISKARD_SPECIFICATIONS_HPP
