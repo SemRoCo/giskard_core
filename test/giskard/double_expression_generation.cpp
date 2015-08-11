@@ -15,7 +15,7 @@ class DoubleExpressionGenerationTest : public ::testing::Test
 TEST_F(DoubleExpressionGenerationTest, Constants)
 {
   giskard::ConstDoubleExpressionDescription descr;
-  giskard::ExpressionScope scope;
+  giskard::Scope scope;
 
   descr.set_value(1.1);
   EXPECT_DOUBLE_EQ(descr.get_value(), 1.1);
@@ -30,7 +30,7 @@ TEST_F(DoubleExpressionGenerationTest, Constants)
 TEST_F(DoubleExpressionGenerationTest, Inputs)
 {
   giskard::InputDoubleExpressionDescription descr;
-  giskard::ExpressionScope scope;
+  giskard::Scope scope;
 
   descr.set_input_num(2);
   EXPECT_EQ(descr.get_input_num(), 2);
@@ -58,7 +58,7 @@ TEST_F(DoubleExpressionGenerationTest, Addition)
       giskard::InputDoubleExpressionDescription());
 
   giskard::AdditionDoubleExpressionDescription add_descr;
-  giskard::ExpressionScope scope;
+  giskard::Scope scope;
 
   const_descr1->set_value(-0.7);
   EXPECT_DOUBLE_EQ(const_descr1->get_value(), -0.7);

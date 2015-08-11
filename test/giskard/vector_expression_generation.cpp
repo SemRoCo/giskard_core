@@ -24,7 +24,7 @@ class VectorExpressionGenerationTest : public ::testing::Test
 TEST_F(VectorExpressionGenerationTest, Constructor)
 {
   giskard::ConstructorVectorExpressionDescription descr;
-  giskard::ExpressionScope scope;
+  giskard::Scope scope;
 
   descr.set_x(x);
   descr.set_y(y);

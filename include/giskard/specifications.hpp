@@ -94,7 +94,7 @@ namespace giskard
 //    return os;
 //  }
 
-  class ExpressionScope
+  class Scope
   {
     public:
       const KDL::Expression<double>::Ptr& find_double_expression(const std::string& reference_name) const
@@ -192,7 +192,7 @@ namespace giskard
   class DoubleExpressionDescription : public ExpressionDescription
   {
     public:
-      KDL::Expression<double>::Ptr get_expression(const giskard::ExpressionScope& scope)
+      KDL::Expression<double>::Ptr get_expression(const giskard::Scope& scope)
       {
         if(get_cached())
           return KDL::cached<double>(generate_expression(scope));
@@ -201,7 +201,7 @@ namespace giskard
       }
 
     private:
-      virtual KDL::Expression<double>::Ptr generate_expression(const giskard::ExpressionScope& scope) = 0;
+      virtual KDL::Expression<double>::Ptr generate_expression(const giskard::Scope& scope) = 0;
   };
 
   typedef typename boost::shared_ptr<DoubleExpressionDescription> DoubleExpressionDescriptionPtr;
@@ -209,7 +209,7 @@ namespace giskard
   class VectorExpressionDescription : public ExpressionDescription
   {
     public:
-      KDL::Expression<KDL::Vector>::Ptr get_expression(const giskard::ExpressionScope& scope)
+      KDL::Expression<KDL::Vector>::Ptr get_expression(const giskard::Scope& scope)
       {
         if(get_cached())
           return KDL::cached<KDL::Vector>(generate_expression(scope));
@@ -218,7 +218,7 @@ namespace giskard
       }
 
     private:
-      virtual KDL::Expression<KDL::Vector>::Ptr generate_expression(const giskard::ExpressionScope& scope) = 0;
+      virtual KDL::Expression<KDL::Vector>::Ptr generate_expression(const giskard::Scope& scope) = 0;
   };
 
   typedef typename boost::shared_ptr<VectorExpressionDescription> VectorExpressionDescriptionPtr;
@@ -243,7 +243,7 @@ namespace giskard
     private:
       double value_;
 
-      virtual KDL::Expression<double>::Ptr generate_expression(const giskard::ExpressionScope& scope)
+      virtual KDL::Expression<double>::Ptr generate_expression(const giskard::Scope& scope)
       {
         return KDL::Constant(get_value());
       }
@@ -267,7 +267,7 @@ namespace giskard
     private:
       size_t input_num_;
 
-      virtual KDL::Expression<double>::Ptr generate_expression(const giskard::ExpressionScope& scope)
+      virtual KDL::Expression<double>::Ptr generate_expression(const giskard::Scope& scope)
       {
         return KDL::input(get_input_num());
       }
@@ -291,7 +291,7 @@ namespace giskard
     private:
       std::string reference_name_;
 
-      virtual KDL::Expression<double>::Ptr generate_expression(const giskard::ExpressionScope& scope)
+      virtual KDL::Expression<double>::Ptr generate_expression(const giskard::Scope& scope)
       {
         return scope.find_double_expression(get_reference_name());
       }
@@ -315,7 +315,7 @@ namespace giskard
     private:
       std::vector<DoubleExpressionDescriptionPtr> inputs_;
 
-      virtual KDL::Expression<double>::Ptr generate_expression(const giskard::ExpressionScope& scope)
+      virtual KDL::Expression<double>::Ptr generate_expression(const giskard::Scope& scope)
       {
         KDL::Expression<double>::Ptr result = KDL::Constant(0.0);
         using KDL::operator+;
@@ -368,7 +368,7 @@ namespace giskard
     private:
       DoubleExpressionDescriptionPtr x_, y_, z_;
 
-      virtual KDL::Expression<KDL::Vector>::Ptr generate_expression(const giskard::ExpressionScope& scope)
+      virtual KDL::Expression<KDL::Vector>::Ptr generate_expression(const giskard::Scope& scope)
       {
         return KDL::vector(get_x()->get_expression(scope), 
             get_y()->get_expression(scope), get_z()->get_expression(scope));

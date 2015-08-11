@@ -2,7 +2,7 @@
 #include <giskard/giskard.hpp>
 
 
-class ExpressionScopeTest : public ::testing::Test
+class ScopeTest : public ::testing::Test
 {
    protected:
     virtual void SetUp()
@@ -19,9 +19,9 @@ class ExpressionScopeTest : public ::testing::Test
     KDL::Expression<KDL::Frame>::Ptr frame_1, frame_2;
 };
 
-TEST_F(ExpressionScopeTest, HasDouble)
+TEST_F(ScopeTest, HasDouble)
 {
-  giskard::ExpressionScope scope;
+  giskard::Scope scope;
 
   EXPECT_FALSE(scope.has_double_expression("a"));
   EXPECT_FALSE(scope.has_double_expression("b"));
@@ -42,9 +42,9 @@ TEST_F(ExpressionScopeTest, HasDouble)
   EXPECT_FALSE(scope.has_frame_expression("c"));
 }
 
-TEST_F(ExpressionScopeTest, HasFrame)
+TEST_F(ScopeTest, HasFrame)
 {
-  giskard::ExpressionScope scope;
+  giskard::Scope scope;
 
   EXPECT_FALSE(scope.has_frame_expression("1"));
   EXPECT_FALSE(scope.has_frame_expression("2"));
@@ -65,9 +65,9 @@ TEST_F(ExpressionScopeTest, HasFrame)
   EXPECT_FALSE(scope.has_double_expression("3"));
 }
 
-TEST_F(ExpressionScopeTest, FindDouble)
+TEST_F(ScopeTest, FindDouble)
 {
-  giskard::ExpressionScope scope;
+  giskard::Scope scope;
 
   scope.add_double_expression("a", double_a);
   EXPECT_EQ(double_a, scope.find_double_expression("a"));
@@ -77,9 +77,9 @@ TEST_F(ExpressionScopeTest, FindDouble)
   EXPECT_EQ(double_b, scope.find_double_expression("b"));
 }
 
-TEST_F(ExpressionScopeTest, FindFrame)
+TEST_F(ScopeTest, FindFrame)
 {
-  giskard::ExpressionScope scope;
+  giskard::Scope scope;
 
   scope.add_frame_expression("1", frame_1);
   EXPECT_EQ(frame_1, scope.find_frame_expression("1"));
