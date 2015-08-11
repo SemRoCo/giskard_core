@@ -14,7 +14,7 @@ class DoubleExpressionGenerationTest : public ::testing::Test
 
 TEST_F(DoubleExpressionGenerationTest, Constants)
 {
-  giskard::ConstDoubleSpecification descr;
+  giskard::ConstDoubleSpec descr;
   giskard::Scope scope;
 
   descr.set_value(1.1);
@@ -29,7 +29,7 @@ TEST_F(DoubleExpressionGenerationTest, Constants)
 
 TEST_F(DoubleExpressionGenerationTest, Inputs)
 {
-  giskard::InputDoubleSpecification descr;
+  giskard::InputDoubleSpec descr;
   giskard::Scope scope;
 
   descr.set_input_num(2);
@@ -50,14 +50,14 @@ TEST_F(DoubleExpressionGenerationTest, Inputs)
 
 TEST_F(DoubleExpressionGenerationTest, Addition)
 {
-  giskard::ConstDoubleSpecificationPtr const_descr1(new
-      giskard::ConstDoubleSpecification());
-  giskard::ConstDoubleSpecificationPtr const_descr2(new
-      giskard::ConstDoubleSpecification());
-  giskard::InputDoubleSpecificationPtr input_descr(new
-      giskard::InputDoubleSpecification());
+  giskard::ConstDoubleSpecPtr const_descr1(new
+      giskard::ConstDoubleSpec());
+  giskard::ConstDoubleSpecPtr const_descr2(new
+      giskard::ConstDoubleSpec());
+  giskard::InputDoubleSpecPtr input_descr(new
+      giskard::InputDoubleSpec());
 
-  giskard::AdditionDoubleSpecification add_descr;
+  giskard::AdditionDoubleSpec add_descr;
   giskard::Scope scope;
 
   const_descr1->set_value(-0.7);
@@ -69,7 +69,7 @@ TEST_F(DoubleExpressionGenerationTest, Addition)
   input_descr->set_input_num(1);
   EXPECT_EQ(input_descr->get_input_num(), 1);
 
-  std::vector<giskard::DoubleSpecificationPtr> input_descrs;
+  std::vector<giskard::DoubleSpecPtr> input_descrs;
   input_descrs.push_back(const_descr1);
   input_descrs.push_back(input_descr);
   input_descrs.push_back(const_descr2);

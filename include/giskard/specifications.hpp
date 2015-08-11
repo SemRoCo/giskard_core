@@ -154,7 +154,7 @@ namespace giskard
   /// base of all specifications of expressions
   ///
 
-  class Specification
+  class Spec
   { 
     public:
 
@@ -189,13 +189,13 @@ namespace giskard
       bool cached_;
   };
 
-  typedef typename boost::shared_ptr<Specification> SpecificationPtr;
+  typedef typename boost::shared_ptr<Spec> SpecPtr;
 
   ///
   /// next level of expression specifications
   ///
 
-  class DoubleSpecification : public Specification
+  class DoubleSpec : public Spec
   {
     public:
       KDL::Expression<double>::Ptr get_expression(const giskard::Scope& scope)
@@ -210,9 +210,9 @@ namespace giskard
       virtual KDL::Expression<double>::Ptr generate_expression(const giskard::Scope& scope) = 0;
   };
 
-  typedef typename boost::shared_ptr<DoubleSpecification> DoubleSpecificationPtr;
+  typedef typename boost::shared_ptr<DoubleSpec> DoubleSpecPtr;
 
-  class VectorSpecification : public Specification
+  class VectorSpec : public Spec
   {
     public:
       KDL::Expression<KDL::Vector>::Ptr get_expression(const giskard::Scope& scope)
@@ -227,13 +227,13 @@ namespace giskard
       virtual KDL::Expression<KDL::Vector>::Ptr generate_expression(const giskard::Scope& scope) = 0;
   };
 
-  typedef typename boost::shared_ptr<VectorSpecification> VectorSpecificationPtr;
+  typedef typename boost::shared_ptr<VectorSpec> VectorSpecPtr;
 
   ///
   /// specifications of double expressions
   ///
 
-  class ConstDoubleSpecification : public DoubleSpecification
+  class ConstDoubleSpec : public DoubleSpec
   {
     public:
       double get_value() const
@@ -248,7 +248,7 @@ namespace giskard
 
       virtual void clear()
       {
-        Specification::clear();
+        Spec::clear();
         set_value(0.0);
       }
 
@@ -261,9 +261,9 @@ namespace giskard
       }
   };
 
-  typedef typename boost::shared_ptr<ConstDoubleSpecification> ConstDoubleSpecificationPtr;
+  typedef typename boost::shared_ptr<ConstDoubleSpec> ConstDoubleSpecPtr;
 
-  class InputDoubleSpecification : public DoubleSpecification
+  class InputDoubleSpec : public DoubleSpec
   {
     public:
       size_t get_input_num() const
@@ -278,7 +278,7 @@ namespace giskard
 
       virtual void clear()
       {
-        Specification::clear();
+        Spec::clear();
         set_input_num(0);
       }
 
@@ -291,9 +291,9 @@ namespace giskard
       }
   };
 
-  typedef typename boost::shared_ptr<InputDoubleSpecification> InputDoubleSpecificationPtr;
+  typedef typename boost::shared_ptr<InputDoubleSpec> InputDoubleSpecPtr;
 
-  class ReferenceDoubleSpecification : public DoubleSpecification
+  class ReferenceDoubleSpec : public DoubleSpec
   {
     public:
       const std::string& get_reference_name() const
@@ -308,7 +308,7 @@ namespace giskard
 
       virtual void clear()
       {
-        Specification::clear();
+        Spec::clear();
         set_reference_name("");
       }
 
@@ -321,29 +321,29 @@ namespace giskard
       }
   };
 
-  typedef typename boost::shared_ptr<ReferenceDoubleSpecification> ReferenceDoubleSpecificationPtr;
+  typedef typename boost::shared_ptr<ReferenceDoubleSpec> ReferenceDoubleSpecPtr;
 
-  class AdditionDoubleSpecification: public DoubleSpecification
+  class AdditionDoubleSpec: public DoubleSpec
   {
     public:
-      const std::vector<DoubleSpecificationPtr>& get_inputs() const
+      const std::vector<DoubleSpecPtr>& get_inputs() const
       {
         return inputs_;
       }
 
-      void set_inputs(const std::vector<DoubleSpecificationPtr>& inputs)
+      void set_inputs(const std::vector<DoubleSpecPtr>& inputs)
       {
         inputs_ = inputs;
       }
 
       virtual void clear()
       {
-        Specification::clear();
-        set_inputs(std::vector<DoubleSpecificationPtr>());
+        Spec::clear();
+        set_inputs(std::vector<DoubleSpecPtr>());
       }
 
     private:
-      std::vector<DoubleSpecificationPtr> inputs_;
+      std::vector<DoubleSpecPtr> inputs_;
 
       virtual KDL::Expression<double>::Ptr generate_expression(const giskard::Scope& scope)
       {
@@ -356,47 +356,47 @@ namespace giskard
       }
    };
 
-  typedef typename boost::shared_ptr<AdditionDoubleSpecification> AdditionDoubleSpecificationPtr;
+  typedef typename boost::shared_ptr<AdditionDoubleSpec> AdditionDoubleSpecPtr;
 
   ///
   /// specifications of vector expressions
   ///
 
-  class ConstructorVectorSpecification: public VectorSpecification
+  class ConstructorVectorSpec: public VectorSpec
   {
     public:
-      const DoubleSpecificationPtr& get_x() const
+      const DoubleSpecPtr& get_x() const
       {
         return x_;
       }
 
-      void set_x(const DoubleSpecificationPtr& x)
+      void set_x(const DoubleSpecPtr& x)
       {
         x_ = x;
       }
 
-      const DoubleSpecificationPtr& get_y() const
+      const DoubleSpecPtr& get_y() const
       {
         return y_;
       }
 
-      void set_y(const DoubleSpecificationPtr& y)
+      void set_y(const DoubleSpecPtr& y)
       {
         y_ = y;
       }
 
-      const DoubleSpecificationPtr& get_z() const
+      const DoubleSpecPtr& get_z() const
       {
         return z_;
       }
 
-      void set_z(const DoubleSpecificationPtr& z)
+      void set_z(const DoubleSpecPtr& z)
       {
         z_ = z;
       }
 
-      void set(const DoubleSpecificationPtr& x, const DoubleSpecificationPtr& y, 
-          const DoubleSpecificationPtr& z)
+      void set(const DoubleSpecPtr& x, const DoubleSpecPtr& y, 
+          const DoubleSpecPtr& z)
       {
         set_x(x);
         set_y(y);
@@ -405,12 +405,12 @@ namespace giskard
 
       virtual void clear()
       {
-        Specification::clear();
-        set(DoubleSpecificationPtr(), DoubleSpecificationPtr(), DoubleSpecificationPtr());
+        Spec::clear();
+        set(DoubleSpecPtr(), DoubleSpecPtr(), DoubleSpecPtr());
       }
 
     private:
-      DoubleSpecificationPtr x_, y_, z_;
+      DoubleSpecPtr x_, y_, z_;
 
       virtual KDL::Expression<KDL::Vector>::Ptr generate_expression(const giskard::Scope& scope)
       {
@@ -419,7 +419,7 @@ namespace giskard
       }
    };
 
-  typedef typename boost::shared_ptr<ConstructorVectorSpecification> ConstructorVectorSpecificationPtr;
+  typedef typename boost::shared_ptr<ConstructorVectorSpec> ConstructorVectorSpecPtr;
 
 }
 

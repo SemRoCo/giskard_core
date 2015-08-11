@@ -7,9 +7,9 @@ class VectorExpressionGenerationTest : public ::testing::Test
    protected:
     virtual void SetUp()
     {
-      x = giskard::ConstDoubleSpecificationPtr(new giskard::ConstDoubleSpecification());
-      y = giskard::ConstDoubleSpecificationPtr(new giskard::ConstDoubleSpecification());
-      z = giskard::ConstDoubleSpecificationPtr(new giskard::ConstDoubleSpecification());
+      x = giskard::ConstDoubleSpecPtr(new giskard::ConstDoubleSpec());
+      y = giskard::ConstDoubleSpecPtr(new giskard::ConstDoubleSpec());
+      z = giskard::ConstDoubleSpecPtr(new giskard::ConstDoubleSpec());
 
       x->set_value(1.1);
       y->set_value(2.2);
@@ -18,12 +18,12 @@ class VectorExpressionGenerationTest : public ::testing::Test
 
     virtual void TearDown(){}
 
-    giskard::ConstDoubleSpecificationPtr x, y, z;
+    giskard::ConstDoubleSpecPtr x, y, z;
 };
 
 TEST_F(VectorExpressionGenerationTest, Constructor)
 {
-  giskard::ConstructorVectorSpecification descr;
+  giskard::ConstructorVectorSpec descr;
   giskard::Scope scope;
 
   descr.set_x(x);

@@ -13,15 +13,15 @@ namespace YAML {
   }
 
   template<>
-  struct convert<giskard::ConstDoubleSpecification> {
+  struct convert<giskard::ConstDoubleSpec> {
     
-    static Node encode(const giskard::ConstDoubleSpecification& rhs) {
+    static Node encode(const giskard::ConstDoubleSpec& rhs) {
       Node node;
       node = rhs.get_value();
       return node;
     }
   
-    static bool decode(const Node& node, giskard::ConstDoubleSpecification& rhs) {
+    static bool decode(const Node& node, giskard::ConstDoubleSpec& rhs) {
       if(!node.IsScalar())
         return false;
   

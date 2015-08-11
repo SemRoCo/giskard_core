@@ -15,8 +15,8 @@ TEST_F(YamlParserTest, DoubleExpression)
   std::string c1 = "1.1";
 
   YAML::Node node = YAML::Load(c1);
-  ASSERT_NO_THROW(node.as<giskard::ConstDoubleSpecification>());
-  giskard::ConstDoubleSpecification s1 = node.as<giskard::ConstDoubleSpecification>();
+  ASSERT_NO_THROW(node.as<giskard::ConstDoubleSpec>());
+  giskard::ConstDoubleSpec s1 = node.as<giskard::ConstDoubleSpec>();
 
   EXPECT_DOUBLE_EQ(1.1, s1.get_value());
   EXPECT_FALSE(s1.get_cached());
