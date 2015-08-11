@@ -173,6 +173,68 @@ namespace YAML {
     }
   };
 
+  ///
+  /// parsing rotation specs
+  ///
+
+  inline bool is_axis_angle(const Node& node)
+  {
+    return node.IsMap() && (node.size() == 3) && node["type"] &&
+        (node["type"].as<std::string>().compare("ROTATION") == 0) &&
+        node["axis"] && node["angle"];
+  }
+
+  template<>
+  struct convert<giskard::AxisAngleSpecPtr> 
+  {
+    static Node encode(const giskard::AxisAngleSpecPtr& rhs) 
+    {
+      Node node;
+      node["type"] = "ROTATION";
+      node["axis"] = rhs->get_axis();
+      node["angle"] = rhs->get_angle();
+      return node;
+    }
+  
+    static bool decode(const Node& node, giskard::AxisAngleSpecPtr& rhs) 
+    {
+      if(!is_axis_angle(node))
+        return false;
+
+      rhs = giskard::AxisAngleSpecPtr(new giskard::AxisAngleSpec()); 
+      rhs->set_angle(node["angle"].as<giskard::DoubleSpecPtr>());
+      rhs->set_axis(node["axis"].as<giskard::VectorSpecPtr>());
+
+      return true;
+    }
+  };
+
+  template<>
+  struct convert<giskard::RotationSpecPtr> 
+  {
+    static Node encode(const giskard::RotationSpecPtr& rhs) 
+    {
+      Node node;
+
+      if(boost::dynamic_pointer_cast<giskard::AxisAngleSpec>(rhs).get())
+        node = boost::dynamic_pointer_cast<giskard::AxisAngleSpec>(rhs);
+
+      return node;
+    }
+  
+    static bool decode(const Node& node, giskard::RotationSpecPtr& rhs) 
+    {
+      if(is_axis_angle(node))
+      {
+        rhs = node.as<giskard::AxisAngleSpecPtr>();
+        return true;
+      }
+      else
+        return false;
+    }
+  };
+
+
 }
 
 #endif // GISKARD_YAML_PARSER_HPP

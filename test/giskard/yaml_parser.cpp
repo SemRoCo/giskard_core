@@ -207,3 +207,127 @@ TEST_F(YamlParserTest, ConstructorVectorSpec)
   EXPECT_STREQ(z->get_name().c_str(), "");
   EXPECT_DOUBLE_EQ(z->get_value(), 3.3);
 };
+
+TEST_F(YamlParserTest, AxisAngleSpec)
+{
+  std::string r = "{type: ROTATION, axis: {type: VECTOR3, inputs: [1.0, 0.0, 0.0]}, angle: {type: INPUT, input-number: 3}}"; 
+
+  // parsing into axis angle specification
+  YAML::Node node = YAML::Load(r);
+
+  ASSERT_NO_THROW(node.as<giskard::AxisAngleSpecPtr>());
+  giskard::AxisAngleSpecPtr s1 = node.as<giskard::AxisAngleSpecPtr>();
+
+  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::InputDoubleSpec>(s1->get_angle()).get());
+  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::ConstructorVectorSpec>(s1->get_axis()).get());
+
+  giskard::InputDoubleSpecPtr angle = 
+      boost::dynamic_pointer_cast<giskard::InputDoubleSpec>(s1->get_angle());
+  giskard::ConstructorVectorSpecPtr axis = 
+      boost::dynamic_pointer_cast<giskard::ConstructorVectorSpec>(s1->get_axis());
+
+  EXPECT_EQ(angle->get_input_num(), 3);
+  EXPECT_FALSE(angle->get_cached());
+  EXPECT_STREQ(angle->get_name().c_str(), "");
+
+  ASSERT_TRUE(axis->get_x().get());
+  ASSERT_TRUE(axis->get_y().get());
+  ASSERT_TRUE(axis->get_z().get());
+
+  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::ConstDoubleSpec>(axis->get_x()).get());
+  EXPECT_DOUBLE_EQ(boost::dynamic_pointer_cast<giskard::ConstDoubleSpec>(axis->get_x())->get_value(), 1.0);
+  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::ConstDoubleSpec>(axis->get_y()).get());
+  EXPECT_DOUBLE_EQ(boost::dynamic_pointer_cast<giskard::ConstDoubleSpec>(axis->get_y())->get_value(), 0.0);
+  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::ConstDoubleSpec>(axis->get_z()).get());
+  EXPECT_DOUBLE_EQ(boost::dynamic_pointer_cast<giskard::ConstDoubleSpec>(axis->get_z())->get_value(), 0.0);
+
+  // roundtrip with generation
+  YAML::Node node2;
+  node2 = s1;
+
+  ASSERT_NO_THROW(node2.as<giskard::AxisAngleSpecPtr>());
+  giskard::AxisAngleSpecPtr s2 = node2.as<giskard::AxisAngleSpecPtr>();
+
+  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::InputDoubleSpec>(s2->get_angle()).get());
+  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::ConstructorVectorSpec>(s2->get_axis()).get());
+
+  angle = boost::dynamic_pointer_cast<giskard::InputDoubleSpec>(s2->get_angle());
+  axis = boost::dynamic_pointer_cast<giskard::ConstructorVectorSpec>(s2->get_axis());
+
+  EXPECT_EQ(angle->get_input_num(), 3);
+  EXPECT_FALSE(angle->get_cached());
+  EXPECT_STREQ(angle->get_name().c_str(), "");
+
+  ASSERT_TRUE(axis->get_x().get());
+  ASSERT_TRUE(axis->get_y().get());
+  ASSERT_TRUE(axis->get_z().get());
+
+  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::ConstDoubleSpec>(axis->get_x()).get());
+  EXPECT_DOUBLE_EQ(boost::dynamic_pointer_cast<giskard::ConstDoubleSpec>(axis->get_x())->get_value(), 1.0);
+  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::ConstDoubleSpec>(axis->get_y()).get());
+  EXPECT_DOUBLE_EQ(boost::dynamic_pointer_cast<giskard::ConstDoubleSpec>(axis->get_y())->get_value(), 0.0);
+  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::ConstDoubleSpec>(axis->get_z()).get());
+  EXPECT_DOUBLE_EQ(boost::dynamic_pointer_cast<giskard::ConstDoubleSpec>(axis->get_z())->get_value(), 0.0);
+
+  // parsing to rotation spec
+  ASSERT_NO_THROW(node.as<giskard::RotationSpecPtr>());
+  giskard::RotationSpecPtr s3 = node.as<giskard::RotationSpecPtr>();
+  
+  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::AxisAngleSpec>(s3).get());
+  giskard::AxisAngleSpecPtr s4 = boost::dynamic_pointer_cast<giskard::AxisAngleSpec>(s3);
+
+  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::InputDoubleSpec>(s4->get_angle()).get());
+  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::ConstructorVectorSpec>(s4->get_axis()).get());
+
+  angle = boost::dynamic_pointer_cast<giskard::InputDoubleSpec>(s4->get_angle());
+  axis = boost::dynamic_pointer_cast<giskard::ConstructorVectorSpec>(s4->get_axis());
+
+  EXPECT_EQ(angle->get_input_num(), 3);
+  EXPECT_FALSE(angle->get_cached());
+  EXPECT_STREQ(angle->get_name().c_str(), "");
+
+  ASSERT_TRUE(axis->get_x().get());
+  ASSERT_TRUE(axis->get_y().get());
+  ASSERT_TRUE(axis->get_z().get());
+
+  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::ConstDoubleSpec>(axis->get_x()).get());
+  EXPECT_DOUBLE_EQ(boost::dynamic_pointer_cast<giskard::ConstDoubleSpec>(axis->get_x())->get_value(), 1.0);
+  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::ConstDoubleSpec>(axis->get_y()).get());
+  EXPECT_DOUBLE_EQ(boost::dynamic_pointer_cast<giskard::ConstDoubleSpec>(axis->get_y())->get_value(), 0.0);
+  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::ConstDoubleSpec>(axis->get_z()).get());
+  EXPECT_DOUBLE_EQ(boost::dynamic_pointer_cast<giskard::ConstDoubleSpec>(axis->get_z())->get_value(), 0.0);
+
+  // roundtrip with generation and parsing of rotation specification
+  YAML::Node node3;
+  node3 = s3;
+
+  ASSERT_NO_THROW(node3.as<giskard::RotationSpecPtr>());
+  giskard::RotationSpecPtr s5 = node3.as<giskard::RotationSpecPtr>();
+  
+  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::AxisAngleSpec>(s5).get());
+  giskard::AxisAngleSpecPtr s6 = boost::dynamic_pointer_cast<giskard::AxisAngleSpec>(s5);
+
+  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::InputDoubleSpec>(s6->get_angle()).get());
+  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::ConstructorVectorSpec>(s6->get_axis()).get());
+
+  angle = boost::dynamic_pointer_cast<giskard::InputDoubleSpec>(s6->get_angle());
+  axis = boost::dynamic_pointer_cast<giskard::ConstructorVectorSpec>(s6->get_axis());
+
+  EXPECT_EQ(angle->get_input_num(), 3);
+  EXPECT_FALSE(angle->get_cached());
+  EXPECT_STREQ(angle->get_name().c_str(), "");
+
+  ASSERT_TRUE(axis->get_x().get());
+  ASSERT_TRUE(axis->get_y().get());
+  ASSERT_TRUE(axis->get_z().get());
+
+  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::ConstDoubleSpec>(axis->get_x()).get());
+  EXPECT_DOUBLE_EQ(boost::dynamic_pointer_cast<giskard::ConstDoubleSpec>(axis->get_x())->get_value(), 1.0);
+  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::ConstDoubleSpec>(axis->get_y()).get());
+  EXPECT_DOUBLE_EQ(boost::dynamic_pointer_cast<giskard::ConstDoubleSpec>(axis->get_y())->get_value(), 0.0);
+  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::ConstDoubleSpec>(axis->get_z()).get());
+  EXPECT_DOUBLE_EQ(boost::dynamic_pointer_cast<giskard::ConstDoubleSpec>(axis->get_z())->get_value(), 0.0);
+
+
+
+};

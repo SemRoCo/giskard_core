@@ -143,6 +143,23 @@ namespace giskard
 
   typedef typename boost::shared_ptr<VectorSpec> VectorSpecPtr;
 
+  class RotationSpec : public Spec
+  {
+    public:
+      KDL::Expression<KDL::Rotation>::Ptr get_expression(const giskard::Scope& scope)
+      {
+        if(get_cached())
+          return KDL::cached<KDL::Rotation>(generate_expression(scope));
+        else
+          return generate_expression(scope);
+      }
+
+    private:
+      virtual KDL::Expression<KDL::Rotation>::Ptr generate_expression(const giskard::Scope& scope) = 0;
+  };
+
+  typedef typename boost::shared_ptr<RotationSpec> RotationSpecPtr;
+
   ///
   /// specifications of double expressions
   ///
@@ -331,10 +348,60 @@ namespace giskard
         return KDL::vector(get_x()->get_expression(scope), 
             get_y()->get_expression(scope), get_z()->get_expression(scope));
       }
-   };
+  };
 
   typedef typename boost::shared_ptr<ConstructorVectorSpec> ConstructorVectorSpecPtr;
+ 
+  ///
+  /// specifications for rotation expresssions
+  ///
 
+  class AxisAngleSpec: public RotationSpec
+  {
+    public:
+      const VectorSpecPtr& get_axis() const
+      {
+        return axis_;
+      }
+
+      void set_axis(const VectorSpecPtr& axis)
+      {
+        axis_ = axis;
+      }
+
+      const DoubleSpecPtr& get_angle() const
+      {
+        return angle_;
+      }
+
+      void set_angle(const DoubleSpecPtr& angle)
+      {
+        angle_ = angle;
+      }
+
+      virtual void clear()
+      {
+        Spec::clear();
+        set_angle(DoubleSpecPtr());
+        set_axis(VectorSpecPtr());
+      }
+
+    private:
+      VectorSpecPtr axis_;
+      DoubleSpecPtr angle_;
+
+      virtual KDL::Expression<KDL::Rotation>::Ptr generate_expression(const giskard::Scope& scope)
+      {
+        // note: this type of rotation expressions only expect expressions for their angle, not
+        //       the angle. while this my make sense, it does break code symmetry.
+        KDL::Expression<double>::Ptr angle = get_angle()->get_expression(scope);
+        KDL::Vector axis = get_axis()->get_expression(scope)->value();
+
+        return KDL::rot(axis, angle);
+      }
+  };
+
+  typedef typename boost::shared_ptr<AxisAngleSpec> AxisAngleSpecPtr;
 }
 
 #endif // GISKARD_SPECIFICATIONS_HPP

@@ -38,6 +38,7 @@ set(TEST_SRCS
   test/${PROJECT_NAME}/expression_arrays.cpp
   test/${PROJECT_NAME}/qp_controller.cpp
   test/${PROJECT_NAME}/qp_problem_builder.cpp
+  test/${PROJECT_NAME}/rotation_expression_generation.cpp
   test/${PROJECT_NAME}/scope.cpp
   test/${PROJECT_NAME}/vector_expression_generation.cpp
   test/${PROJECT_NAME}/yaml_parser.cpp)
