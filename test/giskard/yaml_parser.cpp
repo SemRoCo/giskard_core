@@ -12,15 +12,50 @@ class YamlParserTest : public ::testing::Test
 
 TEST_F(YamlParserTest, DoubleExpression)
 {
-  std::string c1 = "1.1";
+  std::string c = "1.1";
 
-  YAML::Node node = YAML::Load(c1);
+  // parsing const double
+  YAML::Node node = YAML::Load(c);
   ASSERT_NO_THROW(node.as<giskard::ConstDoubleSpec>());
   giskard::ConstDoubleSpec s1 = node.as<giskard::ConstDoubleSpec>();
 
   EXPECT_DOUBLE_EQ(1.1, s1.get_value());
   EXPECT_FALSE(s1.get_cached());
   EXPECT_STREQ(s1.get_name().c_str(), "");
+
+  // roundtrip with generation
+  YAML::Node node2;
+  node2 = s1;
+  ASSERT_NO_THROW(node2.as<giskard::ConstDoubleSpec>());
+  giskard::ConstDoubleSpec s2 = node2.as<giskard::ConstDoubleSpec>();
+
+  EXPECT_DOUBLE_EQ(s1.get_value(), s2.get_value());
+  EXPECT_EQ(s1.get_cached(), s2.get_cached());
+  EXPECT_STREQ(s1.get_name().c_str(), s2.get_name().c_str());
+};
+
+TEST_F(YamlParserTest, InputExpression)
+{
+  std::string i = "{type: INPUT, input-number: 2}";
+
+  // parsing input double
+  YAML::Node node = YAML::Load(i);
+  ASSERT_NO_THROW(node.as<giskard::InputDoubleSpec>());
+  giskard::InputDoubleSpec s1 = node.as<giskard::InputDoubleSpec>();
+
+  EXPECT_EQ(2, s1.get_input_num());
+  EXPECT_FALSE(s1.get_cached());
+  EXPECT_STREQ(s1.get_name().c_str(), "");
+
+  // roundtrip with generation
+  YAML::Node node2;
+  node2 = s1;
+  ASSERT_NO_THROW(node2.as<giskard::InputDoubleSpec>());
+  giskard::InputDoubleSpec s2 = node2.as<giskard::InputDoubleSpec>();
+
+  EXPECT_EQ(s1.get_input_num(), s2.get_input_num());
+  EXPECT_EQ(s1.get_cached(), s2.get_cached());
+  EXPECT_STREQ(s1.get_name().c_str(), s2.get_name().c_str());
 };
 
 //TEST_F(YamlParserTest, ParseObservables)

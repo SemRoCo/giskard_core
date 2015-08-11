@@ -27,6 +27,28 @@ namespace YAML {
     }
   };
 
+  template<>
+  struct convert<giskard::InputDoubleSpec> {
+    
+    static Node encode(const giskard::InputDoubleSpec& rhs) {
+      Node node;
+      node["input-number"] = rhs.get_input_num();
+      node["type"] = "INPUT";
+      return node;
+    }
+  
+    static bool decode(const Node& node, giskard::InputDoubleSpec& rhs) {
+      if(!(node.IsMap() && (node.size() == 2) && node["type"] && node["input-number"] &&
+          (node["type"].as<std::string>().compare("INPUT") == 0)))
+        return false;
+  
+      rhs.clear();
+      rhs.set_input_num(node["input-number"].as<double>());
+
+      return true;
+    }
+  };
+
 
 //  inline bool is_observable_spec(const Node& node)
 //  {
