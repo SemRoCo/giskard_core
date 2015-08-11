@@ -6,6 +6,33 @@
 #include <giskard/specifications.hpp>
 
 namespace YAML {
+
+  inline bool is_const_double(const Node& node)
+  {
+    return node.IsScalar();
+  }
+
+  template<>
+  struct convert<giskard::ConstDoubleSpecification> {
+    
+    static Node encode(const giskard::ConstDoubleSpecification& rhs) {
+      Node node;
+      node = rhs.get_value();
+      return node;
+    }
+  
+    static bool decode(const Node& node, giskard::ConstDoubleSpecification& rhs) {
+      if(!node.IsScalar())
+        return false;
+  
+      rhs.clear();
+      rhs.set_value(node.as<double>());
+
+      return true;
+    }
+  };
+
+
 //  inline bool is_observable_spec(const Node& node)
 //  {
 //    return node.IsMap() && (node.size() == 2) &&

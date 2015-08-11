@@ -12,6 +12,15 @@ class YamlParserTest : public ::testing::Test
 
 TEST_F(YamlParserTest, DoubleExpression)
 {
+  std::string c1 = "1.1";
+
+  YAML::Node node = YAML::Load(c1);
+  ASSERT_NO_THROW(node.as<giskard::ConstDoubleSpecification>());
+  giskard::ConstDoubleSpecification s1 = node.as<giskard::ConstDoubleSpecification>();
+
+  EXPECT_DOUBLE_EQ(1.1, s1.get_value());
+  EXPECT_FALSE(s1.get_cached());
+  EXPECT_STREQ(s1.get_name().c_str(), "");
 };
 
 //TEST_F(YamlParserTest, ParseObservables)
