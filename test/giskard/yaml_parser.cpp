@@ -10,28 +10,38 @@ class YamlParserTest : public ::testing::Test
     virtual void TearDown(){}
 };
 
-TEST_F(YamlParserTest, DoubleExpression)
+TEST_F(YamlParserTest, ConstDoubleExpression)
 {
   std::string c = "1.1";
 
-  // parsing const double
+  // parsing to const double spec
   YAML::Node node = YAML::Load(c);
-  ASSERT_NO_THROW(node.as<giskard::ConstDoubleSpec>());
-  giskard::ConstDoubleSpec s1 = node.as<giskard::ConstDoubleSpec>();
+  ASSERT_NO_THROW(node.as<giskard::ConstDoubleSpecPtr>());
+  giskard::ConstDoubleSpecPtr s1 = node.as<giskard::ConstDoubleSpecPtr>();
 
-  EXPECT_DOUBLE_EQ(1.1, s1.get_value());
-  EXPECT_FALSE(s1.get_cached());
-  EXPECT_STREQ(s1.get_name().c_str(), "");
+  EXPECT_DOUBLE_EQ(1.1, s1->get_value());
+  EXPECT_FALSE(s1->get_cached());
+  EXPECT_STREQ(s1->get_name().c_str(), "");
 
   // roundtrip with generation
   YAML::Node node2;
   node2 = s1;
-  ASSERT_NO_THROW(node2.as<giskard::ConstDoubleSpec>());
-  giskard::ConstDoubleSpec s2 = node2.as<giskard::ConstDoubleSpec>();
+  ASSERT_NO_THROW(node2.as<giskard::ConstDoubleSpecPtr>());
+  giskard::ConstDoubleSpecPtr s2 = node2.as<giskard::ConstDoubleSpecPtr>();
 
-  EXPECT_DOUBLE_EQ(s1.get_value(), s2.get_value());
-  EXPECT_EQ(s1.get_cached(), s2.get_cached());
-  EXPECT_STREQ(s1.get_name().c_str(), s2.get_name().c_str());
+  EXPECT_DOUBLE_EQ(s1->get_value(), s2->get_value());
+  EXPECT_EQ(s1->get_cached(), s2->get_cached());
+  EXPECT_STREQ(s1->get_name().c_str(), s2->get_name().c_str());
+
+  // parsing to double spec
+  ASSERT_NO_THROW(node.as<giskard::DoubleSpecPtr>());
+  giskard::DoubleSpecPtr s3 = node.as<giskard::DoubleSpecPtr>();
+  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::ConstDoubleSpec>(s3).get());
+  giskard::ConstDoubleSpecPtr s4 = boost::dynamic_pointer_cast<giskard::ConstDoubleSpec>(s3);
+
+  EXPECT_DOUBLE_EQ(1.1, s4->get_value());
+  EXPECT_FALSE(s4->get_cached());
+  EXPECT_STREQ(s4->get_name().c_str(), "");
 };
 
 TEST_F(YamlParserTest, InputExpression)
@@ -40,22 +50,32 @@ TEST_F(YamlParserTest, InputExpression)
 
   // parsing input double
   YAML::Node node = YAML::Load(i);
-  ASSERT_NO_THROW(node.as<giskard::InputDoubleSpec>());
-  giskard::InputDoubleSpec s1 = node.as<giskard::InputDoubleSpec>();
+  ASSERT_NO_THROW(node.as<giskard::InputDoubleSpecPtr>());
+  giskard::InputDoubleSpecPtr s1 = node.as<giskard::InputDoubleSpecPtr>();
 
-  EXPECT_EQ(2, s1.get_input_num());
-  EXPECT_FALSE(s1.get_cached());
-  EXPECT_STREQ(s1.get_name().c_str(), "");
+  EXPECT_EQ(2, s1->get_input_num());
+  EXPECT_FALSE(s1->get_cached());
+  EXPECT_STREQ(s1->get_name().c_str(), "");
 
   // roundtrip with generation
   YAML::Node node2;
   node2 = s1;
-  ASSERT_NO_THROW(node2.as<giskard::InputDoubleSpec>());
-  giskard::InputDoubleSpec s2 = node2.as<giskard::InputDoubleSpec>();
+  ASSERT_NO_THROW(node2.as<giskard::InputDoubleSpecPtr>());
+  giskard::InputDoubleSpecPtr s2 = node2.as<giskard::InputDoubleSpecPtr>();
 
-  EXPECT_EQ(s1.get_input_num(), s2.get_input_num());
-  EXPECT_EQ(s1.get_cached(), s2.get_cached());
-  EXPECT_STREQ(s1.get_name().c_str(), s2.get_name().c_str());
+  EXPECT_EQ(s1->get_input_num(), s2->get_input_num());
+  EXPECT_EQ(s1->get_cached(), s2->get_cached());
+  EXPECT_STREQ(s1->get_name().c_str(), s2->get_name().c_str());
+
+  // parsing to double spec
+  ASSERT_NO_THROW(node.as<giskard::DoubleSpecPtr>());
+  giskard::DoubleSpecPtr s3 = node.as<giskard::DoubleSpecPtr>();
+  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::InputDoubleSpec>(s3).get());
+  giskard::InputDoubleSpecPtr s4 = boost::dynamic_pointer_cast<giskard::InputDoubleSpec>(s3);
+
+  EXPECT_EQ(2, s4->get_input_num());
+  EXPECT_FALSE(s4->get_cached());
+  EXPECT_STREQ(s4->get_name().c_str(), "");
 };
 
 //TEST_F(YamlParserTest, ParseObservables)

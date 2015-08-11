@@ -7,48 +7,90 @@
 
 namespace YAML {
 
+  inline bool is_const_double(const Node& node)
+  {
+    return node.IsScalar();
+  }
+
+  inline bool is_input(const Node& node)
+  {
+    return node.IsMap() && (node.size() == 2) && node["type"] && node["input-number"] &&
+        (node["type"].as<std::string>().compare("INPUT") == 0);
+  }
+
   template<>
-  struct convert<giskard::ConstDoubleSpec> {
+  struct convert<giskard::ConstDoubleSpecPtr> {
     
-    static Node encode(const giskard::ConstDoubleSpec& rhs) {
+    static Node encode(const giskard::ConstDoubleSpecPtr& rhs) {
       Node node;
-      node = rhs.get_value();
+      node = rhs->get_value();
       return node;
     }
   
-    static bool decode(const Node& node, giskard::ConstDoubleSpec& rhs) {
-      if(!node.IsScalar())
+    static bool decode(const Node& node, giskard::ConstDoubleSpecPtr& rhs) {
+      if(!is_const_double(node))
         return false;
   
-      rhs.clear();
-      rhs.set_value(node.as<double>());
+      rhs = giskard::ConstDoubleSpecPtr(new giskard::ConstDoubleSpec());
+      rhs->set_value(node.as<double>());
 
       return true;
     }
   };
 
   template<>
-  struct convert<giskard::InputDoubleSpec> {
+  struct convert<giskard::InputDoubleSpecPtr> {
     
-    static Node encode(const giskard::InputDoubleSpec& rhs) {
+    static Node encode(const giskard::InputDoubleSpecPtr& rhs) {
       Node node;
-      node["input-number"] = rhs.get_input_num();
+      node["input-number"] = rhs->get_input_num();
       node["type"] = "INPUT";
       return node;
     }
   
-    static bool decode(const Node& node, giskard::InputDoubleSpec& rhs) {
-      if(!(node.IsMap() && (node.size() == 2) && node["type"] && node["input-number"] &&
-          (node["type"].as<std::string>().compare("INPUT") == 0)))
+    static bool decode(const Node& node, giskard::InputDoubleSpecPtr& rhs) {
+	      if(!is_input(node))
         return false;
   
-      rhs.clear();
-      rhs.set_input_num(node["input-number"].as<double>());
+      rhs = giskard::InputDoubleSpecPtr(new giskard::InputDoubleSpec());
+      rhs->set_input_num(node["input-number"].as<double>());
 
       return true;
     }
   };
 
+  template<>
+  struct convert<giskard::DoubleSpecPtr> {
+    
+    static Node encode(const giskard::DoubleSpecPtr& rhs) {
+      Node node;
+
+      if(boost::dynamic_pointer_cast<giskard::ConstDoubleSpec>(rhs).get())
+      {
+        giskard::ConstDoubleSpecPtr p = 
+            boost::dynamic_pointer_cast<giskard::ConstDoubleSpec>(rhs);
+        node = p;
+      }
+
+      return node;
+    }
+  
+    static bool decode(const Node& node, giskard::DoubleSpecPtr& rhs) {
+      if(is_const_double(node))
+      {
+        rhs = node.as<giskard::ConstDoubleSpecPtr>();
+        return true;
+      }
+      else if(is_input(node))
+      {
+        rhs = node.as<giskard::InputDoubleSpecPtr>();
+        return true;
+      }
+      else
+        return false;
+    }
+  };
+ 
 
 //  inline bool is_observable_spec(const Node& node)
 //  {
