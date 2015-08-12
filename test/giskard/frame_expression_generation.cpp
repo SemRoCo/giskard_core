@@ -105,7 +105,65 @@ TEST_F(FrameGenerationTest, ConstructorEquality)
   EXPECT_EQ(d1, d5);
 }
 
-TEST_F(FrameGenerationTest, ConstructorMultiplicationEquality)
+TEST_F(FrameGenerationTest, Multiplication)
+{
+  giskard::ConstDoubleSpecPtr one = giskard::ConstDoubleSpecPtr(new giskard::ConstDoubleSpec());
+  giskard::ConstDoubleSpecPtr zero = giskard::ConstDoubleSpecPtr(new giskard::ConstDoubleSpec());
+  giskard::ConstDoubleSpecPtr pi = giskard::ConstDoubleSpecPtr(new giskard::ConstDoubleSpec());
+  one->set_value(1.0);
+  zero->set_value(0.0);
+  pi->set_value(M_PI);
+
+  giskard::ConstructorVectorSpecPtr trans1 = 
+      giskard::ConstructorVectorSpecPtr(new giskard::ConstructorVectorSpec());
+  giskard::ConstructorVectorSpecPtr trans2 = 
+      giskard::ConstructorVectorSpecPtr(new giskard::ConstructorVectorSpec());
+  giskard::ConstructorVectorSpecPtr axis1 = 
+      giskard::ConstructorVectorSpecPtr(new giskard::ConstructorVectorSpec());
+  giskard::ConstructorVectorSpecPtr axis2 = 
+      giskard::ConstructorVectorSpecPtr(new giskard::ConstructorVectorSpec());
+  trans1->set(one, one, one);
+  trans2->set(zero, zero, one);
+  axis1->set(one, zero, zero);
+  axis2->set(zero, one, zero);
+
+  giskard::AxisAngleSpecPtr rot1 =
+      giskard::AxisAngleSpecPtr(new giskard::AxisAngleSpec());
+  giskard::AxisAngleSpecPtr rot2 =
+      giskard::AxisAngleSpecPtr(new giskard::AxisAngleSpec());
+
+  rot1->set_axis(axis1);
+  rot1->set_angle(zero);
+  rot2->set_axis(axis2);
+  rot2->set_angle(pi);
+  
+  giskard::ConstructorFrameSpecPtr d1 = 
+      giskard::ConstructorFrameSpecPtr(new giskard::ConstructorFrameSpec());
+  giskard::ConstructorFrameSpecPtr d2 = 
+      giskard::ConstructorFrameSpecPtr(new giskard::ConstructorFrameSpec());
+
+  d1->set_rotation(rot1);
+  d1->set_translation(trans1);
+  d2->set_rotation(rot2);
+  d2->set_translation(trans2);
+
+  std::vector<giskard::FrameSpecPtr> in;
+  in.push_back(d1);
+  in.push_back(d2);
+
+  giskard::MultiplicationFrameSpec m;
+  m.set_inputs(in);
+
+  KDL::Frame f1 = KDL::Frame(KDL::Rotation::Rot(KDL::Vector(1.0, 0.0, 0.0), 0.0), KDL::Vector(1.0, 1.0, 1.0));
+  KDL::Frame f2 = KDL::Frame(KDL::Rotation::Rot(KDL::Vector(0.0, 1.0, 0.0), M_PI), KDL::Vector(0.0, 0.0, 1.0));
+
+  giskard::Scope scope;
+  KDL::Expression<KDL::Frame>::Ptr exp = m.get_expression(scope);
+
+  EXPECT_TRUE(KDL::Equal(exp->value(), f1*f2));
+}
+  
+TEST_F(FrameGenerationTest, MultiplicationEquality)
 {
   giskard::ConstDoubleSpecPtr one = giskard::ConstDoubleSpecPtr(new giskard::ConstDoubleSpec());
   giskard::ConstDoubleSpecPtr zero = giskard::ConstDoubleSpecPtr(new giskard::ConstDoubleSpec());
