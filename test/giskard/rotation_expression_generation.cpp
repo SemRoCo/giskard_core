@@ -36,3 +36,40 @@ TEST_F(RotationGenerationTest, AxisAngle)
 
   EXPECT_TRUE(KDL::Equal(rot, rot2));
 }
+
+TEST_F(RotationGenerationTest, AxisAngleEquality)
+{
+  giskard::ConstDoubleSpecPtr x(new giskard::ConstDoubleSpec());
+  x->set_value(1.0);
+  giskard::ConstDoubleSpecPtr y(new giskard::ConstDoubleSpec());
+  y->set_value(0.0);
+  giskard::ConstDoubleSpecPtr z(new giskard::ConstDoubleSpec());
+  z->set_value(0.0);
+  giskard::ConstDoubleSpecPtr angle(new giskard::ConstDoubleSpec());
+  angle->set_value(M_PI/2.0);
+
+  giskard::ConstructorVectorSpecPtr axis1(new giskard::ConstructorVectorSpec());
+  giskard::ConstructorVectorSpecPtr axis2(new giskard::ConstructorVectorSpec());
+  axis1->set(x, y, z);
+  axis2->set(x, x, x);
+ 
+  giskard::AxisAngleSpec s1, s2, s3, s4;
+  s1.set_axis(axis1);
+  s1.set_angle(angle);
+  s2.set_axis(axis1);
+  s2.set_angle(x);
+  s3.set_axis(axis2);
+  s3.set_angle(angle);
+  s4.set_axis(axis1);
+  s4.set_angle(angle);
+
+  EXPECT_TRUE(s1.equals(s1));
+  EXPECT_FALSE(s1.equals(s2));
+  EXPECT_FALSE(s1.equals(s3));
+  EXPECT_TRUE(s1.equals(s4));
+
+  EXPECT_EQ(s1, s1);
+  EXPECT_NE(s1, s2);
+  EXPECT_NE(s1, s3);
+  EXPECT_EQ(s1, s4);
+}

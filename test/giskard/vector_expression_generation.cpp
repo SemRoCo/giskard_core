@@ -36,3 +36,28 @@ TEST_F(VectorExpressionGenerationTest, Constructor)
   EXPECT_DOUBLE_EQ(v.y(), 2.2);
   EXPECT_DOUBLE_EQ(v.z(), 3.3);
 }
+
+TEST_F(VectorExpressionGenerationTest, ConstructorEquality)
+{
+  giskard::ConstructorVectorSpec d1, d2, d3;
+
+  d1.set(x, y, z);
+  d2.set(x, y, y);
+  d3.set(x, y, z);
+
+  EXPECT_TRUE(d1.equals(d1));
+  EXPECT_FALSE(d1.equals(d2));
+  EXPECT_TRUE(d1.equals(d3));
+
+  EXPECT_EQ(d1, d1);
+  EXPECT_NE(d1, d2);
+  EXPECT_EQ(d1, d3);
+
+  EXPECT_FALSE(d2.equals(d1));
+  EXPECT_TRUE(d2.equals(d2));
+  EXPECT_FALSE(d2.equals(d3));
+
+  EXPECT_TRUE(d3.equals(d1));
+  EXPECT_FALSE(d3.equals(d2));
+  EXPECT_TRUE(d3.equals(d3));
+}

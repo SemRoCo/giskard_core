@@ -98,10 +98,22 @@ namespace giskard
         set_cached(false);
       }
 
+      virtual bool equals(const Spec& other) const = 0;
+
     private:
       std::string name_;
       bool cached_;
   };
+
+  inline bool operator==(const Spec& lhs, const Spec& rhs)
+  {
+    return lhs.equals(rhs);
+  }
+
+  inline bool operator!=(const Spec& lhs, const Spec& rhs)
+  {
+    return !operator==(lhs,rhs);
+  }
 
   typedef typename boost::shared_ptr<Spec> SpecPtr;
 
@@ -120,6 +132,8 @@ namespace giskard
           return generate_expression(scope);
       }
 
+      virtual bool equals(const Spec& other) const = 0;
+
     private:
       virtual KDL::Expression<double>::Ptr generate_expression(const giskard::Scope& scope) = 0;
   };
@@ -136,6 +150,8 @@ namespace giskard
         else
           return generate_expression(scope);
       }
+
+      virtual bool equals(const Spec& other) const = 0;
 
     private:
       virtual KDL::Expression<KDL::Vector>::Ptr generate_expression(const giskard::Scope& scope) = 0;
@@ -154,6 +170,8 @@ namespace giskard
           return generate_expression(scope);
       }
 
+      virtual bool equals(const Spec& other) const = 0;
+
     private:
       virtual KDL::Expression<KDL::Rotation>::Ptr generate_expression(const giskard::Scope& scope) = 0;
   };
@@ -170,6 +188,8 @@ namespace giskard
         else
           return generate_expression(scope);
       }
+
+      virtual bool equals(const Spec& other) const = 0;
 
     private:
       virtual KDL::Expression<KDL::Frame>::Ptr generate_expression(const giskard::Scope& scope) = 0;
@@ -198,6 +218,14 @@ namespace giskard
       {
         Spec::clear();
         set_value(0.0);
+      }
+
+      virtual bool equals(const Spec& other) const
+      {
+        if(!dynamic_cast<const ConstDoubleSpec*>(&other))
+          return false;
+
+        return dynamic_cast<const ConstDoubleSpec*>(&other)->get_value() == this->get_value();
       }
 
     private:
@@ -230,6 +258,14 @@ namespace giskard
         set_input_num(0);
       }
 
+      virtual bool equals(const Spec& other) const
+      {
+        if(!dynamic_cast<const InputDoubleSpec*>(&other))
+          return false;
+
+        return dynamic_cast<const InputDoubleSpec*>(&other)->get_input_num() == this->get_input_num();
+      }
+
     private:
       size_t input_num_;
 
@@ -260,6 +296,14 @@ namespace giskard
         set_reference_name("");
       }
 
+      virtual bool equals(const Spec& other) const
+      {
+        if(!dynamic_cast<const ReferenceDoubleSpec*>(&other))
+          return false;
+
+        return (dynamic_cast<const ReferenceDoubleSpec*>(&other)->get_reference_name().compare(this->get_reference_name()) == 0);
+      }
+
     private:
       std::string reference_name_;
 
@@ -288,6 +332,23 @@ namespace giskard
       {
         Spec::clear();
         set_inputs(std::vector<DoubleSpecPtr>());
+      }
+
+      virtual bool equals(const Spec& other) const
+      {
+        if(!dynamic_cast<const AdditionDoubleSpec*>(&other))
+          return false;
+
+        const AdditionDoubleSpec* other_p = dynamic_cast<const AdditionDoubleSpec*>(&other);
+
+        if(get_inputs().size() != other_p->get_inputs().size())
+          return false;
+
+        for(size_t i=0; i<get_inputs().size(); ++i)
+          if(get_inputs()[i] != other_p->get_inputs()[i])
+            return false;
+        
+        return true;
       }
 
     private:
@@ -357,6 +418,17 @@ namespace giskard
         set(DoubleSpecPtr(), DoubleSpecPtr(), DoubleSpecPtr());
       }
 
+      virtual bool equals(const Spec& other) const
+      {
+        if(!dynamic_cast<const ConstructorVectorSpec*>(&other))
+          return false;
+
+        const ConstructorVectorSpec* other_p = dynamic_cast<const ConstructorVectorSpec*>(&other);
+
+        return (get_x() == other_p->get_x()) && (get_y() == other_p->get_y()) &&
+            (get_z() == other_p->get_z());
+      }
+
     private:
       DoubleSpecPtr x_, y_, z_;
 
@@ -401,6 +473,16 @@ namespace giskard
         Spec::clear();
         set_angle(DoubleSpecPtr());
         set_axis(VectorSpecPtr());
+      }
+
+      virtual bool equals(const Spec& other) const
+      {
+        if(!dynamic_cast<const AxisAngleSpec*>(&other))
+          return false;
+
+        const AxisAngleSpec* other_p = dynamic_cast<const AxisAngleSpec*>(&other);
+
+        return (get_angle() == other_p->get_angle()) && (get_axis() == other_p->get_axis());
       }
 
     private:
@@ -454,24 +536,83 @@ namespace giskard
         set_translation(VectorSpecPtr());
       }
 
+      virtual bool equals(const Spec& other) const
+      {
+        if(!dynamic_cast<const ConstructorFrameSpec*>(&other))
+          return false;
+
+        const ConstructorFrameSpec* other_p = dynamic_cast<const ConstructorFrameSpec*>(&other);
+
+        return (get_translation() == other_p->get_translation()) && (get_rotation() == other_p->get_rotation());
+      }
+
     private:
       VectorSpecPtr translation_;
       RotationSpecPtr rotation_;
 
       virtual KDL::Expression<KDL::Frame>::Ptr generate_expression(const giskard::Scope& scope)
       {
-std::cout << "a";
         KDL::Expression<KDL::Rotation>::Ptr rot = get_rotation()->get_expression(scope);
-std::cout << "b";
 
         KDL::Expression<KDL::Vector>::Ptr trans = get_translation()->get_expression(scope);
-std::cout << "c";
         return KDL::frame(rot, trans);
       }
   };
 
   typedef typename boost::shared_ptr<ConstructorFrameSpec> ConstructorFrameSpecPtr;
 
+  class MultiplicationFrameSpec: public FrameSpec
+  {
+    public:
+      const std::vector<FrameSpecPtr>& get_inputs() const
+      {
+        return inputs_;
+      }
+
+      void set_inputs(const std::vector<FrameSpecPtr>& inputs)
+      {
+        inputs_ = inputs;
+      }
+
+      virtual void clear()
+      {
+        Spec::clear();
+        set_inputs(std::vector<FrameSpecPtr>());
+      }
+
+      virtual bool equals(const Spec& other) const
+      {
+        if(!dynamic_cast<const MultiplicationFrameSpec*>(&other))
+          return false;
+
+        const MultiplicationFrameSpec* other_p = dynamic_cast<const MultiplicationFrameSpec*>(&other);
+
+        if(get_inputs().size() != other_p->get_inputs().size())
+          return false;
+
+        for(size_t i=0; i<get_inputs().size(); ++i)
+          if(get_inputs()[i] != other_p->get_inputs()[i])
+            return false;
+        
+        return true;
+      }
+
+    private:
+      std::vector<giskard::FrameSpecPtr> inputs_;
+
+      virtual KDL::Expression<KDL::Frame>::Ptr generate_expression(const giskard::Scope& scope)
+      {
+        KDL::Expression<KDL::Frame>::Ptr result = KDL::Constant(KDL::Frame::Identity());
+
+        using KDL::operator*;
+        for(size_t i=0; i<get_inputs().size(); ++i)
+          result = result * get_inputs()[i]->get_expression(scope);
+
+        return result;
+      }
+  };
+
+  typedef typename boost::shared_ptr<MultiplicationFrameSpec> MultiplicationFrameSpecPtr;
 }
 
 #endif // GISKARD_SPECIFICATIONS_HPP
