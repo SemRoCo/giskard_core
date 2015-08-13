@@ -78,6 +78,11 @@ TEST_F(FrameGenerationTest, ConstructorEquality)
       giskard::AxisAngleSpecPtr(new giskard::AxisAngleSpec());
   giskard::AxisAngleSpecPtr rot2 =
       giskard::AxisAngleSpecPtr(new giskard::AxisAngleSpec());
+
+  rot1->set_axis(axis1);
+  rot1->set_angle(zero);
+  rot2->set_axis(axis2);
+  rot2->set_angle(pi);
   
   giskard::ConstructorFrameSpec d1, d2, d3, d4, d5;
 
