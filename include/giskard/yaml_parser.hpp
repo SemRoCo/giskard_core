@@ -7,7 +7,7 @@
 
 namespace YAML {
 
-  // 
+ // 
   // parsing of double specs
   //
 
@@ -332,6 +332,74 @@ namespace YAML {
         return false;
     }
   };
+
+  ///
+  /// parsing of general specifications
+  ///
+  inline bool is_double_spec(const Node& node)
+  {
+    return is_const_double(node) || is_input(node);
+  }
+
+  inline bool is_vector_spec(const Node& node)
+  {
+// todo: implement me
+    return false;
+  }
+
+  inline bool is_frame_spec(const Node& node)
+  {
+// todo: implement me
+    return false;
+  }
+
+  template<>
+  struct convert<giskard::SpecPtr> 
+  {
+    static Node encode(const giskard::SpecPtr& rhs) 
+    {
+      Node node;
+
+      if(boost::dynamic_pointer_cast<giskard::FrameSpec>(rhs).get())
+        node = boost::dynamic_pointer_cast<giskard::FrameSpec>(rhs);
+      else if (boost::dynamic_pointer_cast<giskard::VectorSpec>(rhs).get())
+        node = boost::dynamic_pointer_cast<giskard::VectorSpec>(rhs);
+      else if (boost::dynamic_pointer_cast<giskard::DoubleSpec>(rhs).get())
+        node = boost::dynamic_pointer_cast<giskard::DoubleSpec>(rhs);
+
+      return node;
+    }
+  
+    static bool decode(const Node& node, giskard::SpecPtr& rhs) 
+    {
+      if(is_double_spec(node))
+      {
+        rhs = node.as<giskard::DoubleSpecPtr>();
+        return true;
+      }
+      else if(is_vector_spec(node))
+      {
+        rhs = node.as<giskard::VectorSpecPtr>();
+        return true;
+      }
+      else if(is_frame_spec(node))
+      {
+        rhs = node.as<giskard::FrameSpecPtr>();
+        return true;
+      }
+      else
+        return false;
+    }
+  };
+
+  ///
+  /// parsing of maps of expressions
+  ///
+  inline giskard::SpecMap parse_scope(const Node& node)
+  {
+    return node.as< giskard::SpecMap>();
+  }
+
 
 }
 

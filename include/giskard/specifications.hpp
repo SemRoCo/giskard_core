@@ -126,6 +126,7 @@ namespace giskard
   }
 
   typedef typename boost::shared_ptr<Spec> SpecPtr;
+  typedef typename std::map< std::string, giskard::SpecPtr> SpecMap;
 
   ///
   /// next level of expression specifications
@@ -736,6 +737,7 @@ namespace giskard
   };
 
   typedef typename boost::shared_ptr<MultiplicationFrameSpec> MultiplicationFrameSpecPtr;
+
 }
 
 #endif // GISKARD_SPECIFICATIONS_HPP
