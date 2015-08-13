@@ -520,7 +520,62 @@ TEST_F(YamlParserTest, ConstructorFrameSpec)
   EXPECT_DOUBLE_EQ(boost::dynamic_pointer_cast<giskard::ConstDoubleSpec>(trans->get_x())->get_value(), 1.1);
   EXPECT_DOUBLE_EQ(boost::dynamic_pointer_cast<giskard::ConstDoubleSpec>(trans->get_y())->get_value(), 2.2);
   EXPECT_DOUBLE_EQ(boost::dynamic_pointer_cast<giskard::ConstDoubleSpec>(trans->get_z())->get_value(), 3.3);
-
- 
- 
 };
+
+TEST_F(YamlParserTest, MultiplicationFrameSpec)
+{
+  std::string r1 = "{type: ROTATION, axis: {type: VECTOR3, inputs: [1.0, 0.0, 0.0]}, angle: 1.0}";
+  std::string r2 = "{type: ROTATION, axis: {type: VECTOR3, inputs: [0.0, 1.0, 0.0]}, angle: -0.5}";
+  std::string t1 = "{type: VECTOR3, inputs: [0.1, 0.2, 0.3]}";
+  std::string t2 = "{type: VECTOR3, inputs: [-1.1, -2.2, -3.3]}";
+  std::string f1 = "{type: FRAME, rotation: " + r1 + ", translation: " + t1 + "}";
+  std::string f2 = "{type: FRAME, rotation: " + r2 + ", translation: " + t2 + "}";
+  std::string f3 = "{type: FRAME-MULTIPLICATION, inputs: [" + f1 + ", " + f2 + "]}";
+  YAML::Node node = YAML::Load(f1);
+  ASSERT_NO_THROW(node.as<giskard::ConstructorFrameSpecPtr>());
+  giskard::ConstructorFrameSpecPtr s1 = node.as<giskard::ConstructorFrameSpecPtr>();
+  node = YAML::Load(f2);
+  ASSERT_NO_THROW(node.as<giskard::ConstructorFrameSpecPtr>());
+  giskard::ConstructorFrameSpecPtr s2 = node.as<giskard::ConstructorFrameSpecPtr>();
+ 
+  // parsing into frame-multiplication specification
+  node = YAML::Load(f3);
+  ASSERT_NO_THROW(node.as<giskard::MultiplicationFrameSpecPtr>());
+  giskard::MultiplicationFrameSpecPtr s3 = node.as<giskard::MultiplicationFrameSpecPtr>();
+ 
+  ASSERT_EQ(s3->get_inputs().size(), 2);
+  EXPECT_TRUE(s3->get_inputs()[0]->equals(*s1));
+  EXPECT_TRUE(s3->get_inputs()[1]->equals(*s2));
+
+  // roundtrip with generation
+  YAML::Node node2;
+  node2 = s3;
+  ASSERT_NO_THROW(node2.as<giskard::MultiplicationFrameSpecPtr>());
+  giskard::MultiplicationFrameSpecPtr s4 = node2.as<giskard::MultiplicationFrameSpecPtr>();
+ 
+  ASSERT_EQ(s4->get_inputs().size(), 2);
+  EXPECT_TRUE(s4->get_inputs()[0]->equals(*s1));
+  EXPECT_TRUE(s4->get_inputs()[1]->equals(*s2));
+
+  // parsing into frame specification
+  ASSERT_NO_THROW(node.as<giskard::FrameSpecPtr>());
+  giskard::FrameSpecPtr s5 = node.as<giskard::FrameSpecPtr>();
+
+  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::MultiplicationFrameSpec>(s5).get());
+  giskard::MultiplicationFrameSpecPtr s6 = boost::dynamic_pointer_cast<giskard::MultiplicationFrameSpec>(s5);
+ 
+  ASSERT_EQ(s6->get_inputs().size(), 2);
+  EXPECT_TRUE(s6->get_inputs()[0]->equals(*s1));
+  EXPECT_TRUE(s6->get_inputs()[1]->equals(*s2));
+
+  //roundtrip with generation from frame specification
+  YAML::Node node3;
+  node3 = s5;
+  
+  ASSERT_NO_THROW(node3.as<giskard::MultiplicationFrameSpecPtr>());
+  giskard::MultiplicationFrameSpecPtr s7 = node2.as<giskard::MultiplicationFrameSpecPtr>();
+ 
+  ASSERT_EQ(s7->get_inputs().size(), 2);
+  EXPECT_TRUE(s7->get_inputs()[0]->equals(*s1));
+  EXPECT_TRUE(s7->get_inputs()[1]->equals(*s2));
+}

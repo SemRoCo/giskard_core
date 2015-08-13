@@ -270,6 +270,37 @@ namespace YAML {
     }
   };
 
+  inline bool is_frame_multiplication(const Node& node)
+  {
+    return node.IsMap() && (node.size() == 2) && node["type"] &&
+        (node["type"].as<std::string>().compare("FRAME-MULTIPLICATION") == 0) &&
+        node["inputs"] && node["inputs"].IsSequence();
+  }
+
+  template<>
+  struct convert<giskard::MultiplicationFrameSpecPtr> 
+  {
+    static Node encode(const giskard::MultiplicationFrameSpecPtr& rhs) 
+    {
+      Node node;
+      node["type"] = "FRAME-MULTIPLICATION";
+      node["inputs"] = rhs->get_inputs();
+      return node;
+    }
+  
+    static bool decode(const Node& node, giskard::MultiplicationFrameSpecPtr& rhs) 
+    {
+      if(!is_frame_multiplication(node))
+        return false;
+
+      rhs = giskard::MultiplicationFrameSpecPtr(new giskard::MultiplicationFrameSpec()); 
+      rhs->set_inputs(node["inputs"].as< std::vector<giskard::FrameSpecPtr> >());
+
+      return true;
+    }
+  };
+
+
   template<>
   struct convert<giskard::FrameSpecPtr> 
   {
@@ -279,6 +310,8 @@ namespace YAML {
 
       if(boost::dynamic_pointer_cast<giskard::ConstructorFrameSpec>(rhs).get())
         node = boost::dynamic_pointer_cast<giskard::ConstructorFrameSpec>(rhs);
+      else if (boost::dynamic_pointer_cast<giskard::MultiplicationFrameSpec>(rhs).get())
+        node = boost::dynamic_pointer_cast<giskard::MultiplicationFrameSpec>(rhs);
 
       return node;
     }
@@ -288,6 +321,11 @@ namespace YAML {
       if(is_constructor_frame(node))
       {
         rhs = node.as<giskard::ConstructorFrameSpecPtr>();
+        return true;
+      }
+      else if(is_frame_multiplication(node))
+      {
+        rhs = node.as<giskard::MultiplicationFrameSpecPtr>();
         return true;
       }
       else

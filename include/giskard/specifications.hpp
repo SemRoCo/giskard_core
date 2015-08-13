@@ -5,6 +5,7 @@
 #include <iostream>
 #include <map>
 #include <giskard/expressiontree.hpp>
+#include <boost/lexical_cast.hpp>
 
 namespace giskard
 {
@@ -100,6 +101,9 @@ namespace giskard
 
       virtual bool equals(const Spec& other) const = 0;
 
+      // TODO: extend this with a parameter for indention
+      virtual std::string to_string() const = 0;
+
     private:
       std::string name_;
       bool cached_;
@@ -113,6 +117,12 @@ namespace giskard
   inline bool operator!=(const Spec& lhs, const Spec& rhs)
   {
     return !operator==(lhs,rhs);
+  }
+
+  inline std::ostream& operator<<(std::ostream& os, const Spec& spec)
+  {
+    os << spec.to_string();
+    return os;
   }
 
   typedef typename boost::shared_ptr<Spec> SpecPtr;
@@ -134,6 +144,8 @@ namespace giskard
 
       virtual bool equals(const Spec& other) const = 0;
 
+      virtual std::string to_string() const = 0;
+
     private:
       virtual KDL::Expression<double>::Ptr generate_expression(const giskard::Scope& scope) = 0;
   };
@@ -152,6 +164,8 @@ namespace giskard
       }
 
       virtual bool equals(const Spec& other) const = 0;
+
+      virtual std::string to_string() const = 0;
 
     private:
       virtual KDL::Expression<KDL::Vector>::Ptr generate_expression(const giskard::Scope& scope) = 0;
@@ -172,6 +186,8 @@ namespace giskard
 
       virtual bool equals(const Spec& other) const = 0;
 
+      virtual std::string to_string() const = 0;
+
     private:
       virtual KDL::Expression<KDL::Rotation>::Ptr generate_expression(const giskard::Scope& scope) = 0;
   };
@@ -190,6 +206,8 @@ namespace giskard
       }
 
       virtual bool equals(const Spec& other) const = 0;
+
+      virtual std::string to_string() const = 0;
 
     private:
       virtual KDL::Expression<KDL::Frame>::Ptr generate_expression(const giskard::Scope& scope) = 0;
@@ -225,7 +243,13 @@ namespace giskard
         if(!dynamic_cast<const ConstDoubleSpec*>(&other))
           return false;
 
-        return dynamic_cast<const ConstDoubleSpec*>(&other)->get_value() == this->get_value();
+        return KDL::epsilon >
+            std::abs(dynamic_cast<const ConstDoubleSpec*>(&other)->get_value() - this->get_value());
+      }
+
+      virtual std::string to_string() const
+      {
+        return boost::lexical_cast<std::string>(get_value());
       }
 
     private:
@@ -266,6 +290,11 @@ namespace giskard
         return dynamic_cast<const InputDoubleSpec*>(&other)->get_input_num() == this->get_input_num();
       }
 
+      virtual std::string to_string() const
+      {
+        return "todo: implement me";
+      }
+
     private:
       size_t input_num_;
 
@@ -302,6 +331,11 @@ namespace giskard
           return false;
 
         return (dynamic_cast<const ReferenceDoubleSpec*>(&other)->get_reference_name().compare(this->get_reference_name()) == 0);
+      }
+
+      virtual std::string to_string() const
+      {
+        return "todo: implement me";
       }
 
     private:
@@ -344,11 +378,28 @@ namespace giskard
         if(get_inputs().size() != other_p->get_inputs().size())
           return false;
 
+        if(!inputs_valid() || !other_p->inputs_valid())
+          return false;
+
         for(size_t i=0; i<get_inputs().size(); ++i)
           if(get_inputs()[i] != other_p->get_inputs()[i])
             return false;
         
         return true;
+      }
+
+      bool inputs_valid() const
+      {
+        for(size_t i=0; i<get_inputs().size(); ++i)
+          if(!get_inputs()[i].get())
+            return false;
+
+        return true;
+      }
+
+      virtual std::string to_string() const
+      {
+        return "todo: implement me";
       }
 
     private:
@@ -424,9 +475,26 @@ namespace giskard
           return false;
 
         const ConstructorVectorSpec* other_p = dynamic_cast<const ConstructorVectorSpec*>(&other);
+        
+        if(!members_valid() || !other_p->members_valid())
+          return false;
 
-        return (get_x() == other_p->get_x()) && (get_y() == other_p->get_y()) &&
-            (get_z() == other_p->get_z());
+        return (get_x()->equals(*(other_p->get_x()))) && (get_y()->equals(*(other_p->get_y()))) &&
+            (get_z()->equals(*(other_p->get_z())));
+      }
+
+      bool members_valid() const
+      {
+        return get_x().get() && get_y().get() && get_z().get();
+      }
+
+      virtual std::string to_string() const
+      {
+        std::string result = "type: VECTOR3(";
+        result += get_x()->to_string() + ", ";
+        result += get_y()->to_string() + ", ";
+        result += get_z()->to_string() + ")";
+        return result;
       }
 
     private:
@@ -475,6 +543,11 @@ namespace giskard
         set_axis(VectorSpecPtr());
       }
 
+      bool members_valid() const
+      {
+        return get_axis().get() && get_angle().get();
+      }
+
       virtual bool equals(const Spec& other) const
       {
         if(!dynamic_cast<const AxisAngleSpec*>(&other))
@@ -482,7 +555,19 @@ namespace giskard
 
         const AxisAngleSpec* other_p = dynamic_cast<const AxisAngleSpec*>(&other);
 
-        return (get_angle() == other_p->get_angle()) && (get_axis() == other_p->get_axis());
+        if(!members_valid() || !other_p->members_valid())
+          return false;
+
+        return (get_angle()->equals(*(other_p->get_angle()))) && 
+               (get_axis()->equals(*( other_p->get_axis())));
+      }
+
+      virtual std::string to_string() const
+      {
+        std::string result = "type: ROTATION\naxis:\n";
+        result += get_axis()->to_string() + "\nangle:\n";
+        result += get_angle()->to_string();
+        return result;
       }
 
     private:
@@ -543,7 +628,24 @@ namespace giskard
 
         const ConstructorFrameSpec* other_p = dynamic_cast<const ConstructorFrameSpec*>(&other);
 
-        return (get_translation() == other_p->get_translation()) && (get_rotation() == other_p->get_rotation());
+        if(!members_valid() || !other_p->members_valid())
+          return false;
+        
+        return (get_translation()->equals(*(other_p->get_translation()))) && 
+            (get_rotation()->equals(*(other_p->get_rotation())));
+      }
+
+      bool members_valid() const
+      {
+        return get_translation().get() && get_rotation().get();
+      }
+
+      virtual std::string to_string() const
+      {
+        std::string result = "type: FRAME\ntranslation:\n";
+        result += get_translation()->to_string() + "\nrotation:\n";
+        result += get_rotation()->to_string();
+        return result;
       }
 
     private:
@@ -590,11 +692,32 @@ namespace giskard
         if(get_inputs().size() != other_p->get_inputs().size())
           return false;
 
+        if(!inputs_valid() || !other_p->inputs_valid())
+          return false;
+
         for(size_t i=0; i<get_inputs().size(); ++i)
           if(get_inputs()[i] != other_p->get_inputs()[i])
             return false;
         
         return true;
+      }
+
+      bool inputs_valid() const
+      {
+        for(size_t i=0; i<get_inputs().size(); ++i)
+          if(!get_inputs()[i].get())
+            return false;
+
+        return true;
+      }
+
+      virtual std::string to_string() const
+      {
+        std::string result = "type: FRAME-MULTIPLICATION\ninputs:[";
+        for(size_t i=0; i<get_inputs().size(); ++i)
+          result += "\n" + get_inputs()[i]->to_string();
+        result += "]";
+        return result;
       }
 
     private:
