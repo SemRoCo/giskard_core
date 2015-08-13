@@ -1,0 +1,160 @@
+type: FRAME-MULTIPLICATION
+inputs:
+  # torso_lift_link --> l_shoulder_pan_link
+  # 
+  # URDF DATA:
+  #  <joint name="l_shoulder_pan_joint" type="revolute">
+  #    <axis xyz="0 0 1"/>
+  #    <origin rpy="0 0 0" xyz="0.0 0.188 0.0"/>
+  #    <!-- transform from parent link to this joint frame -->
+  #    <parent link="torso_lift_link"/>
+  #    <child link="l_shoulder_pan_link"/>
+  #  </joint>
+  - type: FRAME
+    translation:
+      type: VECTOR3
+      inputs: [0.0, 0.188, 0.0]
+    rotation:
+      type: ROTATION
+      axis:
+        type: VECTOR3
+        inputs: [0, 0, 1]
+      angle:
+        type: INPUT # l_shoulder_pan_joint
+        input-number: 0
+
+
+  # l_shoulder_pan_link -->  l_shoulder_lift_link
+  # 
+  # URDF DATA:
+  #  <joint name="l_shoulder_lift_joint" type="revolute">
+  #    <axis xyz="0 1 0"/>
+  #    <origin rpy="0 0 0" xyz="0.1 0 0"/>
+  #    <parent link="l_shoulder_pan_link"/>
+  #    <child link="l_shoulder_lift_link"/>
+  #  </joint>
+  - type: FRAME
+    translation:
+      type: VECTOR3
+      inputs: [0.1, 0, 0]
+    rotation:
+      type: ROTATION
+      axis:
+        type: VECTOR3
+        inputs: [0, 1, 0]
+      angle:
+        type: INPUT # l_shoulder_lift_joint
+        input-number: 1
+
+
+  # l_shoulder_lift_link --> l_upper_arm_roll_link
+  # 
+  # URDF DATA:
+  #  <joint name="l_upper_arm_roll_joint" type="revolute">
+  #    <axis xyz="1 0 0"/>
+  #    <origin rpy="0 0 0" xyz="0 0 0"/>
+  #    <parent link="l_shoulder_lift_link"/>
+  #    <child link="l_upper_arm_roll_link"/>
+  #  </joint>
+  - type: FRAME
+    translation:
+      type: VECTOR3
+      inputs: [0, 0, 0]
+    rotation:
+      type: ROTATION
+      axis:
+        type: VECTOR3
+        inputs: [1, 0, 0]
+      angle:
+        type: INPUT # l_upper_arm_roll_joint
+        input-number: 2
+
+
+  # l_upper_arm_roll_link --> l_elbow_flew_link
+  # 
+  # URDF DATA: missing identiy transform
+  #  <joint name="l_elbow_flex_joint" type="revolute">
+  #    <axis xyz="0 1 0"/>
+  #    <origin rpy="0 0 0" xyz="0.4 0 0"/>
+  #    <parent link="l_upper_arm_link"/>
+  #    <child link="l_elbow_flex_link"/>
+  #  </joint>
+  - type: FRAME
+    translation:
+      type: VECTOR3
+      inputs: [0.4, 0, 0]
+    rotation:
+      type: ROTATION
+      axis:
+        type: VECTOR3
+        inputs: [0, 1, 0]
+      angle:
+        type: INPUT # l_elbow_flex_joint
+        input-number: 3 
+
+  # l_elbow_flew_link --> l_forearm_roll_link
+  # 
+  # URDF DATA:
+  #  <joint name="l_forearm_roll_joint" type="continuous">
+  #    <axis xyz="1 0 0"/>
+  #    <origin rpy="0 0 0" xyz="0 0 0"/>
+  #    <parent link="l_elbow_flex_link"/>
+  #    <child link="l_forearm_roll_link"/>
+  #  </joint>
+  - type: FRAME
+    translation:
+      type: VECTOR3
+      inputs: [0, 0, 0]
+    rotation:
+      type: ROTATION
+      axis:
+        type: VECTOR3
+        inputs: [1, 0, 0]
+      angle:
+        type: INPUT # l_forearm_roll_joint
+        input-number: 4 
+
+
+  # l_forearm_roll_link --> l_wrist_flex_link
+  # 
+  # URDF DATA: missing identity transform
+  #  <joint name="l_wrist_flex_joint" type="revolute">
+  #    <axis xyz="0 1 0"/>
+  #    <origin rpy="0 0 0" xyz="0.321 0 0"/>
+  #    <parent link="l_forearm_link"/>
+  #    <child link="l_wrist_flex_link"/>
+  #  </joint>
+  - type: FRAME
+    translation:
+      type: VECTOR3
+      inputs: [0.321, 0, 0]
+    rotation:
+      type: ROTATION
+      axis:
+        type: VECTOR3
+        inputs: [0, 1, 0]
+      angle:
+        type: INPUT # l_wrist_flex_joint
+        input-number: 5 
+
+  # l_wrist_flex_link --> l_wrist_roll_link
+  # 
+  # URDF DATA:
+  #  <joint name="l_wrist_roll_joint" type="continuous">
+  #    <axis xyz="1 0 0"/>
+  #    <origin rpy="0 0 0" xyz="0 0 0"/>
+  #    <parent link="l_wrist_flex_link"/>
+  #    <child link="l_wrist_roll_link"/>
+  #  </joint>
+  - type: FRAME
+    translation:
+      type: VECTOR3
+      inputs: [0, 0, 0]
+    rotation:
+      type: ROTATION
+      axis:
+        type: VECTOR3
+        inputs: [1, 0, 0]
+      angle:
+        type: INPUT # l_wrist_roll_joint
+        input-number: 6
