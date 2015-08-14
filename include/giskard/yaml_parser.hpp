@@ -63,7 +63,38 @@ namespace YAML {
         return false;
   
       rhs = giskard::InputDoubleSpecPtr(new giskard::InputDoubleSpec());
-      rhs->set_input_num(node["input-number"].as<double>());
+      rhs->set_input_num(node["input-number"].as<size_t>());
+
+      return true;
+    }
+  };
+
+  inline bool is_double_reference(const Node& node)
+  {
+    return node.IsMap() && (node.size() == 2) && node["type"] &&
+        (node["type"].as<std::string>().compare("DOUBLE-REFERENCE") == 0) &&
+        node["reference"];
+  }
+
+  template<>
+  struct convert<giskard::ReferenceDoubleSpecPtr> 
+  {
+    
+    static Node encode(const giskard::ReferenceDoubleSpecPtr& rhs) 
+    {
+      Node node;
+      node["reference"] = rhs->get_reference_name();
+      node["type"] = "DOUBLE-REFERENCE";
+      return node;
+    }
+  
+    static bool decode(const Node& node, giskard::ReferenceDoubleSpecPtr& rhs) 
+    {
+      if(!is_double_reference(node))
+        return false;
+  
+      rhs = giskard::ReferenceDoubleSpecPtr(new giskard::ReferenceDoubleSpec());
+      rhs->set_reference_name(node["reference"].as<std::string>());
 
       return true;
     }
@@ -89,6 +120,12 @@ namespace YAML {
             boost::dynamic_pointer_cast<giskard::InputDoubleSpec>(rhs);
         node = p;
       }
+      else if(boost::dynamic_pointer_cast<giskard::ReferenceDoubleSpec>(rhs).get())
+      {
+        giskard::ReferenceDoubleSpecPtr p = 
+            boost::dynamic_pointer_cast<giskard::ReferenceDoubleSpec>(rhs);
+        node = p;
+      }
 
       return node;
     }
@@ -103,6 +140,11 @@ namespace YAML {
       else if(is_input(node))
       {
         rhs = node.as<giskard::InputDoubleSpecPtr>();
+        return true;
+      }
+      else if(is_double_reference(node))
+      {
+        rhs = node.as<giskard::ReferenceDoubleSpecPtr>();
         return true;
       }
       else
@@ -232,7 +274,7 @@ namespace YAML {
       else
         return false;
     }
-  };
+  }; 
 
   ///
   /// parsing frame specifications
@@ -300,6 +342,36 @@ namespace YAML {
     }
   };
 
+  inline bool is_frame_reference(const Node& node)
+  {
+    return node.IsMap() && (node.size() == 2) && node["type"] &&
+        (node["type"].as<std::string>().compare("FRAME-REFERENCE") == 0) &&
+        node["reference"];
+  }
+
+  template<>
+  struct convert<giskard::FrameReferenceSpecPtr> 
+  {
+    
+    static Node encode(const giskard::FrameReferenceSpecPtr& rhs) 
+    {
+      Node node;
+      node["reference"] = rhs->get_reference_name();
+      node["type"] = "FRAME-REFERENCE";
+      return node;
+    }
+  
+    static bool decode(const Node& node, giskard::FrameReferenceSpecPtr& rhs) 
+    {
+      if(!is_frame_reference(node))
+        return false;
+  
+      rhs = giskard::FrameReferenceSpecPtr(new giskard::FrameReferenceSpec());
+      rhs->set_reference_name(node["reference"].as<std::string>());
+
+      return true;
+    }
+  };
 
   template<>
   struct convert<giskard::FrameSpecPtr> 
@@ -312,6 +384,8 @@ namespace YAML {
         node = boost::dynamic_pointer_cast<giskard::ConstructorFrameSpec>(rhs);
       else if (boost::dynamic_pointer_cast<giskard::MultiplicationFrameSpec>(rhs).get())
         node = boost::dynamic_pointer_cast<giskard::MultiplicationFrameSpec>(rhs);
+      else if (boost::dynamic_pointer_cast<giskard::FrameReferenceSpec>(rhs).get())
+        node = boost::dynamic_pointer_cast<giskard::FrameReferenceSpec>(rhs);
 
       return node;
     }
@@ -328,6 +402,11 @@ namespace YAML {
         rhs = node.as<giskard::MultiplicationFrameSpecPtr>();
         return true;
       }
+      else if(is_frame_reference(node))
+      {
+        rhs = node.as<giskard::FrameReferenceSpecPtr>();
+        return true;
+      }
       else
         return false;
     }
@@ -336,21 +415,26 @@ namespace YAML {
   ///
   /// parsing of general specifications
   ///
+
   inline bool is_double_spec(const Node& node)
   {
-    return is_const_double(node) || is_input(node);
+    return is_const_double(node) || is_input(node) || is_double_reference(node);
   }
 
   inline bool is_vector_spec(const Node& node)
   {
-// todo: implement me
-    return false;
+    return is_constructor_vector(node);
+  }
+
+  inline bool is_rotation_spec(const Node& node)
+  {
+    return is_axis_angle(node);
   }
 
   inline bool is_frame_spec(const Node& node)
   {
-// todo: implement me
-    return false;
+    return is_constructor_frame(node) || is_frame_multiplication(node) || 
+        is_frame_reference(node);
   }
 
   template<>
@@ -364,7 +448,9 @@ namespace YAML {
         node = boost::dynamic_pointer_cast<giskard::FrameSpec>(rhs);
       else if (boost::dynamic_pointer_cast<giskard::VectorSpec>(rhs).get())
         node = boost::dynamic_pointer_cast<giskard::VectorSpec>(rhs);
-      else if (boost::dynamic_pointer_cast<giskard::DoubleSpec>(rhs).get())
+      else if (boost::dynamic_pointer_cast<giskard::RotationSpec>(rhs).get())
+        node = boost::dynamic_pointer_cast<giskard::RotationSpec>(rhs);
+       else if (boost::dynamic_pointer_cast<giskard::DoubleSpec>(rhs).get())
         node = boost::dynamic_pointer_cast<giskard::DoubleSpec>(rhs);
 
       return node;
@@ -380,6 +466,11 @@ namespace YAML {
       else if(is_vector_spec(node))
       {
         rhs = node.as<giskard::VectorSpecPtr>();
+        return true;
+      }
+      else if(is_rotation_spec(node))
+      {
+        rhs = node.as<giskard::RotationSpecPtr>();
         return true;
       }
       else if(is_frame_spec(node))
@@ -399,7 +490,6 @@ namespace YAML {
   {
     return node.as< giskard::SpecMap>();
   }
-
 
 }
 

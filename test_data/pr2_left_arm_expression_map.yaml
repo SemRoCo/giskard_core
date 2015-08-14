@@ -1,28 +1,12 @@
-l_shoulder_pan_joint:
-  type: INPUT
-  input-number: 0
-#l_shoulder_lift_joint:
-#  type: INPUT
-#  input-number: 1
-l_shoulder_pan_joint_transform:
+l_shoulder_pan_joint: {type: INPUT, input-number: 0}
+l_shoulder_pan:
   type: FRAME
-  translation:
-    type: VECTOR3
-    inputs: [0.0, 0.188, 0.0]
+  translation: {type: VECTOR3, inputs: [0.0, 0.188, 0.0]}
   rotation:
     type: ROTATION
-    axis:
-      type: VECTOR3
-      inputs: [0, 0, 1]
-    angle: l_shoulder_pan_joint # reference
-#l_shoulder_lift_joint_transform:
-# type: FRAME
-# translation:
-#   type: VECTOR3
-#   inputs: [0.1, 0, 0]
-# rotation:
-#   type: ROTATION
-#   axis:
-#     type: VECTOR3
-#     inputs: [0, 1, 0]
-#   angle: l_shoulder_lift_joint # reference
+    axis: {type: VECTOR3, inputs: [0, 0, 1]}
+    angle: {type: DOUBLE-REFERENCE, reference: l_shoulder_pan_joint}
+pr2_fk:
+  type: FRAME-MULTIPLICATION
+  inputs:
+  - {type: FRAME-REFERENCE, reference: l_shoulder_pan} 
