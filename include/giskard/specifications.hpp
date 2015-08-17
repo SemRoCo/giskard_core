@@ -118,12 +118,6 @@ namespace giskard
         cached_ = cached;
       }
 
-      virtual void clear()
-      {
-        set_name("");
-        set_cached(false);
-      }
-
       virtual bool equals(const Spec& other) const = 0;
 
       // TODO: extend this with a parameter for indention
@@ -257,12 +251,6 @@ namespace giskard
         value_ = value;
       } 
 
-      virtual void clear()
-      {
-        Spec::clear();
-        set_value(0.0);
-      }
-
       virtual bool equals(const Spec& other) const
       {
         if(!dynamic_cast<const ConstDoubleSpec*>(&other))
@@ -299,12 +287,6 @@ namespace giskard
       void set_input_num(size_t input_num)
       {
         input_num_ = input_num;
-      }
-
-      virtual void clear()
-      {
-        Spec::clear();
-        set_input_num(0);
       }
 
       virtual bool equals(const Spec& other) const
@@ -344,12 +326,6 @@ namespace giskard
         reference_name_ = reference_name;
       }
 
-      virtual void clear()
-      {
-        Spec::clear();
-        set_reference_name("");
-      }
-
       virtual bool equals(const Spec& other) const
       {
         if(!dynamic_cast<const ReferenceDoubleSpec*>(&other))
@@ -385,12 +361,6 @@ namespace giskard
       void set_inputs(const std::vector<DoubleSpecPtr>& inputs)
       {
         inputs_ = inputs;
-      }
-
-      virtual void clear()
-      {
-        Spec::clear();
-        set_inputs(std::vector<DoubleSpecPtr>());
       }
 
       virtual bool equals(const Spec& other) const
@@ -488,12 +458,6 @@ namespace giskard
         set_z(z);
       }
 
-      virtual void clear()
-      {
-        Spec::clear();
-        set(DoubleSpecPtr(), DoubleSpecPtr(), DoubleSpecPtr());
-      }
-
       virtual bool equals(const Spec& other) const
       {
         if(!dynamic_cast<const ConstructorVectorSpec*>(&other))
@@ -547,12 +511,6 @@ namespace giskard
         reference_name_ = reference_name;
       }
 
-      virtual void clear()
-      {
-        Spec::clear();
-        set_reference_name("");
-      }
-
       virtual bool equals(const Spec& other) const
       {
         if(!dynamic_cast<const VectorReferenceSpec*>(&other))
@@ -602,13 +560,6 @@ namespace giskard
       void set_angle(const DoubleSpecPtr& angle)
       {
         angle_ = angle;
-      }
-
-      virtual void clear()
-      {
-        Spec::clear();
-        set_angle(DoubleSpecPtr());
-        set_axis(VectorSpecPtr());
       }
 
       bool members_valid() const
@@ -682,13 +633,6 @@ namespace giskard
         rotation_ = rotation;
       }
 
-      virtual void clear()
-      {
-        Spec::clear();
-        set_rotation(RotationSpecPtr());
-        set_translation(VectorSpecPtr());
-      }
-
       virtual bool equals(const Spec& other) const
       {
         if(!dynamic_cast<const ConstructorFrameSpec*>(&other))
@@ -742,12 +686,6 @@ namespace giskard
       void set_inputs(const std::vector<FrameSpecPtr>& inputs)
       {
         inputs_ = inputs;
-      }
-
-      virtual void clear()
-      {
-        Spec::clear();
-        set_inputs(std::vector<FrameSpecPtr>());
       }
 
       virtual bool equals(const Spec& other) const
@@ -816,12 +754,6 @@ namespace giskard
       void set_reference_name(const std::string& reference_name)
       {
         reference_name_ = reference_name;
-      }
-
-      virtual void clear()
-      {
-        Spec::clear();
-        set_reference_name("");
       }
 
       virtual bool equals(const Spec& other) const
