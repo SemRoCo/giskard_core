@@ -17,23 +17,10 @@ namespace giskard
   class Spec
   { 
     public:
-      bool get_cached() const
-      {
-        return cached_;
-      }
- 
-      void set_cached(bool cached)
-      {
-        cached_ = cached;
-      }
-
       virtual bool equals(const Spec& other) const = 0;
 
       // TODO: extend this with a parameter for indention
       virtual std::string to_string() const = 0;
-
-    private:
-      bool cached_;
   };
 
   inline bool operator==(const Spec& lhs, const Spec& rhs)
@@ -63,10 +50,7 @@ namespace giskard
     public:
       KDL::Expression<double>::Ptr get_expression(const giskard::Scope& scope)
       {
-        if(get_cached())
-          return KDL::cached<double>(generate_expression(scope));
-        else
-          return generate_expression(scope);
+        return generate_expression(scope);
       }
 
       virtual bool equals(const Spec& other) const = 0;
@@ -84,10 +68,7 @@ namespace giskard
     public:
       KDL::Expression<KDL::Vector>::Ptr get_expression(const giskard::Scope& scope)
       {
-        if(get_cached())
-          return KDL::cached<KDL::Vector>(generate_expression(scope));
-        else
-          return generate_expression(scope);
+        return generate_expression(scope);
       }
 
       virtual bool equals(const Spec& other) const = 0;
@@ -105,10 +86,7 @@ namespace giskard
     public:
       KDL::Expression<KDL::Rotation>::Ptr get_expression(const giskard::Scope& scope)
       {
-        if(get_cached())
-          return KDL::cached<KDL::Rotation>(generate_expression(scope));
-        else
-          return generate_expression(scope);
+        return generate_expression(scope);
       }
 
       virtual bool equals(const Spec& other) const = 0;
@@ -126,10 +104,7 @@ namespace giskard
     public:
       KDL::Expression<KDL::Frame>::Ptr get_expression(const giskard::Scope& scope)
       {
-        if(get_cached())
-          return KDL::cached<KDL::Frame>(generate_expression(scope));
-        else
-          return generate_expression(scope);
+        return generate_expression(scope);
       }
 
       virtual bool equals(const Spec& other) const = 0;
