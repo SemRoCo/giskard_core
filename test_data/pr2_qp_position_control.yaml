@@ -1,0 +1,105 @@
+scope:
+  # definition of some nice short-cuts
+  - unit-x: {type: VECTOR3, inputs: [1, 0, 0]}
+  - unit-y: {type: VECTOR3, inputs: [0, 1, 0]}
+  - unit-z: {type: VECTOR3, inputs: [0, 0, 1]}
+  
+  
+  # definition of joint input variables
+  - torso_lift_joint: {type: INPUT, input-number: 0}
+  - l_shoulder_pan_joint: {type: INPUT, input-number: 1}
+  - l_shoulder_lift_joint: {type: INPUT, input-number: 2}
+  - l_upper_arm_roll_joint: {type: INPUT, input-number: 3}
+  - l_elbow_flex_joint: {type: INPUT, input-number: 4}
+  - l_forearm_roll_joint: {type: INPUT, input-number: 5}
+  - l_wrist_flex_joint: {type: INPUT, input-number: 6}
+  - l_wrist_roll_joint: {type: INPUT, input-number: 7}
+  
+  
+  # definition of joint transforms
+  - torso_lift:
+      type: FRAME
+      translation: 
+        type: VECTOR3
+        inputs:
+        - -0.05
+        - 0
+        - type: DOUBLE-ADDITION
+          inputs: [0.739675, {type: DOUBLE-REFERENCE, reference: torso_lift_joint}]
+      rotation: # todo: replace by reference to unit-rotation to test that this also works
+        type: ROTATION
+        axis: {type: VECTOR-REFERENCE, reference: unit-x}
+        angle: 0
+  - l_shoulder_pan:
+      type: FRAME
+      translation: {type: VECTOR3, inputs: [0.0, 0.188, 0.0]}
+      rotation:
+        type: ROTATION
+        axis: {type: VECTOR-REFERENCE, reference: unit-z}
+        angle: {type: DOUBLE-REFERENCE, reference: l_shoulder_pan_joint}
+  - l_shoulder_lift:
+      type: FRAME
+      translation: {type: VECTOR3, inputs: [0.1, 0, 0]}
+      rotation:
+        type: ROTATION
+        axis: {type: VECTOR-REFERENCE, reference: unit-y}
+        angle: {type: DOUBLE-REFERENCE, reference: l_shoulder_lift_joint}
+  - l_upper_arm_roll:
+      type: FRAME
+      translation: {type: VECTOR3, inputs: [0, 0, 0]}
+      rotation:
+        type: ROTATION
+        axis: {type: VECTOR-REFERENCE, reference: unit-x}
+        angle: {type: DOUBLE-REFERENCE, reference: l_upper_arm_roll_joint}
+  - l_elbow_flex:
+      type: FRAME
+      translation: {type: VECTOR3, inputs: [0.4, 0, 0]}
+      rotation:
+        type: ROTATION
+        axis: {type: VECTOR-REFERENCE, reference: unit-y}
+        angle: {type: DOUBLE-REFERENCE, reference: l_elbow_flex_joint}
+  - l_forearm_roll:
+      type: FRAME
+      translation: {type: VECTOR3, inputs: [0, 0, 0]}
+      rotation:
+        type: ROTATION
+        axis: {type: VECTOR-REFERENCE, reference: unit-x}
+        angle: {type: DOUBLE-REFERENCE, reference: l_forearm_roll_joint}
+  - l_wrist_flex:
+      type: FRAME
+      translation: {type: VECTOR3, inputs: [0.321, 0, 0]}
+      rotation:
+        type: ROTATION
+        axis: {type: VECTOR-REFERENCE, reference: unit-y}
+        angle: {type: DOUBLE-REFERENCE, reference: l_wrist_flex_joint}
+  - l_wrist_roll:
+      type: FRAME
+      translation: {type: VECTOR3, inputs: [0, 0, 0]}
+      rotation:
+        type: ROTATION
+        axis: {type: VECTOR-REFERENCE, reference: unit-x}
+        angle: {type: DOUBLE-REFERENCE, reference: l_wrist_roll_joint}
+  
+  
+  # defintion of entire FK, goal, and control law
+  - pr2_fk:
+      type: FRAME-MULTIPLICATION
+      inputs:
+      - {type: FRAME-REFERENCE, reference: torso_lift} 
+      - {type: FRAME-REFERENCE, reference: l_shoulder_pan} 
+      - {type: FRAME-REFERENCE, reference: l_shoulder_lift} 
+      - {type: FRAME-REFERENCE, reference: l_upper_arm_roll} 
+      - {type: FRAME-REFERENCE, reference: l_elbow_flex} 
+      - {type: FRAME-REFERENCE, reference: l_forearm_roll} 
+      - {type: FRAME-REFERENCE, reference: l_wrist_flex} 
+      - {type: FRAME-REFERENCE, reference: l_wrist_roll} 
+  - pr2_fk_pos:
+      type: POSITION-OF
+      input: {type: FRAME-REFERENCE, reference: pr2_fk}
+#  - pr2_fk_goal: {type: VECTOR3, inputs: [1.1, 2.2, 3.3]}
+#  - pr2_fk_error:
+#    type: VECTOR-SUBTRACTION
+#    inputs: [{type: VECTOR-REFERENCE, reference: pr2_fk_goal}, {type: VECTOR-REFERENCE, reference: pr2_fk_pos}]
+#  - pr2_fk_control_law:
+#      type: DOUBLE-MULTIPLICATION
+#      inputs: [2.0, {type: VECTOR-NORM, input: {type: VECTOR-REFERENCE, reference: pr2_fk_error}}]

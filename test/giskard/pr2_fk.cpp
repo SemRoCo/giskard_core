@@ -61,7 +61,7 @@ TEST_F(PR2FKTest, SingleExpression)
   }
 }
 
-TEST_F(PR2FKTest, ExpressionMap)
+TEST_F(PR2FKTest, Scope)
 {
   YAML::Node node = YAML::LoadFile("pr2_left_arm_scope.yaml");
 
@@ -106,4 +106,11 @@ TEST_F(PR2FKTest, ExpressionMap)
     EXPECT_TRUE(KDL::Equal(exp_frame, solver_frame));
   }
 
+}
+
+TEST_F(PR2FKTest, QPPositionControl)
+{
+  YAML::Node node = YAML::LoadFile("pr2_qp_position_control.yaml");
+
+//  ASSERT_NO_THROW(node.as< giskard::ScopeSpec >());
 }
