@@ -533,7 +533,50 @@ namespace giskard
   };
 
   typedef typename boost::shared_ptr<ConstructorVectorSpec> ConstructorVectorSpecPtr;
- 
+
+  class VectorReferenceSpec : public VectorSpec
+  {
+    public:
+      const std::string& get_reference_name() const
+      {
+        return reference_name_;
+      }
+
+      void set_reference_name(const std::string& reference_name)
+      {
+        reference_name_ = reference_name;
+      }
+
+      virtual void clear()
+      {
+        Spec::clear();
+        set_reference_name("");
+      }
+
+      virtual bool equals(const Spec& other) const
+      {
+        if(!dynamic_cast<const VectorReferenceSpec*>(&other))
+          return false;
+
+        return (dynamic_cast<const VectorReferenceSpec*>(&other)->get_reference_name().compare(this->get_reference_name()) == 0);
+      }
+
+      virtual std::string to_string() const
+      {
+        return "todo: implement me";
+      }
+
+    private:
+      std::string reference_name_;
+
+      virtual KDL::Expression<KDL::Vector>::Ptr generate_expression(const giskard::Scope& scope)
+      {
+        return scope.find_vector_expression(get_reference_name());
+      }
+  };
+
+  typedef typename boost::shared_ptr<VectorReferenceSpec> VectorReferenceSpecPtr;
+
   ///
   /// specifications for rotation expresssions
   ///
