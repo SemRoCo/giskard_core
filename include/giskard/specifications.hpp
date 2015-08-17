@@ -17,17 +17,6 @@ namespace giskard
   class Spec
   { 
     public:
-
-      const std::string& get_name() const
-      {
-        return name_;
-      }
-
-      void set_name(const std::string& name) 
-      {
-        name_ = name;
-      }
-
       bool get_cached() const
       {
         return cached_;
@@ -44,7 +33,6 @@ namespace giskard
       virtual std::string to_string() const = 0;
 
     private:
-      std::string name_;
       bool cached_;
   };
 
