@@ -23,6 +23,17 @@ namespace giskard
         return it->second;
       }
 
+      const KDL::Expression<KDL::Vector>::Ptr& find_vector_expression(const std::string& reference_name) const
+      {
+        // TODO: throw exception here
+        assert(has_vector_expression(reference_name));
+
+        std::map< std::string, KDL::Expression<KDL::Vector>::Ptr >::const_iterator it =
+            vector_references_.find(reference_name);
+
+        return it->second;
+      }
+
       const KDL::Expression<KDL::Frame>::Ptr& find_frame_expression(const std::string& reference_name) const
       {
         // TODO: throw exception here
@@ -39,6 +50,11 @@ namespace giskard
         return (double_references_.count(expression_name) == 1);
       }
 
+      bool has_vector_expression(const std::string& expression_name) const
+      {
+        return (vector_references_.count(expression_name) == 1);
+      }
+
       bool has_frame_expression(const std::string& expression_name) const
       {
         return (frame_references_.count(expression_name) == 1);
@@ -52,6 +68,14 @@ namespace giskard
         double_references_[reference_name] = expression;
       }
 
+      void add_vector_expression(const std::string& reference_name, const KDL::Expression<KDL::Vector>::Ptr& expression)
+      {
+        // TODO: throw warning here
+        assert(!has_vector_expression(reference_name));
+
+        vector_references_[reference_name] = expression;
+      }
+
       void add_frame_expression(const std::string& reference_name, const KDL::Expression<KDL::Frame>::Ptr& expression)
       {
         // TODO: throw warning here
@@ -62,6 +86,7 @@ namespace giskard
 
     private:
       std::map< std::string, KDL::Expression<double>::Ptr > double_references_;
+      std::map< std::string, KDL::Expression<KDL::Vector>::Ptr > vector_references_;
       std::map< std::string, KDL::Expression<KDL::Frame>::Ptr > frame_references_;
   };
 
