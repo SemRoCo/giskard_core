@@ -97,7 +97,7 @@ namespace giskard
   /// specifications of double expressions
   ///
 
-  class ConstDoubleSpec : public DoubleSpec
+  class DoubleConstSpec : public DoubleSpec
   {
     public:
       double get_value() const
@@ -112,11 +112,11 @@ namespace giskard
 
       virtual bool equals(const Spec& other) const
       {
-        if(!dynamic_cast<const ConstDoubleSpec*>(&other))
+        if(!dynamic_cast<const DoubleConstSpec*>(&other))
           return false;
 
         return KDL::epsilon >
-            std::abs(dynamic_cast<const ConstDoubleSpec*>(&other)->get_value() - this->get_value());
+            std::abs(dynamic_cast<const DoubleConstSpec*>(&other)->get_value() - this->get_value());
       }
 
       virtual std::string to_string() const
@@ -133,9 +133,9 @@ namespace giskard
       double value_;
   };
 
-  typedef typename boost::shared_ptr<ConstDoubleSpec> ConstDoubleSpecPtr;
+  typedef typename boost::shared_ptr<DoubleConstSpec> DoubleConstSpecPtr;
 
-  class InputDoubleSpec : public DoubleSpec
+  class DoubleInputSpec : public DoubleSpec
   {
     public:
       size_t get_input_num() const
@@ -150,10 +150,10 @@ namespace giskard
 
       virtual bool equals(const Spec& other) const
       {
-        if(!dynamic_cast<const InputDoubleSpec*>(&other))
+        if(!dynamic_cast<const DoubleInputSpec*>(&other))
           return false;
 
-        return dynamic_cast<const InputDoubleSpec*>(&other)->get_input_num() == this->get_input_num();
+        return dynamic_cast<const DoubleInputSpec*>(&other)->get_input_num() == this->get_input_num();
       }
 
       virtual std::string to_string() const
@@ -170,9 +170,9 @@ namespace giskard
       size_t input_num_;
   };
 
-  typedef typename boost::shared_ptr<InputDoubleSpec> InputDoubleSpecPtr;
+  typedef typename boost::shared_ptr<DoubleInputSpec> DoubleInputSpecPtr;
 
-  class ReferenceDoubleSpec : public DoubleSpec
+  class DoubleReferenceSpec : public DoubleSpec
   {
     public:
       const std::string& get_reference_name() const
@@ -187,10 +187,10 @@ namespace giskard
 
       virtual bool equals(const Spec& other) const
       {
-        if(!dynamic_cast<const ReferenceDoubleSpec*>(&other))
+        if(!dynamic_cast<const DoubleReferenceSpec*>(&other))
           return false;
 
-        return (dynamic_cast<const ReferenceDoubleSpec*>(&other)->get_reference_name().compare(this->get_reference_name()) == 0);
+        return (dynamic_cast<const DoubleReferenceSpec*>(&other)->get_reference_name().compare(this->get_reference_name()) == 0);
       }
 
       virtual std::string to_string() const
@@ -207,9 +207,9 @@ namespace giskard
       std::string reference_name_;
   };
 
-  typedef typename boost::shared_ptr<ReferenceDoubleSpec> ReferenceDoubleSpecPtr;
+  typedef typename boost::shared_ptr<DoubleReferenceSpec> DoubleReferenceSpecPtr;
 
-  class AdditionDoubleSpec: public DoubleSpec
+  class DoubleAdditionSpec: public DoubleSpec
   {
     public:
       const std::vector<DoubleSpecPtr>& get_inputs() const
@@ -224,10 +224,10 @@ namespace giskard
 
       virtual bool equals(const Spec& other) const
       {
-        if(!dynamic_cast<const AdditionDoubleSpec*>(&other))
+        if(!dynamic_cast<const DoubleAdditionSpec*>(&other))
           return false;
 
-        const AdditionDoubleSpec* other_p = dynamic_cast<const AdditionDoubleSpec*>(&other);
+        const DoubleAdditionSpec* other_p = dynamic_cast<const DoubleAdditionSpec*>(&other);
 
         if(get_inputs().size() != other_p->get_inputs().size())
           return false;
@@ -270,13 +270,13 @@ namespace giskard
       std::vector<DoubleSpecPtr> inputs_;
    };
 
-  typedef typename boost::shared_ptr<AdditionDoubleSpec> AdditionDoubleSpecPtr;
+  typedef typename boost::shared_ptr<DoubleAdditionSpec> DoubleAdditionSpecPtr;
 
   ///
   /// specifications of vector expressions
   ///
 
-  class ConstructorVectorSpec: public VectorSpec
+  class VectorConstructorSpec: public VectorSpec
   {
     public:
       const DoubleSpecPtr& get_x() const
@@ -319,10 +319,10 @@ namespace giskard
 
       virtual bool equals(const Spec& other) const
       {
-        if(!dynamic_cast<const ConstructorVectorSpec*>(&other))
+        if(!dynamic_cast<const VectorConstructorSpec*>(&other))
           return false;
 
-        const ConstructorVectorSpec* other_p = dynamic_cast<const ConstructorVectorSpec*>(&other);
+        const VectorConstructorSpec* other_p = dynamic_cast<const VectorConstructorSpec*>(&other);
         
         if(!members_valid() || !other_p->members_valid())
           return false;
@@ -355,7 +355,7 @@ namespace giskard
       DoubleSpecPtr x_, y_, z_;
   };
 
-  typedef typename boost::shared_ptr<ConstructorVectorSpec> ConstructorVectorSpecPtr;
+  typedef typename boost::shared_ptr<VectorConstructorSpec> VectorConstructorSpecPtr;
 
   class VectorReferenceSpec : public VectorSpec
   {
@@ -469,7 +469,7 @@ namespace giskard
   /// specifications for frame expresssions
   ///
 
-  class ConstructorFrameSpec: public FrameSpec
+  class FrameConstructorSpec: public FrameSpec
   {
     public:
       const giskard::VectorSpecPtr& get_translation() const
@@ -494,10 +494,10 @@ namespace giskard
 
       virtual bool equals(const Spec& other) const
       {
-        if(!dynamic_cast<const ConstructorFrameSpec*>(&other))
+        if(!dynamic_cast<const FrameConstructorSpec*>(&other))
           return false;
 
-        const ConstructorFrameSpec* other_p = dynamic_cast<const ConstructorFrameSpec*>(&other);
+        const FrameConstructorSpec* other_p = dynamic_cast<const FrameConstructorSpec*>(&other);
 
         if(!members_valid() || !other_p->members_valid())
           return false;
@@ -532,9 +532,9 @@ namespace giskard
       RotationSpecPtr rotation_;
   };
 
-  typedef typename boost::shared_ptr<ConstructorFrameSpec> ConstructorFrameSpecPtr;
+  typedef typename boost::shared_ptr<FrameConstructorSpec> FrameConstructorSpecPtr;
 
-  class MultiplicationFrameSpec: public FrameSpec
+  class FrameMultiplicationSpec: public FrameSpec
   {
     public:
       const std::vector<FrameSpecPtr>& get_inputs() const
@@ -549,10 +549,10 @@ namespace giskard
 
       virtual bool equals(const Spec& other) const
       {
-        if(!dynamic_cast<const MultiplicationFrameSpec*>(&other))
+        if(!dynamic_cast<const FrameMultiplicationSpec*>(&other))
           return false;
 
-        const MultiplicationFrameSpec* other_p = dynamic_cast<const MultiplicationFrameSpec*>(&other);
+        const FrameMultiplicationSpec* other_p = dynamic_cast<const FrameMultiplicationSpec*>(&other);
 
         if(get_inputs().size() != other_p->get_inputs().size())
           return false;
@@ -600,7 +600,7 @@ namespace giskard
       std::vector<giskard::FrameSpecPtr> inputs_;
   };
 
-  typedef typename boost::shared_ptr<MultiplicationFrameSpec> MultiplicationFrameSpecPtr;
+  typedef typename boost::shared_ptr<FrameMultiplicationSpec> FrameMultiplicationSpecPtr;
 
   class FrameReferenceSpec : public FrameSpec
   {

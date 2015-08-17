@@ -14,32 +14,32 @@ class FrameGenerationTest : public ::testing::Test
 
 TEST_F(FrameGenerationTest, ConstructorFrame)
 {
-  giskard::ConstDoubleSpecPtr rot_axis_x(new giskard::ConstDoubleSpec());
+  giskard::DoubleConstSpecPtr rot_axis_x(new giskard::DoubleConstSpec());
   rot_axis_x->set_value(1.0);
-  giskard::ConstDoubleSpecPtr rot_axis_y(new giskard::ConstDoubleSpec());
+  giskard::DoubleConstSpecPtr rot_axis_y(new giskard::DoubleConstSpec());
   rot_axis_y->set_value(2.0);
-  giskard::ConstDoubleSpecPtr rot_axis_z(new giskard::ConstDoubleSpec());
+  giskard::DoubleConstSpecPtr rot_axis_z(new giskard::DoubleConstSpec());
   rot_axis_z->set_value(3.0);
-  giskard::ConstructorVectorSpecPtr rot_axis(new giskard::ConstructorVectorSpec());
+  giskard::VectorConstructorSpecPtr rot_axis(new giskard::VectorConstructorSpec());
   rot_axis->set(rot_axis_x, rot_axis_y, rot_axis_z);
 
-  giskard::ConstDoubleSpecPtr rot_angle(new giskard::ConstDoubleSpec());
+  giskard::DoubleConstSpecPtr rot_angle(new giskard::DoubleConstSpec());
   rot_angle->set_value(-4.0);
 
   giskard::AxisAngleSpecPtr rot(new giskard::AxisAngleSpec());
   rot->set_axis(rot_axis);
   rot->set_angle(rot_angle);
 
-  giskard::ConstDoubleSpecPtr trans_x(new giskard::ConstDoubleSpec());
-  giskard::ConstDoubleSpecPtr trans_y(new giskard::ConstDoubleSpec());
-  giskard::ConstDoubleSpecPtr trans_z(new giskard::ConstDoubleSpec());
+  giskard::DoubleConstSpecPtr trans_x(new giskard::DoubleConstSpec());
+  giskard::DoubleConstSpecPtr trans_y(new giskard::DoubleConstSpec());
+  giskard::DoubleConstSpecPtr trans_z(new giskard::DoubleConstSpec());
   trans_x->set_value(-0.1);
   trans_y->set_value(-0.2);
   trans_z->set_value(-0.3);
-  giskard::ConstructorVectorSpecPtr trans(new giskard::ConstructorVectorSpec());
+  giskard::VectorConstructorSpecPtr trans(new giskard::VectorConstructorSpec());
   trans->set(trans_x, trans_y, trans_z);
 
-  giskard::ConstructorFrameSpec spec;
+  giskard::FrameConstructorSpec spec;
   spec.set_translation(trans);
   spec.set_rotation(rot);
 
@@ -54,21 +54,21 @@ TEST_F(FrameGenerationTest, ConstructorFrame)
 
 TEST_F(FrameGenerationTest, ConstructorEquality)
 {
-  giskard::ConstDoubleSpecPtr one = giskard::ConstDoubleSpecPtr(new giskard::ConstDoubleSpec());
-  giskard::ConstDoubleSpecPtr zero = giskard::ConstDoubleSpecPtr(new giskard::ConstDoubleSpec());
-  giskard::ConstDoubleSpecPtr pi = giskard::ConstDoubleSpecPtr(new giskard::ConstDoubleSpec());
+  giskard::DoubleConstSpecPtr one = giskard::DoubleConstSpecPtr(new giskard::DoubleConstSpec());
+  giskard::DoubleConstSpecPtr zero = giskard::DoubleConstSpecPtr(new giskard::DoubleConstSpec());
+  giskard::DoubleConstSpecPtr pi = giskard::DoubleConstSpecPtr(new giskard::DoubleConstSpec());
   one->set_value(0.0);
   zero->set_value(1.0);
   pi->set_value(M_PI);
 
-  giskard::ConstructorVectorSpecPtr trans1 = 
-      giskard::ConstructorVectorSpecPtr(new giskard::ConstructorVectorSpec());
-  giskard::ConstructorVectorSpecPtr trans2 = 
-      giskard::ConstructorVectorSpecPtr(new giskard::ConstructorVectorSpec());
-  giskard::ConstructorVectorSpecPtr axis1 = 
-      giskard::ConstructorVectorSpecPtr(new giskard::ConstructorVectorSpec());
-  giskard::ConstructorVectorSpecPtr axis2 = 
-      giskard::ConstructorVectorSpecPtr(new giskard::ConstructorVectorSpec());
+  giskard::VectorConstructorSpecPtr trans1 = 
+      giskard::VectorConstructorSpecPtr(new giskard::VectorConstructorSpec());
+  giskard::VectorConstructorSpecPtr trans2 = 
+      giskard::VectorConstructorSpecPtr(new giskard::VectorConstructorSpec());
+  giskard::VectorConstructorSpecPtr axis1 = 
+      giskard::VectorConstructorSpecPtr(new giskard::VectorConstructorSpec());
+  giskard::VectorConstructorSpecPtr axis2 = 
+      giskard::VectorConstructorSpecPtr(new giskard::VectorConstructorSpec());
   trans1->set(one, one, one);
   trans2->set(zero, zero, one);
   axis1->set(one, zero, zero);
@@ -84,7 +84,7 @@ TEST_F(FrameGenerationTest, ConstructorEquality)
   rot2->set_axis(axis2);
   rot2->set_angle(pi);
   
-  giskard::ConstructorFrameSpec d1, d2, d3, d4, d5;
+  giskard::FrameConstructorSpec d1, d2, d3, d4, d5;
 
   d1.set_rotation(rot1);
   d1.set_translation(trans1);
@@ -112,21 +112,21 @@ TEST_F(FrameGenerationTest, ConstructorEquality)
 
 TEST_F(FrameGenerationTest, Multiplication)
 {
-  giskard::ConstDoubleSpecPtr one = giskard::ConstDoubleSpecPtr(new giskard::ConstDoubleSpec());
-  giskard::ConstDoubleSpecPtr zero = giskard::ConstDoubleSpecPtr(new giskard::ConstDoubleSpec());
-  giskard::ConstDoubleSpecPtr pi = giskard::ConstDoubleSpecPtr(new giskard::ConstDoubleSpec());
+  giskard::DoubleConstSpecPtr one = giskard::DoubleConstSpecPtr(new giskard::DoubleConstSpec());
+  giskard::DoubleConstSpecPtr zero = giskard::DoubleConstSpecPtr(new giskard::DoubleConstSpec());
+  giskard::DoubleConstSpecPtr pi = giskard::DoubleConstSpecPtr(new giskard::DoubleConstSpec());
   one->set_value(1.0);
   zero->set_value(0.0);
   pi->set_value(M_PI);
 
-  giskard::ConstructorVectorSpecPtr trans1 = 
-      giskard::ConstructorVectorSpecPtr(new giskard::ConstructorVectorSpec());
-  giskard::ConstructorVectorSpecPtr trans2 = 
-      giskard::ConstructorVectorSpecPtr(new giskard::ConstructorVectorSpec());
-  giskard::ConstructorVectorSpecPtr axis1 = 
-      giskard::ConstructorVectorSpecPtr(new giskard::ConstructorVectorSpec());
-  giskard::ConstructorVectorSpecPtr axis2 = 
-      giskard::ConstructorVectorSpecPtr(new giskard::ConstructorVectorSpec());
+  giskard::VectorConstructorSpecPtr trans1 = 
+      giskard::VectorConstructorSpecPtr(new giskard::VectorConstructorSpec());
+  giskard::VectorConstructorSpecPtr trans2 = 
+      giskard::VectorConstructorSpecPtr(new giskard::VectorConstructorSpec());
+  giskard::VectorConstructorSpecPtr axis1 = 
+      giskard::VectorConstructorSpecPtr(new giskard::VectorConstructorSpec());
+  giskard::VectorConstructorSpecPtr axis2 = 
+      giskard::VectorConstructorSpecPtr(new giskard::VectorConstructorSpec());
   trans1->set(one, one, one);
   trans2->set(zero, zero, one);
   axis1->set(one, zero, zero);
@@ -142,10 +142,10 @@ TEST_F(FrameGenerationTest, Multiplication)
   rot2->set_axis(axis2);
   rot2->set_angle(pi);
   
-  giskard::ConstructorFrameSpecPtr d1 = 
-      giskard::ConstructorFrameSpecPtr(new giskard::ConstructorFrameSpec());
-  giskard::ConstructorFrameSpecPtr d2 = 
-      giskard::ConstructorFrameSpecPtr(new giskard::ConstructorFrameSpec());
+  giskard::FrameConstructorSpecPtr d1 = 
+      giskard::FrameConstructorSpecPtr(new giskard::FrameConstructorSpec());
+  giskard::FrameConstructorSpecPtr d2 = 
+      giskard::FrameConstructorSpecPtr(new giskard::FrameConstructorSpec());
 
   d1->set_rotation(rot1);
   d1->set_translation(trans1);
@@ -156,7 +156,7 @@ TEST_F(FrameGenerationTest, Multiplication)
   in.push_back(d1);
   in.push_back(d2);
 
-  giskard::MultiplicationFrameSpec m;
+  giskard::FrameMultiplicationSpec m;
   m.set_inputs(in);
 
   KDL::Frame f1 = KDL::Frame(KDL::Rotation::Rot(KDL::Vector(1.0, 0.0, 0.0), 0.0), KDL::Vector(1.0, 1.0, 1.0));
@@ -170,21 +170,21 @@ TEST_F(FrameGenerationTest, Multiplication)
   
 TEST_F(FrameGenerationTest, MultiplicationEquality)
 {
-  giskard::ConstDoubleSpecPtr one = giskard::ConstDoubleSpecPtr(new giskard::ConstDoubleSpec());
-  giskard::ConstDoubleSpecPtr zero = giskard::ConstDoubleSpecPtr(new giskard::ConstDoubleSpec());
-  giskard::ConstDoubleSpecPtr pi = giskard::ConstDoubleSpecPtr(new giskard::ConstDoubleSpec());
+  giskard::DoubleConstSpecPtr one = giskard::DoubleConstSpecPtr(new giskard::DoubleConstSpec());
+  giskard::DoubleConstSpecPtr zero = giskard::DoubleConstSpecPtr(new giskard::DoubleConstSpec());
+  giskard::DoubleConstSpecPtr pi = giskard::DoubleConstSpecPtr(new giskard::DoubleConstSpec());
   one->set_value(0.0);
   zero->set_value(1.0);
   pi->set_value(M_PI);
 
-  giskard::ConstructorVectorSpecPtr trans1 = 
-      giskard::ConstructorVectorSpecPtr(new giskard::ConstructorVectorSpec());
-  giskard::ConstructorVectorSpecPtr trans2 = 
-      giskard::ConstructorVectorSpecPtr(new giskard::ConstructorVectorSpec());
-  giskard::ConstructorVectorSpecPtr axis1 = 
-      giskard::ConstructorVectorSpecPtr(new giskard::ConstructorVectorSpec());
-  giskard::ConstructorVectorSpecPtr axis2 = 
-      giskard::ConstructorVectorSpecPtr(new giskard::ConstructorVectorSpec());
+  giskard::VectorConstructorSpecPtr trans1 = 
+      giskard::VectorConstructorSpecPtr(new giskard::VectorConstructorSpec());
+  giskard::VectorConstructorSpecPtr trans2 = 
+      giskard::VectorConstructorSpecPtr(new giskard::VectorConstructorSpec());
+  giskard::VectorConstructorSpecPtr axis1 = 
+      giskard::VectorConstructorSpecPtr(new giskard::VectorConstructorSpec());
+  giskard::VectorConstructorSpecPtr axis2 = 
+      giskard::VectorConstructorSpecPtr(new giskard::VectorConstructorSpec());
   trans1->set(one, one, one);
   trans2->set(zero, zero, one);
   axis1->set(one, zero, zero);
@@ -195,10 +195,10 @@ TEST_F(FrameGenerationTest, MultiplicationEquality)
   giskard::AxisAngleSpecPtr rot2 =
       giskard::AxisAngleSpecPtr(new giskard::AxisAngleSpec());
   
-  giskard::ConstructorFrameSpecPtr d1 = 
-      giskard::ConstructorFrameSpecPtr(new giskard::ConstructorFrameSpec());
-  giskard::ConstructorFrameSpecPtr d2 = 
-      giskard::ConstructorFrameSpecPtr(new giskard::ConstructorFrameSpec());
+  giskard::FrameConstructorSpecPtr d1 = 
+      giskard::FrameConstructorSpecPtr(new giskard::FrameConstructorSpec());
+  giskard::FrameConstructorSpecPtr d2 = 
+      giskard::FrameConstructorSpecPtr(new giskard::FrameConstructorSpec());
 
   d1->set_rotation(rot1);
   d1->set_translation(trans1);
@@ -214,7 +214,7 @@ TEST_F(FrameGenerationTest, MultiplicationEquality)
   in4.push_back(d2);
   in5.push_back(d1);
 
-  giskard::MultiplicationFrameSpec a1, a2, a3, a4, a5;
+  giskard::FrameMultiplicationSpec a1, a2, a3, a4, a5;
   a1.set_inputs(in1);
   a2.set_inputs(in2);
   a3.set_inputs(in3);

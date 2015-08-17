@@ -14,16 +14,16 @@ class RotationGenerationTest : public ::testing::Test
 
 TEST_F(RotationGenerationTest, AxisAngle)
 {
-  giskard::ConstDoubleSpecPtr x(new giskard::ConstDoubleSpec());
+  giskard::DoubleConstSpecPtr x(new giskard::DoubleConstSpec());
   x->set_value(1.0);
-  giskard::ConstDoubleSpecPtr y(new giskard::ConstDoubleSpec());
+  giskard::DoubleConstSpecPtr y(new giskard::DoubleConstSpec());
   y->set_value(0.0);
-  giskard::ConstDoubleSpecPtr z(new giskard::ConstDoubleSpec());
+  giskard::DoubleConstSpecPtr z(new giskard::DoubleConstSpec());
   z->set_value(0.0);
-  giskard::ConstDoubleSpecPtr angle(new giskard::ConstDoubleSpec());
+  giskard::DoubleConstSpecPtr angle(new giskard::DoubleConstSpec());
   angle->set_value(M_PI/2.0);
 
-  giskard::ConstructorVectorSpecPtr axis(new giskard::ConstructorVectorSpec());
+  giskard::VectorConstructorSpecPtr axis(new giskard::VectorConstructorSpec());
   axis->set(x, y, z);
  
   giskard::AxisAngleSpec spec;
@@ -39,17 +39,17 @@ TEST_F(RotationGenerationTest, AxisAngle)
 
 TEST_F(RotationGenerationTest, AxisAngleEquality)
 {
-  giskard::ConstDoubleSpecPtr x(new giskard::ConstDoubleSpec());
+  giskard::DoubleConstSpecPtr x(new giskard::DoubleConstSpec());
   x->set_value(1.0);
-  giskard::ConstDoubleSpecPtr y(new giskard::ConstDoubleSpec());
+  giskard::DoubleConstSpecPtr y(new giskard::DoubleConstSpec());
   y->set_value(0.0);
-  giskard::ConstDoubleSpecPtr z(new giskard::ConstDoubleSpec());
+  giskard::DoubleConstSpecPtr z(new giskard::DoubleConstSpec());
   z->set_value(0.0);
-  giskard::ConstDoubleSpecPtr angle(new giskard::ConstDoubleSpec());
+  giskard::DoubleConstSpecPtr angle(new giskard::DoubleConstSpec());
   angle->set_value(M_PI/2.0);
 
-  giskard::ConstructorVectorSpecPtr axis1(new giskard::ConstructorVectorSpec());
-  giskard::ConstructorVectorSpecPtr axis2(new giskard::ConstructorVectorSpec());
+  giskard::VectorConstructorSpecPtr axis1(new giskard::VectorConstructorSpec());
+  giskard::VectorConstructorSpecPtr axis2(new giskard::VectorConstructorSpec());
   axis1->set(x, y, z);
   axis2->set(x, x, x);
  

@@ -14,7 +14,7 @@ class DoubleExpressionGenerationTest : public ::testing::Test
 
 TEST_F(DoubleExpressionGenerationTest, Constants)
 {
-  giskard::ConstDoubleSpec descr;
+  giskard::DoubleConstSpec descr;
   giskard::Scope scope;
 
   descr.set_value(1.1);
@@ -29,7 +29,7 @@ TEST_F(DoubleExpressionGenerationTest, Constants)
 
 TEST_F(DoubleExpressionGenerationTest, ConstDoubleEquality)
 {
-  giskard::ConstDoubleSpec d1, d2, d3;
+  giskard::DoubleConstSpec d1, d2, d3;
 
   d1.set_value(1.1);
   d2.set_value(2.0);
@@ -54,7 +54,7 @@ TEST_F(DoubleExpressionGenerationTest, ConstDoubleEquality)
 
 TEST_F(DoubleExpressionGenerationTest, Inputs)
 {
-  giskard::InputDoubleSpec descr;
+  giskard::DoubleInputSpec descr;
   giskard::Scope scope;
 
   descr.set_input_num(2);
@@ -75,7 +75,7 @@ TEST_F(DoubleExpressionGenerationTest, Inputs)
 
 TEST_F(DoubleExpressionGenerationTest, InputEquality)
 {
-  giskard::InputDoubleSpec d1, d2, d3;
+  giskard::DoubleInputSpec d1, d2, d3;
   giskard::Scope scope;
 
   d1.set_input_num(1);
@@ -101,7 +101,7 @@ TEST_F(DoubleExpressionGenerationTest, InputEquality)
 
 TEST_F(DoubleExpressionGenerationTest, ReferenceEquality)
 {
-  giskard::ReferenceDoubleSpec d1, d2, d3;
+  giskard::DoubleReferenceSpec d1, d2, d3;
   giskard::Scope scope;
 
   d1.set_reference_name("my_var"); 
@@ -127,14 +127,14 @@ TEST_F(DoubleExpressionGenerationTest, ReferenceEquality)
 
 TEST_F(DoubleExpressionGenerationTest, Addition)
 {
-  giskard::ConstDoubleSpecPtr const_descr1(new
-      giskard::ConstDoubleSpec());
-  giskard::ConstDoubleSpecPtr const_descr2(new
-      giskard::ConstDoubleSpec());
-  giskard::InputDoubleSpecPtr input_descr(new
-      giskard::InputDoubleSpec());
+  giskard::DoubleConstSpecPtr const_descr1(new
+      giskard::DoubleConstSpec());
+  giskard::DoubleConstSpecPtr const_descr2(new
+      giskard::DoubleConstSpec());
+  giskard::DoubleInputSpecPtr input_descr(new
+      giskard::DoubleInputSpec());
 
-  giskard::AdditionDoubleSpec add_descr;
+  giskard::DoubleAdditionSpec add_descr;
   giskard::Scope scope;
 
   const_descr1->set_value(-0.7);
@@ -170,9 +170,9 @@ TEST_F(DoubleExpressionGenerationTest, Addition)
 
 TEST_F(DoubleExpressionGenerationTest, AdditionEquality)
 {
-  giskard::ConstDoubleSpecPtr dd1(new giskard::ConstDoubleSpec());
-  giskard::ConstDoubleSpecPtr dd2(new giskard::ConstDoubleSpec());
-  giskard::InputDoubleSpecPtr dd3(new giskard::InputDoubleSpec());
+  giskard::DoubleConstSpecPtr dd1(new giskard::DoubleConstSpec());
+  giskard::DoubleConstSpecPtr dd2(new giskard::DoubleConstSpec());
+  giskard::DoubleInputSpecPtr dd3(new giskard::DoubleInputSpec());
 
   dd1->set_value(1.0);
   dd2->set_value(2.0);
@@ -186,7 +186,7 @@ TEST_F(DoubleExpressionGenerationTest, AdditionEquality)
   in4.push_back(dd3);
   in5.push_back(dd1);
 
-  giskard::AdditionDoubleSpec a1, a2, a3, a4, a5;
+  giskard::DoubleAdditionSpec a1, a2, a3, a4, a5;
   a1.set_inputs(in1);
   a2.set_inputs(in2);
   a3.set_inputs(in3);

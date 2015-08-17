@@ -16,24 +16,24 @@ TEST_F(YamlParserTest, ConstDoubleExpression)
 
   // parsing to const double spec
   YAML::Node node = YAML::Load(c);
-  ASSERT_NO_THROW(node.as<giskard::ConstDoubleSpecPtr>());
-  giskard::ConstDoubleSpecPtr s1 = node.as<giskard::ConstDoubleSpecPtr>();
+  ASSERT_NO_THROW(node.as<giskard::DoubleConstSpecPtr>());
+  giskard::DoubleConstSpecPtr s1 = node.as<giskard::DoubleConstSpecPtr>();
 
   EXPECT_DOUBLE_EQ(1.1, s1->get_value());
 
   // roundtrip with generation
   YAML::Node node2;
   node2 = s1;
-  ASSERT_NO_THROW(node2.as<giskard::ConstDoubleSpecPtr>());
-  giskard::ConstDoubleSpecPtr s2 = node2.as<giskard::ConstDoubleSpecPtr>();
+  ASSERT_NO_THROW(node2.as<giskard::DoubleConstSpecPtr>());
+  giskard::DoubleConstSpecPtr s2 = node2.as<giskard::DoubleConstSpecPtr>();
 
   EXPECT_DOUBLE_EQ(s1->get_value(), s2->get_value());
 
   // parsing to double spec
   ASSERT_NO_THROW(node.as<giskard::DoubleSpecPtr>());
   giskard::DoubleSpecPtr s3 = node.as<giskard::DoubleSpecPtr>();
-  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::ConstDoubleSpec>(s3).get());
-  giskard::ConstDoubleSpecPtr s4 = boost::dynamic_pointer_cast<giskard::ConstDoubleSpec>(s3);
+  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::DoubleConstSpec>(s3).get());
+  giskard::DoubleConstSpecPtr s4 = boost::dynamic_pointer_cast<giskard::DoubleConstSpec>(s3);
 
   EXPECT_DOUBLE_EQ(1.1, s4->get_value());
 
@@ -42,8 +42,8 @@ TEST_F(YamlParserTest, ConstDoubleExpression)
   node3 = s3;
   ASSERT_NO_THROW(node3.as<giskard::DoubleSpecPtr>());
   giskard::DoubleSpecPtr s5 = node3.as<giskard::DoubleSpecPtr>();
-  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::ConstDoubleSpec>(s5).get());
-  giskard::ConstDoubleSpecPtr s6 = boost::dynamic_pointer_cast<giskard::ConstDoubleSpec>(s5);
+  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::DoubleConstSpec>(s5).get());
+  giskard::DoubleConstSpecPtr s6 = boost::dynamic_pointer_cast<giskard::DoubleConstSpec>(s5);
 
   EXPECT_DOUBLE_EQ(1.1, s6->get_value());
 };
@@ -54,24 +54,24 @@ TEST_F(YamlParserTest, InputExpression)
 
   // parsing input double
   YAML::Node node = YAML::Load(i);
-  ASSERT_NO_THROW(node.as<giskard::InputDoubleSpecPtr>());
-  giskard::InputDoubleSpecPtr s1 = node.as<giskard::InputDoubleSpecPtr>();
+  ASSERT_NO_THROW(node.as<giskard::DoubleInputSpecPtr>());
+  giskard::DoubleInputSpecPtr s1 = node.as<giskard::DoubleInputSpecPtr>();
 
   EXPECT_EQ(2, s1->get_input_num());
 
   // roundtrip with generation
   YAML::Node node2;
   node2 = s1;
-  ASSERT_NO_THROW(node2.as<giskard::InputDoubleSpecPtr>());
-  giskard::InputDoubleSpecPtr s2 = node2.as<giskard::InputDoubleSpecPtr>();
+  ASSERT_NO_THROW(node2.as<giskard::DoubleInputSpecPtr>());
+  giskard::DoubleInputSpecPtr s2 = node2.as<giskard::DoubleInputSpecPtr>();
 
   EXPECT_EQ(s1->get_input_num(), s2->get_input_num());
 
   // parsing to double spec
   ASSERT_NO_THROW(node.as<giskard::DoubleSpecPtr>());
   giskard::DoubleSpecPtr s3 = node.as<giskard::DoubleSpecPtr>();
-  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::InputDoubleSpec>(s3).get());
-  giskard::InputDoubleSpecPtr s4 = boost::dynamic_pointer_cast<giskard::InputDoubleSpec>(s3);
+  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::DoubleInputSpec>(s3).get());
+  giskard::DoubleInputSpecPtr s4 = boost::dynamic_pointer_cast<giskard::DoubleInputSpec>(s3);
 
   EXPECT_EQ(2, s4->get_input_num());
 
@@ -80,70 +80,70 @@ TEST_F(YamlParserTest, InputExpression)
   node3 = s3;
   ASSERT_NO_THROW(node3.as<giskard::DoubleSpecPtr>());
   giskard::DoubleSpecPtr s5 = node3.as<giskard::DoubleSpecPtr>();
-  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::InputDoubleSpec>(s5).get());
-  giskard::InputDoubleSpecPtr s6 = boost::dynamic_pointer_cast<giskard::InputDoubleSpec>(s5);
+  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::DoubleInputSpec>(s5).get());
+  giskard::DoubleInputSpecPtr s6 = boost::dynamic_pointer_cast<giskard::DoubleInputSpec>(s5);
 
   EXPECT_EQ(2, s6->get_input_num());
 };
 
-TEST_F(YamlParserTest, ConstructorVectorSpec)
+TEST_F(YamlParserTest, VectorConstructorSpec)
 {
   std::string v = "{type: VECTOR3, inputs: [1.1, 2.2, 3.3]}";
 
   // parsing constructor vector
   YAML::Node node = YAML::Load(v);
-  ASSERT_NO_THROW(node.as<giskard::ConstructorVectorSpecPtr>());
-  giskard::ConstructorVectorSpecPtr s1 = node.as<giskard::ConstructorVectorSpecPtr>();
+  ASSERT_NO_THROW(node.as<giskard::VectorConstructorSpecPtr>());
+  giskard::VectorConstructorSpecPtr s1 = node.as<giskard::VectorConstructorSpecPtr>();
 
-  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::ConstDoubleSpec>(s1->get_x()).get());
-  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::ConstDoubleSpec>(s1->get_y()).get());
-  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::ConstDoubleSpec>(s1->get_z()).get());
+  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::DoubleConstSpec>(s1->get_x()).get());
+  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::DoubleConstSpec>(s1->get_y()).get());
+  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::DoubleConstSpec>(s1->get_z()).get());
 
-  giskard::ConstDoubleSpecPtr x = boost::dynamic_pointer_cast<giskard::ConstDoubleSpec>(s1->get_x());
+  giskard::DoubleConstSpecPtr x = boost::dynamic_pointer_cast<giskard::DoubleConstSpec>(s1->get_x());
   EXPECT_DOUBLE_EQ(x->get_value(), 1.1);
 
-  giskard::ConstDoubleSpecPtr y = boost::dynamic_pointer_cast<giskard::ConstDoubleSpec>(s1->get_y());
+  giskard::DoubleConstSpecPtr y = boost::dynamic_pointer_cast<giskard::DoubleConstSpec>(s1->get_y());
   EXPECT_DOUBLE_EQ(y->get_value(), 2.2);
 
-  giskard::ConstDoubleSpecPtr z = boost::dynamic_pointer_cast<giskard::ConstDoubleSpec>(s1->get_z());
+  giskard::DoubleConstSpecPtr z = boost::dynamic_pointer_cast<giskard::DoubleConstSpec>(s1->get_z());
   EXPECT_DOUBLE_EQ(z->get_value(), 3.3);
 
   // roundtrip with generation
   YAML::Node node2;
   node2 = s1;
-  ASSERT_NO_THROW(node2.as<giskard::ConstructorVectorSpecPtr>());
-  giskard::ConstructorVectorSpecPtr s2 = node2.as<giskard::ConstructorVectorSpecPtr>();
+  ASSERT_NO_THROW(node2.as<giskard::VectorConstructorSpecPtr>());
+  giskard::VectorConstructorSpecPtr s2 = node2.as<giskard::VectorConstructorSpecPtr>();
 
-  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::ConstDoubleSpec>(s2->get_x()).get());
-  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::ConstDoubleSpec>(s2->get_y()).get());
-  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::ConstDoubleSpec>(s2->get_z()).get());
+  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::DoubleConstSpec>(s2->get_x()).get());
+  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::DoubleConstSpec>(s2->get_y()).get());
+  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::DoubleConstSpec>(s2->get_z()).get());
 
-  x = boost::dynamic_pointer_cast<giskard::ConstDoubleSpec>(s2->get_x());
+  x = boost::dynamic_pointer_cast<giskard::DoubleConstSpec>(s2->get_x());
   EXPECT_DOUBLE_EQ(x->get_value(), 1.1);
 
-  y = boost::dynamic_pointer_cast<giskard::ConstDoubleSpec>(s2->get_y());
+  y = boost::dynamic_pointer_cast<giskard::DoubleConstSpec>(s2->get_y());
   EXPECT_DOUBLE_EQ(y->get_value(), 2.2);
 
-  z = boost::dynamic_pointer_cast<giskard::ConstDoubleSpec>(s2->get_z());
+  z = boost::dynamic_pointer_cast<giskard::DoubleConstSpec>(s2->get_z());
   EXPECT_DOUBLE_EQ(z->get_value(), 3.3);
 
   // parsing to vector spec
   ASSERT_NO_THROW(node.as<giskard::VectorSpecPtr>());
   giskard::VectorSpecPtr s3 = node.as<giskard::VectorSpecPtr>();
-  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::ConstructorVectorSpec>(s3).get());
-  giskard::ConstructorVectorSpecPtr s4 = boost::dynamic_pointer_cast<giskard::ConstructorVectorSpec>(s3);
+  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::VectorConstructorSpec>(s3).get());
+  giskard::VectorConstructorSpecPtr s4 = boost::dynamic_pointer_cast<giskard::VectorConstructorSpec>(s3);
 
-  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::ConstDoubleSpec>(s4->get_x()).get());
-  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::ConstDoubleSpec>(s4->get_y()).get());
-  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::ConstDoubleSpec>(s4->get_z()).get());
+  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::DoubleConstSpec>(s4->get_x()).get());
+  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::DoubleConstSpec>(s4->get_y()).get());
+  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::DoubleConstSpec>(s4->get_z()).get());
 
-  x = boost::dynamic_pointer_cast<giskard::ConstDoubleSpec>(s4->get_x());
+  x = boost::dynamic_pointer_cast<giskard::DoubleConstSpec>(s4->get_x());
   EXPECT_DOUBLE_EQ(x->get_value(), 1.1);
 
-  y = boost::dynamic_pointer_cast<giskard::ConstDoubleSpec>(s4->get_y());
+  y = boost::dynamic_pointer_cast<giskard::DoubleConstSpec>(s4->get_y());
   EXPECT_DOUBLE_EQ(y->get_value(), 2.2);
 
-  z = boost::dynamic_pointer_cast<giskard::ConstDoubleSpec>(s4->get_z());
+  z = boost::dynamic_pointer_cast<giskard::DoubleConstSpec>(s4->get_z());
   EXPECT_DOUBLE_EQ(z->get_value(), 3.3);
 
   // roundtrip with generation to double spec
@@ -151,20 +151,20 @@ TEST_F(YamlParserTest, ConstructorVectorSpec)
   node3 = s3;
   ASSERT_NO_THROW(node3.as<giskard::VectorSpecPtr>());
   giskard::VectorSpecPtr s5 = node3.as<giskard::VectorSpecPtr>();
-  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::ConstructorVectorSpec>(s5).get());
-  giskard::ConstructorVectorSpecPtr s6 = boost::dynamic_pointer_cast<giskard::ConstructorVectorSpec>(s5);
+  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::VectorConstructorSpec>(s5).get());
+  giskard::VectorConstructorSpecPtr s6 = boost::dynamic_pointer_cast<giskard::VectorConstructorSpec>(s5);
 
-  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::ConstDoubleSpec>(s6->get_x()).get());
-  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::ConstDoubleSpec>(s6->get_y()).get());
-  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::ConstDoubleSpec>(s6->get_z()).get());
+  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::DoubleConstSpec>(s6->get_x()).get());
+  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::DoubleConstSpec>(s6->get_y()).get());
+  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::DoubleConstSpec>(s6->get_z()).get());
 
-  x = boost::dynamic_pointer_cast<giskard::ConstDoubleSpec>(s6->get_x());
+  x = boost::dynamic_pointer_cast<giskard::DoubleConstSpec>(s6->get_x());
   EXPECT_DOUBLE_EQ(x->get_value(), 1.1);
 
-  y = boost::dynamic_pointer_cast<giskard::ConstDoubleSpec>(s6->get_y());
+  y = boost::dynamic_pointer_cast<giskard::DoubleConstSpec>(s6->get_y());
   EXPECT_DOUBLE_EQ(y->get_value(), 2.2);
 
-  z = boost::dynamic_pointer_cast<giskard::ConstDoubleSpec>(s6->get_z());
+  z = boost::dynamic_pointer_cast<giskard::DoubleConstSpec>(s6->get_z());
   EXPECT_DOUBLE_EQ(z->get_value(), 3.3);
 };
 
@@ -178,13 +178,13 @@ TEST_F(YamlParserTest, AxisAngleSpec)
   ASSERT_NO_THROW(node.as<giskard::AxisAngleSpecPtr>());
   giskard::AxisAngleSpecPtr s1 = node.as<giskard::AxisAngleSpecPtr>();
 
-  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::InputDoubleSpec>(s1->get_angle()).get());
-  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::ConstructorVectorSpec>(s1->get_axis()).get());
+  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::DoubleInputSpec>(s1->get_angle()).get());
+  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::VectorConstructorSpec>(s1->get_axis()).get());
 
-  giskard::InputDoubleSpecPtr angle = 
-      boost::dynamic_pointer_cast<giskard::InputDoubleSpec>(s1->get_angle());
-  giskard::ConstructorVectorSpecPtr axis = 
-      boost::dynamic_pointer_cast<giskard::ConstructorVectorSpec>(s1->get_axis());
+  giskard::DoubleInputSpecPtr angle = 
+      boost::dynamic_pointer_cast<giskard::DoubleInputSpec>(s1->get_angle());
+  giskard::VectorConstructorSpecPtr axis = 
+      boost::dynamic_pointer_cast<giskard::VectorConstructorSpec>(s1->get_axis());
 
   EXPECT_EQ(angle->get_input_num(), 3);
 
@@ -192,12 +192,12 @@ TEST_F(YamlParserTest, AxisAngleSpec)
   ASSERT_TRUE(axis->get_y().get());
   ASSERT_TRUE(axis->get_z().get());
 
-  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::ConstDoubleSpec>(axis->get_x()).get());
-  EXPECT_DOUBLE_EQ(boost::dynamic_pointer_cast<giskard::ConstDoubleSpec>(axis->get_x())->get_value(), 1.0);
-  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::ConstDoubleSpec>(axis->get_y()).get());
-  EXPECT_DOUBLE_EQ(boost::dynamic_pointer_cast<giskard::ConstDoubleSpec>(axis->get_y())->get_value(), 0.0);
-  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::ConstDoubleSpec>(axis->get_z()).get());
-  EXPECT_DOUBLE_EQ(boost::dynamic_pointer_cast<giskard::ConstDoubleSpec>(axis->get_z())->get_value(), 0.0);
+  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::DoubleConstSpec>(axis->get_x()).get());
+  EXPECT_DOUBLE_EQ(boost::dynamic_pointer_cast<giskard::DoubleConstSpec>(axis->get_x())->get_value(), 1.0);
+  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::DoubleConstSpec>(axis->get_y()).get());
+  EXPECT_DOUBLE_EQ(boost::dynamic_pointer_cast<giskard::DoubleConstSpec>(axis->get_y())->get_value(), 0.0);
+  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::DoubleConstSpec>(axis->get_z()).get());
+  EXPECT_DOUBLE_EQ(boost::dynamic_pointer_cast<giskard::DoubleConstSpec>(axis->get_z())->get_value(), 0.0);
 
   // roundtrip with generation
   YAML::Node node2;
@@ -206,11 +206,11 @@ TEST_F(YamlParserTest, AxisAngleSpec)
   ASSERT_NO_THROW(node2.as<giskard::AxisAngleSpecPtr>());
   giskard::AxisAngleSpecPtr s2 = node2.as<giskard::AxisAngleSpecPtr>();
 
-  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::InputDoubleSpec>(s2->get_angle()).get());
-  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::ConstructorVectorSpec>(s2->get_axis()).get());
+  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::DoubleInputSpec>(s2->get_angle()).get());
+  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::VectorConstructorSpec>(s2->get_axis()).get());
 
-  angle = boost::dynamic_pointer_cast<giskard::InputDoubleSpec>(s2->get_angle());
-  axis = boost::dynamic_pointer_cast<giskard::ConstructorVectorSpec>(s2->get_axis());
+  angle = boost::dynamic_pointer_cast<giskard::DoubleInputSpec>(s2->get_angle());
+  axis = boost::dynamic_pointer_cast<giskard::VectorConstructorSpec>(s2->get_axis());
 
   EXPECT_EQ(angle->get_input_num(), 3);
 
@@ -218,12 +218,12 @@ TEST_F(YamlParserTest, AxisAngleSpec)
   ASSERT_TRUE(axis->get_y().get());
   ASSERT_TRUE(axis->get_z().get());
 
-  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::ConstDoubleSpec>(axis->get_x()).get());
-  EXPECT_DOUBLE_EQ(boost::dynamic_pointer_cast<giskard::ConstDoubleSpec>(axis->get_x())->get_value(), 1.0);
-  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::ConstDoubleSpec>(axis->get_y()).get());
-  EXPECT_DOUBLE_EQ(boost::dynamic_pointer_cast<giskard::ConstDoubleSpec>(axis->get_y())->get_value(), 0.0);
-  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::ConstDoubleSpec>(axis->get_z()).get());
-  EXPECT_DOUBLE_EQ(boost::dynamic_pointer_cast<giskard::ConstDoubleSpec>(axis->get_z())->get_value(), 0.0);
+  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::DoubleConstSpec>(axis->get_x()).get());
+  EXPECT_DOUBLE_EQ(boost::dynamic_pointer_cast<giskard::DoubleConstSpec>(axis->get_x())->get_value(), 1.0);
+  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::DoubleConstSpec>(axis->get_y()).get());
+  EXPECT_DOUBLE_EQ(boost::dynamic_pointer_cast<giskard::DoubleConstSpec>(axis->get_y())->get_value(), 0.0);
+  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::DoubleConstSpec>(axis->get_z()).get());
+  EXPECT_DOUBLE_EQ(boost::dynamic_pointer_cast<giskard::DoubleConstSpec>(axis->get_z())->get_value(), 0.0);
 
   // parsing to rotation spec
   ASSERT_NO_THROW(node.as<giskard::RotationSpecPtr>());
@@ -232,11 +232,11 @@ TEST_F(YamlParserTest, AxisAngleSpec)
   ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::AxisAngleSpec>(s3).get());
   giskard::AxisAngleSpecPtr s4 = boost::dynamic_pointer_cast<giskard::AxisAngleSpec>(s3);
 
-  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::InputDoubleSpec>(s4->get_angle()).get());
-  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::ConstructorVectorSpec>(s4->get_axis()).get());
+  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::DoubleInputSpec>(s4->get_angle()).get());
+  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::VectorConstructorSpec>(s4->get_axis()).get());
 
-  angle = boost::dynamic_pointer_cast<giskard::InputDoubleSpec>(s4->get_angle());
-  axis = boost::dynamic_pointer_cast<giskard::ConstructorVectorSpec>(s4->get_axis());
+  angle = boost::dynamic_pointer_cast<giskard::DoubleInputSpec>(s4->get_angle());
+  axis = boost::dynamic_pointer_cast<giskard::VectorConstructorSpec>(s4->get_axis());
 
   EXPECT_EQ(angle->get_input_num(), 3);
 
@@ -244,12 +244,12 @@ TEST_F(YamlParserTest, AxisAngleSpec)
   ASSERT_TRUE(axis->get_y().get());
   ASSERT_TRUE(axis->get_z().get());
 
-  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::ConstDoubleSpec>(axis->get_x()).get());
-  EXPECT_DOUBLE_EQ(boost::dynamic_pointer_cast<giskard::ConstDoubleSpec>(axis->get_x())->get_value(), 1.0);
-  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::ConstDoubleSpec>(axis->get_y()).get());
-  EXPECT_DOUBLE_EQ(boost::dynamic_pointer_cast<giskard::ConstDoubleSpec>(axis->get_y())->get_value(), 0.0);
-  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::ConstDoubleSpec>(axis->get_z()).get());
-  EXPECT_DOUBLE_EQ(boost::dynamic_pointer_cast<giskard::ConstDoubleSpec>(axis->get_z())->get_value(), 0.0);
+  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::DoubleConstSpec>(axis->get_x()).get());
+  EXPECT_DOUBLE_EQ(boost::dynamic_pointer_cast<giskard::DoubleConstSpec>(axis->get_x())->get_value(), 1.0);
+  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::DoubleConstSpec>(axis->get_y()).get());
+  EXPECT_DOUBLE_EQ(boost::dynamic_pointer_cast<giskard::DoubleConstSpec>(axis->get_y())->get_value(), 0.0);
+  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::DoubleConstSpec>(axis->get_z()).get());
+  EXPECT_DOUBLE_EQ(boost::dynamic_pointer_cast<giskard::DoubleConstSpec>(axis->get_z())->get_value(), 0.0);
 
   // roundtrip with generation and parsing of rotation specification
   YAML::Node node3;
@@ -261,11 +261,11 @@ TEST_F(YamlParserTest, AxisAngleSpec)
   ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::AxisAngleSpec>(s5).get());
   giskard::AxisAngleSpecPtr s6 = boost::dynamic_pointer_cast<giskard::AxisAngleSpec>(s5);
 
-  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::InputDoubleSpec>(s6->get_angle()).get());
-  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::ConstructorVectorSpec>(s6->get_axis()).get());
+  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::DoubleInputSpec>(s6->get_angle()).get());
+  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::VectorConstructorSpec>(s6->get_axis()).get());
 
-  angle = boost::dynamic_pointer_cast<giskard::InputDoubleSpec>(s6->get_angle());
-  axis = boost::dynamic_pointer_cast<giskard::ConstructorVectorSpec>(s6->get_axis());
+  angle = boost::dynamic_pointer_cast<giskard::DoubleInputSpec>(s6->get_angle());
+  axis = boost::dynamic_pointer_cast<giskard::VectorConstructorSpec>(s6->get_axis());
 
   EXPECT_EQ(angle->get_input_num(), 3);
 
@@ -273,15 +273,15 @@ TEST_F(YamlParserTest, AxisAngleSpec)
   ASSERT_TRUE(axis->get_y().get());
   ASSERT_TRUE(axis->get_z().get());
 
-  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::ConstDoubleSpec>(axis->get_x()).get());
-  EXPECT_DOUBLE_EQ(boost::dynamic_pointer_cast<giskard::ConstDoubleSpec>(axis->get_x())->get_value(), 1.0);
-  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::ConstDoubleSpec>(axis->get_y()).get());
-  EXPECT_DOUBLE_EQ(boost::dynamic_pointer_cast<giskard::ConstDoubleSpec>(axis->get_y())->get_value(), 0.0);
-  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::ConstDoubleSpec>(axis->get_z()).get());
-  EXPECT_DOUBLE_EQ(boost::dynamic_pointer_cast<giskard::ConstDoubleSpec>(axis->get_z())->get_value(), 0.0);
+  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::DoubleConstSpec>(axis->get_x()).get());
+  EXPECT_DOUBLE_EQ(boost::dynamic_pointer_cast<giskard::DoubleConstSpec>(axis->get_x())->get_value(), 1.0);
+  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::DoubleConstSpec>(axis->get_y()).get());
+  EXPECT_DOUBLE_EQ(boost::dynamic_pointer_cast<giskard::DoubleConstSpec>(axis->get_y())->get_value(), 0.0);
+  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::DoubleConstSpec>(axis->get_z()).get());
+  EXPECT_DOUBLE_EQ(boost::dynamic_pointer_cast<giskard::DoubleConstSpec>(axis->get_z())->get_value(), 0.0);
 };
 
-TEST_F(YamlParserTest, ConstructorFrameSpec)
+TEST_F(YamlParserTest, FrameConstructorSpec)
 {
   std::string r = "{type: ROTATION, axis: {type: VECTOR3, inputs: [0.0, -2.0, 0.0]}, angle: " + boost::lexical_cast<std::string>(M_PI/-2.0) + "}";
   std::string t = "{type: VECTOR3, inputs: [1.1, 2.2, 3.3]}";
@@ -290,139 +290,139 @@ TEST_F(YamlParserTest, ConstructorFrameSpec)
   // parsing into axis angle specification
   YAML::Node node = YAML::Load(f);
 
-  ASSERT_NO_THROW(node.as<giskard::ConstructorFrameSpecPtr>());
-  giskard::ConstructorFrameSpecPtr s1 = node.as<giskard::ConstructorFrameSpecPtr>();
+  ASSERT_NO_THROW(node.as<giskard::FrameConstructorSpecPtr>());
+  giskard::FrameConstructorSpecPtr s1 = node.as<giskard::FrameConstructorSpecPtr>();
 
   ASSERT_TRUE(s1->get_rotation().get());
   ASSERT_TRUE(s1->get_translation().get());
   ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::AxisAngleSpec>(s1->get_rotation()).get());
-  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::ConstructorVectorSpec>(s1->get_translation()).get());
+  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::VectorConstructorSpec>(s1->get_translation()).get());
   giskard::AxisAngleSpecPtr rot =
       boost::dynamic_pointer_cast<giskard::AxisAngleSpec>(s1->get_rotation());
-  giskard::ConstructorVectorSpecPtr trans =
-      boost::dynamic_pointer_cast<giskard::ConstructorVectorSpec>(s1->get_translation());
+  giskard::VectorConstructorSpecPtr trans =
+      boost::dynamic_pointer_cast<giskard::VectorConstructorSpec>(s1->get_translation());
 
   ASSERT_TRUE(rot->get_axis().get());
   ASSERT_TRUE(rot->get_angle().get());
-  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::ConstructorVectorSpec>(rot->get_axis()).get());
-  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::ConstDoubleSpec>(rot->get_angle()).get());
-  giskard::ConstructorVectorSpecPtr rot_axis = 
-      boost::dynamic_pointer_cast<giskard::ConstructorVectorSpec>(rot->get_axis());
-  giskard::ConstDoubleSpecPtr rot_angle =
-      boost::dynamic_pointer_cast<giskard::ConstDoubleSpec>(rot->get_angle());
+  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::VectorConstructorSpec>(rot->get_axis()).get());
+  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::DoubleConstSpec>(rot->get_angle()).get());
+  giskard::VectorConstructorSpecPtr rot_axis = 
+      boost::dynamic_pointer_cast<giskard::VectorConstructorSpec>(rot->get_axis());
+  giskard::DoubleConstSpecPtr rot_angle =
+      boost::dynamic_pointer_cast<giskard::DoubleConstSpec>(rot->get_angle());
 
   ASSERT_TRUE(rot_axis->get_x().get());
   ASSERT_TRUE(rot_axis->get_y().get());
   ASSERT_TRUE(rot_axis->get_z().get());
-  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::ConstDoubleSpec>(rot_axis->get_x()).get());
-  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::ConstDoubleSpec>(rot_axis->get_y()).get());
-  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::ConstDoubleSpec>(rot_axis->get_z()).get());
-  EXPECT_DOUBLE_EQ(boost::dynamic_pointer_cast<giskard::ConstDoubleSpec>(rot_axis->get_x())->get_value(), 0.0);
-  EXPECT_DOUBLE_EQ(boost::dynamic_pointer_cast<giskard::ConstDoubleSpec>(rot_axis->get_y())->get_value(), -2.0);
-  EXPECT_DOUBLE_EQ(boost::dynamic_pointer_cast<giskard::ConstDoubleSpec>(rot_axis->get_z())->get_value(), 0.0);
+  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::DoubleConstSpec>(rot_axis->get_x()).get());
+  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::DoubleConstSpec>(rot_axis->get_y()).get());
+  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::DoubleConstSpec>(rot_axis->get_z()).get());
+  EXPECT_DOUBLE_EQ(boost::dynamic_pointer_cast<giskard::DoubleConstSpec>(rot_axis->get_x())->get_value(), 0.0);
+  EXPECT_DOUBLE_EQ(boost::dynamic_pointer_cast<giskard::DoubleConstSpec>(rot_axis->get_y())->get_value(), -2.0);
+  EXPECT_DOUBLE_EQ(boost::dynamic_pointer_cast<giskard::DoubleConstSpec>(rot_axis->get_z())->get_value(), 0.0);
 
-  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::ConstDoubleSpec>(rot_angle).get());
-  EXPECT_DOUBLE_EQ(boost::dynamic_pointer_cast<giskard::ConstDoubleSpec>(rot_angle)->get_value(), M_PI/-2.0);
+  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::DoubleConstSpec>(rot_angle).get());
+  EXPECT_DOUBLE_EQ(boost::dynamic_pointer_cast<giskard::DoubleConstSpec>(rot_angle)->get_value(), M_PI/-2.0);
 
   ASSERT_TRUE(trans->get_x().get());
   ASSERT_TRUE(trans->get_y().get());
   ASSERT_TRUE(trans->get_z().get());
-  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::ConstDoubleSpec>(trans->get_x()).get());
-  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::ConstDoubleSpec>(trans->get_y()).get());
-  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::ConstDoubleSpec>(trans->get_z()).get());
-  EXPECT_DOUBLE_EQ(boost::dynamic_pointer_cast<giskard::ConstDoubleSpec>(trans->get_x())->get_value(), 1.1);
-  EXPECT_DOUBLE_EQ(boost::dynamic_pointer_cast<giskard::ConstDoubleSpec>(trans->get_y())->get_value(), 2.2);
-  EXPECT_DOUBLE_EQ(boost::dynamic_pointer_cast<giskard::ConstDoubleSpec>(trans->get_z())->get_value(), 3.3);
+  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::DoubleConstSpec>(trans->get_x()).get());
+  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::DoubleConstSpec>(trans->get_y()).get());
+  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::DoubleConstSpec>(trans->get_z()).get());
+  EXPECT_DOUBLE_EQ(boost::dynamic_pointer_cast<giskard::DoubleConstSpec>(trans->get_x())->get_value(), 1.1);
+  EXPECT_DOUBLE_EQ(boost::dynamic_pointer_cast<giskard::DoubleConstSpec>(trans->get_y())->get_value(), 2.2);
+  EXPECT_DOUBLE_EQ(boost::dynamic_pointer_cast<giskard::DoubleConstSpec>(trans->get_z())->get_value(), 3.3);
 
   // roundtrip with generation
   YAML::Node node2;
   node2 = s1;
 
-  ASSERT_NO_THROW(node2.as<giskard::ConstructorFrameSpecPtr>());
-  giskard::ConstructorFrameSpecPtr s2 = node2.as<giskard::ConstructorFrameSpecPtr>();
+  ASSERT_NO_THROW(node2.as<giskard::FrameConstructorSpecPtr>());
+  giskard::FrameConstructorSpecPtr s2 = node2.as<giskard::FrameConstructorSpecPtr>();
 
   ASSERT_TRUE(s2->get_rotation().get());
   ASSERT_TRUE(s2->get_translation().get());
   ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::AxisAngleSpec>(s2->get_rotation()).get());
-  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::ConstructorVectorSpec>(s2->get_translation()).get());
+  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::VectorConstructorSpec>(s2->get_translation()).get());
   rot = boost::dynamic_pointer_cast<giskard::AxisAngleSpec>(s2->get_rotation());
-  trans = boost::dynamic_pointer_cast<giskard::ConstructorVectorSpec>(s2->get_translation());
+  trans = boost::dynamic_pointer_cast<giskard::VectorConstructorSpec>(s2->get_translation());
 
   ASSERT_TRUE(rot->get_axis().get());
   ASSERT_TRUE(rot->get_angle().get());
-  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::ConstructorVectorSpec>(rot->get_axis()).get());
-  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::ConstDoubleSpec>(rot->get_angle()).get());
-  rot_axis = boost::dynamic_pointer_cast<giskard::ConstructorVectorSpec>(rot->get_axis());
-  rot_angle = boost::dynamic_pointer_cast<giskard::ConstDoubleSpec>(rot->get_angle());
+  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::VectorConstructorSpec>(rot->get_axis()).get());
+  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::DoubleConstSpec>(rot->get_angle()).get());
+  rot_axis = boost::dynamic_pointer_cast<giskard::VectorConstructorSpec>(rot->get_axis());
+  rot_angle = boost::dynamic_pointer_cast<giskard::DoubleConstSpec>(rot->get_angle());
 
   ASSERT_TRUE(rot_axis->get_x().get());
   ASSERT_TRUE(rot_axis->get_y().get());
   ASSERT_TRUE(rot_axis->get_z().get());
-  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::ConstDoubleSpec>(rot_axis->get_x()).get());
-  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::ConstDoubleSpec>(rot_axis->get_y()).get());
-  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::ConstDoubleSpec>(rot_axis->get_z()).get());
-  EXPECT_DOUBLE_EQ(boost::dynamic_pointer_cast<giskard::ConstDoubleSpec>(rot_axis->get_x())->get_value(), 0.0);
-  EXPECT_DOUBLE_EQ(boost::dynamic_pointer_cast<giskard::ConstDoubleSpec>(rot_axis->get_y())->get_value(), -2.0);
-  EXPECT_DOUBLE_EQ(boost::dynamic_pointer_cast<giskard::ConstDoubleSpec>(rot_axis->get_z())->get_value(), 0.0);
+  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::DoubleConstSpec>(rot_axis->get_x()).get());
+  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::DoubleConstSpec>(rot_axis->get_y()).get());
+  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::DoubleConstSpec>(rot_axis->get_z()).get());
+  EXPECT_DOUBLE_EQ(boost::dynamic_pointer_cast<giskard::DoubleConstSpec>(rot_axis->get_x())->get_value(), 0.0);
+  EXPECT_DOUBLE_EQ(boost::dynamic_pointer_cast<giskard::DoubleConstSpec>(rot_axis->get_y())->get_value(), -2.0);
+  EXPECT_DOUBLE_EQ(boost::dynamic_pointer_cast<giskard::DoubleConstSpec>(rot_axis->get_z())->get_value(), 0.0);
 
-  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::ConstDoubleSpec>(rot_angle).get());
-  EXPECT_DOUBLE_EQ(boost::dynamic_pointer_cast<giskard::ConstDoubleSpec>(rot_angle)->get_value(), M_PI/-2.0);
+  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::DoubleConstSpec>(rot_angle).get());
+  EXPECT_DOUBLE_EQ(boost::dynamic_pointer_cast<giskard::DoubleConstSpec>(rot_angle)->get_value(), M_PI/-2.0);
 
   ASSERT_TRUE(trans->get_x().get());
   ASSERT_TRUE(trans->get_y().get());
   ASSERT_TRUE(trans->get_z().get());
-  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::ConstDoubleSpec>(trans->get_x()).get());
-  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::ConstDoubleSpec>(trans->get_y()).get());
-  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::ConstDoubleSpec>(trans->get_z()).get());
-  EXPECT_DOUBLE_EQ(boost::dynamic_pointer_cast<giskard::ConstDoubleSpec>(trans->get_x())->get_value(), 1.1);
-  EXPECT_DOUBLE_EQ(boost::dynamic_pointer_cast<giskard::ConstDoubleSpec>(trans->get_y())->get_value(), 2.2);
-  EXPECT_DOUBLE_EQ(boost::dynamic_pointer_cast<giskard::ConstDoubleSpec>(trans->get_z())->get_value(), 3.3);
+  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::DoubleConstSpec>(trans->get_x()).get());
+  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::DoubleConstSpec>(trans->get_y()).get());
+  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::DoubleConstSpec>(trans->get_z()).get());
+  EXPECT_DOUBLE_EQ(boost::dynamic_pointer_cast<giskard::DoubleConstSpec>(trans->get_x())->get_value(), 1.1);
+  EXPECT_DOUBLE_EQ(boost::dynamic_pointer_cast<giskard::DoubleConstSpec>(trans->get_y())->get_value(), 2.2);
+  EXPECT_DOUBLE_EQ(boost::dynamic_pointer_cast<giskard::DoubleConstSpec>(trans->get_z())->get_value(), 3.3);
 
   // parsing into frame specification
   ASSERT_NO_THROW(node.as<giskard::FrameSpecPtr>());
   giskard::FrameSpecPtr s3 = node.as<giskard::FrameSpecPtr>();
 
   ASSERT_TRUE(s3.get());
-  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::ConstructorFrameSpec>(s3).get());
-  giskard::ConstructorFrameSpecPtr s4 =
-      boost::dynamic_pointer_cast<giskard::ConstructorFrameSpec>(s3);
+  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::FrameConstructorSpec>(s3).get());
+  giskard::FrameConstructorSpecPtr s4 =
+      boost::dynamic_pointer_cast<giskard::FrameConstructorSpec>(s3);
 
   ASSERT_TRUE(s4->get_rotation().get());
   ASSERT_TRUE(s4->get_translation().get());
   ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::AxisAngleSpec>(s4->get_rotation()).get());
-  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::ConstructorVectorSpec>(s4->get_translation()).get());
+  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::VectorConstructorSpec>(s4->get_translation()).get());
   rot = boost::dynamic_pointer_cast<giskard::AxisAngleSpec>(s4->get_rotation());
-  trans = boost::dynamic_pointer_cast<giskard::ConstructorVectorSpec>(s4->get_translation());
+  trans = boost::dynamic_pointer_cast<giskard::VectorConstructorSpec>(s4->get_translation());
 
   ASSERT_TRUE(rot->get_axis().get());
   ASSERT_TRUE(rot->get_angle().get());
-  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::ConstructorVectorSpec>(rot->get_axis()).get());
-  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::ConstDoubleSpec>(rot->get_angle()).get());
-  rot_axis = boost::dynamic_pointer_cast<giskard::ConstructorVectorSpec>(rot->get_axis());
-  rot_angle = boost::dynamic_pointer_cast<giskard::ConstDoubleSpec>(rot->get_angle());
+  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::VectorConstructorSpec>(rot->get_axis()).get());
+  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::DoubleConstSpec>(rot->get_angle()).get());
+  rot_axis = boost::dynamic_pointer_cast<giskard::VectorConstructorSpec>(rot->get_axis());
+  rot_angle = boost::dynamic_pointer_cast<giskard::DoubleConstSpec>(rot->get_angle());
 
   ASSERT_TRUE(rot_axis->get_x().get());
   ASSERT_TRUE(rot_axis->get_y().get());
   ASSERT_TRUE(rot_axis->get_z().get());
-  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::ConstDoubleSpec>(rot_axis->get_x()).get());
-  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::ConstDoubleSpec>(rot_axis->get_y()).get());
-  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::ConstDoubleSpec>(rot_axis->get_z()).get());
-  EXPECT_DOUBLE_EQ(boost::dynamic_pointer_cast<giskard::ConstDoubleSpec>(rot_axis->get_x())->get_value(), 0.0);
-  EXPECT_DOUBLE_EQ(boost::dynamic_pointer_cast<giskard::ConstDoubleSpec>(rot_axis->get_y())->get_value(), -2.0);
-  EXPECT_DOUBLE_EQ(boost::dynamic_pointer_cast<giskard::ConstDoubleSpec>(rot_axis->get_z())->get_value(), 0.0);
+  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::DoubleConstSpec>(rot_axis->get_x()).get());
+  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::DoubleConstSpec>(rot_axis->get_y()).get());
+  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::DoubleConstSpec>(rot_axis->get_z()).get());
+  EXPECT_DOUBLE_EQ(boost::dynamic_pointer_cast<giskard::DoubleConstSpec>(rot_axis->get_x())->get_value(), 0.0);
+  EXPECT_DOUBLE_EQ(boost::dynamic_pointer_cast<giskard::DoubleConstSpec>(rot_axis->get_y())->get_value(), -2.0);
+  EXPECT_DOUBLE_EQ(boost::dynamic_pointer_cast<giskard::DoubleConstSpec>(rot_axis->get_z())->get_value(), 0.0);
 
-  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::ConstDoubleSpec>(rot_angle).get());
-  EXPECT_DOUBLE_EQ(boost::dynamic_pointer_cast<giskard::ConstDoubleSpec>(rot_angle)->get_value(), M_PI/-2.0);
+  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::DoubleConstSpec>(rot_angle).get());
+  EXPECT_DOUBLE_EQ(boost::dynamic_pointer_cast<giskard::DoubleConstSpec>(rot_angle)->get_value(), M_PI/-2.0);
 
   ASSERT_TRUE(trans->get_x().get());
   ASSERT_TRUE(trans->get_y().get());
   ASSERT_TRUE(trans->get_z().get());
-  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::ConstDoubleSpec>(trans->get_x()).get());
-  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::ConstDoubleSpec>(trans->get_y()).get());
-  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::ConstDoubleSpec>(trans->get_z()).get());
-  EXPECT_DOUBLE_EQ(boost::dynamic_pointer_cast<giskard::ConstDoubleSpec>(trans->get_x())->get_value(), 1.1);
-  EXPECT_DOUBLE_EQ(boost::dynamic_pointer_cast<giskard::ConstDoubleSpec>(trans->get_y())->get_value(), 2.2);
-  EXPECT_DOUBLE_EQ(boost::dynamic_pointer_cast<giskard::ConstDoubleSpec>(trans->get_z())->get_value(), 3.3);
+  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::DoubleConstSpec>(trans->get_x()).get());
+  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::DoubleConstSpec>(trans->get_y()).get());
+  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::DoubleConstSpec>(trans->get_z()).get());
+  EXPECT_DOUBLE_EQ(boost::dynamic_pointer_cast<giskard::DoubleConstSpec>(trans->get_x())->get_value(), 1.1);
+  EXPECT_DOUBLE_EQ(boost::dynamic_pointer_cast<giskard::DoubleConstSpec>(trans->get_y())->get_value(), 2.2);
+  EXPECT_DOUBLE_EQ(boost::dynamic_pointer_cast<giskard::DoubleConstSpec>(trans->get_z())->get_value(), 3.3);
 
   // roundtrip with generation and parsing into frame specification
   YAML::Node node3;
@@ -432,49 +432,49 @@ TEST_F(YamlParserTest, ConstructorFrameSpec)
   giskard::FrameSpecPtr s5 = node3.as<giskard::FrameSpecPtr>();
 
   ASSERT_TRUE(s5.get());
-  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::ConstructorFrameSpec>(s5).get());
-  giskard::ConstructorFrameSpecPtr s6 =
-      boost::dynamic_pointer_cast<giskard::ConstructorFrameSpec>(s6);
+  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::FrameConstructorSpec>(s5).get());
+  giskard::FrameConstructorSpecPtr s6 =
+      boost::dynamic_pointer_cast<giskard::FrameConstructorSpec>(s6);
 
   ASSERT_TRUE(s6->get_rotation().get());
   ASSERT_TRUE(s6->get_translation().get());
   ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::AxisAngleSpec>(s6->get_rotation()).get());
-  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::ConstructorVectorSpec>(s6->get_translation()).get());
+  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::VectorConstructorSpec>(s6->get_translation()).get());
   rot = boost::dynamic_pointer_cast<giskard::AxisAngleSpec>(s6->get_rotation());
-  trans = boost::dynamic_pointer_cast<giskard::ConstructorVectorSpec>(s6->get_translation());
+  trans = boost::dynamic_pointer_cast<giskard::VectorConstructorSpec>(s6->get_translation());
 
   ASSERT_TRUE(rot->get_axis().get());
   ASSERT_TRUE(rot->get_angle().get());
-  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::ConstructorVectorSpec>(rot->get_axis()).get());
-  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::ConstDoubleSpec>(rot->get_angle()).get());
-  rot_axis = boost::dynamic_pointer_cast<giskard::ConstructorVectorSpec>(rot->get_axis());
-  rot_angle = boost::dynamic_pointer_cast<giskard::ConstDoubleSpec>(rot->get_angle());
+  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::VectorConstructorSpec>(rot->get_axis()).get());
+  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::DoubleConstSpec>(rot->get_angle()).get());
+  rot_axis = boost::dynamic_pointer_cast<giskard::VectorConstructorSpec>(rot->get_axis());
+  rot_angle = boost::dynamic_pointer_cast<giskard::DoubleConstSpec>(rot->get_angle());
 
   ASSERT_TRUE(rot_axis->get_x().get());
   ASSERT_TRUE(rot_axis->get_y().get());
   ASSERT_TRUE(rot_axis->get_z().get());
-  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::ConstDoubleSpec>(rot_axis->get_x()).get());
-  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::ConstDoubleSpec>(rot_axis->get_y()).get());
-  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::ConstDoubleSpec>(rot_axis->get_z()).get());
-  EXPECT_DOUBLE_EQ(boost::dynamic_pointer_cast<giskard::ConstDoubleSpec>(rot_axis->get_x())->get_value(), 0.0);
-  EXPECT_DOUBLE_EQ(boost::dynamic_pointer_cast<giskard::ConstDoubleSpec>(rot_axis->get_y())->get_value(), -2.0);
-  EXPECT_DOUBLE_EQ(boost::dynamic_pointer_cast<giskard::ConstDoubleSpec>(rot_axis->get_z())->get_value(), 0.0);
+  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::DoubleConstSpec>(rot_axis->get_x()).get());
+  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::DoubleConstSpec>(rot_axis->get_y()).get());
+  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::DoubleConstSpec>(rot_axis->get_z()).get());
+  EXPECT_DOUBLE_EQ(boost::dynamic_pointer_cast<giskard::DoubleConstSpec>(rot_axis->get_x())->get_value(), 0.0);
+  EXPECT_DOUBLE_EQ(boost::dynamic_pointer_cast<giskard::DoubleConstSpec>(rot_axis->get_y())->get_value(), -2.0);
+  EXPECT_DOUBLE_EQ(boost::dynamic_pointer_cast<giskard::DoubleConstSpec>(rot_axis->get_z())->get_value(), 0.0);
 
-  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::ConstDoubleSpec>(rot_angle).get());
-  EXPECT_DOUBLE_EQ(boost::dynamic_pointer_cast<giskard::ConstDoubleSpec>(rot_angle)->get_value(), M_PI/-2.0);
+  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::DoubleConstSpec>(rot_angle).get());
+  EXPECT_DOUBLE_EQ(boost::dynamic_pointer_cast<giskard::DoubleConstSpec>(rot_angle)->get_value(), M_PI/-2.0);
 
   ASSERT_TRUE(trans->get_x().get());
   ASSERT_TRUE(trans->get_y().get());
   ASSERT_TRUE(trans->get_z().get());
-  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::ConstDoubleSpec>(trans->get_x()).get());
-  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::ConstDoubleSpec>(trans->get_y()).get());
-  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::ConstDoubleSpec>(trans->get_z()).get());
-  EXPECT_DOUBLE_EQ(boost::dynamic_pointer_cast<giskard::ConstDoubleSpec>(trans->get_x())->get_value(), 1.1);
-  EXPECT_DOUBLE_EQ(boost::dynamic_pointer_cast<giskard::ConstDoubleSpec>(trans->get_y())->get_value(), 2.2);
-  EXPECT_DOUBLE_EQ(boost::dynamic_pointer_cast<giskard::ConstDoubleSpec>(trans->get_z())->get_value(), 3.3);
+  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::DoubleConstSpec>(trans->get_x()).get());
+  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::DoubleConstSpec>(trans->get_y()).get());
+  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::DoubleConstSpec>(trans->get_z()).get());
+  EXPECT_DOUBLE_EQ(boost::dynamic_pointer_cast<giskard::DoubleConstSpec>(trans->get_x())->get_value(), 1.1);
+  EXPECT_DOUBLE_EQ(boost::dynamic_pointer_cast<giskard::DoubleConstSpec>(trans->get_y())->get_value(), 2.2);
+  EXPECT_DOUBLE_EQ(boost::dynamic_pointer_cast<giskard::DoubleConstSpec>(trans->get_z())->get_value(), 3.3);
 };
 
-TEST_F(YamlParserTest, MultiplicationFrameSpec)
+TEST_F(YamlParserTest, FrameMultiplicationSpec)
 {
   std::string r1 = "{type: ROTATION, axis: {type: VECTOR3, inputs: [1.0, 0.0, 0.0]}, angle: 1.0}";
   std::string r2 = "{type: ROTATION, axis: {type: VECTOR3, inputs: [0.0, 1.0, 0.0]}, angle: -0.5}";
@@ -484,16 +484,16 @@ TEST_F(YamlParserTest, MultiplicationFrameSpec)
   std::string f2 = "{type: FRAME, rotation: " + r2 + ", translation: " + t2 + "}";
   std::string f3 = "{type: FRAME-MULTIPLICATION, inputs: [" + f1 + ", " + f2 + "]}";
   YAML::Node node = YAML::Load(f1);
-  ASSERT_NO_THROW(node.as<giskard::ConstructorFrameSpecPtr>());
-  giskard::ConstructorFrameSpecPtr s1 = node.as<giskard::ConstructorFrameSpecPtr>();
+  ASSERT_NO_THROW(node.as<giskard::FrameConstructorSpecPtr>());
+  giskard::FrameConstructorSpecPtr s1 = node.as<giskard::FrameConstructorSpecPtr>();
   node = YAML::Load(f2);
-  ASSERT_NO_THROW(node.as<giskard::ConstructorFrameSpecPtr>());
-  giskard::ConstructorFrameSpecPtr s2 = node.as<giskard::ConstructorFrameSpecPtr>();
+  ASSERT_NO_THROW(node.as<giskard::FrameConstructorSpecPtr>());
+  giskard::FrameConstructorSpecPtr s2 = node.as<giskard::FrameConstructorSpecPtr>();
  
   // parsing into frame-multiplication specification
   node = YAML::Load(f3);
-  ASSERT_NO_THROW(node.as<giskard::MultiplicationFrameSpecPtr>());
-  giskard::MultiplicationFrameSpecPtr s3 = node.as<giskard::MultiplicationFrameSpecPtr>();
+  ASSERT_NO_THROW(node.as<giskard::FrameMultiplicationSpecPtr>());
+  giskard::FrameMultiplicationSpecPtr s3 = node.as<giskard::FrameMultiplicationSpecPtr>();
  
   ASSERT_EQ(s3->get_inputs().size(), 2);
   EXPECT_TRUE(s3->get_inputs()[0]->equals(*s1));
@@ -502,8 +502,8 @@ TEST_F(YamlParserTest, MultiplicationFrameSpec)
   // roundtrip with generation
   YAML::Node node2;
   node2 = s3;
-  ASSERT_NO_THROW(node2.as<giskard::MultiplicationFrameSpecPtr>());
-  giskard::MultiplicationFrameSpecPtr s4 = node2.as<giskard::MultiplicationFrameSpecPtr>();
+  ASSERT_NO_THROW(node2.as<giskard::FrameMultiplicationSpecPtr>());
+  giskard::FrameMultiplicationSpecPtr s4 = node2.as<giskard::FrameMultiplicationSpecPtr>();
  
   ASSERT_EQ(s4->get_inputs().size(), 2);
   EXPECT_TRUE(s4->get_inputs()[0]->equals(*s1));
@@ -513,8 +513,8 @@ TEST_F(YamlParserTest, MultiplicationFrameSpec)
   ASSERT_NO_THROW(node.as<giskard::FrameSpecPtr>());
   giskard::FrameSpecPtr s5 = node.as<giskard::FrameSpecPtr>();
 
-  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::MultiplicationFrameSpec>(s5).get());
-  giskard::MultiplicationFrameSpecPtr s6 = boost::dynamic_pointer_cast<giskard::MultiplicationFrameSpec>(s5);
+  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::FrameMultiplicationSpec>(s5).get());
+  giskard::FrameMultiplicationSpecPtr s6 = boost::dynamic_pointer_cast<giskard::FrameMultiplicationSpec>(s5);
  
   ASSERT_EQ(s6->get_inputs().size(), 2);
   EXPECT_TRUE(s6->get_inputs()[0]->equals(*s1));
@@ -524,8 +524,8 @@ TEST_F(YamlParserTest, MultiplicationFrameSpec)
   YAML::Node node3;
   node3 = s5;
   
-  ASSERT_NO_THROW(node3.as<giskard::MultiplicationFrameSpecPtr>());
-  giskard::MultiplicationFrameSpecPtr s7 = node2.as<giskard::MultiplicationFrameSpecPtr>();
+  ASSERT_NO_THROW(node3.as<giskard::FrameMultiplicationSpecPtr>());
+  giskard::FrameMultiplicationSpecPtr s7 = node2.as<giskard::FrameMultiplicationSpecPtr>();
  
   ASSERT_EQ(s7->get_inputs().size(), 2);
   EXPECT_TRUE(s7->get_inputs()[0]->equals(*s1));
