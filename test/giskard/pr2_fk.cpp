@@ -76,7 +76,7 @@ TEST_F(PR2FKTest, ExpressionMap)
   KDL::Expression<KDL::Frame>::Ptr exp = scope.find_frame_expression("pr2_fk");
   ASSERT_TRUE(exp.get()); 
 
-  std::string base = "torso_lift_link";
+  std::string base = "base_link";
   std::string tip = "l_wrist_roll_link";
   KDL::Chain chain;
   ASSERT_TRUE(tree.getChain(base, tip, chain));

@@ -5,16 +5,30 @@
 
 
 # definition of joint input variables
-- l_shoulder_pan_joint: {type: INPUT, input-number: 0}
-- l_shoulder_lift_joint: {type: INPUT, input-number: 1}
-- l_upper_arm_roll_joint: {type: INPUT, input-number: 2}
-- l_elbow_flex_joint: {type: INPUT, input-number: 3}
-- l_forearm_roll_joint: {type: INPUT, input-number: 4}
-- l_wrist_flex_joint: {type: INPUT, input-number: 5}
-- l_wrist_roll_joint: {type: INPUT, input-number: 6}
+- torso_lift_joint: {type: INPUT, input-number: 0}
+- l_shoulder_pan_joint: {type: INPUT, input-number: 1}
+- l_shoulder_lift_joint: {type: INPUT, input-number: 2}
+- l_upper_arm_roll_joint: {type: INPUT, input-number: 3}
+- l_elbow_flex_joint: {type: INPUT, input-number: 4}
+- l_forearm_roll_joint: {type: INPUT, input-number: 5}
+- l_wrist_flex_joint: {type: INPUT, input-number: 6}
+- l_wrist_roll_joint: {type: INPUT, input-number: 7}
 
 
 # definition of joint transforms
+- torso_lift:
+    type: FRAME
+    translation: 
+      type: VECTOR3
+      inputs:
+      - -0.05
+      - 0
+      - type: DOUBLE-ADDITION
+        inputs: [0.739675, {type: DOUBLE-REFERENCE, reference: torso_lift_joint}]
+    rotation: # todo: replace by reference to unit-rotation to test that this also works
+      type: ROTATION
+      axis: {type: VECTOR-REFERENCE, reference: unit-x}
+      angle: 0
 - l_shoulder_pan:
     type: FRAME
     translation: {type: VECTOR3, inputs: [0.0, 0.188, 0.0]}
@@ -70,6 +84,7 @@
 - pr2_fk:
     type: FRAME-MULTIPLICATION
     inputs:
+    - {type: FRAME-REFERENCE, reference: torso_lift} 
     - {type: FRAME-REFERENCE, reference: l_shoulder_pan} 
     - {type: FRAME-REFERENCE, reference: l_shoulder_lift} 
     - {type: FRAME-REFERENCE, reference: l_upper_arm_roll} 
