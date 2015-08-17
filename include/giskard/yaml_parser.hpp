@@ -100,6 +100,36 @@ namespace YAML {
     }
   };
 
+  inline bool is_double_addition(const Node& node)
+  {
+    return node.IsMap() && (node.size() == 2) && node["type"] &&
+        (node["type"].as<std::string>().compare("DOUBLE-ADDITION") == 0) &&
+        node["inputs"] && node["inputs"].IsSequence();
+  }
+
+  template<>
+  struct convert<giskard::AdditionDoubleSpecPtr> 
+  {
+    static Node encode(const giskard::AdditionDoubleSpecPtr& rhs) 
+    {
+      Node node;
+      node["type"] = "DOUBLE-ADDITION";
+      node["inputs"] = rhs->get_inputs();
+      return node;
+    }
+  
+    static bool decode(const Node& node, giskard::AdditionDoubleSpecPtr& rhs) 
+    {
+      if(!is_double_addition(node))
+        return false;
+
+      rhs = giskard::AdditionDoubleSpecPtr(new giskard::AdditionDoubleSpec()); 
+      rhs->set_inputs(node["inputs"].as< std::vector<giskard::DoubleSpecPtr> >());
+
+      return true;
+    }
+  };
+
   template<>
   struct convert<giskard::DoubleSpecPtr> 
   {
@@ -126,6 +156,12 @@ namespace YAML {
             boost::dynamic_pointer_cast<giskard::ReferenceDoubleSpec>(rhs);
         node = p;
       }
+      else if(boost::dynamic_pointer_cast<giskard::AdditionDoubleSpec>(rhs).get())
+      {
+        giskard::AdditionDoubleSpecPtr p = 
+            boost::dynamic_pointer_cast<giskard::AdditionDoubleSpec>(rhs);
+        node = p;
+      }
 
       return node;
     }
@@ -145,6 +181,11 @@ namespace YAML {
       else if(is_double_reference(node))
       {
         rhs = node.as<giskard::ReferenceDoubleSpecPtr>();
+        return true;
+      }
+      else if(is_double_addition(node))
+      {
+        rhs = node.as<giskard::AdditionDoubleSpecPtr>();
         return true;
       }
       else
