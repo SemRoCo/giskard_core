@@ -48,17 +48,11 @@ namespace giskard
   class DoubleSpec : public Spec
   {
     public:
-      KDL::Expression<double>::Ptr get_expression(const giskard::Scope& scope)
-      {
-        return generate_expression(scope);
-      }
-
       virtual bool equals(const Spec& other) const = 0;
 
       virtual std::string to_string() const = 0;
 
-    private:
-      virtual KDL::Expression<double>::Ptr generate_expression(const giskard::Scope& scope) = 0;
+      virtual KDL::Expression<double>::Ptr get_expression(const giskard::Scope& scope) = 0;
   };
 
   typedef typename boost::shared_ptr<DoubleSpec> DoubleSpecPtr;
@@ -66,17 +60,11 @@ namespace giskard
   class VectorSpec : public Spec
   {
     public:
-      KDL::Expression<KDL::Vector>::Ptr get_expression(const giskard::Scope& scope)
-      {
-        return generate_expression(scope);
-      }
-
       virtual bool equals(const Spec& other) const = 0;
 
       virtual std::string to_string() const = 0;
 
-    private:
-      virtual KDL::Expression<KDL::Vector>::Ptr generate_expression(const giskard::Scope& scope) = 0;
+      virtual KDL::Expression<KDL::Vector>::Ptr get_expression(const giskard::Scope& scope) = 0;
   };
 
   typedef typename boost::shared_ptr<VectorSpec> VectorSpecPtr;
@@ -84,17 +72,11 @@ namespace giskard
   class RotationSpec : public Spec
   {
     public:
-      KDL::Expression<KDL::Rotation>::Ptr get_expression(const giskard::Scope& scope)
-      {
-        return generate_expression(scope);
-      }
-
       virtual bool equals(const Spec& other) const = 0;
 
       virtual std::string to_string() const = 0;
 
-    private:
-      virtual KDL::Expression<KDL::Rotation>::Ptr generate_expression(const giskard::Scope& scope) = 0;
+      virtual KDL::Expression<KDL::Rotation>::Ptr get_expression(const giskard::Scope& scope) = 0;
   };
 
   typedef typename boost::shared_ptr<RotationSpec> RotationSpecPtr;
@@ -102,17 +84,11 @@ namespace giskard
   class FrameSpec : public Spec
   {
     public:
-      KDL::Expression<KDL::Frame>::Ptr get_expression(const giskard::Scope& scope)
-      {
-        return generate_expression(scope);
-      }
-
       virtual bool equals(const Spec& other) const = 0;
 
       virtual std::string to_string() const = 0;
 
-    private:
-      virtual KDL::Expression<KDL::Frame>::Ptr generate_expression(const giskard::Scope& scope) = 0;
+      virtual KDL::Expression<KDL::Frame>::Ptr get_expression(const giskard::Scope& scope) = 0;
   };
 
   typedef typename boost::shared_ptr<FrameSpec> FrameSpecPtr;
@@ -148,13 +124,13 @@ namespace giskard
         return boost::lexical_cast<std::string>(get_value());
       }
 
-    private:
-      double value_;
-
-      virtual KDL::Expression<double>::Ptr generate_expression(const giskard::Scope& scope)
+      virtual KDL::Expression<double>::Ptr get_expression(const giskard::Scope& scope)
       {
         return KDL::Constant(get_value());
       }
+
+    private:
+      double value_;
   };
 
   typedef typename boost::shared_ptr<ConstDoubleSpec> ConstDoubleSpecPtr;
@@ -185,13 +161,13 @@ namespace giskard
         return "todo: implement me";
       }
 
-    private:
-      size_t input_num_;
-
-      virtual KDL::Expression<double>::Ptr generate_expression(const giskard::Scope& scope)
+      virtual KDL::Expression<double>::Ptr get_expression(const giskard::Scope& scope)
       {
         return KDL::input(get_input_num());
       }
+
+    private:
+      size_t input_num_;
   };
 
   typedef typename boost::shared_ptr<InputDoubleSpec> InputDoubleSpecPtr;
@@ -222,13 +198,13 @@ namespace giskard
         return "todo: implement me";
       }
 
-    private:
-      std::string reference_name_;
-
-      virtual KDL::Expression<double>::Ptr generate_expression(const giskard::Scope& scope)
+      virtual KDL::Expression<double>::Ptr get_expression(const giskard::Scope& scope)
       {
         return scope.find_double_expression(get_reference_name());
       }
+
+    private:
+      std::string reference_name_;
   };
 
   typedef typename boost::shared_ptr<ReferenceDoubleSpec> ReferenceDoubleSpecPtr;
@@ -280,10 +256,7 @@ namespace giskard
         return "todo: implement me";
       }
 
-    private:
-      std::vector<DoubleSpecPtr> inputs_;
-
-      virtual KDL::Expression<double>::Ptr generate_expression(const giskard::Scope& scope)
+      virtual KDL::Expression<double>::Ptr get_expression(const giskard::Scope& scope)
       {
         KDL::Expression<double>::Ptr result = KDL::Constant(0.0);
         using KDL::operator+;
@@ -292,6 +265,9 @@ namespace giskard
     
         return result;
       }
+
+    private:
+      std::vector<DoubleSpecPtr> inputs_;
    };
 
   typedef typename boost::shared_ptr<AdditionDoubleSpec> AdditionDoubleSpecPtr;
@@ -369,14 +345,14 @@ namespace giskard
         return result;
       }
 
-    private:
-      DoubleSpecPtr x_, y_, z_;
-
-      virtual KDL::Expression<KDL::Vector>::Ptr generate_expression(const giskard::Scope& scope)
+      virtual KDL::Expression<KDL::Vector>::Ptr get_expression(const giskard::Scope& scope)
       {
         return KDL::vector(get_x()->get_expression(scope), 
             get_y()->get_expression(scope), get_z()->get_expression(scope));
       }
+
+    private:
+      DoubleSpecPtr x_, y_, z_;
   };
 
   typedef typename boost::shared_ptr<ConstructorVectorSpec> ConstructorVectorSpecPtr;
@@ -407,13 +383,13 @@ namespace giskard
         return "todo: implement me";
       }
 
-    private:
-      std::string reference_name_;
-
-      virtual KDL::Expression<KDL::Vector>::Ptr generate_expression(const giskard::Scope& scope)
+      virtual KDL::Expression<KDL::Vector>::Ptr get_expression(const giskard::Scope& scope)
       {
         return scope.find_vector_expression(get_reference_name());
       }
+
+    private:
+      std::string reference_name_;
   };
 
   typedef typename boost::shared_ptr<VectorReferenceSpec> VectorReferenceSpecPtr;
@@ -472,19 +448,19 @@ namespace giskard
         return result;
       }
 
-    private:
-      VectorSpecPtr axis_;
-      DoubleSpecPtr angle_;
-
-      virtual KDL::Expression<KDL::Rotation>::Ptr generate_expression(const giskard::Scope& scope)
+      virtual KDL::Expression<KDL::Rotation>::Ptr get_expression(const giskard::Scope& scope)
       {
-        // note: this type of rotation expressions only expect expressions for their angle, not
+        // note: this type of rotation expressions only expect expressions for their axis, not
         //       the angle. while this my make sense, it does break code symmetry.
         KDL::Expression<double>::Ptr angle = get_angle()->get_expression(scope);
         KDL::Vector axis = get_axis()->get_expression(scope)->value();
 
         return KDL::rot(axis, angle);
       }
+
+    private:
+      VectorSpecPtr axis_;
+      DoubleSpecPtr angle_;
   };
 
   typedef typename boost::shared_ptr<AxisAngleSpec> AxisAngleSpecPtr;
@@ -543,17 +519,17 @@ namespace giskard
         return result;
       }
 
-    private:
-      VectorSpecPtr translation_;
-      RotationSpecPtr rotation_;
-
-      virtual KDL::Expression<KDL::Frame>::Ptr generate_expression(const giskard::Scope& scope)
+      virtual KDL::Expression<KDL::Frame>::Ptr get_expression(const giskard::Scope& scope)
       {
         KDL::Expression<KDL::Rotation>::Ptr rot = get_rotation()->get_expression(scope);
 
         KDL::Expression<KDL::Vector>::Ptr trans = get_translation()->get_expression(scope);
         return KDL::frame(rot, trans);
       }
+
+    private:
+      VectorSpecPtr translation_;
+      RotationSpecPtr rotation_;
   };
 
   typedef typename boost::shared_ptr<ConstructorFrameSpec> ConstructorFrameSpecPtr;
@@ -609,10 +585,7 @@ namespace giskard
         return result;
       }
 
-    private:
-      std::vector<giskard::FrameSpecPtr> inputs_;
-
-      virtual KDL::Expression<KDL::Frame>::Ptr generate_expression(const giskard::Scope& scope)
+      virtual KDL::Expression<KDL::Frame>::Ptr get_expression(const giskard::Scope& scope)
       {
         KDL::Expression<KDL::Frame>::Ptr result = KDL::Constant(KDL::Frame::Identity());
 
@@ -622,6 +595,9 @@ namespace giskard
 
         return result;
       }
+
+    private:
+      std::vector<giskard::FrameSpecPtr> inputs_;
   };
 
   typedef typename boost::shared_ptr<MultiplicationFrameSpec> MultiplicationFrameSpecPtr;
@@ -652,13 +628,13 @@ namespace giskard
         return "todo: implement me";
       }
 
-    private:
-      std::string reference_name_;
-
-      virtual KDL::Expression<KDL::Frame>::Ptr generate_expression(const giskard::Scope& scope)
+      virtual KDL::Expression<KDL::Frame>::Ptr get_expression(const giskard::Scope& scope)
       {
         return scope.find_frame_expression(get_reference_name());
       }
+
+    private:
+      std::string reference_name_;
   };
 
   typedef typename boost::shared_ptr<FrameReferenceSpec> FrameReferenceSpecPtr;
