@@ -190,6 +190,38 @@ namespace YAML {
     }
   };
 
+  inline bool is_vector_reference(const Node& node)
+  {
+    return node.IsMap() && (node.size() == 2) && node["type"] &&
+        (node["type"].as<std::string>().compare("VECTOR-REFERENCE") == 0) &&
+        node["reference"];
+  }
+
+  template<>
+  struct convert<giskard::VectorReferenceSpecPtr> 
+  {
+    
+    static Node encode(const giskard::VectorReferenceSpecPtr& rhs) 
+    {
+      Node node;
+      node["reference"] = rhs->get_reference_name();
+      node["type"] = "VECTOR-REFERENCE";
+      return node;
+    }
+  
+    static bool decode(const Node& node, giskard::VectorReferenceSpecPtr& rhs) 
+    {
+      if(!is_vector_reference(node))
+        return false;
+  
+      rhs = giskard::VectorReferenceSpecPtr(new giskard::VectorReferenceSpec());
+      rhs->set_reference_name(node["reference"].as<std::string>());
+
+      return true;
+    }
+  };
+
+
   template<>
   struct convert<giskard::VectorSpecPtr> 
   {
@@ -199,6 +231,8 @@ namespace YAML {
 
       if(boost::dynamic_pointer_cast<giskard::ConstructorVectorSpec>(rhs).get())
         node = boost::dynamic_pointer_cast<giskard::ConstructorVectorSpec>(rhs);
+      else if(boost::dynamic_pointer_cast<giskard::VectorReferenceSpec>(rhs).get())
+        node = boost::dynamic_pointer_cast<giskard::VectorReferenceSpec>(rhs);
 
       return node;
     }
@@ -210,7 +244,12 @@ namespace YAML {
         rhs = node.as<giskard::ConstructorVectorSpecPtr>();
         return true;
       }
-      else
+      else if(is_vector_reference(node))
+      {
+        rhs = node.as<giskard::VectorReferenceSpecPtr>();
+        return true;
+      }
+       else
         return false;
     }
   };

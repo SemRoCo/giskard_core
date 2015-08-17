@@ -18,7 +18,9 @@ namespace giskard
       if(boost::dynamic_pointer_cast<giskard::DoubleSpec>(spec).get())
         scope.add_double_expression(name,
             boost::dynamic_pointer_cast<giskard::DoubleSpec>(spec)->get_expression(scope));
-      // TODO: add support for vector specs
+      else if(boost::dynamic_pointer_cast<giskard::VectorSpec>(spec).get())
+        scope.add_vector_expression(name,
+            boost::dynamic_pointer_cast<giskard::VectorSpec>(spec)->get_expression(scope));
       else if(boost::dynamic_pointer_cast<giskard::FrameSpec>(spec).get())
         scope.add_frame_expression(name,
             boost::dynamic_pointer_cast<giskard::FrameSpec>(spec)->get_expression(scope));
