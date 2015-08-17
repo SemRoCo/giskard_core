@@ -484,13 +484,37 @@ namespace YAML {
   };
 
   ///
-  /// parsing of maps of expressions
+  /// Parsing of more composed structures
   ///
-  inline giskard::SpecMap parse_scope(const Node& node)
+
+  inline bool is_scope_entry(const Node& node)
   {
-    return node.as< giskard::SpecMap>();
+    return node.IsMap() && (node.size() == 1);
   }
 
+  template<>
+  struct convert<giskard::ScopeEntry> 
+  {
+    static Node encode(const giskard::ScopeEntry& rhs) 
+    {
+      YAML::Node node;
+
+      node[rhs.name] = rhs.spec;
+
+      return node;
+    }
+  
+    static bool decode(const Node& node, giskard::ScopeEntry& rhs) 
+    {
+      if(!is_scope_entry(node))
+        return false;
+
+      rhs.name = node.begin()->first.as<std::string>();
+      rhs.spec = node.begin()->second.as<giskard::SpecPtr>(); 
+
+      return true;
+    }
+  };
 }
 
 #endif // GISKARD_YAML_PARSER_HPP

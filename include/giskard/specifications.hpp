@@ -126,7 +126,6 @@ namespace giskard
   }
 
   typedef typename boost::shared_ptr<Spec> SpecPtr;
-  typedef typename std::map< std::string, giskard::SpecPtr> SpecMap;
 
   ///
   /// next level of expression specifications
@@ -780,6 +779,20 @@ namespace giskard
   };
 
   typedef typename boost::shared_ptr<FrameReferenceSpec> FrameReferenceSpecPtr;
+
+  ///
+  /// Specification of a Scope
+  ///
+
+  class ScopeEntry 
+  {
+    public:
+      std::string name;
+      giskard::SpecPtr spec;
+  };
+
+  typedef std::vector<ScopeEntry> ScopeSpec;
+
 }
 
 #endif // GISKARD_SPECIFICATIONS_HPP

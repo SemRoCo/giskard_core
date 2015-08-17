@@ -1,0 +1,36 @@
+#ifndef GISKARD_EXPRESSION_GENERATION_HPP
+#define GISKARD_EXPRESSION_GENERATION_HPP
+
+#include <giskard/specifications.hpp>
+
+namespace giskard
+{
+
+  giskard::Scope generate(const giskard::ScopeSpec& scope_spec)
+  {
+    giskard::Scope scope;
+
+    for(size_t i=0; i<scope_spec.size(); ++i)
+    {
+      std::string name = scope_spec[i].name;
+      giskard::SpecPtr spec = scope_spec[i].spec;
+
+      if(boost::dynamic_pointer_cast<giskard::DoubleSpec>(spec).get())
+        scope.add_double_expression(name,
+            boost::dynamic_pointer_cast<giskard::DoubleSpec>(spec)->get_expression(scope));
+      // TODO: add support for vector specs
+      else if(boost::dynamic_pointer_cast<giskard::FrameSpec>(spec).get())
+        scope.add_frame_expression(name,
+            boost::dynamic_pointer_cast<giskard::FrameSpec>(spec)->get_expression(scope));
+      else
+        // found non-supported type of specification in scope
+        // TODO: issue warning, instead
+        assert(false);
+    }
+
+    return scope;
+  }
+
+}
+
+#endif // GISKARD_EXPRESSION_GENERATION_HPP
