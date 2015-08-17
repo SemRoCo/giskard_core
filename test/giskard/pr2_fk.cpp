@@ -63,7 +63,7 @@ TEST_F(PR2FKTest, SingleExpression)
 
 TEST_F(PR2FKTest, ExpressionMap)
 {
-  YAML::Node node = YAML::LoadFile("pr2_left_arm_expression_map.yaml");
+  YAML::Node node = YAML::LoadFile("pr2_left_arm_scope.yaml");
 
   ASSERT_NO_THROW(node.as< giskard::ScopeSpec >());
   giskard::ScopeSpec scope_spec = node.as<giskard::ScopeSpec>();
