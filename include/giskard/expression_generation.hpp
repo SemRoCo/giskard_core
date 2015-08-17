@@ -6,7 +6,7 @@
 namespace giskard
 {
 
-  giskard::Scope generate(const giskard::ScopeSpec& scope_spec)
+  inline giskard::Scope generate(const giskard::ScopeSpec& scope_spec)
   {
     giskard::Scope scope;
 
