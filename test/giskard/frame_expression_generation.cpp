@@ -195,6 +195,11 @@ TEST_F(FrameGenerationTest, MultiplicationEquality)
   giskard::AxisAngleSpecPtr rot2 =
       giskard::AxisAngleSpecPtr(new giskard::AxisAngleSpec());
   
+  rot1->set_axis(axis1);
+  rot1->set_angle(zero);
+  rot2->set_axis(axis2);
+  rot2->set_angle(pi);
+
   giskard::FrameConstructorSpecPtr d1 = 
       giskard::FrameConstructorSpecPtr(new giskard::FrameConstructorSpec());
   giskard::FrameConstructorSpecPtr d2 = 
