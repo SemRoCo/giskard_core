@@ -293,6 +293,36 @@ namespace YAML {
     }
   };
 
+  inline bool is_vector_subtraction(const Node& node)
+  {
+    return node.IsMap() && (node.size() == 2) && node["type"] &&
+        (node["type"].as<std::string>().compare("VECTOR-SUBTRACTION") == 0) &&
+        node["inputs"] && node["inputs"].IsSequence();
+  }
+
+  template<>
+  struct convert<giskard::VectorSubtractionSpecPtr> 
+  {
+    static Node encode(const giskard::VectorSubtractionSpecPtr& rhs) 
+    {
+      Node node;
+      node["type"] = "VECTOR-SUBTRACTION";
+      node["inputs"] = rhs->get_inputs();
+      return node;
+    }
+  
+    static bool decode(const Node& node, giskard::VectorSubtractionSpecPtr& rhs) 
+    {
+      if(!is_vector_subtraction(node))
+        return false;
+
+      rhs = giskard::VectorSubtractionSpecPtr(new giskard::VectorSubtractionSpec()); 
+      rhs->set_inputs(node["inputs"].as< std::vector<giskard::VectorSpecPtr> >());
+
+      return true;
+    }
+  };
+
   template<>
   struct convert<giskard::VectorSpecPtr> 
   {
@@ -306,6 +336,8 @@ namespace YAML {
         node = boost::dynamic_pointer_cast<giskard::VectorReferenceSpec>(rhs);
       else if(boost::dynamic_pointer_cast<giskard::VectorOriginOfSpec>(rhs).get())
         node = boost::dynamic_pointer_cast<giskard::VectorOriginOfSpec>(rhs);
+      else if(boost::dynamic_pointer_cast<giskard::VectorSubtractionSpec>(rhs).get())
+        node = boost::dynamic_pointer_cast<giskard::VectorSubtractionSpec>(rhs);
 
       return node;
     }
@@ -325,6 +357,11 @@ namespace YAML {
       else if(is_vector_origin_of(node))
       {
         rhs = node.as<giskard::VectorOriginOfSpecPtr>();
+        return true;
+      }
+      else if(is_vector_subtraction(node))
+      {
+        rhs = node.as<giskard::VectorSubtractionSpecPtr>();
         return true;
       }
       else
@@ -541,7 +578,7 @@ namespace YAML {
   inline bool is_vector_spec(const Node& node)
   {
     return is_constructor_vector(node) || is_vector_reference(node) ||
-        is_vector_origin_of(node);
+        is_vector_origin_of(node) || is_vector_subtraction(node);
   }
 
   inline bool is_rotation_spec(const Node& node)
@@ -627,7 +664,7 @@ namespace YAML {
       if(!is_scope_entry(node))
         return false;
 
-//std::cout << "Decode expression: " << node.begin()->first.as<std::string>() << "\n";
+std::cout << "Decode expression: " << node.begin()->first.as<std::string>() << "\n";
 
       rhs.name = node.begin()->first.as<std::string>();
       rhs.spec = node.begin()->second.as<giskard::SpecPtr>(); 

@@ -61,3 +61,56 @@ TEST_F(VectorExpressionGenerationTest, ConstructorEquality)
   EXPECT_FALSE(d3.equals(d2));
   EXPECT_TRUE(d3.equals(d3));
 }
+
+TEST_F(VectorExpressionGenerationTest, VectorSubtraction)
+{
+  std::string v1 = "{type: VECTOR3, inputs: [1.1, 2.2, 3.3]}";
+  std::string v2 = "{type: VECTOR3, inputs: [-0.5, 0.5, 1.5]}";
+
+  std::string s1 = "{type: VECTOR-SUBTRACTION, inputs: [" + v1 + "]}";
+  std::string s2 = "{type: VECTOR-SUBTRACTION, inputs: [" + v1 + ", " + v2 + "]}";
+  std::string s3 = "{type: VECTOR-SUBTRACTION, inputs: [" + v1 + ", " + v2 + ", " + v2 + "]}";
+
+  // test 1
+  YAML::Node node = YAML::Load(s1);
+
+  ASSERT_NO_THROW(node.as<giskard::VectorSpecPtr>());
+  giskard::VectorSpecPtr spec = node.as<giskard::VectorSpecPtr>();
+  
+  giskard::Scope scope;
+  ASSERT_NO_THROW(spec->get_expression(scope));
+  KDL::Expression<KDL::Vector>::Ptr exp = spec->get_expression(scope);
+  
+  ASSERT_TRUE(exp.get());
+  KDL::Vector val1 = exp->value();
+  KDL::Vector val2 = KDL::Vector(-1.1, -2.2, -3.3);
+  EXPECT_TRUE(KDL::Equal(val1, val2));
+
+  // test 2
+  node = YAML::Load(s2);
+
+  ASSERT_NO_THROW(node.as<giskard::VectorSpecPtr>());
+  spec = node.as<giskard::VectorSpecPtr>();
+  
+  ASSERT_NO_THROW(spec->get_expression(scope));
+  exp = spec->get_expression(scope);
+  
+  ASSERT_TRUE(exp.get());
+  val1 = exp->value();
+  val2 = KDL::Vector(1.6, 1.7, 1.8);
+  EXPECT_TRUE(KDL::Equal(val1, val2));
+
+  // test 3
+  node = YAML::Load(s3);
+
+  ASSERT_NO_THROW(node.as<giskard::VectorSpecPtr>());
+  spec = node.as<giskard::VectorSpecPtr>();
+  
+  ASSERT_NO_THROW(spec->get_expression(scope));
+  exp = spec->get_expression(scope);
+  
+  ASSERT_TRUE(exp.get());
+  val1 = exp->value();
+  val2 = KDL::Vector(2.1, 1.2, 0.3);
+  EXPECT_TRUE(KDL::Equal(val1, val2));
+}

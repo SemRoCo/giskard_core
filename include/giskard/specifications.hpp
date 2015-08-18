@@ -236,7 +236,7 @@ namespace giskard
           return false;
 
         for(size_t i=0; i<get_inputs().size(); ++i)
-          if(get_inputs()[i] != other_p->get_inputs()[i])
+          if(!get_inputs()[i]->equals(*(other_p->get_inputs()[i])))
             return false;
         
         return true;
@@ -356,6 +356,83 @@ namespace giskard
   };
 
   typedef typename boost::shared_ptr<VectorConstructorSpec> VectorConstructorSpecPtr;
+
+  class VectorSubtractionSpec: public VectorSpec
+  {
+    public:
+      const std::vector<VectorSpecPtr>& get_inputs() const
+      {
+        return inputs_;
+      }
+
+      void set_inputs(const std::vector<VectorSpecPtr>& inputs)
+      {
+        inputs_ = inputs;
+      }
+
+      virtual bool equals(const Spec& other) const
+      {
+        if(!dynamic_cast<const VectorSubtractionSpec*>(&other))
+          return false;
+
+        const VectorSubtractionSpec* other_p = dynamic_cast<const VectorSubtractionSpec*>(&other);
+
+        if(get_inputs().size() != other_p->get_inputs().size())
+          return false;
+
+        if(!inputs_valid() || !other_p->inputs_valid())
+          return false;
+
+        for(size_t i=0; i<get_inputs().size(); ++i)
+          if(!get_inputs()[i]->equals(*(other_p->get_inputs()[i])))
+            return false;
+        
+        return true;
+      }
+
+      bool inputs_valid() const
+      {
+        for(size_t i=0; i<get_inputs().size(); ++i)
+          if(!get_inputs()[i].get())
+            return false;
+
+        return true;
+      }
+
+      virtual std::string to_string() const
+      {
+        // todo: implement me
+        return "";
+      }
+
+      virtual KDL::Expression<KDL::Vector>::Ptr get_expression(const giskard::Scope& scope)
+      {
+        // todo: throw exception here
+        assert(get_inputs().size() > 0);
+
+        using KDL::operator+;
+        using KDL::operator-;
+
+        KDL::Expression<KDL::Vector>::Ptr minuend = get_inputs()[0]->get_expression(scope);
+
+        if(get_inputs().size() == 1)
+          return -minuend;
+        else
+        {
+          KDL::Expression<KDL::Vector>::Ptr subtrahend = get_inputs()[1]->get_expression(scope);
+
+          for(size_t i=2; i<get_inputs().size(); ++i)
+            subtrahend = subtrahend + get_inputs()[i]->get_expression(scope);
+
+          return minuend - subtrahend;
+        }
+      }
+
+    private:
+      std::vector<giskard::VectorSpecPtr> inputs_;
+  };
+
+  typedef typename boost::shared_ptr<VectorSubtractionSpec> VectorSubtractionSpecPtr;
 
   class VectorReferenceSpec : public VectorSpec
   {
@@ -598,7 +675,7 @@ namespace giskard
           return false;
 
         for(size_t i=0; i<get_inputs().size(); ++i)
-          if(get_inputs()[i] != other_p->get_inputs()[i])
+          if(!get_inputs()[i]->equals(*(other_p->get_inputs()[i])))
             return false;
         
         return true;
