@@ -220,3 +220,18 @@ TEST_F(DoubleExpressionGenerationTest, VectorNorm)
 
   EXPECT_NEAR(exp->value(), 3.0, 1e-10);
 }
+
+TEST_F(DoubleExpressionGenerationTest, DoubleMultiplication)
+{
+  std::string s = "{type: DOUBLE-MULTIPLICATION, inputs: [-0.5, 2.0, 3.5, 0.1]}";
+
+  YAML::Node node = YAML::Load(s);
+
+  ASSERT_NO_THROW(node.as<giskard::DoubleSpecPtr>());
+  giskard::DoubleSpecPtr spec = node.as<giskard::DoubleSpecPtr>();
+
+  KDL::Expression<double>::Ptr exp = spec->get_expression(giskard::Scope());
+  ASSERT_TRUE(exp.get());
+
+  EXPECT_NEAR(exp->value(), -0.35, 1e-10);
+}

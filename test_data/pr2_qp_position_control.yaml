@@ -104,7 +104,7 @@ scope:
                {type: VECTOR-REFERENCE, reference: pr2_fk_pos}]
   - pr2_fk_error:
       type: NORM-OF
-      vector: {type: VECTOR-REFERENCE, reference: pr2_fk_error}
-#  - pr2_fk_control_law:
-#      type: DOUBLE-MULTIPLICATION
-#      inputs: [2.0, {type: VECTOR-NORM, input: {type: VECTOR-REFERENCE, reference: pr2_fk_error}}]
+      vector: {type: VECTOR-REFERENCE, reference: pr2_fk_error_vector}
+  - pr2_fk_control_law:
+      type: DOUBLE-MULTIPLICATION
+      inputs: [2.0, {type: DOUBLE-REFERENCE, reference: pr2_fk_error}]

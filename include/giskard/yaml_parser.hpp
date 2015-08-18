@@ -161,6 +161,36 @@ namespace YAML {
     }
   };
 
+  inline bool is_double_multiplication(const Node& node)
+  {
+    return node.IsMap() && (node.size() == 2) && node["type"] &&
+        (node["type"].as<std::string>().compare("DOUBLE-MULTIPLICATION") == 0) &&
+        node["inputs"] && node["inputs"].IsSequence();
+  }
+
+  template<>
+  struct convert<giskard::DoubleMultiplicationSpecPtr> 
+  {
+    static Node encode(const giskard::DoubleMultiplicationSpecPtr& rhs) 
+    {
+      Node node;
+      node["type"] = "DOUBLE-MULTIPLICATION";
+      node["inputs"] = rhs->get_inputs();
+      return node;
+    }
+  
+    static bool decode(const Node& node, giskard::DoubleMultiplicationSpecPtr& rhs) 
+    {
+      if(!is_double_multiplication(node))
+        return false;
+
+      rhs = giskard::DoubleMultiplicationSpecPtr(new giskard::DoubleMultiplicationSpec()); 
+      rhs->set_inputs(node["inputs"].as< std::vector<giskard::DoubleSpecPtr> >());
+
+      return true;
+    }
+  };
+
   template<>
   struct convert<giskard::DoubleSpecPtr> 
   {
@@ -199,6 +229,12 @@ namespace YAML {
             boost::dynamic_pointer_cast<giskard::DoubleNormOfSpec>(rhs);
         node = p;
       }
+      else if(boost::dynamic_pointer_cast<giskard::DoubleMultiplicationSpec>(rhs).get())
+      {
+        giskard::DoubleMultiplicationSpecPtr p = 
+            boost::dynamic_pointer_cast<giskard::DoubleMultiplicationSpec>(rhs);
+        node = p;
+      }
 
       return node;
     }
@@ -223,6 +259,11 @@ namespace YAML {
       else if(is_double_addition(node))
       {
         rhs = node.as<giskard::DoubleAdditionSpecPtr>();
+        return true;
+      }
+      else if(is_double_multiplication(node))
+      {
+        rhs = node.as<giskard::DoubleMultiplicationSpecPtr>();
         return true;
       }
       else if(is_double_norm_of(node))
@@ -615,7 +656,7 @@ namespace YAML {
   inline bool is_double_spec(const Node& node)
   {
     return is_const_double(node) || is_input(node) || is_double_reference(node) ||
-        is_double_norm_of(node);
+        is_double_norm_of(node) || is_double_multiplication(node);
   }
 
   inline bool is_vector_spec(const Node& node)
@@ -707,7 +748,7 @@ namespace YAML {
       if(!is_scope_entry(node))
         return false;
 
-std::cout << "Decode expression: " << node.begin()->first.as<std::string>() << "\n";
+//std::cout << "\nDecode expression: " << node.begin()->first.as<std::string>() << "\n";
 
       rhs.name = node.begin()->first.as<std::string>();
       rhs.spec = node.begin()->second.as<giskard::SpecPtr>(); 
