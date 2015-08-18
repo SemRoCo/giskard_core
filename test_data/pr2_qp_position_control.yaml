@@ -96,11 +96,15 @@ scope:
   - pr2_fk_pos:
       type: ORIGIN-OF
       frame: {type: FRAME-REFERENCE, reference: pr2_fk}
-  - pr2_fk_goal: {type: VECTOR3, inputs: [1.1, 2.2, 3.3]}
-  - pr2_fk_error:
+  - pr2_fk_goal: {type: VECTOR3, inputs: [0.6, 0.5, 0.7]}
+  - eps: 0.03
+  - pr2_fk_error_vector:
       type: VECTOR-SUBTRACTION
       inputs: [{type: VECTOR-REFERENCE, reference: pr2_fk_goal}, 
                {type: VECTOR-REFERENCE, reference: pr2_fk_pos}]
+  - pr2_fk_error:
+      type: NORM-OF
+      vector: {type: VECTOR-REFERENCE, reference: pr2_fk_error}
 #  - pr2_fk_control_law:
 #      type: DOUBLE-MULTIPLICATION
 #      inputs: [2.0, {type: VECTOR-NORM, input: {type: VECTOR-REFERENCE, reference: pr2_fk_error}}]

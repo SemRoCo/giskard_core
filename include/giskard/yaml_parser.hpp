@@ -7,7 +7,7 @@
 
 namespace YAML {
 
- // 
+  // 
   // parsing of double specs
   //
 
@@ -130,6 +130,37 @@ namespace YAML {
     }
   };
 
+  inline bool is_double_norm_of(const Node& node)
+  {
+    return node.IsMap() && (node.size() == 2) && node["type"] &&
+        (node["type"].as<std::string>().compare("NORM-OF") == 0) &&
+        node["vector"];
+  }
+
+  template<>
+  struct convert<giskard::DoubleNormOfSpecPtr> 
+  {
+    
+    static Node encode(const giskard::DoubleNormOfSpecPtr& rhs) 
+    {
+      Node node;
+      node["type"] = "NORM-OF";
+      node["vector"] = rhs->get_vector();
+      return node;
+    }
+  
+    static bool decode(const Node& node, giskard::DoubleNormOfSpecPtr& rhs) 
+    {
+      if(!is_double_norm_of(node))
+        return false;
+  
+      rhs = giskard::DoubleNormOfSpecPtr(new giskard::DoubleNormOfSpec());
+      rhs->set_vector(node["vector"].as<giskard::VectorSpecPtr>());
+
+      return true;
+    }
+  };
+
   template<>
   struct convert<giskard::DoubleSpecPtr> 
   {
@@ -162,6 +193,12 @@ namespace YAML {
             boost::dynamic_pointer_cast<giskard::DoubleAdditionSpec>(rhs);
         node = p;
       }
+      else if(boost::dynamic_pointer_cast<giskard::DoubleNormOfSpec>(rhs).get())
+      {
+        giskard::DoubleNormOfSpecPtr p = 
+            boost::dynamic_pointer_cast<giskard::DoubleNormOfSpec>(rhs);
+        node = p;
+      }
 
       return node;
     }
@@ -186,6 +223,11 @@ namespace YAML {
       else if(is_double_addition(node))
       {
         rhs = node.as<giskard::DoubleAdditionSpecPtr>();
+        return true;
+      }
+      else if(is_double_norm_of(node))
+      {
+        rhs = node.as<giskard::DoubleNormOfSpecPtr>();
         return true;
       }
       else
@@ -572,7 +614,8 @@ namespace YAML {
 
   inline bool is_double_spec(const Node& node)
   {
-    return is_const_double(node) || is_input(node) || is_double_reference(node);
+    return is_const_double(node) || is_input(node) || is_double_reference(node) ||
+        is_double_norm_of(node);
   }
 
   inline bool is_vector_spec(const Node& node)
