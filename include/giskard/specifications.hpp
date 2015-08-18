@@ -394,6 +394,43 @@ namespace giskard
 
   typedef typename boost::shared_ptr<VectorReferenceSpec> VectorReferenceSpecPtr;
 
+  class VectorOriginOfSpec : public VectorSpec
+  {
+    public:
+      const giskard::FrameSpecPtr& get_frame() const
+      {
+        return frame_;
+      }
+
+      void set_frame(const giskard::FrameSpecPtr& frame)
+      {
+        frame_ = frame;
+      }
+
+      virtual bool equals(const Spec& other) const
+      {
+        if(!dynamic_cast<const VectorOriginOfSpec*>(&other))
+          return false;
+
+        return dynamic_cast<const VectorOriginOfSpec*>(&other)->get_frame()->equals(*(this->get_frame()));
+      }
+
+      virtual std::string to_string() const
+      {
+        return "todo: implement me";
+      }
+
+      virtual KDL::Expression<KDL::Vector>::Ptr get_expression(const giskard::Scope& scope)
+      {
+        return KDL::origin(get_frame()->get_expression(scope));
+      }
+
+    private:
+      giskard::FrameSpecPtr frame_;
+  };
+
+  typedef typename boost::shared_ptr<VectorOriginOfSpec> VectorOriginOfSpecPtr;
+
   ///
   /// specifications for rotation expresssions
   ///

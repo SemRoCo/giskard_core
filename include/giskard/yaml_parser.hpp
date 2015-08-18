@@ -262,6 +262,36 @@ namespace YAML {
     }
   };
 
+  inline bool is_vector_origin_of(const Node& node)
+  {
+    return node.IsMap() && (node.size() == 2) && node["type"] &&
+        (node["type"].as<std::string>().compare("ORIGIN-OF") == 0) &&
+        node["frame"];
+  }
+
+  template<>
+  struct convert<giskard::VectorOriginOfSpecPtr> 
+  {
+    
+    static Node encode(const giskard::VectorOriginOfSpecPtr& rhs) 
+    {
+      Node node;
+      node["type"] = "ORIGIN-OF";
+      node["frame"] = rhs->get_frame();
+      return node;
+    }
+  
+    static bool decode(const Node& node, giskard::VectorOriginOfSpecPtr& rhs) 
+    {
+      if(!is_vector_origin_of(node))
+        return false;
+  
+      rhs = giskard::VectorOriginOfSpecPtr(new giskard::VectorOriginOfSpec());
+      rhs->set_frame(node["frame"].as<giskard::FrameSpecPtr>());
+
+      return true;
+    }
+  };
 
   template<>
   struct convert<giskard::VectorSpecPtr> 
@@ -274,6 +304,8 @@ namespace YAML {
         node = boost::dynamic_pointer_cast<giskard::VectorConstructorSpec>(rhs);
       else if(boost::dynamic_pointer_cast<giskard::VectorReferenceSpec>(rhs).get())
         node = boost::dynamic_pointer_cast<giskard::VectorReferenceSpec>(rhs);
+      else if(boost::dynamic_pointer_cast<giskard::VectorOriginOfSpec>(rhs).get())
+        node = boost::dynamic_pointer_cast<giskard::VectorOriginOfSpec>(rhs);
 
       return node;
     }
@@ -290,7 +322,12 @@ namespace YAML {
         rhs = node.as<giskard::VectorReferenceSpecPtr>();
         return true;
       }
-       else
+      else if(is_vector_origin_of(node))
+      {
+        rhs = node.as<giskard::VectorOriginOfSpecPtr>();
+        return true;
+      }
+      else
         return false;
     }
   };
@@ -503,7 +540,8 @@ namespace YAML {
 
   inline bool is_vector_spec(const Node& node)
   {
-    return is_constructor_vector(node);
+    return is_constructor_vector(node) || is_vector_reference(node) ||
+        is_vector_origin_of(node);
   }
 
   inline bool is_rotation_spec(const Node& node)
@@ -588,6 +626,8 @@ namespace YAML {
     {
       if(!is_scope_entry(node))
         return false;
+
+//std::cout << "Decode expression: " << node.begin()->first.as<std::string>() << "\n";
 
       rhs.name = node.begin()->first.as<std::string>();
       rhs.spec = node.begin()->second.as<giskard::SpecPtr>(); 

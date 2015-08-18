@@ -94,9 +94,9 @@ scope:
       - {type: FRAME-REFERENCE, reference: l_wrist_flex} 
       - {type: FRAME-REFERENCE, reference: l_wrist_roll} 
   - pr2_fk_pos:
-      type: POSITION-OF
-      input: {type: FRAME-REFERENCE, reference: pr2_fk}
-#  - pr2_fk_goal: {type: VECTOR3, inputs: [1.1, 2.2, 3.3]}
+      type: ORIGIN-OF
+      frame: {type: FRAME-REFERENCE, reference: pr2_fk}
+  - pr2_fk_goal: {type: VECTOR3, inputs: [1.1, 2.2, 3.3]}
 #  - pr2_fk_error:
 #    type: VECTOR-SUBTRACTION
 #    inputs: [{type: VECTOR-REFERENCE, reference: pr2_fk_goal}, {type: VECTOR-REFERENCE, reference: pr2_fk_pos}]

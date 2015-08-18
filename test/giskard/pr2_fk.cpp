@@ -112,5 +112,7 @@ TEST_F(PR2FKTest, QPPositionControl)
 {
   YAML::Node node = YAML::LoadFile("pr2_qp_position_control.yaml");
 
-//  ASSERT_NO_THROW(node.as< giskard::ScopeSpec >());
+  ASSERT_TRUE(node.IsMap());
+  ASSERT_TRUE(node["scope"]);
+  ASSERT_NO_THROW(node["scope"].as< giskard::ScopeSpec >());
 }
