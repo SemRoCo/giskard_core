@@ -1,6 +1,8 @@
 #ifndef GISKARD_EXPRESSION_GENERATION_HPP
 #define GISKARD_EXPRESSION_GENERATION_HPP
 
+#include <giskard/scope.hpp>
+#include <giskard/qp_controller.hpp>
 #include <giskard/specifications.hpp>
 
 namespace giskard
@@ -33,6 +35,13 @@ namespace giskard
     return scope;
   }
 
+  inline giskard::QPController generate(const giskard::QPControllerSpec& spec)
+  {
+    giskard::QPController controller;
+
+//TODO: implement me
+    return controller;
+  }
 }
 
 #endif // GISKARD_EXPRESSION_GENERATION_HPP
