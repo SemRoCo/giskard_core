@@ -869,6 +869,30 @@ namespace giskard
 
   typedef std::vector<ScopeEntry> ScopeSpec;
 
+  class ControllableConstraintSpec
+  {
+    public:
+      giskard::DoubleSpecPtr lower_, upper_, weight_;
+      size_t input_number_;
+  };
+
+  typedef typename boost::shared_ptr<ControllableConstraintSpec> ControllableConstraintSpecPtr;
+  
+  class SoftConstraintSpec
+  {
+    public:
+      giskard::DoubleSpecPtr expression_, lower_, upper_, weight_;
+  };
+
+  typedef typename boost::shared_ptr<SoftConstraintSpec> SoftConstraintSpecPtr;
+
+  class HardConstraintSpec
+  {
+    public:
+      giskard::DoubleSpecPtr expression_, lower_, upper_;
+  };
+
+  typedef typename boost::shared_ptr<HardConstraintSpec> HardConstraintSpecPtr;
 }
 
 #endif // GISKARD_SPECIFICATIONS_HPP

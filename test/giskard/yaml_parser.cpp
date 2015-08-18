@@ -531,3 +531,48 @@ TEST_F(YamlParserTest, FrameMultiplicationSpec)
   EXPECT_TRUE(s7->get_inputs()[0]->equals(*s1));
   EXPECT_TRUE(s7->get_inputs()[1]->equals(*s2));
 }
+
+TEST_F(YamlParserTest, ControllableConstraintSpec)
+{
+  std::string s = "{lower: -0.1, upper: 0.2, weight: 5.0, input-number: 2}";
+
+  YAML::Node node = YAML::Load(s);
+
+  ASSERT_NO_THROW(node.as<giskard::ControllableConstraintSpec>());
+  giskard::ControllableConstraintSpec spec = node.as<giskard::ControllableConstraintSpec>();
+
+  EXPECT_DOUBLE_EQ(spec.lower_->get_expression(giskard::Scope())->value(), -0.1);
+  EXPECT_DOUBLE_EQ(spec.upper_->get_expression(giskard::Scope())->value(), 0.2);
+  EXPECT_DOUBLE_EQ(spec.weight_->get_expression(giskard::Scope())->value(), 5.0);
+  EXPECT_EQ(spec.input_number_, 2);
+}
+
+TEST_F(YamlParserTest, SoftConstraintSpec)
+{
+  std::string s = "{lower: -10.1, upper: 120.2, weight: 5.0, expression: 1.1}";
+
+  YAML::Node node = YAML::Load(s);
+
+  ASSERT_NO_THROW(node.as<giskard::SoftConstraintSpec>());
+  giskard::SoftConstraintSpec spec = node.as<giskard::SoftConstraintSpec>();
+
+  EXPECT_DOUBLE_EQ(spec.lower_->get_expression(giskard::Scope())->value(), -10.1);
+  EXPECT_DOUBLE_EQ(spec.upper_->get_expression(giskard::Scope())->value(), 120.2);
+  EXPECT_DOUBLE_EQ(spec.weight_->get_expression(giskard::Scope())->value(), 5.0);
+  EXPECT_DOUBLE_EQ(spec.expression_->get_expression(giskard::Scope())->value(), 1.1);
+
+}
+
+TEST_F(YamlParserTest, HardConstraintSpec)
+{
+  std::string s = "{lower: -10.1, upper: 120.2, expression: 1.1}";
+
+  YAML::Node node = YAML::Load(s);
+
+  ASSERT_NO_THROW(node.as<giskard::HardConstraintSpec>());
+  giskard::HardConstraintSpec spec = node.as<giskard::HardConstraintSpec>();
+
+  EXPECT_DOUBLE_EQ(spec.lower_->get_expression(giskard::Scope())->value(), -10.1);
+  EXPECT_DOUBLE_EQ(spec.upper_->get_expression(giskard::Scope())->value(), 120.2);
+  EXPECT_DOUBLE_EQ(spec.expression_->get_expression(giskard::Scope())->value(), 1.1);
+}

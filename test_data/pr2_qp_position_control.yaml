@@ -108,3 +108,51 @@ scope:
   - pr2_fk_control_law:
       type: DOUBLE-MULTIPLICATION
       inputs: [2.0, {type: DOUBLE-REFERENCE, reference: pr2_fk_error}]
+
+
+controllable_constraints:
+  - lower: -0.1
+    upper: 0.1
+    weight: 5.0
+    input-number: 0
+  - lower: -0.3
+    upper: 0.3
+    weight: 1.0
+    input-number: 1
+  - lower: -0.3
+    upper: 0.3
+    weight: 1.0
+    input-number: 2
+  - lower: -0.3
+    upper: 0.3
+    weight: 1.0
+    input-number: 3
+  - lower: -0.3
+    upper: 0.3
+    weight: 1.0
+    input-number: 4
+  - lower: -0.3
+    upper: 0.3
+    weight: 1.0
+    input-number: 5
+  - lower: -0.3
+    upper: 0.3
+    weight: 1.0
+    input-number: 6
+  - lower: -0.3
+    upper: 0.3
+    weight: 1.0
+    input-number: 7
+
+
+soft_constraints:
+  - expression: {type: DOUBLE-REFERENCE, reference: pr2_fk_error}
+    lower: {type: DOUBLE-REFERENCE, reference: pr2_fk_control_law}
+    upper: {type: DOUBLE-REFERENCE, reference: pr2_fk_control_law}
+    weight: 10.0
+
+
+hard_constraints: []
+#  - expression:
+#    lower:
+#    upper:

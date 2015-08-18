@@ -756,6 +756,109 @@ namespace YAML {
       return true;
     }
   };
+
+  inline bool is_controllable_spec(const Node& node)
+  {
+    return node.IsMap() && (node.size() == 4) && node["lower"] &&
+        node["upper"] && node["weight"] && node["input-number"];
+  }
+
+  template<>
+  struct convert<giskard::ControllableConstraintSpec> 
+  {
+    static Node encode(const giskard::ControllableConstraintSpec& rhs) 
+    {
+      YAML::Node node;
+
+      node["lower"] = rhs.lower_;
+      node["upper"] = rhs.upper_;
+      node["weight"] = rhs.weight_;
+      node["input-number"] = rhs.input_number_;
+
+      return node;
+    }
+  
+    static bool decode(const Node& node, giskard::ControllableConstraintSpec& rhs) 
+    {
+      if(!is_controllable_spec(node))
+        return false;
+
+      rhs.lower_ = node["lower"].as<giskard::DoubleSpecPtr>();
+      rhs.upper_ = node["upper"].as<giskard::DoubleSpecPtr>();
+      rhs.weight_ = node["weight"].as<giskard::DoubleSpecPtr>();
+      rhs.input_number_ = node["input-number"].as<size_t>();
+
+      return true;
+    }
+  };
+
+  inline bool is_soft_constraint_spec(const Node& node)
+  {
+    return node.IsMap() && (node.size() == 4) && node["lower"] &&
+        node["upper"] && node["weight"] && node["expression"];
+  }
+
+  template<>
+  struct convert<giskard::SoftConstraintSpec> 
+  {
+    static Node encode(const giskard::SoftConstraintSpec& rhs) 
+    {
+      YAML::Node node;
+
+      node["lower"] = rhs.lower_;
+      node["upper"] = rhs.upper_;
+      node["weight"] = rhs.weight_;
+      node["expression"] = rhs.expression_;
+
+      return node;
+    }
+  
+    static bool decode(const Node& node, giskard::SoftConstraintSpec& rhs) 
+    {
+      if(!is_soft_constraint_spec(node))
+        return false;
+
+      rhs.lower_ = node["lower"].as<giskard::DoubleSpecPtr>();
+      rhs.upper_ = node["upper"].as<giskard::DoubleSpecPtr>();
+      rhs.weight_ = node["weight"].as<giskard::DoubleSpecPtr>();
+      rhs.expression_ = node["expression"].as<giskard::DoubleSpecPtr>();
+
+      return true;
+    }
+  };
+
+  inline bool is_hard_constraint_spec(const Node& node)
+  {
+    return node.IsMap() && (node.size() == 3) && node["lower"] &&
+        node["upper"] && node["expression"];
+  }
+
+  template<>
+  struct convert<giskard::HardConstraintSpec> 
+  {
+    static Node encode(const giskard::HardConstraintSpec& rhs) 
+    {
+      YAML::Node node;
+
+      node["lower"] = rhs.lower_;
+      node["upper"] = rhs.upper_;
+      node["expression"] = rhs.expression_;
+
+      return node;
+    }
+  
+    static bool decode(const Node& node, giskard::HardConstraintSpec& rhs) 
+    {
+      if(!is_hard_constraint_spec(node))
+        return false;
+
+      rhs.lower_ = node["lower"].as<giskard::DoubleSpecPtr>();
+      rhs.upper_ = node["upper"].as<giskard::DoubleSpecPtr>();
+      rhs.expression_ = node["expression"].as<giskard::DoubleSpecPtr>();
+
+      return true;
+    }
+  };
 }
 
 #endif // GISKARD_YAML_PARSER_HPP
