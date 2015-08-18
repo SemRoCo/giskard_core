@@ -859,6 +859,48 @@ namespace YAML {
       return true;
     }
   };
+
+  inline bool is_qp_controller_spec(const Node& node)
+  {
+    return node.IsMap() && (node.size() == 4) && node["scope"] &&
+        node["scope"].IsSequence() && node["soft-constraints"] &&
+        node["soft-constraints"].IsSequence() && node["hard-constraints"] &&
+        node["hard-constraints"].IsSequence() && node["controllable-constraints"] &&
+        node["controllable-constraints"].IsSequence();
+  }
+
+  template<>
+  struct convert<giskard::QPControllerSpec> 
+  {
+    static Node encode(const giskard::QPControllerSpec& rhs) 
+    {
+      YAML::Node node;
+
+      node["scope"] = rhs.scope_;
+      node["controllable-constraints"] = rhs.controllable_constraints_;
+      node["soft-constraints"] = rhs.soft_constraints_;
+      node["hard-constraints"] = rhs.hard_constraints_;
+
+      return node;
+    }
+  
+    static bool decode(const Node& node, giskard::QPControllerSpec& rhs) 
+    {
+      if(!is_qp_controller_spec(node))
+        return false;
+
+      rhs.scope_ = node["scope"].as< std::vector<giskard::ScopeEntry> >();
+      rhs.controllable_constraints_ = 
+          node["controllable-constraints"].as< std::vector<giskard::ControllableConstraintSpec> >();
+      rhs.soft_constraints_ = 
+          node["soft-constraints"].as< std::vector<giskard::SoftConstraintSpec> >();
+      rhs.hard_constraints_ = 
+          node["hard-constraints"].as< std::vector<giskard::HardConstraintSpec> >();
+
+      return true;
+    }
+  };
+
 }
 
 #endif // GISKARD_YAML_PARSER_HPP

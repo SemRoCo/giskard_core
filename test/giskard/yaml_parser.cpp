@@ -560,7 +560,6 @@ TEST_F(YamlParserTest, SoftConstraintSpec)
   EXPECT_DOUBLE_EQ(spec.upper_->get_expression(giskard::Scope())->value(), 120.2);
   EXPECT_DOUBLE_EQ(spec.weight_->get_expression(giskard::Scope())->value(), 5.0);
   EXPECT_DOUBLE_EQ(spec.expression_->get_expression(giskard::Scope())->value(), 1.1);
-
 }
 
 TEST_F(YamlParserTest, HardConstraintSpec)
@@ -575,4 +574,38 @@ TEST_F(YamlParserTest, HardConstraintSpec)
   EXPECT_DOUBLE_EQ(spec.lower_->get_expression(giskard::Scope())->value(), -10.1);
   EXPECT_DOUBLE_EQ(spec.upper_->get_expression(giskard::Scope())->value(), 120.2);
   EXPECT_DOUBLE_EQ(spec.expression_->get_expression(giskard::Scope())->value(), 1.1);
+}
+
+TEST_F(YamlParserTest, QPControllerSpec)
+{
+  std::string sc = "scope: []";
+  std::string co = "controllable-constraints: [{lower: -0.1, upper: 0.2, weight: 5.0, input-number: 2}]";
+  std::string so = "soft-constraints: [{lower: -10.1, upper: 120.2, weight: 5.0, expression: 1.1}]";
+  std::string ha = "hard-constraints: [{lower: -33.1, upper: 110.3, expression: 17.1}]";
+
+  std::string s = sc + "\n" + co + "\n" + so + "\n" + ha;
+
+  YAML::Node node = YAML::Load(s);
+
+  ASSERT_NO_THROW(node.as<giskard::QPControllerSpec>());
+  giskard::QPControllerSpec spec = node.as<giskard::QPControllerSpec>();
+
+  ASSERT_EQ(spec.scope_.size(), 0);
+  ASSERT_EQ(spec.controllable_constraints_.size(), 1);
+  ASSERT_EQ(spec.soft_constraints_.size(), 1);
+  ASSERT_EQ(spec.hard_constraints_.size(), 1);
+
+  EXPECT_DOUBLE_EQ(spec.controllable_constraints_[0].lower_->get_expression(giskard::Scope())->value(), -0.1);
+  EXPECT_DOUBLE_EQ(spec.controllable_constraints_[0].upper_->get_expression(giskard::Scope())->value(), 0.2);
+  EXPECT_DOUBLE_EQ(spec.controllable_constraints_[0].weight_->get_expression(giskard::Scope())->value(), 5.0);
+  EXPECT_EQ(spec.controllable_constraints_[0].input_number_, 2);
+
+  EXPECT_DOUBLE_EQ(spec.soft_constraints_[0].lower_->get_expression(giskard::Scope())->value(), -10.1);
+  EXPECT_DOUBLE_EQ(spec.soft_constraints_[0].upper_->get_expression(giskard::Scope())->value(), 120.2);
+  EXPECT_DOUBLE_EQ(spec.soft_constraints_[0].weight_->get_expression(giskard::Scope())->value(), 5.0);
+  EXPECT_DOUBLE_EQ(spec.soft_constraints_[0].expression_->get_expression(giskard::Scope())->value(), 1.1);
+
+  EXPECT_DOUBLE_EQ(spec.hard_constraints_[0].lower_->get_expression(giskard::Scope())->value(), -33.1);
+  EXPECT_DOUBLE_EQ(spec.hard_constraints_[0].upper_->get_expression(giskard::Scope())->value(), 110.3);
+  EXPECT_DOUBLE_EQ(spec.hard_constraints_[0].expression_->get_expression(giskard::Scope())->value(), 17.1);
 }

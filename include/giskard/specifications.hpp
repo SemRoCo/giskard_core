@@ -893,6 +893,15 @@ namespace giskard
   };
 
   typedef typename boost::shared_ptr<HardConstraintSpec> HardConstraintSpecPtr;
+
+  class QPControllerSpec
+  {
+    public:
+      std::vector< giskard::ScopeEntry > scope_;
+      std::vector< giskard::ControllableConstraintSpec > controllable_constraints_;
+      std::vector< giskard::SoftConstraintSpec > soft_constraints_;
+      std::vector< giskard::HardConstraintSpec > hard_constraints_;
+  };
 }
 
 #endif // GISKARD_SPECIFICATIONS_HPP
