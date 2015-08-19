@@ -130,6 +130,36 @@ namespace YAML {
     }
   };
 
+  inline bool is_double_subtraction(const Node& node)
+  {
+    return node.IsMap() && (node.size() == 2) && node["type"] &&
+        (node["type"].as<std::string>().compare("DOUBLE-SUBTRACTION") == 0) &&
+        node["inputs"] && node["inputs"].IsSequence();
+  }
+
+  template<>
+  struct convert<giskard::DoubleSubtractionSpecPtr> 
+  {
+    static Node encode(const giskard::DoubleSubtractionSpecPtr& rhs) 
+    {
+      Node node;
+      node["type"] = "DOUBLE-SUBTRACTION";
+      node["inputs"] = rhs->get_inputs();
+      return node;
+    }
+  
+    static bool decode(const Node& node, giskard::DoubleSubtractionSpecPtr& rhs) 
+    {
+      if(!is_double_subtraction(node))
+        return false;
+
+      rhs = giskard::DoubleSubtractionSpecPtr(new giskard::DoubleSubtractionSpec()); 
+      rhs->set_inputs(node["inputs"].as< std::vector<giskard::DoubleSpecPtr> >());
+
+      return true;
+    }
+  };
+
   inline bool is_double_norm_of(const Node& node)
   {
     return node.IsMap() && (node.size() == 2) && node["type"] &&
@@ -223,6 +253,12 @@ namespace YAML {
             boost::dynamic_pointer_cast<giskard::DoubleAdditionSpec>(rhs);
         node = p;
       }
+      else if(boost::dynamic_pointer_cast<giskard::DoubleSubtractionSpec>(rhs).get())
+      {
+        giskard::DoubleSubtractionSpecPtr p = 
+            boost::dynamic_pointer_cast<giskard::DoubleSubtractionSpec>(rhs);
+        node = p;
+      }
       else if(boost::dynamic_pointer_cast<giskard::DoubleNormOfSpec>(rhs).get())
       {
         giskard::DoubleNormOfSpecPtr p = 
@@ -259,6 +295,11 @@ namespace YAML {
       else if(is_double_addition(node))
       {
         rhs = node.as<giskard::DoubleAdditionSpecPtr>();
+        return true;
+      }
+      else if(is_double_subtraction(node))
+      {
+        rhs = node.as<giskard::DoubleSubtractionSpecPtr>();
         return true;
       }
       else if(is_double_multiplication(node))
@@ -656,7 +697,7 @@ namespace YAML {
   inline bool is_double_spec(const Node& node)
   {
     return is_const_double(node) || is_input(node) || is_double_reference(node) ||
-        is_double_norm_of(node) || is_double_multiplication(node);
+        is_double_norm_of(node) || is_double_multiplication(node) || is_double_subtraction(node);
   }
 
   inline bool is_vector_spec(const Node& node)
@@ -689,7 +730,7 @@ namespace YAML {
         node = boost::dynamic_pointer_cast<giskard::VectorSpec>(rhs);
       else if (boost::dynamic_pointer_cast<giskard::RotationSpec>(rhs).get())
         node = boost::dynamic_pointer_cast<giskard::RotationSpec>(rhs);
-       else if (boost::dynamic_pointer_cast<giskard::DoubleSpec>(rhs).get())
+      else if (boost::dynamic_pointer_cast<giskard::DoubleSpec>(rhs).get())
         node = boost::dynamic_pointer_cast<giskard::DoubleSpec>(rhs);
 
       return node;
@@ -747,8 +788,6 @@ namespace YAML {
     {
       if(!is_scope_entry(node))
         return false;
-
-//std::cout << "\nDecode expression: " << node.begin()->first.as<std::string>() << "\n";
 
       rhs.name = node.begin()->first.as<std::string>();
       rhs.spec = node.begin()->second.as<giskard::SpecPtr>(); 

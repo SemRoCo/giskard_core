@@ -235,3 +235,41 @@ TEST_F(DoubleExpressionGenerationTest, DoubleMultiplication)
 
   EXPECT_NEAR(exp->value(), -0.35, 1e-10);
 }
+
+
+TEST_F(DoubleExpressionGenerationTest, DoubleSubtraction)
+{
+  std::string s1 = "{type: DOUBLE-SUBTRACTION, inputs: [-0.5]}";
+  std::string s2 = "{type: DOUBLE-SUBTRACTION, inputs: [0.5, 2.0]}";
+  std::string s3 = "{type: DOUBLE-SUBTRACTION, inputs: [1.1, 0.2, -0.3]}";
+
+  YAML::Node node = YAML::Load(s1);
+
+  ASSERT_NO_THROW(node.as<giskard::DoubleSpecPtr>());
+  giskard::DoubleSpecPtr spec = node.as<giskard::DoubleSpecPtr>();
+
+  KDL::Expression<double>::Ptr exp = spec->get_expression(giskard::Scope());
+  ASSERT_TRUE(exp.get());
+
+  EXPECT_NEAR(exp->value(), 0.5, 1e-10);
+
+  node = YAML::Load(s2);
+
+  ASSERT_NO_THROW(node.as<giskard::DoubleSpecPtr>());
+  spec = node.as<giskard::DoubleSpecPtr>();
+
+  exp = spec->get_expression(giskard::Scope());
+  ASSERT_TRUE(exp.get());
+
+  EXPECT_NEAR(exp->value(), -1.5, 1e-10);
+
+  node = YAML::Load(s3);
+
+  ASSERT_NO_THROW(node.as<giskard::DoubleSpecPtr>());
+  spec = node.as<giskard::DoubleSpecPtr>();
+
+  exp = spec->get_expression(giskard::Scope());
+  ASSERT_TRUE(exp.get());
+
+  EXPECT_NEAR(exp->value(), 1.2, 1e-10);
+}
