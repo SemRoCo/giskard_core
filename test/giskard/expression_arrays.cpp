@@ -102,7 +102,7 @@ TEST_F(ExpressionArrayTest, PushPop)
 
   a.push_expression(exp2);
   EXPECT_EQ(2, a.num_expressions());
-  EXPECT_EQ(4, a.num_inputs());
+  EXPECT_EQ(5, a.num_inputs());
   EXPECT_EQ(exp1, a.get_expression(0));
   EXPECT_EQ(exp2, a.get_expression(1));
 

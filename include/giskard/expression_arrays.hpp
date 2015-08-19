@@ -20,7 +20,10 @@ namespace KDL
 
       size_t num_inputs() const
       {
-        return calculate_inputs().size();
+        int result = 0;
+        for(size_t i=0; i<get_expressions().size(); ++i)
+          result = std::max(result, get_expressions()[i]->number_of_derivatives());
+        return result;
       }
 
       const std::vector< ExpressionTypePtr >& get_expressions() const
@@ -116,17 +119,17 @@ namespace KDL
 
       void prepare_optimizer()
       {
-       std::set<int> input_vars = calculate_inputs();
-       optimizer_.prepare(std::vector<int>(input_vars.begin(), input_vars.end()));
+       optimizer_.prepare(calculate_inputs());
+
        for(size_t i=0; i<expressions_.size(); ++i)
          expressions_[i]->addToOptimizer(optimizer_);
       }
 
-      std::set<int> calculate_inputs() const
+      std::vector<int> calculate_inputs() const
       {
-        std::set<int> input_vars;
-        for(size_t i=0; i<expressions_.size(); ++i)
-          expressions_[i]->getDependencies(input_vars);
+        std::vector<int> input_vars;
+        for(size_t i=0; i<num_inputs(); ++i)
+          input_vars.push_back(i);
         return input_vars;
       }
 
