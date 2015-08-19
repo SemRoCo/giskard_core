@@ -78,9 +78,19 @@ namespace giskard
         return hard_expressions_.num_expressions();
       }
 
+      size_t num_hard_constraints_controllables() const
+      {
+        return hard_expressions_.num_inputs();
+      }
+
       size_t num_soft_constraints() const
       {
         return soft_expressions_.num_expressions();
+      }
+
+      size_t num_soft_constraints_controllables() const
+      {
+        return soft_expressions_.num_inputs();
       }
 
       size_t num_constraints() const
@@ -160,9 +170,9 @@ namespace giskard
         H_.diagonal().segment(num_controllables(), num_soft_constraints()) =
             soft_weights_.get_values();
 
-        A_.block(0, 0, num_hard_constraints(), num_controllables()) =
+        A_.block(0, 0, num_hard_constraints(), num_hard_constraints_controllables()) =
             hard_expressions_.get_derivatives();
-        A_.block(num_hard_constraints(), 0, num_soft_constraints(), num_controllables()) = 
+        A_.block(num_hard_constraints(), 0, num_soft_constraints(), num_soft_constraints_controllables()) = 
             soft_expressions_.get_derivatives();
 
         lb_.segment(0, num_controllables()) = controllable_lower_bounds_.get_values();
