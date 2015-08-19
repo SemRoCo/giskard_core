@@ -35,11 +35,52 @@ namespace giskard
     return scope;
   }
 
-  inline giskard::QPController generate(const giskard::QPControllerSpec& spec)
+  inline giskard::QPController generate(const giskard::QPControllerSpec& spec,
+      const Eigen::VectorXd& observables, int nWSR)
   {
-    giskard::QPController controller;
+    giskard::Scope scope = generate(spec.scope_);
 
-//TODO: implement me
+    // generate controllable constraints
+    std::vector< KDL::Expression<double>::Ptr > controllable_lower, controllable_upper,
+        controllable_weight;
+    for(size_t i=0; i<spec.controllable_constraints_.size(); ++i)
+    {
+      // TODO: throw an exception, instead
+      assert(spec.controllable_constraints_[i].input_number_ == i);
+
+      controllable_lower.push_back(spec.controllable_constraints_[i].lower_->get_expression(scope));
+      controllable_upper.push_back(spec.controllable_constraints_[i].upper_->get_expression(scope));
+      controllable_weight.push_back(spec.controllable_constraints_[i].weight_->get_expression(scope));
+    }
+
+    // generate soft constraints
+    std::vector< KDL::Expression<double>::Ptr > soft_lower, soft_upper,
+        soft_weight, soft_exp;
+    for(size_t i=0; i<spec.soft_constraints_.size(); ++i)
+    {
+      soft_lower.push_back(spec.soft_constraints_[i].lower_->get_expression(scope));
+      soft_upper.push_back(spec.soft_constraints_[i].upper_->get_expression(scope));
+      soft_weight.push_back(spec.soft_constraints_[i].weight_->get_expression(scope));
+      soft_exp.push_back(spec.soft_constraints_[i].expression_->get_expression(scope));
+    }
+
+    // generate hard constraints
+    std::vector< KDL::Expression<double>::Ptr > hard_lower, hard_upper, hard_exp;
+    for(size_t i=0; i<spec.hard_constraints_.size(); ++i)
+    {
+      hard_lower.push_back(spec.hard_constraints_[i].lower_->get_expression(scope));
+      hard_upper.push_back(spec.hard_constraints_[i].upper_->get_expression(scope));
+      hard_exp.push_back(spec.hard_constraints_[i].expression_->get_expression(scope));
+    }
+
+    giskard::QPController controller;
+   
+    // TODO: throw an exception, instead
+    assert(controller.init(controllable_lower, controllable_upper, controllable_weight,
+                           soft_exp, soft_lower, soft_upper, soft_weight,
+                           hard_exp, hard_lower, hard_upper, 
+                           observables, nWSR));
+
     return controller;
   }
 }

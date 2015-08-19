@@ -22,7 +22,6 @@ namespace giskard
             controllable_weights, soft_expressions, soft_lower_bounds,
             soft_upper_bounds, soft_weights, hard_expressions,
             hard_lower_bounds, hard_upper_bounds);
-
         qp_builder_.update(observables);
 
         qp_problem_ = qpOASES::SQProblem(qp_builder_.num_weights(), qp_builder_.num_constraints());
@@ -38,6 +37,7 @@ namespace giskard
           return false;
 
         xdot_full_.resize(qp_builder_.num_weights());
+
         xdot_partial_.resize(qp_builder_.num_controllables());
 
         return true;

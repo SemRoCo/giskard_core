@@ -100,17 +100,17 @@ scope:
   - eps: 0.03
   - pr2_fk_error_vector:
       type: VECTOR-SUBTRACTION
-      inputs: [{type: VECTOR-REFERENCE, reference: pr2_fk_goal}, 
+      inputs: [{type: VECTOR-REFERENCE, reference: pr2_fk_goal},
                {type: VECTOR-REFERENCE, reference: pr2_fk_pos}]
   - pr2_fk_error:
       type: NORM-OF
       vector: {type: VECTOR-REFERENCE, reference: pr2_fk_error_vector}
   - pr2_fk_control_law:
       type: DOUBLE-MULTIPLICATION
-      inputs: [2.0, {type: DOUBLE-REFERENCE, reference: pr2_fk_error}]
+      inputs: [-10.0, {type: DOUBLE-REFERENCE, reference: pr2_fk_error}]
 
 
-controllable_constraints:
+controllable-constraints:
   - lower: -0.1
     upper: 0.1
     weight: 5.0
@@ -145,14 +145,14 @@ controllable_constraints:
     input-number: 7
 
 
-soft_constraints:
+soft-constraints:
   - expression: {type: DOUBLE-REFERENCE, reference: pr2_fk_error}
     lower: {type: DOUBLE-REFERENCE, reference: pr2_fk_control_law}
     upper: {type: DOUBLE-REFERENCE, reference: pr2_fk_control_law}
     weight: 10.0
 
 
-hard_constraints: []
+hard-constraints: []
 #  - expression:
 #    lower:
 #    upper:
