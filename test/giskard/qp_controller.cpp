@@ -77,7 +77,9 @@ TEST_F(QPControllerTest, Init)
    giskard::QPController c;
 
    ASSERT_TRUE(c.init(controllable_lower, controllable_upper, controllable_weights, soft_expressions,
-      soft_lower, soft_upper, soft_weights, hard_expressions, hard_lower, hard_upper, initial_state, nWSR));
+      soft_lower, soft_upper, soft_weights, hard_expressions, hard_lower, hard_upper));
+
+   ASSERT_TRUE(c.start(initial_state, nWSR));
 
    EXPECT_EQ(2, c.get_command().rows());
 }
@@ -87,7 +89,8 @@ TEST_F(QPControllerTest, Update)
    // setup controller
    giskard::QPController c;
    ASSERT_TRUE(c.init(controllable_lower, controllable_upper, controllable_weights, soft_expressions,
-      soft_lower, soft_upper, soft_weights, hard_expressions, hard_lower, hard_upper, initial_state, nWSR));
+      soft_lower, soft_upper, soft_weights, hard_expressions, hard_lower, hard_upper));
+   ASSERT_TRUE(c.start(initial_state, nWSR));
 
    // run several dozen simulation runs; enough to converge
    Eigen::VectorXd state = initial_state;

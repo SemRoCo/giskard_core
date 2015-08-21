@@ -35,8 +35,7 @@ namespace giskard
     return scope;
   }
 
-  inline giskard::QPController generate(const giskard::QPControllerSpec& spec,
-      const Eigen::VectorXd& observables, int nWSR)
+  inline giskard::QPController generate(const giskard::QPControllerSpec& spec)
   {
     giskard::Scope scope = generate(spec.scope_);
 
@@ -78,8 +77,7 @@ namespace giskard
     // TODO: throw an exception, instead
     assert(controller.init(controllable_lower, controllable_upper, controllable_weight,
                            soft_exp, soft_lower, soft_upper, soft_weight,
-                           hard_exp, hard_lower, hard_upper, 
-                           observables, nWSR));
+                           hard_exp, hard_lower, hard_upper));
 
     return controller;
   }

@@ -124,8 +124,8 @@ TEST_F(PR2FKTest, QPPositionControl)
   using Eigen::operator<<;
   state << 0.02, 0.0, 0.0, 0.0, -0.16, 0.0, -0.11, 0.0;
   int nWSR = 10;
-  ASSERT_NO_THROW(giskard::generate(spec, state, nWSR));
-  giskard::QPController controller = giskard::generate(spec, state, nWSR);
+  ASSERT_NO_THROW(giskard::generate(spec));
+  giskard::QPController controller = giskard::generate(spec);
 
   // setup
   size_t iterations = 300;
@@ -136,6 +136,7 @@ TEST_F(PR2FKTest, QPPositionControl)
   error->setInputValues(state_tmp);
   EXPECT_GE(error->value(), 0.3);
 
+  ASSERT_TRUE(controller.start(state, nWSR));
   for(size_t i=0; i<iterations; ++i)
   {
     ASSERT_TRUE(controller.update(state, nWSR));
