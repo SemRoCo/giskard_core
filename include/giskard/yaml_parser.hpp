@@ -182,9 +182,8 @@ namespace YAML {
 
   inline bool is_double_multiplication(const Node& node)
   {
-    return node.IsMap() && (node.size() == 2) && node["type"] &&
-        (node["type"].as<std::string>().compare("DOUBLE-MULTIPLICATION") == 0) &&
-        node["inputs"] && node["inputs"].IsSequence();
+    return node.IsMap() && (node.size() == 1) && node["double-multiplication"] &&
+        node["double-multiplication"].IsSequence();
   }
 
   template<>
@@ -193,8 +192,7 @@ namespace YAML {
     static Node encode(const giskard::DoubleMultiplicationSpecPtr& rhs) 
     {
       Node node;
-      node["type"] = "DOUBLE-MULTIPLICATION";
-      node["inputs"] = rhs->get_inputs();
+      node["double-multiplication"] = rhs->get_inputs();
       return node;
     }
   
@@ -204,7 +202,7 @@ namespace YAML {
         return false;
 
       rhs = giskard::DoubleMultiplicationSpecPtr(new giskard::DoubleMultiplicationSpec()); 
-      rhs->set_inputs(node["inputs"].as< std::vector<giskard::DoubleSpecPtr> >());
+      rhs->set_inputs(node["double-multiplication"].as< std::vector<giskard::DoubleSpecPtr> >());
 
       return true;
     }

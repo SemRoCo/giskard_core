@@ -223,7 +223,7 @@ TEST_F(DoubleExpressionGenerationTest, VectorNorm)
 
 TEST_F(DoubleExpressionGenerationTest, DoubleMultiplication)
 {
-  std::string s = "{type: DOUBLE-MULTIPLICATION, inputs: [-0.5, 2.0, 3.5, 0.1]}";
+  std::string s = "{double-multiplication: [-0.5, 2.0, 3.5, 0.1]}";
 
   YAML::Node node = YAML::Load(s);
 
