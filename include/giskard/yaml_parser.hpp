@@ -465,9 +465,8 @@ namespace YAML {
 
   inline bool is_vector_frame_multiplication(const Node& node)
   {
-    return node.IsMap() && (node.size() == 3) &&  node["type"] &&
-        (node["type"].as<std::string>().compare("MULTIPLICATION") == 0) &&
-        node["frame"] && node["vector"];
+    return node.IsMap() && (node.size() == 1) && node["transform-vector"] &&
+        node["transform-vector"].IsSequence() && (node["transform-vector"].size() == 2);
   }
 
   template<>
@@ -476,9 +475,8 @@ namespace YAML {
     static Node encode(const giskard::VectorFrameMultiplicationSpecPtr& rhs) 
     {
       Node node;
-      node["type"] = "MULTIPLICAION";
-      node["frame"] = rhs->get_frame();
-      node["vector"] = rhs->get_vector();
+      node["transform-vector"][0] = rhs->get_frame();
+      node["transform-vector"][1] = rhs->get_vector();
       return node;
     }
   
@@ -488,8 +486,8 @@ namespace YAML {
         return false;
 
       rhs = giskard::VectorFrameMultiplicationSpecPtr(new giskard::VectorFrameMultiplicationSpec()); 
-      rhs->set_frame(node["frame"].as< giskard::FrameSpecPtr >());
-      rhs->set_vector(node["vector"].as< giskard::VectorSpecPtr >());
+      rhs->set_frame(node["transform-vector"][0].as< giskard::FrameSpecPtr >());
+      rhs->set_vector(node["transform-vector"][1].as< giskard::VectorSpecPtr >());
 
       return true;
     }

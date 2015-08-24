@@ -121,7 +121,7 @@ TEST_F(VectorExpressionGenerationTest, VectorFrameMultiplication)
   std::string v2 = "{vector3: [1, 2, 3]}";
   std::string r = "{axis-angle: [{vector3: [1, 0, 0]}, 0]}";
   std::string f = "{frame: [" + r + ", " + v1 + "]}";
-  std::string s1 = "{type: MULTIPLICATION, frame: " + f + ", vector: " + v2 + "}";
+  std::string s1 = "{transform-vector: [" + f + ", " + v2 + "]}";
 
   YAML::Node node = YAML::Load(s1);
 //std::cout << node << "\n\n";
