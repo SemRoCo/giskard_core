@@ -119,7 +119,7 @@ TEST_F(VectorExpressionGenerationTest, VectorFrameMultiplication)
 {
   std::string v1 = "{vector3: [0.1, 0.2, 0.3]}";
   std::string v2 = "{vector3: [1, 2, 3]}";
-  std::string r = "{type: ROTATION, axis: {vector3: [1, 0, 0]}, angle: 0}";
+  std::string r = "{axis-angle: [{vector3: [1, 0, 0]}, 0]}";
   std::string f = "{type: FRAME, translation: " + v1 + ", rotation: " + r + "}";
   std::string s1 = "{type: MULTIPLICATION, frame: " + f + ", vector: " + v2 + "}";
 

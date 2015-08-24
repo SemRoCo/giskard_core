@@ -12,12 +12,7 @@ frame-multiplication:
   - type: FRAME
     translation:
       vector3: [0.0, 0.188, 0.0]
-    rotation:
-      type: ROTATION
-      axis:
-        vector3: [0, 0, 1]
-      angle:
-        input-variable: 0 # l_shoulder_pan_joint
+    rotation: {axis-angle: [{vector3: [0, 0, 1]}, {input-variable: 0}]} # l_shoulder_pan_joint
 
 
   # l_shoulder_pan_link -->  l_shoulder_lift_link
@@ -32,12 +27,7 @@ frame-multiplication:
   - type: FRAME
     translation:
       vector3: [0.1, 0, 0]
-    rotation:
-      type: ROTATION
-      axis:
-        vector3: [0, 1, 0]
-      angle:
-        input-variable: 1 # l_shoulder_lift_joint
+    rotation: {axis-angle: [{vector3: [0, 1, 0]}, {input-variable: 1}]} # l_shoulder_lift_joint
 
 
   # l_shoulder_lift_link --> l_upper_arm_roll_link
@@ -52,12 +42,7 @@ frame-multiplication:
   - type: FRAME
     translation:
       vector3: [0, 0, 0]
-    rotation:
-      type: ROTATION
-      axis:
-        vector3: [1, 0, 0]
-      angle:
-        input-variable: 2 # l_upper_arm_roll_joint
+    rotation: {axis-angle: [{vector3: [1, 0, 0]}, {input-variable: 2}]} # l_upper_arm_roll_joint
 
 
   # l_upper_arm_roll_link --> l_elbow_flew_link
@@ -72,12 +57,7 @@ frame-multiplication:
   - type: FRAME
     translation:
       vector3: [0.4, 0, 0]
-    rotation:
-      type: ROTATION
-      axis:
-        vector3: [0, 1, 0]
-      angle:
-        input-variable: 3 # l_elbow_flex_joint
+    rotation: {axis-angle: [{vector3: [0, 1, 0]}, {input-variable: 3}]} # l_elbow_flex_joint
 
   # l_elbow_flew_link --> l_forearm_roll_link
   # 
@@ -91,12 +71,7 @@ frame-multiplication:
   - type: FRAME
     translation:
       vector3: [0, 0, 0]
-    rotation:
-      type: ROTATION
-      axis:
-        vector3: [1, 0, 0]
-      angle:
-        input-variable: 4 # l_forearm_roll_joint
+    rotation: {axis-angle: [{vector3: [1, 0, 0]}, {input-variable: 4}]} # l_forearm_roll_joint
 
 
   # l_forearm_roll_link --> l_wrist_flex_link
@@ -111,12 +86,7 @@ frame-multiplication:
   - type: FRAME
     translation:
       vector3: [0.321, 0, 0]
-    rotation:
-      type: ROTATION
-      axis:
-        vector3: [0, 1, 0]
-      angle:
-        input-variable: 5 # l_wrist_flex_joint
+    rotation: {axis-angle: [{vector3: [0, 1, 0]}, {input-variable: 5}]} # l_wrist_flex_joint
 
   # l_wrist_flex_link --> l_wrist_roll_link
   # 
@@ -130,9 +100,4 @@ frame-multiplication:
   - type: FRAME
     translation:
       vector3: [0, 0, 0]
-    rotation:
-      type: ROTATION
-      axis:
-        vector3: [1, 0, 0]
-      angle:
-        input-variable: 6 # l_wrist_roll_joint
+    rotation: {axis-angle: [{vector3: [1, 0, 0]}, {input-variable: 6}]} # l_wrist_roll_joint

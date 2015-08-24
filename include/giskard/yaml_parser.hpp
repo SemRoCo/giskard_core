@@ -554,9 +554,8 @@ namespace YAML {
 
   inline bool is_axis_angle(const Node& node)
   {
-    return node.IsMap() && (node.size() == 3) && node["type"] &&
-        (node["type"].as<std::string>().compare("ROTATION") == 0) &&
-        node["axis"] && node["angle"];
+    return node.IsMap() && (node.size() == 1) && node["axis-angle"] &&
+        node["axis-angle"].IsSequence() && (node["axis-angle"].size() == 2);
   }
 
   template<>
@@ -565,9 +564,8 @@ namespace YAML {
     static Node encode(const giskard::AxisAngleSpecPtr& rhs) 
     {
       Node node;
-      node["type"] = "ROTATION";
-      node["axis"] = rhs->get_axis();
-      node["angle"] = rhs->get_angle();
+      node["axis-angle"][0] = rhs->get_axis();
+      node["axis-angle"][1] = rhs->get_angle();
       return node;
     }
   
@@ -577,8 +575,8 @@ namespace YAML {
         return false;
 
       rhs = giskard::AxisAngleSpecPtr(new giskard::AxisAngleSpec()); 
-      rhs->set_angle(node["angle"].as<giskard::DoubleSpecPtr>());
-      rhs->set_axis(node["axis"].as<giskard::VectorSpecPtr>());
+      rhs->set_axis(node["axis-angle"][0].as<giskard::VectorSpecPtr>());
+      rhs->set_angle(node["axis-angle"][1].as<giskard::DoubleSpecPtr>());
 
       return true;
     }
