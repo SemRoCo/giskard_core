@@ -696,9 +696,7 @@ namespace YAML {
 
   inline bool is_frame_reference(const Node& node)
   {
-    return node.IsMap() && (node.size() == 2) && node["type"] &&
-        (node["type"].as<std::string>().compare("FRAME-REFERENCE") == 0) &&
-        node["reference"];
+    return node.IsMap() && (node.size() == 1) && node["frame"];
   }
 
   template<>
@@ -708,8 +706,7 @@ namespace YAML {
     static Node encode(const giskard::FrameReferenceSpecPtr& rhs) 
     {
       Node node;
-      node["reference"] = rhs->get_reference_name();
-      node["type"] = "FRAME-REFERENCE";
+      node["frame"] = rhs->get_reference_name();
       return node;
     }
   
@@ -719,7 +716,7 @@ namespace YAML {
         return false;
   
       rhs = giskard::FrameReferenceSpecPtr(new giskard::FrameReferenceSpec());
-      rhs->set_reference_name(node["reference"].as<std::string>());
+      rhs->set_reference_name(node["frame"].as<std::string>());
 
       return true;
     }

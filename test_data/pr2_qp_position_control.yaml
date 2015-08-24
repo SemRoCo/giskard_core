@@ -85,17 +85,17 @@ scope:
   - pr2_fk:
       type: FRAME-MULTIPLICATION
       inputs:
-      - {type: FRAME-REFERENCE, reference: torso_lift} 
-      - {type: FRAME-REFERENCE, reference: l_shoulder_pan} 
-      - {type: FRAME-REFERENCE, reference: l_shoulder_lift} 
-      - {type: FRAME-REFERENCE, reference: l_upper_arm_roll} 
-      - {type: FRAME-REFERENCE, reference: l_elbow_flex} 
-      - {type: FRAME-REFERENCE, reference: l_forearm_roll} 
-      - {type: FRAME-REFERENCE, reference: l_wrist_flex} 
-      - {type: FRAME-REFERENCE, reference: l_wrist_roll} 
+      - {frame: torso_lift} 
+      - {frame: l_shoulder_pan} 
+      - {frame: l_shoulder_lift} 
+      - {frame: l_upper_arm_roll} 
+      - {frame: l_elbow_flex} 
+      - {frame: l_forearm_roll} 
+      - {frame: l_wrist_flex} 
+      - {frame: l_wrist_roll} 
   - pr2_fk_pos:
       type: ORIGIN-OF
-      frame: {type: FRAME-REFERENCE, reference: pr2_fk}
+      frame: {frame: pr2_fk}
   - pr2_fk_goal: {type: VECTOR3, inputs: [0.6, 0.5, 0.7]}
   - pr2_fk_error_vector:
       type: VECTOR-SUBTRACTION
