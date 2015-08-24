@@ -395,9 +395,7 @@ namespace YAML {
 
   inline bool is_vector_reference(const Node& node)
   {
-    return node.IsMap() && (node.size() == 2) && node["type"] &&
-        (node["type"].as<std::string>().compare("VECTOR-REFERENCE") == 0) &&
-        node["reference"];
+    return node.IsMap() && (node.size() == 1) && node["vector3"];
   }
 
   template<>
@@ -407,8 +405,7 @@ namespace YAML {
     static Node encode(const giskard::VectorReferenceSpecPtr& rhs) 
     {
       Node node;
-      node["reference"] = rhs->get_reference_name();
-      node["type"] = "VECTOR-REFERENCE";
+      node["vector3"] = rhs->get_reference_name();
       return node;
     }
   
@@ -418,7 +415,7 @@ namespace YAML {
         return false;
   
       rhs = giskard::VectorReferenceSpecPtr(new giskard::VectorReferenceSpec());
-      rhs->set_reference_name(node["reference"].as<std::string>());
+      rhs->set_reference_name(node["vector3"].as<std::string>());
 
       return true;
     }

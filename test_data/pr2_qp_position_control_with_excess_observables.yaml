@@ -28,56 +28,56 @@ scope:
           inputs: [0.739675, {double: torso_lift_joint}]
       rotation: # todo: replace by reference to unit-rotation to test that this also works
         type: ROTATION
-        axis: {type: VECTOR-REFERENCE, reference: unit-x}
+        axis: {vector3: unit-x}
         angle: 0
   - l_shoulder_pan:
       type: FRAME
       translation: {type: VECTOR3, inputs: [0.0, 0.188, 0.0]}
       rotation:
         type: ROTATION
-        axis: {type: VECTOR-REFERENCE, reference: unit-z}
+        axis: {vector3: unit-z}
         angle: {double: l_shoulder_pan_joint}
   - l_shoulder_lift:
       type: FRAME
       translation: {type: VECTOR3, inputs: [0.1, 0, 0]}
       rotation:
         type: ROTATION
-        axis: {type: VECTOR-REFERENCE, reference: unit-y}
+        axis: {vector3: unit-y}
         angle: {double: l_shoulder_lift_joint}
   - l_upper_arm_roll:
       type: FRAME
       translation: {type: VECTOR3, inputs: [0, 0, 0]}
       rotation:
         type: ROTATION
-        axis: {type: VECTOR-REFERENCE, reference: unit-x}
+        axis: {vector3: unit-x}
         angle: {double: l_upper_arm_roll_joint}
   - l_elbow_flex:
       type: FRAME
       translation: {type: VECTOR3, inputs: [0.4, 0, 0]}
       rotation:
         type: ROTATION
-        axis: {type: VECTOR-REFERENCE, reference: unit-y}
+        axis: {vector3: unit-y}
         angle: {double: l_elbow_flex_joint}
   - l_forearm_roll:
       type: FRAME
       translation: {type: VECTOR3, inputs: [0, 0, 0]}
       rotation:
         type: ROTATION
-        axis: {type: VECTOR-REFERENCE, reference: unit-x}
+        axis: {vector3: unit-x}
         angle: {double: l_forearm_roll_joint}
   - l_wrist_flex:
       type: FRAME
       translation: {type: VECTOR3, inputs: [0.321, 0, 0]}
       rotation:
         type: ROTATION
-        axis: {type: VECTOR-REFERENCE, reference: unit-y}
+        axis: {vector3: unit-y}
         angle: {double: l_wrist_flex_joint}
   - l_wrist_roll:
       type: FRAME
       translation: {type: VECTOR3, inputs: [0, 0, 0]}
       rotation:
         type: ROTATION
-        axis: {type: VECTOR-REFERENCE, reference: unit-x}
+        axis: {vector3: unit-x}
         angle: {double: l_wrist_roll_joint}
   
   
@@ -99,11 +99,11 @@ scope:
   - pr2_fk_goal: {type: VECTOR3, inputs: [0.6, 0.5, 0.7]}
   - pr2_fk_error_vector:
       type: VECTOR-SUBTRACTION
-      inputs: [{type: VECTOR-REFERENCE, reference: pr2_fk_goal},
-               {type: VECTOR-REFERENCE, reference: pr2_fk_pos}]
+      inputs: [{vector3: pr2_fk_goal},
+               {vector3: pr2_fk_pos}]
   - pr2_fk_error:
       type: NORM-OF
-      vector: {type: VECTOR-REFERENCE, reference: pr2_fk_error_vector}
+      vector: {vector3: pr2_fk_error_vector}
   - pr2_fk_control_law:
       type: DOUBLE-MULTIPLICATION
       inputs: [-10.0, {double: pr2_fk_error}]
