@@ -221,6 +221,36 @@ namespace YAML {
     }
   };
 
+  inline bool is_z_coord_of(const Node& node)
+  {
+    return node.IsMap() && (node.size() == 2) && node["type"] &&
+        (node["type"].as<std::string>().compare("Z-COORD-OF") == 0) &&
+        node["vector"];
+  }
+
+  template<>
+  struct convert<giskard::DoubleZCoordOfSpecPtr> 
+  {
+    static Node encode(const giskard::DoubleZCoordOfSpecPtr& rhs) 
+    {
+      Node node;
+      node["type"] = "Z-COORD-OF";
+      node["vector"] = rhs->get_vector();
+      return node;
+    }
+  
+    static bool decode(const Node& node, giskard::DoubleZCoordOfSpecPtr& rhs) 
+    {
+      if(!is_z_coord_of(node))
+        return false;
+
+      rhs = giskard::DoubleZCoordOfSpecPtr(new giskard::DoubleZCoordOfSpec()); 
+      rhs->set_vector(node["vector"].as< giskard::VectorSpecPtr >());
+
+      return true;
+    }
+  };
+
   template<>
   struct convert<giskard::DoubleSpecPtr> 
   {
@@ -271,6 +301,12 @@ namespace YAML {
             boost::dynamic_pointer_cast<giskard::DoubleMultiplicationSpec>(rhs);
         node = p;
       }
+      else if(boost::dynamic_pointer_cast<giskard::DoubleZCoordOfSpec>(rhs).get())
+      {
+        giskard::DoubleZCoordOfSpecPtr p = 
+            boost::dynamic_pointer_cast<giskard::DoubleZCoordOfSpec>(rhs);
+        node = p;
+      }
 
       return node;
     }
@@ -310,6 +346,11 @@ namespace YAML {
       else if(is_double_norm_of(node))
       {
         rhs = node.as<giskard::DoubleNormOfSpecPtr>();
+        return true;
+      }
+      else if(is_z_coord_of(node))
+      {
+        rhs = node.as<giskard::DoubleZCoordOfSpecPtr>();
         return true;
       }
       else
@@ -697,7 +738,8 @@ namespace YAML {
   inline bool is_double_spec(const Node& node)
   {
     return is_const_double(node) || is_input(node) || is_double_reference(node) ||
-        is_double_norm_of(node) || is_double_multiplication(node) || is_double_subtraction(node);
+        is_double_norm_of(node) || is_double_multiplication(node) || is_double_subtraction(node) ||
+        is_z_coord_of(node);
   }
 
   inline bool is_vector_spec(const Node& node)

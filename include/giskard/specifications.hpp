@@ -451,6 +451,43 @@ namespace giskard
 
   typedef typename boost::shared_ptr<DoubleMultiplicationSpec> DoubleMultiplicationSpecPtr;
 
+  class DoubleZCoordOfSpec : public DoubleSpec
+  {
+    public:
+      const giskard::VectorSpecPtr& get_vector() const
+      {
+        return vector_;
+      }
+
+      void set_vector(const giskard::VectorSpecPtr& vector)
+      {
+        vector_ = vector;
+      }
+
+      virtual bool equals(const Spec& other) const
+      {
+        if(!dynamic_cast<const DoubleZCoordOfSpec*>(&other))
+          return false;
+
+        return dynamic_cast<const DoubleZCoordOfSpec*>(&other)->get_vector()->equals(*(this->get_vector()));
+      }
+
+      virtual std::string to_string() const
+      {
+        return "todo: implement me";
+      }
+
+      virtual KDL::Expression<double>::Ptr get_expression(const giskard::Scope& scope)
+      {
+        return KDL::coord_z(get_vector()->get_expression(scope));
+      }
+
+    private:
+      giskard::VectorSpecPtr vector_;
+  };
+
+  typedef typename boost::shared_ptr<DoubleZCoordOfSpec> DoubleZCoordOfSpecPtr;
+
   ///
   /// specifications of vector expressions
   ///

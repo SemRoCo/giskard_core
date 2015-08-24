@@ -273,3 +273,18 @@ TEST_F(DoubleExpressionGenerationTest, DoubleSubtraction)
 
   EXPECT_NEAR(exp->value(), 1.2, 1e-10);
 }
+
+TEST_F(DoubleExpressionGenerationTest, ZCoordOf)
+{
+  std::string s1 = "{type: Z-COORD-OF, vector: {type: VECTOR3, inputs: [1.1, 2.2, 3.3]}}";
+
+  YAML::Node node = YAML::Load(s1);
+
+  ASSERT_NO_THROW(node.as<giskard::DoubleSpecPtr>());
+  giskard::DoubleSpecPtr spec = node.as<giskard::DoubleSpecPtr>();
+
+  KDL::Expression<double>::Ptr exp = spec->get_expression(giskard::Scope());
+  ASSERT_TRUE(exp.get());
+
+  EXPECT_NEAR(exp->value(), 3.3, 1e-10);
+}
