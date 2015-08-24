@@ -20,7 +20,7 @@ scope:
   - torso_lift:
       type: FRAME
       translation: 
-        vector3: [-0.05, 0, {type: DOUBLE-ADDITION, inputs: [0.739675, {double: torso_lift_joint}]}]
+        vector3: [-0.05, 0, {double-addition: [0.739675, {double: torso_lift_joint}]}]
       rotation: # todo: replace by reference to unit-rotation to test that this also works
         type: ROTATION
         axis: {vector3: unit-x}

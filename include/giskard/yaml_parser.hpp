@@ -99,9 +99,8 @@ namespace YAML {
 
   inline bool is_double_addition(const Node& node)
   {
-    return node.IsMap() && (node.size() == 2) && node["type"] &&
-        (node["type"].as<std::string>().compare("DOUBLE-ADDITION") == 0) &&
-        node["inputs"] && node["inputs"].IsSequence();
+    return node.IsMap() && (node.size() == 1) && node["double-addition"] &&
+        node["double-addition"].IsSequence();
   }
 
   template<>
@@ -110,8 +109,7 @@ namespace YAML {
     static Node encode(const giskard::DoubleAdditionSpecPtr& rhs) 
     {
       Node node;
-      node["type"] = "DOUBLE-ADDITION";
-      node["inputs"] = rhs->get_inputs();
+      node["double-addition"] = rhs->get_inputs();
       return node;
     }
   
@@ -121,7 +119,7 @@ namespace YAML {
         return false;
 
       rhs = giskard::DoubleAdditionSpecPtr(new giskard::DoubleAdditionSpec()); 
-      rhs->set_inputs(node["inputs"].as< std::vector<giskard::DoubleSpecPtr> >());
+      rhs->set_inputs(node["double-addition"].as< std::vector<giskard::DoubleSpecPtr> >());
 
       return true;
     }
