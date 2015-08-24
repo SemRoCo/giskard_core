@@ -159,9 +159,9 @@ TEST_F(PR2FKTest, QPPositionControl)
   EXPECT_LE(error->value(), 0.01);
 }
 
-TEST_F(PR2FKTest, QPPositionControlWithExcessObservables)
+TEST_F(PR2FKTest, QPPositionControlWithDeactivatedControllables)
 {
-  YAML::Node node = YAML::LoadFile("pr2_qp_position_control_with_excess_observables.yaml");
+  YAML::Node node = YAML::LoadFile("pr2_qp_position_control_with_deactivated_controllables.yaml");
 
   ASSERT_TRUE(node.IsMap());
 
