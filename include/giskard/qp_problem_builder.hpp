@@ -170,10 +170,12 @@ namespace giskard
         H_.diagonal().segment(num_controllables(), num_soft_constraints()) =
             soft_weights_.get_values();
 
-        A_.block(0, 0, num_hard_constraints(), num_hard_constraints_observables()) =
-            hard_expressions_.get_derivatives();
-        A_.block(num_hard_constraints(), 0, num_soft_constraints(), num_soft_constraints_observables()) = 
-            soft_expressions_.get_derivatives();
+        size_t cols_to_copy = std::min(num_hard_constraints_observables(), num_controllables());
+        A_.block(0, 0, num_hard_constraints(), cols_to_copy) =
+            hard_expressions_.get_derivatives().block(0, 0, num_hard_constraints(), cols_to_copy);
+        cols_to_copy = std::min(num_soft_constraints_observables(), num_controllables());
+        A_.block(num_hard_constraints(), 0, num_soft_constraints(), cols_to_copy) = 
+            soft_expressions_.get_derivatives().block(0, 0, num_soft_constraints(), cols_to_copy);
 
         lb_.segment(0, num_controllables()) = controllable_lower_bounds_.get_values();
         // TODO: try to get rid of these constants
