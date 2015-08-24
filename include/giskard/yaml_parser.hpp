@@ -127,9 +127,8 @@ namespace YAML {
 
   inline bool is_double_subtraction(const Node& node)
   {
-    return node.IsMap() && (node.size() == 2) && node["type"] &&
-        (node["type"].as<std::string>().compare("DOUBLE-SUBTRACTION") == 0) &&
-        node["inputs"] && node["inputs"].IsSequence();
+    return node.IsMap() && (node.size() == 1) && node["double-subtraction"] &&
+        node["double-subtraction"].IsSequence();
   }
 
   template<>
@@ -138,8 +137,7 @@ namespace YAML {
     static Node encode(const giskard::DoubleSubtractionSpecPtr& rhs) 
     {
       Node node;
-      node["type"] = "DOUBLE-SUBTRACTION";
-      node["inputs"] = rhs->get_inputs();
+      node["double-subtraction"] = rhs->get_inputs();
       return node;
     }
   
@@ -149,7 +147,7 @@ namespace YAML {
         return false;
 
       rhs = giskard::DoubleSubtractionSpecPtr(new giskard::DoubleSubtractionSpec()); 
-      rhs->set_inputs(node["inputs"].as< std::vector<giskard::DoubleSpecPtr> >());
+      rhs->set_inputs(node["double-subtraction"].as< std::vector<giskard::DoubleSpecPtr> >());
 
       return true;
     }

@@ -239,9 +239,9 @@ TEST_F(DoubleExpressionGenerationTest, DoubleMultiplication)
 
 TEST_F(DoubleExpressionGenerationTest, DoubleSubtraction)
 {
-  std::string s1 = "{type: DOUBLE-SUBTRACTION, inputs: [-0.5]}";
-  std::string s2 = "{type: DOUBLE-SUBTRACTION, inputs: [0.5, 2.0]}";
-  std::string s3 = "{type: DOUBLE-SUBTRACTION, inputs: [1.1, 0.2, -0.3]}";
+  std::string s1 = "{double-subtraction: [-0.5]}";
+  std::string s2 = "{double-subtraction: [0.5, 2.0]}";
+  std::string s3 = "{double-subtraction: [1.1, 0.2, -0.3]}";
 
   YAML::Node node = YAML::Load(s1);
 

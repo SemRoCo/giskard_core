@@ -140,17 +140,17 @@ soft-constraints:
 
 hard-constraints:
   - expression: {double: torso_lift_joint}
-    lower: {type: DOUBLE-SUBTRACTION, inputs: [0.0115, {double: torso_lift_joint}]}
-    upper: {type: DOUBLE-SUBTRACTION, inputs: [0.325, {double: torso_lift_joint}]}
+    lower: {double-subtraction: [0.0115, {double: torso_lift_joint}]}
+    upper: {double-subtraction: [0.325, {double: torso_lift_joint}]}
   - expression: {double: l_shoulder_pan_joint}
-    lower: {type: DOUBLE-SUBTRACTION, inputs: [-0.5646, {double: l_shoulder_pan_joint}]}
-    upper: {type: DOUBLE-SUBTRACTION, inputs: [2.1353, {double: l_shoulder_pan_joint}]}
+    lower: {double-subtraction: [-0.5646, {double: l_shoulder_pan_joint}]}
+    upper: {double-subtraction: [2.1353, {double: l_shoulder_pan_joint}]}
   - expression: {double: l_shoulder_lift_joint}
-    lower: {type: DOUBLE-SUBTRACTION, inputs: [-0.3536, {double: l_shoulder_lift_joint}]}
-    upper: {type: DOUBLE-SUBTRACTION, inputs: [1.2963, {double: l_shoulder_lift_joint}]}
+    lower: {double-subtraction: [-0.3536, {double: l_shoulder_lift_joint}]}
+    upper: {double-subtraction: [1.2963, {double: l_shoulder_lift_joint}]}
   - expression: {double: l_upper_arm_roll_joint}
-    lower: {type: DOUBLE-SUBTRACTION, inputs: [-0.65, {double: l_upper_arm_roll_joint}]}
-    upper: {type: DOUBLE-SUBTRACTION, inputs: [3.75, {double: l_upper_arm_roll_joint}]}
+    lower: {double-subtraction: [-0.65, {double: l_upper_arm_roll_joint}]}
+    upper: {double-subtraction: [3.75, {double: l_upper_arm_roll_joint}]}
   - expression: {double: l_elbow_flex_joint}
-    lower: {type: DOUBLE-SUBTRACTION, inputs: [-2.1213, {double: l_elbow_flex_joint}]}
-    upper: {type: DOUBLE-SUBTRACTION, inputs: [-0.15, {double: l_elbow_flex_joint}]}
+    lower: {double-subtraction: [-2.1213, {double: l_elbow_flex_joint}]}
+    upper: {double-subtraction: [-0.15, {double: l_elbow_flex_joint}]}
