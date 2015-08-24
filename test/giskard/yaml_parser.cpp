@@ -285,7 +285,7 @@ TEST_F(YamlParserTest, FrameConstructorSpec)
 {
   std::string r = "{axis-angle: [{vector3: [0.0, -2.0, 0.0]}, " + boost::lexical_cast<std::string>(M_PI/-2.0) + "]}";
   std::string t = "{vector3: [1.1, 2.2, 3.3]}";
-  std::string f = "{type: FRAME, rotation: " + r + ", translation: " + t + "}";
+  std::string f = "{frame: [" + r + ", " + t + "]}";
 
   // parsing into axis angle specification
   YAML::Node node = YAML::Load(f);
@@ -480,8 +480,8 @@ TEST_F(YamlParserTest, FrameMultiplicationSpec)
   std::string r2 = "{axis-angle: [{vector3: [0.0, 1.0, 0.0]}, -0.5]}";
   std::string t1 = "{vector3: [0.1, 0.2, 0.3]}";
   std::string t2 = "{vector3: [-1.1, -2.2, -3.3]}";
-  std::string f1 = "{type: FRAME, rotation: " + r1 + ", translation: " + t1 + "}";
-  std::string f2 = "{type: FRAME, rotation: " + r2 + ", translation: " + t2 + "}";
+  std::string f1 = "{frame: [" + r1 + ", " + t1 + "]}";
+  std::string f2 = "{frame: [" + r2 + ", " + t2 + "]}";
   std::string f3 = "{frame-multiplication: [" + f1 + ", " + f2 + "]}";
   YAML::Node node = YAML::Load(f1);
   ASSERT_NO_THROW(node.as<giskard::FrameConstructorSpecPtr>());

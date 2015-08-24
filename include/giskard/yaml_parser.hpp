@@ -613,9 +613,8 @@ namespace YAML {
 
   inline bool is_constructor_frame(const Node& node)
   {
-    return node.IsMap() && (node.size() == 3) && node["type"] &&
-        (node["type"].as<std::string>().compare("FRAME") == 0) &&
-        node["translation"] && node["rotation"];
+    return node.IsMap() && (node.size() == 1) && node["frame"] &&
+        node["frame"].IsSequence() && (node["frame"].size() == 2);
   }
 
   template<>
@@ -624,9 +623,8 @@ namespace YAML {
     static Node encode(const giskard::FrameConstructorSpecPtr& rhs) 
     {
       Node node;
-      node["type"] = "FRAME";
-      node["translation"] = rhs->get_translation();
-      node["rotation"] = rhs->get_rotation();
+      node["frame"][0] = rhs->get_rotation();
+      node["frame"][1] = rhs->get_translation();
       return node;
     }
   
@@ -636,8 +634,8 @@ namespace YAML {
         return false;
 
       rhs = giskard::FrameConstructorSpecPtr(new giskard::FrameConstructorSpec()); 
-      rhs->set_translation(node["translation"].as<giskard::VectorSpecPtr>());
-      rhs->set_rotation(node["rotation"].as<giskard::RotationSpecPtr>());
+      rhs->set_rotation(node["frame"][0].as<giskard::RotationSpecPtr>());
+      rhs->set_translation(node["frame"][1].as<giskard::VectorSpecPtr>());
 
       return true;
     }

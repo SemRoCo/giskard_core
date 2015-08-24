@@ -18,39 +18,38 @@ scope:
   
   # definition of joint transforms
   - torso_lift:
-      type: FRAME
-      translation: 
-        vector3: [-0.05, 0, {double-addition: [0.739675, {double: torso_lift_joint}]}]
-      rotation: {axis-angle: [{vector3: unit-x}, 0]}
+      frame:
+      - {axis-angle: [{vector3: unit-x}, 0]}
+      - {vector3: [-0.05, 0, {double-addition: [0.739675, {double: torso_lift_joint}]}]}
   - l_shoulder_pan:
-      type: FRAME
-      translation: {vector3: [0.0, 0.188, 0.0]}
-      rotation: {axis-angle: [{vector3: unit-z}, {double: l_shoulder_pan_joint}]}
+      frame:
+      - {axis-angle: [{vector3: unit-z}, {double: l_shoulder_pan_joint}]}
+      - {vector3: [0.0, 0.188, 0.0]}
   - l_shoulder_lift:
-      type: FRAME
-      translation: {vector3: [0.1, 0, 0]}
-      rotation: {axis-angle: [{vector3: unit-y}, {double: l_shoulder_lift_joint}]}
+      frame:
+      - {axis-angle: [{vector3: unit-y}, {double: l_shoulder_lift_joint}]}
+      - {vector3: [0.1, 0, 0]}
   - l_upper_arm_roll:
-      type: FRAME
-      translation: {vector3: [0, 0, 0]}
-      rotation: {axis-angle: [{vector3: unit-x}, {double: l_upper_arm_roll_joint}]}
+      frame:
+      - {axis-angle: [{vector3: unit-x}, {double: l_upper_arm_roll_joint}]}
+      - {vector3: [0, 0, 0]}
   - l_elbow_flex:
-      type: FRAME
-      translation: {vector3: [0.4, 0, 0]}
-      rotation: {axis-angle: [{vector3: unit-y}, {double: l_elbow_flex_joint}]}
+      frame:
+      - {axis-angle: [{vector3: unit-y}, {double: l_elbow_flex_joint}]}
+      - {vector3: [0.4, 0, 0]}
   - l_forearm_roll:
-      type: FRAME
-      translation: {vector3: [0, 0, 0]}
-      rotation: {axis-angle: [{vector3: unit-x}, {double: l_forearm_roll_joint}]}
+      frame:
+      - {axis-angle: [{vector3: unit-x}, {double: l_forearm_roll_joint}]}
+      - {vector3: [0, 0, 0]}
   - l_wrist_flex:
-      type: FRAME
-      translation: {vector3: [0.321, 0, 0]}
-      rotation: {axis-angle: [{vector3: unit-y}, {double: l_wrist_flex_joint}]}
+      frame:
+      - {axis-angle: [{vector3: unit-y}, {double: l_wrist_flex_joint}]}
+      - {vector3: [0.321, 0, 0]}
   - l_wrist_roll:
-      type: FRAME
-      translation: {vector3: [0, 0, 0]}
-      rotation: {axis-angle: [{vector3: unit-x}, {double: l_wrist_roll_joint}]}
-  
+      frame:
+      - {axis-angle: [{vector3: unit-x}, {double: l_wrist_roll_joint}]}
+      - {vector3: [0, 0, 0]}
+
   
   # defintion of entire FK, goal, and control law
   - pr2_fk:
