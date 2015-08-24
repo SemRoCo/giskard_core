@@ -448,9 +448,8 @@ namespace YAML {
 
   inline bool is_vector_subtraction(const Node& node)
   {
-    return node.IsMap() && (node.size() == 2) && node["type"] &&
-        (node["type"].as<std::string>().compare("VECTOR-SUBTRACTION") == 0) &&
-        node["inputs"] && node["inputs"].IsSequence();
+    return node.IsMap() && (node.size() == 1) && node["vector-subtraction"] &&
+        node["vector-subtraction"].IsSequence();
   }
 
   template<>
@@ -459,8 +458,7 @@ namespace YAML {
     static Node encode(const giskard::VectorSubtractionSpecPtr& rhs) 
     {
       Node node;
-      node["type"] = "VECTOR-SUBTRACTION";
-      node["inputs"] = rhs->get_inputs();
+      node["vector-subtraction"] = rhs->get_inputs();
       return node;
     }
   
@@ -470,7 +468,7 @@ namespace YAML {
         return false;
 
       rhs = giskard::VectorSubtractionSpecPtr(new giskard::VectorSubtractionSpec()); 
-      rhs->set_inputs(node["inputs"].as< std::vector<giskard::VectorSpecPtr> >());
+      rhs->set_inputs(node["vector-subtraction"].as< std::vector<giskard::VectorSpecPtr> >());
 
       return true;
     }

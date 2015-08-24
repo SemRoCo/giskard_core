@@ -92,10 +92,7 @@ scope:
       type: ORIGIN-OF
       frame: {frame: pr2_fk}
   - pr2_fk_goal: {vector3: [0.6, 0.5, 0.7]}
-  - pr2_fk_error_vector:
-      type: VECTOR-SUBTRACTION
-      inputs: [{vector3: pr2_fk_goal},
-               {vector3: pr2_fk_pos}]
+  - pr2_fk_error_vector: {vector-subtraction: [{vector3: pr2_fk_goal}, {vector3: pr2_fk_pos}]}
   - pr2_fk_error:
       type: NORM-OF
       vector: {vector3: pr2_fk_error_vector}
