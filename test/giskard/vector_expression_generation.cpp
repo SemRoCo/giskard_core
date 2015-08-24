@@ -64,8 +64,8 @@ TEST_F(VectorExpressionGenerationTest, ConstructorEquality)
 
 TEST_F(VectorExpressionGenerationTest, VectorSubtraction)
 {
-  std::string v1 = "{type: VECTOR3, inputs: [1.1, 2.2, 3.3]}";
-  std::string v2 = "{type: VECTOR3, inputs: [-0.5, 0.5, 1.5]}";
+  std::string v1 = "{vector3: [1.1, 2.2, 3.3]}";
+  std::string v2 = "{vector3: [-0.5, 0.5, 1.5]}";
 
   std::string s1 = "{type: VECTOR-SUBTRACTION, inputs: [" + v1 + "]}";
   std::string s2 = "{type: VECTOR-SUBTRACTION, inputs: [" + v1 + ", " + v2 + "]}";
@@ -117,9 +117,9 @@ TEST_F(VectorExpressionGenerationTest, VectorSubtraction)
 
 TEST_F(VectorExpressionGenerationTest, VectorFrameMultiplication)
 {
-  std::string v1 = "{type: VECTOR3, inputs: [0.1, 0.2, 0.3]}";
-  std::string v2 = "{type: VECTOR3, inputs: [1, 2, 3]}";
-  std::string r = "{type: ROTATION, axis: {type: VECTOR3, inputs: [1, 0, 0]}, angle: 0}";
+  std::string v1 = "{vector3: [0.1, 0.2, 0.3]}";
+  std::string v2 = "{vector3: [1, 2, 3]}";
+  std::string r = "{type: ROTATION, axis: {vector3: [1, 0, 0]}, angle: 0}";
   std::string f = "{type: FRAME, translation: " + v1 + ", rotation: " + r + "}";
   std::string s1 = "{type: MULTIPLICATION, frame: " + f + ", vector: " + v2 + "}";
 

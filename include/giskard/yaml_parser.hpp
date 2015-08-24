@@ -361,9 +361,8 @@ namespace YAML {
 
   inline bool is_constructor_vector(const Node& node)
   {
-    return node.IsMap() && (node.size() == 2) && node["type"] &&
-        (node["type"].as<std::string>().compare("VECTOR3") == 0) && 
-        node["inputs"] && node["inputs"].IsSequence() && (node["inputs"].size() == 3);
+    return node.IsMap() && (node.size() == 1) && node["vector3"] &&
+        node["vector3"].IsSequence() && (node["vector3"].size() == 3);
   }
 
   template<>
@@ -372,10 +371,9 @@ namespace YAML {
     static Node encode(const giskard::VectorConstructorSpecPtr& rhs) 
     {
       Node node;
-      node["type"] = "VECTOR3";
-      node["inputs"].push_back(rhs->get_x());
-      node["inputs"].push_back(rhs->get_y());
-      node["inputs"].push_back(rhs->get_z());
+      node["vector3"].push_back(rhs->get_x());
+      node["vector3"].push_back(rhs->get_y());
+      node["vector3"].push_back(rhs->get_z());
       return node;
     }
   
@@ -385,9 +383,9 @@ namespace YAML {
         return false;
 
       rhs = giskard::VectorConstructorSpecPtr(new giskard::VectorConstructorSpec()); 
-      rhs->set_x(node["inputs"][0].as<giskard::DoubleSpecPtr>());
-      rhs->set_y(node["inputs"][1].as<giskard::DoubleSpecPtr>());
-      rhs->set_z(node["inputs"][2].as<giskard::DoubleSpecPtr>());
+      rhs->set_x(node["vector3"][0].as<giskard::DoubleSpecPtr>());
+      rhs->set_y(node["vector3"][1].as<giskard::DoubleSpecPtr>());
+      rhs->set_z(node["vector3"][2].as<giskard::DoubleSpecPtr>());
 
       return true;
     }
@@ -395,7 +393,8 @@ namespace YAML {
 
   inline bool is_vector_reference(const Node& node)
   {
-    return node.IsMap() && (node.size() == 1) && node["vector3"];
+    return node.IsMap() && (node.size() == 1) && node["vector3"] &&
+        node["vector3"].IsScalar();
   }
 
   template<>

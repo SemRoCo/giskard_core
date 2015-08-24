@@ -88,7 +88,7 @@ TEST_F(YamlParserTest, InputExpression)
 
 TEST_F(YamlParserTest, VectorConstructorSpec)
 {
-  std::string v = "{type: VECTOR3, inputs: [1.1, 2.2, 3.3]}";
+  std::string v = "{vector3: [1.1, 2.2, 3.3]}";
 
   // parsing constructor vector
   YAML::Node node = YAML::Load(v);
@@ -170,7 +170,7 @@ TEST_F(YamlParserTest, VectorConstructorSpec)
 
 TEST_F(YamlParserTest, AxisAngleSpec)
 {
-  std::string r = "{type: ROTATION, axis: {type: VECTOR3, inputs: [1.0, 0.0, 0.0]}, angle: {type: INPUT, input-number: 3}}"; 
+  std::string r = "{type: ROTATION, axis: {vector3: [1.0, 0.0, 0.0]}, angle: {type: INPUT, input-number: 3}}"; 
 
   // parsing into axis angle specification
   YAML::Node node = YAML::Load(r);
@@ -283,8 +283,8 @@ TEST_F(YamlParserTest, AxisAngleSpec)
 
 TEST_F(YamlParserTest, FrameConstructorSpec)
 {
-  std::string r = "{type: ROTATION, axis: {type: VECTOR3, inputs: [0.0, -2.0, 0.0]}, angle: " + boost::lexical_cast<std::string>(M_PI/-2.0) + "}";
-  std::string t = "{type: VECTOR3, inputs: [1.1, 2.2, 3.3]}";
+  std::string r = "{type: ROTATION, axis: {vector3: [0.0, -2.0, 0.0]}, angle: " + boost::lexical_cast<std::string>(M_PI/-2.0) + "}";
+  std::string t = "{vector3: [1.1, 2.2, 3.3]}";
   std::string f = "{type: FRAME, rotation: " + r + ", translation: " + t + "}";
 
   // parsing into axis angle specification
@@ -476,10 +476,10 @@ TEST_F(YamlParserTest, FrameConstructorSpec)
 
 TEST_F(YamlParserTest, FrameMultiplicationSpec)
 {
-  std::string r1 = "{type: ROTATION, axis: {type: VECTOR3, inputs: [1.0, 0.0, 0.0]}, angle: 1.0}";
-  std::string r2 = "{type: ROTATION, axis: {type: VECTOR3, inputs: [0.0, 1.0, 0.0]}, angle: -0.5}";
-  std::string t1 = "{type: VECTOR3, inputs: [0.1, 0.2, 0.3]}";
-  std::string t2 = "{type: VECTOR3, inputs: [-1.1, -2.2, -3.3]}";
+  std::string r1 = "{type: ROTATION, axis: {vector3: [1.0, 0.0, 0.0]}, angle: 1.0}";
+  std::string r2 = "{type: ROTATION, axis: {vector3: [0.0, 1.0, 0.0]}, angle: -0.5}";
+  std::string t1 = "{vector3: [0.1, 0.2, 0.3]}";
+  std::string t2 = "{vector3: [-1.1, -2.2, -3.3]}";
   std::string f1 = "{type: FRAME, rotation: " + r1 + ", translation: " + t1 + "}";
   std::string f2 = "{type: FRAME, rotation: " + r2 + ", translation: " + t2 + "}";
   std::string f3 = "{type: FRAME-MULTIPLICATION, inputs: [" + f1 + ", " + f2 + "]}";

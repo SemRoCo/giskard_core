@@ -12,13 +12,11 @@ inputs:
   #  </joint>
   - type: FRAME
     translation:
-      type: VECTOR3
-      inputs: [0.0, 0.188, 0.0]
+      vector3: [0.0, 0.188, 0.0]
     rotation:
       type: ROTATION
       axis:
-        type: VECTOR3
-        inputs: [0, 0, 1]
+        vector3: [0, 0, 1]
       angle:
         type: INPUT # l_shoulder_pan_joint
         input-number: 0
@@ -35,13 +33,11 @@ inputs:
   #  </joint>
   - type: FRAME
     translation:
-      type: VECTOR3
-      inputs: [0.1, 0, 0]
+      vector3: [0.1, 0, 0]
     rotation:
       type: ROTATION
       axis:
-        type: VECTOR3
-        inputs: [0, 1, 0]
+        vector3: [0, 1, 0]
       angle:
         type: INPUT # l_shoulder_lift_joint
         input-number: 1
@@ -58,13 +54,11 @@ inputs:
   #  </joint>
   - type: FRAME
     translation:
-      type: VECTOR3
-      inputs: [0, 0, 0]
+      vector3: [0, 0, 0]
     rotation:
       type: ROTATION
       axis:
-        type: VECTOR3
-        inputs: [1, 0, 0]
+        vector3: [1, 0, 0]
       angle:
         type: INPUT # l_upper_arm_roll_joint
         input-number: 2
@@ -81,13 +75,11 @@ inputs:
   #  </joint>
   - type: FRAME
     translation:
-      type: VECTOR3
-      inputs: [0.4, 0, 0]
+      vector3: [0.4, 0, 0]
     rotation:
       type: ROTATION
       axis:
-        type: VECTOR3
-        inputs: [0, 1, 0]
+        vector3: [0, 1, 0]
       angle:
         type: INPUT # l_elbow_flex_joint
         input-number: 3 
@@ -103,13 +95,11 @@ inputs:
   #  </joint>
   - type: FRAME
     translation:
-      type: VECTOR3
-      inputs: [0, 0, 0]
+      vector3: [0, 0, 0]
     rotation:
       type: ROTATION
       axis:
-        type: VECTOR3
-        inputs: [1, 0, 0]
+        vector3: [1, 0, 0]
       angle:
         type: INPUT # l_forearm_roll_joint
         input-number: 4 
@@ -126,13 +116,11 @@ inputs:
   #  </joint>
   - type: FRAME
     translation:
-      type: VECTOR3
-      inputs: [0.321, 0, 0]
+      vector3: [0.321, 0, 0]
     rotation:
       type: ROTATION
       axis:
-        type: VECTOR3
-        inputs: [0, 1, 0]
+        vector3: [0, 1, 0]
       angle:
         type: INPUT # l_wrist_flex_joint
         input-number: 5 
@@ -148,13 +136,11 @@ inputs:
   #  </joint>
   - type: FRAME
     translation:
-      type: VECTOR3
-      inputs: [0, 0, 0]
+      vector3: [0, 0, 0]
     rotation:
       type: ROTATION
       axis:
-        type: VECTOR3
-        inputs: [1, 0, 0]
+        vector3: [1, 0, 0]
       angle:
         type: INPUT # l_wrist_roll_joint
         input-number: 6
