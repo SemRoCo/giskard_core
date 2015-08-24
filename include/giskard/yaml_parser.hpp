@@ -71,9 +71,7 @@ namespace YAML {
 
   inline bool is_double_reference(const Node& node)
   {
-    return node.IsMap() && (node.size() == 2) && node["type"] &&
-        (node["type"].as<std::string>().compare("DOUBLE-REFERENCE") == 0) &&
-        node["reference"];
+    return node.IsMap() && (node.size() == 1) && node["double"];
   }
 
   template<>
@@ -83,8 +81,7 @@ namespace YAML {
     static Node encode(const giskard::DoubleReferenceSpecPtr& rhs) 
     {
       Node node;
-      node["reference"] = rhs->get_reference_name();
-      node["type"] = "DOUBLE-REFERENCE";
+      node["double"] = rhs->get_reference_name();
       return node;
     }
   
@@ -94,7 +91,7 @@ namespace YAML {
         return false;
   
       rhs = giskard::DoubleReferenceSpecPtr(new giskard::DoubleReferenceSpec());
-      rhs->set_reference_name(node["reference"].as<std::string>());
+      rhs->set_reference_name(node["double"].as<std::string>());
 
       return true;
     }

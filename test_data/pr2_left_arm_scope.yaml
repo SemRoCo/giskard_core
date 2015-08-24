@@ -24,7 +24,7 @@
       - -0.05
       - 0
       - type: DOUBLE-ADDITION
-        inputs: [0.739675, {type: DOUBLE-REFERENCE, reference: torso_lift_joint}]
+        inputs: [0.739675, {double: torso_lift_joint}]
     rotation: # todo: replace by reference to unit-rotation to test that this also works
       type: ROTATION
       axis: {type: VECTOR-REFERENCE, reference: unit-x}
@@ -35,49 +35,49 @@
     rotation:
       type: ROTATION
       axis: {type: VECTOR-REFERENCE, reference: unit-z}
-      angle: {type: DOUBLE-REFERENCE, reference: l_shoulder_pan_joint}
+      angle: {double: l_shoulder_pan_joint}
 - l_shoulder_lift:
     type: FRAME
     translation: {type: VECTOR3, inputs: [0.1, 0, 0]}
     rotation:
       type: ROTATION
       axis: {type: VECTOR-REFERENCE, reference: unit-y}
-      angle: {type: DOUBLE-REFERENCE, reference: l_shoulder_lift_joint}
+      angle: {double: l_shoulder_lift_joint}
 - l_upper_arm_roll:
     type: FRAME
     translation: {type: VECTOR3, inputs: [0, 0, 0]}
     rotation:
       type: ROTATION
       axis: {type: VECTOR-REFERENCE, reference: unit-x}
-      angle: {type: DOUBLE-REFERENCE, reference: l_upper_arm_roll_joint}
+      angle: {double: l_upper_arm_roll_joint}
 - l_elbow_flex:
     type: FRAME
     translation: {type: VECTOR3, inputs: [0.4, 0, 0]}
     rotation:
       type: ROTATION
       axis: {type: VECTOR-REFERENCE, reference: unit-y}
-      angle: {type: DOUBLE-REFERENCE, reference: l_elbow_flex_joint}
+      angle: {double: l_elbow_flex_joint}
 - l_forearm_roll:
     type: FRAME
     translation: {type: VECTOR3, inputs: [0, 0, 0]}
     rotation:
       type: ROTATION
       axis: {type: VECTOR-REFERENCE, reference: unit-x}
-      angle: {type: DOUBLE-REFERENCE, reference: l_forearm_roll_joint}
+      angle: {double: l_forearm_roll_joint}
 - l_wrist_flex:
     type: FRAME
     translation: {type: VECTOR3, inputs: [0.321, 0, 0]}
     rotation:
       type: ROTATION
       axis: {type: VECTOR-REFERENCE, reference: unit-y}
-      angle: {type: DOUBLE-REFERENCE, reference: l_wrist_flex_joint}
+      angle: {double: l_wrist_flex_joint}
 - l_wrist_roll:
     type: FRAME
     translation: {type: VECTOR3, inputs: [0, 0, 0]}
     rotation:
       type: ROTATION
       axis: {type: VECTOR-REFERENCE, reference: unit-x}
-      angle: {type: DOUBLE-REFERENCE, reference: l_wrist_roll_joint}
+      angle: {double: l_wrist_roll_joint}
 
 
 # defintion of entire FK
