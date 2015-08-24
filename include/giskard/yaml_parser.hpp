@@ -658,9 +658,8 @@ namespace YAML {
 
   inline bool is_frame_multiplication(const Node& node)
   {
-    return node.IsMap() && (node.size() == 2) && node["type"] &&
-        (node["type"].as<std::string>().compare("FRAME-MULTIPLICATION") == 0) &&
-        node["inputs"] && node["inputs"].IsSequence();
+    return node.IsMap() && (node.size() == 1) && node["frame-multiplication"] &&
+        node["frame-multiplication"].IsSequence();
   }
 
   template<>
@@ -669,8 +668,7 @@ namespace YAML {
     static Node encode(const giskard::FrameMultiplicationSpecPtr& rhs) 
     {
       Node node;
-      node["type"] = "FRAME-MULTIPLICATION";
-      node["inputs"] = rhs->get_inputs();
+      node["frame-multiplication"] = rhs->get_inputs();
       return node;
     }
   
@@ -680,7 +678,7 @@ namespace YAML {
         return false;
 
       rhs = giskard::FrameMultiplicationSpecPtr(new giskard::FrameMultiplicationSpec()); 
-      rhs->set_inputs(node["inputs"].as< std::vector<giskard::FrameSpecPtr> >());
+      rhs->set_inputs(node["frame-multiplication"].as< std::vector<giskard::FrameSpecPtr> >());
 
       return true;
     }

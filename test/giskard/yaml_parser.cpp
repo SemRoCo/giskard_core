@@ -482,7 +482,7 @@ TEST_F(YamlParserTest, FrameMultiplicationSpec)
   std::string t2 = "{vector3: [-1.1, -2.2, -3.3]}";
   std::string f1 = "{type: FRAME, rotation: " + r1 + ", translation: " + t1 + "}";
   std::string f2 = "{type: FRAME, rotation: " + r2 + ", translation: " + t2 + "}";
-  std::string f3 = "{type: FRAME-MULTIPLICATION, inputs: [" + f1 + ", " + f2 + "]}";
+  std::string f3 = "{frame-multiplication: [" + f1 + ", " + f2 + "]}";
   YAML::Node node = YAML::Load(f1);
   ASSERT_NO_THROW(node.as<giskard::FrameConstructorSpecPtr>());
   giskard::FrameConstructorSpecPtr s1 = node.as<giskard::FrameConstructorSpecPtr>();

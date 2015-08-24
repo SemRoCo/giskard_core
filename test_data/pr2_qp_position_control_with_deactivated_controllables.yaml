@@ -78,8 +78,7 @@ scope:
   
   # defintion of entire FK, goal, and control law
   - pr2_fk:
-      type: FRAME-MULTIPLICATION
-      inputs:
+      frame-multiplication:
       - {frame: torso_lift} 
       - {frame: l_shoulder_pan} 
       - {frame: l_shoulder_lift} 

@@ -1,5 +1,4 @@
-type: FRAME-MULTIPLICATION
-inputs:
+frame-multiplication:
   # torso_lift_link --> l_shoulder_pan_link
   # 
   # URDF DATA:
