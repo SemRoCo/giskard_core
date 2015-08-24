@@ -89,8 +89,8 @@ TEST_F(QPProblemBuilderTest, Constructor)
   EXPECT_EQ(0, b.num_constraints());
   EXPECT_EQ(0, b.num_soft_constraints());
   EXPECT_EQ(0, b.num_hard_constraints());
-  EXPECT_EQ(0, b.num_soft_constraints_controllables());
-  EXPECT_EQ(0, b.num_hard_constraints_controllables());
+  EXPECT_EQ(0, b.num_soft_constraints_observables());
+  EXPECT_EQ(0, b.num_hard_constraints_observables());
   EXPECT_EQ(0, b.num_controllables());
 
   EXPECT_EQ(0, b.get_ubA().rows());
@@ -125,8 +125,8 @@ TEST_F(QPProblemBuilderTest, Init)
   EXPECT_EQ(5, b.num_constraints());
   EXPECT_EQ(3, b.num_soft_constraints());
   EXPECT_EQ(2, b.num_hard_constraints());
-  EXPECT_EQ(2, b.num_soft_constraints_controllables());
-  EXPECT_EQ(2, b.num_hard_constraints_controllables());
+  EXPECT_EQ(2, b.num_soft_constraints_observables());
+  EXPECT_EQ(2, b.num_hard_constraints_observables());
   EXPECT_EQ(2, b.num_controllables());
 
   EXPECT_EQ(5, b.get_ubA().rows());
@@ -162,8 +162,8 @@ TEST_F(QPProblemBuilderTest, Update)
   EXPECT_EQ(5, b.num_constraints());
   EXPECT_EQ(3, b.num_soft_constraints());
   EXPECT_EQ(2, b.num_hard_constraints());
-  EXPECT_EQ(2, b.num_soft_constraints_controllables());
-  EXPECT_EQ(2, b.num_hard_constraints_controllables());
+  EXPECT_EQ(2, b.num_soft_constraints_observables());
+  EXPECT_EQ(2, b.num_hard_constraints_observables());
   EXPECT_EQ(2, b.num_controllables());
 
   using Eigen::operator<<;
