@@ -417,9 +417,7 @@ namespace YAML {
 
   inline bool is_vector_origin_of(const Node& node)
   {
-    return node.IsMap() && (node.size() == 2) && node["type"] &&
-        (node["type"].as<std::string>().compare("ORIGIN-OF") == 0) &&
-        node["frame"];
+    return node.IsMap() && (node.size() == 1) && node["origin-of"];
   }
 
   template<>
@@ -429,8 +427,7 @@ namespace YAML {
     static Node encode(const giskard::VectorOriginOfSpecPtr& rhs) 
     {
       Node node;
-      node["type"] = "ORIGIN-OF";
-      node["frame"] = rhs->get_frame();
+      node["origin-of"] = rhs->get_frame();
       return node;
     }
   
@@ -440,7 +437,7 @@ namespace YAML {
         return false;
   
       rhs = giskard::VectorOriginOfSpecPtr(new giskard::VectorOriginOfSpec());
-      rhs->set_frame(node["frame"].as<giskard::FrameSpecPtr>());
+      rhs->set_frame(node["origin-of"].as<giskard::FrameSpecPtr>());
 
       return true;
     }

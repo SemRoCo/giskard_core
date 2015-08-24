@@ -87,9 +87,7 @@ scope:
       - {frame: l_forearm_roll} 
       - {frame: l_wrist_flex} 
       - {frame: l_wrist_roll} 
-  - pr2_fk_pos:
-      type: ORIGIN-OF
-      frame: {frame: pr2_fk}
+  - pr2_fk_pos: {origin-of: {frame: pr2_fk}}
   - pr2_fk_goal: {vector3: [0.6, 0.5, 0.7]}
   - pr2_fk_error_vector: {vector-subtraction: [{vector3: pr2_fk_goal}, {vector3: pr2_fk_pos}]}
   - pr2_fk_error:
