@@ -276,7 +276,7 @@ TEST_F(DoubleExpressionGenerationTest, DoubleSubtraction)
 
 TEST_F(DoubleExpressionGenerationTest, ZCoordOf)
 {
-  std::string s1 = "{type: Z-COORD-OF, vector: {vector3: [1.1, 2.2, 3.3]}}";
+  std::string s1 = "{z-coord: {vector3: [1.1, 2.2, 3.3]}}";
 
   YAML::Node node = YAML::Load(s1);
 

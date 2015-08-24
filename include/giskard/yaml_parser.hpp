@@ -210,9 +210,7 @@ namespace YAML {
 
   inline bool is_z_coord_of(const Node& node)
   {
-    return node.IsMap() && (node.size() == 2) && node["type"] &&
-        (node["type"].as<std::string>().compare("Z-COORD-OF") == 0) &&
-        node["vector"];
+    return node.IsMap() && (node.size() == 1) && node["z-coord"];
   }
 
   template<>
@@ -221,8 +219,7 @@ namespace YAML {
     static Node encode(const giskard::DoubleZCoordOfSpecPtr& rhs) 
     {
       Node node;
-      node["type"] = "Z-COORD-OF";
-      node["vector"] = rhs->get_vector();
+      node["z-coord"] = rhs->get_vector();
       return node;
     }
   
@@ -232,7 +229,7 @@ namespace YAML {
         return false;
 
       rhs = giskard::DoubleZCoordOfSpecPtr(new giskard::DoubleZCoordOfSpec()); 
-      rhs->set_vector(node["vector"].as< giskard::VectorSpecPtr >());
+      rhs->set_vector(node["z-coord"].as< giskard::VectorSpecPtr >());
 
       return true;
     }
