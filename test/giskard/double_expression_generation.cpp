@@ -208,7 +208,7 @@ TEST_F(DoubleExpressionGenerationTest, AdditionEquality)
 
 TEST_F(DoubleExpressionGenerationTest, VectorNorm)
 {
-  std::string s = "{type: NORM-OF, vector: {vector3: [1.0, 2.0, 2.0]}}";
+  std::string s = "{vector-norm: {vector3: [1.0, 2.0, 2.0]}}";
 
   YAML::Node node = YAML::Load(s);
 

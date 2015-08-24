@@ -154,9 +154,7 @@ namespace YAML {
 
   inline bool is_double_norm_of(const Node& node)
   {
-    return node.IsMap() && (node.size() == 2) && node["type"] &&
-        (node["type"].as<std::string>().compare("NORM-OF") == 0) &&
-        node["vector"];
+    return node.IsMap() && (node.size() == 1) && node["vector-norm"];
   }
 
   template<>
@@ -166,8 +164,7 @@ namespace YAML {
     static Node encode(const giskard::DoubleNormOfSpecPtr& rhs) 
     {
       Node node;
-      node["type"] = "NORM-OF";
-      node["vector"] = rhs->get_vector();
+      node["vector-norm"] = rhs->get_vector();
       return node;
     }
   
@@ -177,7 +174,7 @@ namespace YAML {
         return false;
   
       rhs = giskard::DoubleNormOfSpecPtr(new giskard::DoubleNormOfSpec());
-      rhs->set_vector(node["vector"].as<giskard::VectorSpecPtr>());
+      rhs->set_vector(node["vector-norm"].as<giskard::VectorSpecPtr>());
 
       return true;
     }
