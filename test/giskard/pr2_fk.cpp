@@ -212,3 +212,55 @@ TEST_F(PR2FKTest, QPPositionControlWithDeactivatedControllables)
 
   EXPECT_LE(error->value(), 0.01);
 }
+
+TEST_F(PR2FKTest, QPPositionControlWithExcessObservables)
+{
+  YAML::Node node = YAML::LoadFile("pr2_qp_position_control_with_excess_observables.yaml");
+
+  ASSERT_TRUE(node.IsMap());
+
+  ASSERT_NO_THROW(node.as< giskard::QPControllerSpec >());
+  giskard::QPControllerSpec spec = node.as< giskard::QPControllerSpec >();
+
+  giskard::Scope scope = giskard::generate(spec.scope_);
+  KDL::Expression<double>::Ptr error = scope.find_double_expression("pr2_fk_error");
+
+  Eigen::VectorXd state(8);
+  using Eigen::operator<<;
+  state << 0.02, 0.0, 0.0, 0.0, -0.16, 0.0, -0.11, 0.0;
+  int nWSR = 10;
+  ASSERT_NO_THROW(giskard::generate(spec));
+  giskard::QPController controller = giskard::generate(spec);
+
+  // setup
+  size_t iterations = 300;
+  double dt = 0.01;
+  std::vector<double> state_tmp;
+  state_tmp.resize(state.rows());
+  
+  error->setInputValues(state_tmp);
+  EXPECT_GE(error->value(), 0.3);
+
+  ASSERT_TRUE(controller.start(state, nWSR));
+  for(size_t i=0; i<iterations; ++i)
+  {
+    ASSERT_TRUE(controller.update(state, nWSR));
+
+    for(size_t j=0; j<state.rows(); ++j)
+      state_tmp[j] = state(j);
+    error->setInputValues(state_tmp);
+    double last_error = error->value();
+
+    state.segment(0, 6) += dt * controller.get_command();
+
+    for(size_t j=0; j<state.rows(); ++j)
+      state_tmp[j] = state(j);
+    error->setInputValues(state_tmp);
+    double current_error = error->value();
+
+    EXPECT_LE(current_error, last_error);
+
+  }
+
+  EXPECT_LE(error->value(), 0.01);
+}
