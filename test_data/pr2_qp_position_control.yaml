@@ -6,14 +6,14 @@ scope:
   
   
   # definition of joint input variables
-  - torso_lift_joint: {type: INPUT, input-number: 0}
-  - l_shoulder_pan_joint: {type: INPUT, input-number: 1}
-  - l_shoulder_lift_joint: {type: INPUT, input-number: 2}
-  - l_upper_arm_roll_joint: {type: INPUT, input-number: 3}
-  - l_elbow_flex_joint: {type: INPUT, input-number: 4}
-  - l_forearm_roll_joint: {type: INPUT, input-number: 5}
-  - l_wrist_flex_joint: {type: INPUT, input-number: 6}
-  - l_wrist_roll_joint: {type: INPUT, input-number: 7}
+  - torso_lift_joint: {input-variable: 0}
+  - l_shoulder_pan_joint: {input-variable: 1}
+  - l_shoulder_lift_joint: {input-variable: 2}
+  - l_upper_arm_roll_joint: {input-variable: 3}
+  - l_elbow_flex_joint: {input-variable: 4}
+  - l_forearm_roll_joint: {input-variable: 5}
+  - l_wrist_flex_joint: {input-variable: 6}
+  - l_wrist_roll_joint: {input-variable: 7}
   
   
   # definition of joint transforms

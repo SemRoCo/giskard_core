@@ -50,7 +50,7 @@ TEST_F(YamlParserTest, ConstDoubleExpression)
 
 TEST_F(YamlParserTest, InputExpression)
 {
-  std::string i = "{type: INPUT, input-number: 2}";
+  std::string i = "{input-variable: 2}";
 
   // parsing input double
   YAML::Node node = YAML::Load(i);
@@ -170,7 +170,7 @@ TEST_F(YamlParserTest, VectorConstructorSpec)
 
 TEST_F(YamlParserTest, AxisAngleSpec)
 {
-  std::string r = "{type: ROTATION, axis: {vector3: [1.0, 0.0, 0.0]}, angle: {type: INPUT, input-number: 3}}"; 
+  std::string r = "{type: ROTATION, axis: {vector3: [1.0, 0.0, 0.0]}, angle: {input-variable: 3}}"; 
 
   // parsing into axis angle specification
   YAML::Node node = YAML::Load(r);

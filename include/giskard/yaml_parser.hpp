@@ -41,8 +41,8 @@ namespace YAML {
 
   inline bool is_input(const Node& node)
   {
-    return node.IsMap() && (node.size() == 2) && node["type"] && node["input-number"] &&
-        (node["type"].as<std::string>().compare("INPUT") == 0);
+    return node.IsMap() && (node.size() == 1) && node["input-variable"] && 
+        node["input-variable"].IsScalar();
   }
 
   template<>
@@ -52,8 +52,7 @@ namespace YAML {
     static Node encode(const giskard::DoubleInputSpecPtr& rhs) 
     {
       Node node;
-      node["input-number"] = rhs->get_input_num();
-      node["type"] = "INPUT";
+      node["input-variable"] = rhs->get_input_num();
       return node;
     }
   
@@ -63,7 +62,7 @@ namespace YAML {
         return false;
   
       rhs = giskard::DoubleInputSpecPtr(new giskard::DoubleInputSpec());
-      rhs->set_input_num(node["input-number"].as<size_t>());
+      rhs->set_input_num(node["input-variable"].as<size_t>());
 
       return true;
     }
