@@ -65,7 +65,12 @@ namespace giskard
       {
         return xdot_partial_;
       }
- 
+
+      const QPProblemBuilder& get_qp_builder() const
+      {
+        return qp_builder_;
+      }
+
     private:
       giskard::QPProblemBuilder qp_builder_;
       qpOASES::SQProblem qp_problem_;

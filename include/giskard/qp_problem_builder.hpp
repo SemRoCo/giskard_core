@@ -103,6 +103,26 @@ namespace giskard
         return num_controllables() + num_soft_constraints();
       }
 
+      const DoubleExpressionVector& get_soft_lower_bounds() const
+      {
+        return soft_lower_bounds_.get_expressions();
+      }
+
+      const DoubleExpressionVector& get_soft_upper_bounds() const
+      {
+        return soft_upper_bounds_.get_expressions();
+      }
+
+      const DoubleExpressionVector& get_soft_expressions() const
+      {
+        return soft_expressions_.get_expressions();
+      }
+
+      const DoubleExpressionVector& get_soft_weights() const
+      {
+        return soft_weights_.get_expressions();
+      }
+    
     private:
       KDL::DoubleExpressionArray controllable_lower_bounds_, controllable_upper_bounds_,
          controllable_weights_, soft_expressions_, soft_lower_bounds_, soft_upper_bounds_,
