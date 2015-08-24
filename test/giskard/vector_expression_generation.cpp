@@ -114,3 +114,25 @@ TEST_F(VectorExpressionGenerationTest, VectorSubtraction)
   val2 = KDL::Vector(2.1, 1.2, 0.3);
   EXPECT_TRUE(KDL::Equal(val1, val2));
 }
+
+TEST_F(VectorExpressionGenerationTest, VectorFrameMultiplication)
+{
+  std::string v1 = "{type: VECTOR3, inputs: [0.1, 0.2, 0.3]}";
+  std::string v2 = "{type: VECTOR3, inputs: [1, 2, 3]}";
+  std::string r = "{type: ROTATION, axis: {type: VECTOR3, inputs: [1, 0, 0]}, angle: 0}";
+  std::string f = "{type: FRAME, translation: " + v1 + ", rotation: " + r + "}";
+  std::string s1 = "{type: MULTIPLICATION, frame: " + f + ", vector: " + v2 + "}";
+
+  YAML::Node node = YAML::Load(s1);
+//std::cout << node << "\n\n";
+  ASSERT_NO_THROW(node.as<giskard::VectorSpecPtr>());
+  giskard::VectorSpecPtr spec = node.as<giskard::VectorSpecPtr>();
+  
+  ASSERT_NO_THROW(spec->get_expression(giskard::Scope()));
+  KDL::Expression<KDL::Vector>::Ptr exp = spec->get_expression(giskard::Scope());
+  
+  ASSERT_TRUE(exp.get());
+  KDL::Vector val1 = exp->value();
+  KDL::Vector val2 = KDL::Vector(1.1, 2.2, 3.3);
+  EXPECT_TRUE(KDL::Equal(val1, val2));
+}

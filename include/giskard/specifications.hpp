@@ -724,6 +724,60 @@ namespace giskard
 
   typedef typename boost::shared_ptr<VectorOriginOfSpec> VectorOriginOfSpecPtr;
 
+  class VectorFrameMultiplicationSpec: public VectorSpec
+  {
+    public:
+      const VectorSpecPtr& get_vector() const
+      {
+        return vector_;
+      }
+
+      const FrameSpecPtr& get_frame() const
+      {
+        return frame_;
+      }
+
+      void set_vector(const VectorSpecPtr& vector)
+      {
+        vector_ = vector;
+      }
+
+      void set_frame(const FrameSpecPtr& frame)
+      {
+        frame_ = frame;
+      }
+
+      virtual bool equals(const Spec& other) const
+      {
+        if(!dynamic_cast<const VectorFrameMultiplicationSpec*>(&other))
+          return false;
+
+        const VectorFrameMultiplicationSpec* other_p = dynamic_cast<const VectorFrameMultiplicationSpec*>(&other);
+
+        return get_frame().get() && get_vector().get() && 
+            get_frame()->equals(*(other_p->get_frame())) &&
+            get_vector()->equals(*(other_p->get_vector()));
+      }
+
+      virtual std::string to_string() const
+      {
+        // todo: implement me
+        return "";
+      }
+
+      virtual KDL::Expression<KDL::Vector>::Ptr get_expression(const giskard::Scope& scope)
+      {
+        using KDL::operator*;
+
+        return get_frame()->get_expression(scope) * get_vector()->get_expression(scope);
+      }
+
+    private:
+      VectorSpecPtr vector_;
+      FrameSpecPtr frame_;
+  };
+
+  typedef typename boost::shared_ptr<VectorFrameMultiplicationSpec> VectorFrameMultiplicationSpecPtr;
 
   ///
   /// specifications for rotation expresssions

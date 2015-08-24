@@ -488,6 +488,38 @@ namespace YAML {
     }
   };
 
+  inline bool is_vector_frame_multiplication(const Node& node)
+  {
+    return node.IsMap() && (node.size() == 3) &&  node["type"] &&
+        (node["type"].as<std::string>().compare("MULTIPLICATION") == 0) &&
+        node["frame"] && node["vector"];
+  }
+
+  template<>
+  struct convert<giskard::VectorFrameMultiplicationSpecPtr> 
+  {
+    static Node encode(const giskard::VectorFrameMultiplicationSpecPtr& rhs) 
+    {
+      Node node;
+      node["type"] = "MULTIPLICAION";
+      node["frame"] = rhs->get_frame();
+      node["vector"] = rhs->get_vector();
+      return node;
+    }
+  
+    static bool decode(const Node& node, giskard::VectorFrameMultiplicationSpecPtr& rhs) 
+    {
+      if(!is_vector_frame_multiplication(node))
+        return false;
+
+      rhs = giskard::VectorFrameMultiplicationSpecPtr(new giskard::VectorFrameMultiplicationSpec()); 
+      rhs->set_frame(node["frame"].as< giskard::FrameSpecPtr >());
+      rhs->set_vector(node["vector"].as< giskard::VectorSpecPtr >());
+
+      return true;
+    }
+  };
+
   template<>
   struct convert<giskard::VectorSpecPtr> 
   {
@@ -503,6 +535,8 @@ namespace YAML {
         node = boost::dynamic_pointer_cast<giskard::VectorOriginOfSpec>(rhs);
       else if(boost::dynamic_pointer_cast<giskard::VectorSubtractionSpec>(rhs).get())
         node = boost::dynamic_pointer_cast<giskard::VectorSubtractionSpec>(rhs);
+      else if(boost::dynamic_pointer_cast<giskard::VectorFrameMultiplicationSpec>(rhs).get())
+        node = boost::dynamic_pointer_cast<giskard::VectorFrameMultiplicationSpec>(rhs);
 
       return node;
     }
@@ -527,6 +561,11 @@ namespace YAML {
       else if(is_vector_subtraction(node))
       {
         rhs = node.as<giskard::VectorSubtractionSpecPtr>();
+        return true;
+      }
+      else if(is_vector_frame_multiplication(node))
+      {
+        rhs = node.as<giskard::VectorFrameMultiplicationSpecPtr>();
         return true;
       }
       else
@@ -745,7 +784,8 @@ namespace YAML {
   inline bool is_vector_spec(const Node& node)
   {
     return is_constructor_vector(node) || is_vector_reference(node) ||
-        is_vector_origin_of(node) || is_vector_subtraction(node);
+        is_vector_origin_of(node) || is_vector_subtraction(node) ||
+        is_vector_frame_multiplication(node);
   }
 
   inline bool is_rotation_spec(const Node& node)
