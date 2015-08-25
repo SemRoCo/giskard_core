@@ -37,11 +37,11 @@
 # defintion of entire FK
 - pr2_fk:
     frame-multiplication:
-      - {frame: torso_lift} 
-      - {frame: l_shoulder_pan} 
-      - {frame: l_shoulder_lift} 
-      - {frame: l_upper_arm_roll} 
-      - {frame: l_elbow_flex} 
-      - {frame: l_forearm_roll} 
-      - {frame: l_wrist_flex} 
-      - {frame: l_wrist_roll} 
+      - torso_lift 
+      - l_shoulder_pan 
+      - l_shoulder_lift 
+      - l_upper_arm_roll 
+      - l_elbow_flex 
+      - l_forearm_roll 
+      - l_wrist_flex 
+      - l_wrist_roll 
