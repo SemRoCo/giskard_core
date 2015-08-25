@@ -403,8 +403,18 @@ namespace YAML {
 
   inline bool is_vector_reference(const Node& node)
   {
-    return node.IsMap() && (node.size() == 1) && node["vector3"] &&
-        node["vector3"].IsScalar();
+    if(!node.IsScalar())
+      return false;
+
+    try
+    {
+      node.as<std::string>();
+      return true;
+    }
+    catch (const YAML::Exception& e)
+    {
+      return false;
+    }
   }
 
   template<>
@@ -414,7 +424,7 @@ namespace YAML {
     static Node encode(const giskard::VectorReferenceSpecPtr& rhs) 
     {
       Node node;
-      node["vector3"] = rhs->get_reference_name();
+      node = rhs->get_reference_name();
       return node;
     }
   
@@ -424,7 +434,7 @@ namespace YAML {
         return false;
   
       rhs = giskard::VectorReferenceSpecPtr(new giskard::VectorReferenceSpec());
-      rhs->set_reference_name(node["vector3"].as<std::string>());
+      rhs->set_reference_name(node.as<std::string>());
 
       return true;
     }
