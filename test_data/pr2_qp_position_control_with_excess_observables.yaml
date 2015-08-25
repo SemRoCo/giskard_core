@@ -54,52 +54,37 @@ scope:
 
 
 controllable-constraints:
-  - lower: -0.1
-    upper: 0.1
-    weight: 10.0
-    input-number: 0
-  - lower: -0.3
-    upper: 0.3
-    weight: 1.0
-    input-number: 1
-  - lower: -0.3
-    upper: 0.3
-    weight: 1.0
-    input-number: 2
-  - lower: -0.3
-    upper: 0.3
-    weight: 1.0
-    input-number: 3
-  - lower: -0.3
-    upper: 0.3
-    weight: 1.0
-    input-number: 4
-  - lower: -0.3
-    upper: 0.3
-    weight: 1.0
-    input-number: 5
+  - controllable-constraint: [-0.1, 0.1, 10.0, 0]
+  - controllable-constraint: [-0.3, 0.3, 1.0, 1]
+  - controllable-constraint: [-0.3, 0.3, 1.0, 2]
+  - controllable-constraint: [-0.3, 0.3, 1.0, 3]
+  - controllable-constraint: [-0.3, 0.3, 1.0, 4]
+  - controllable-constraint: [-0.3, 0.3, 1.0, 5]
 
 
 soft-constraints:
-  - expression: pr2_fk_error
-    lower: pr2_fk_control_law
-    upper: pr2_fk_control_law
-    weight: 10.0
+  - soft-constraint: [pr2_fk_control_law, pr2_fk_control_law, 10.0, pr2_fk_error]
 
 
 hard-constraints:
-  - expression: torso_lift_joint
-    lower: {double-sub: [0.0115, torso_lift_joint]}
-    upper: {double-sub: [0.325, torso_lift_joint]}
-  - expression: l_shoulder_pan_joint
-    lower: {double-sub: [-0.5646, l_shoulder_pan_joint]}
-    upper: {double-sub: [2.1353, l_shoulder_pan_joint]}
-  - expression: l_shoulder_lift_joint
-    lower: {double-sub: [-0.3536, l_shoulder_lift_joint]}
-    upper: {double-sub: [1.2963, l_shoulder_lift_joint]}
-  - expression: l_upper_arm_roll_joint
-    lower: {double-sub: [-0.65, l_upper_arm_roll_joint]}
-    upper: {double-sub: [3.75, l_upper_arm_roll_joint]}
-  - expression: l_elbow_flex_joint
-    lower: {double-sub: [-2.1213, l_elbow_flex_joint]}
-    upper: {double-sub: [-0.15, l_elbow_flex_joint]}
+  - hard-constraint: 
+      - {double-sub: [0.0115, torso_lift_joint]}
+      - {double-sub: [0.325, torso_lift_joint]}
+      - torso_lift_joint
+  - hard-constraint:
+      - {double-sub: [-0.5646, l_shoulder_pan_joint]}
+      - {double-sub: [2.1353, l_shoulder_pan_joint]}
+      - l_shoulder_pan_joint
+  - hard-constraint:
+      - {double-sub: [-0.3536, l_shoulder_lift_joint]}
+      - {double-sub: [1.2963, l_shoulder_lift_joint]}
+      -  l_shoulder_lift_joint
+  - hard-constraint:
+      - {double-sub: [-0.65, l_upper_arm_roll_joint]}
+      - {double-sub: [3.75, l_upper_arm_roll_joint]}
+      - l_upper_arm_roll_joint
+  - hard-constraint: 
+      - {double-sub: [-2.1213, l_elbow_flex_joint]}
+      - {double-sub: [-0.15, l_elbow_flex_joint]}
+      - l_elbow_flex_joint
+

@@ -888,8 +888,8 @@ namespace YAML {
 
   inline bool is_controllable_spec(const Node& node)
   {
-    return node.IsMap() && (node.size() == 4) && node["lower"] &&
-        node["upper"] && node["weight"] && node["input-number"];
+    return node.IsMap() && (node.size() == 1) && node["controllable-constraint"] &&
+        node["controllable-constraint"].IsSequence() && (node["controllable-constraint"].size() == 4);
   }
 
   template<>
@@ -899,10 +899,10 @@ namespace YAML {
     {
       YAML::Node node;
 
-      node["lower"] = rhs.lower_;
-      node["upper"] = rhs.upper_;
-      node["weight"] = rhs.weight_;
-      node["input-number"] = rhs.input_number_;
+      node["controllable-constraint"][0] = rhs.lower_;
+      node["controllable-constraint"][1] = rhs.upper_;
+      node["controllable-constraint"][2] = rhs.weight_;
+      node["controllable-constraint"][3] = rhs.input_number_;
 
       return node;
     }
@@ -912,10 +912,10 @@ namespace YAML {
       if(!is_controllable_spec(node))
         return false;
 
-      rhs.lower_ = node["lower"].as<giskard::DoubleSpecPtr>();
-      rhs.upper_ = node["upper"].as<giskard::DoubleSpecPtr>();
-      rhs.weight_ = node["weight"].as<giskard::DoubleSpecPtr>();
-      rhs.input_number_ = node["input-number"].as<size_t>();
+      rhs.lower_ = node["controllable-constraint"][0].as<giskard::DoubleSpecPtr>();
+      rhs.upper_ = node["controllable-constraint"][1].as<giskard::DoubleSpecPtr>();
+      rhs.weight_ = node["controllable-constraint"][2].as<giskard::DoubleSpecPtr>();
+      rhs.input_number_ = node["controllable-constraint"][3].as<size_t>();
 
       return true;
     }
@@ -923,8 +923,8 @@ namespace YAML {
 
   inline bool is_soft_constraint_spec(const Node& node)
   {
-    return node.IsMap() && (node.size() == 4) && node["lower"] &&
-        node["upper"] && node["weight"] && node["expression"];
+    return node.IsMap() && (node.size() == 1) && node["soft-constraint"] &&
+        node["soft-constraint"].IsSequence() && (node["soft-constraint"].size() == 4);
   }
 
   template<>
@@ -934,10 +934,10 @@ namespace YAML {
     {
       YAML::Node node;
 
-      node["lower"] = rhs.lower_;
-      node["upper"] = rhs.upper_;
-      node["weight"] = rhs.weight_;
-      node["expression"] = rhs.expression_;
+      node["soft-constraint"][0] = rhs.lower_;
+      node["soft-constraint"][1] = rhs.upper_;
+      node["soft-constraint"][2] = rhs.weight_;
+      node["soft-constraint"][3] = rhs.expression_;
 
       return node;
     }
@@ -947,10 +947,10 @@ namespace YAML {
       if(!is_soft_constraint_spec(node))
         return false;
 
-      rhs.lower_ = node["lower"].as<giskard::DoubleSpecPtr>();
-      rhs.upper_ = node["upper"].as<giskard::DoubleSpecPtr>();
-      rhs.weight_ = node["weight"].as<giskard::DoubleSpecPtr>();
-      rhs.expression_ = node["expression"].as<giskard::DoubleSpecPtr>();
+      rhs.lower_ = node["soft-constraint"][0].as<giskard::DoubleSpecPtr>();
+      rhs.upper_ = node["soft-constraint"][1].as<giskard::DoubleSpecPtr>();
+      rhs.weight_ = node["soft-constraint"][2].as<giskard::DoubleSpecPtr>();
+      rhs.expression_ = node["soft-constraint"][3].as<giskard::DoubleSpecPtr>();
 
       return true;
     }
@@ -958,8 +958,8 @@ namespace YAML {
 
   inline bool is_hard_constraint_spec(const Node& node)
   {
-    return node.IsMap() && (node.size() == 3) && node["lower"] &&
-        node["upper"] && node["expression"];
+    return node.IsMap() && (node.size() == 1) && node["hard-constraint"] &&
+        node["hard-constraint"].IsSequence() && (node["hard-constraint"].size() == 3);
   }
 
   template<>
@@ -969,9 +969,9 @@ namespace YAML {
     {
       YAML::Node node;
 
-      node["lower"] = rhs.lower_;
-      node["upper"] = rhs.upper_;
-      node["expression"] = rhs.expression_;
+      node["hard-constraint"][0] = rhs.lower_;
+      node["hard-constraint"][1] = rhs.upper_;
+      node["hard-constraint"][2] = rhs.expression_;
 
       return node;
     }
@@ -981,9 +981,9 @@ namespace YAML {
       if(!is_hard_constraint_spec(node))
         return false;
 
-      rhs.lower_ = node["lower"].as<giskard::DoubleSpecPtr>();
-      rhs.upper_ = node["upper"].as<giskard::DoubleSpecPtr>();
-      rhs.expression_ = node["expression"].as<giskard::DoubleSpecPtr>();
+      rhs.lower_ = node["hard-constraint"][0].as<giskard::DoubleSpecPtr>();
+      rhs.upper_ = node["hard-constraint"][1].as<giskard::DoubleSpecPtr>();
+      rhs.expression_ = node["hard-constraint"][2].as<giskard::DoubleSpecPtr>();
 
       return true;
     }

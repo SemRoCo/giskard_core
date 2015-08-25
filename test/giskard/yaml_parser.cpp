@@ -534,7 +534,7 @@ TEST_F(YamlParserTest, FrameMultiplicationSpec)
 
 TEST_F(YamlParserTest, ControllableConstraintSpec)
 {
-  std::string s = "{lower: -0.1, upper: 0.2, weight: 5.0, input-number: 2}";
+  std::string s = "controllable-constraint: [-0.1, 0.2, 5.0, 2]";
 
   YAML::Node node = YAML::Load(s);
 
@@ -549,7 +549,7 @@ TEST_F(YamlParserTest, ControllableConstraintSpec)
 
 TEST_F(YamlParserTest, SoftConstraintSpec)
 {
-  std::string s = "{lower: -10.1, upper: 120.2, weight: 5.0, expression: 1.1}";
+  std::string s = "{soft-constraint: [-10.1, 120.2, 5.0, 1.1]}";
 
   YAML::Node node = YAML::Load(s);
 
@@ -564,7 +564,7 @@ TEST_F(YamlParserTest, SoftConstraintSpec)
 
 TEST_F(YamlParserTest, HardConstraintSpec)
 {
-  std::string s = "{lower: -10.1, upper: 120.2, expression: 1.1}";
+  std::string s = "{hard-constraint: [-10.1, 120.2, 1.1]}";
 
   YAML::Node node = YAML::Load(s);
 
@@ -579,9 +579,9 @@ TEST_F(YamlParserTest, HardConstraintSpec)
 TEST_F(YamlParserTest, QPControllerSpec)
 {
   std::string sc = "scope: []";
-  std::string co = "controllable-constraints: [{lower: -0.1, upper: 0.2, weight: 5.0, input-number: 2}]";
-  std::string so = "soft-constraints: [{lower: -10.1, upper: 120.2, weight: 5.0, expression: 1.1}]";
-  std::string ha = "hard-constraints: [{lower: -33.1, upper: 110.3, expression: 17.1}]";
+  std::string co = "controllable-constraints: [{controllable-constraint: [-0.1, 0.2, 5.0, 2]}]";
+  std::string so = "soft-constraints: [{soft-constraint: [-10.1, 120.2, 5.0, 1.1]}]";
+  std::string ha = "hard-constraints: [{hard-constraint: [-33.1, 110.3, 17.1]}]";
 
   std::string s = sc + "\n" + co + "\n" + so + "\n" + ha;
 
