@@ -116,7 +116,6 @@ TEST_F(PR2FKTest, QPPositionControl)
 
   ASSERT_NO_THROW(node.as< giskard::QPControllerSpec >());
   giskard::QPControllerSpec spec = node.as< giskard::QPControllerSpec >();
-
   giskard::Scope scope = giskard::generate(spec.scope_);
   KDL::Expression<double>::Ptr error = scope.find_double_expression("pr2_fk_error");
 

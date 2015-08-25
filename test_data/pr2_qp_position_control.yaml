@@ -20,34 +20,34 @@ scope:
   - torso_lift:
       frame:
       - {axis-angle: [{vector3: unit-x}, 0]}
-      - {vector3: [-0.05, 0, {double-addition: [0.739675, {double: torso_lift_joint}]}]}
+      - {vector3: [-0.05, 0, {double-addition: [0.739675, torso_lift_joint]}]}
   - l_shoulder_pan:
       frame:
-      - {axis-angle: [{vector3: unit-z}, {double: l_shoulder_pan_joint}]}
+      - {axis-angle: [{vector3: unit-z}, l_shoulder_pan_joint]}
       - {vector3: [0.0, 0.188, 0.0]}
   - l_shoulder_lift:
       frame:
-      - {axis-angle: [{vector3: unit-y}, {double: l_shoulder_lift_joint}]}
+      - {axis-angle: [{vector3: unit-y}, l_shoulder_lift_joint]}
       - {vector3: [0.1, 0, 0]}
   - l_upper_arm_roll:
       frame:
-      - {axis-angle: [{vector3: unit-x}, {double: l_upper_arm_roll_joint}]}
+      - {axis-angle: [{vector3: unit-x}, l_upper_arm_roll_joint]}
       - {vector3: [0, 0, 0]}
   - l_elbow_flex:
       frame:
-      - {axis-angle: [{vector3: unit-y}, {double: l_elbow_flex_joint}]}
+      - {axis-angle: [{vector3: unit-y}, l_elbow_flex_joint]}
       - {vector3: [0.4, 0, 0]}
   - l_forearm_roll:
       frame:
-      - {axis-angle: [{vector3: unit-x}, {double: l_forearm_roll_joint}]}
+      - {axis-angle: [{vector3: unit-x}, l_forearm_roll_joint]}
       - {vector3: [0, 0, 0]}
   - l_wrist_flex:
       frame:
-      - {axis-angle: [{vector3: unit-y}, {double: l_wrist_flex_joint}]}
+      - {axis-angle: [{vector3: unit-y}, l_wrist_flex_joint]}
       - {vector3: [0.321, 0, 0]}
   - l_wrist_roll:
       frame:
-      - {axis-angle: [{vector3: unit-x}, {double: l_wrist_roll_joint}]}
+      - {axis-angle: [{vector3: unit-x}, l_wrist_roll_joint]}
       - {vector3: [0, 0, 0]}
   
   
@@ -66,7 +66,7 @@ scope:
   - pr2_fk_goal: {vector3: [0.6, 0.5, 0.7]}
   - pr2_fk_error_vector: {vector-subtraction: [{vector3: pr2_fk_goal}, {vector3: pr2_fk_pos}]}
   - pr2_fk_error: {vector-norm: {vector3: pr2_fk_error_vector}}
-  - pr2_fk_control_law: {double-multiplication: [-10.0, {double: pr2_fk_error}]}
+  - pr2_fk_control_law: {double-multiplication: [-10.0, pr2_fk_error]}
 
 
 controllable-constraints:
@@ -105,29 +105,29 @@ controllable-constraints:
 
 
 soft-constraints:
-  - expression: {double: pr2_fk_error}
-    lower: {double: pr2_fk_control_law}
-    upper: {double: pr2_fk_control_law}
+  - expression: pr2_fk_error
+    lower: pr2_fk_control_law
+    upper: pr2_fk_control_law
     weight: 10.0
 
 
 hard-constraints:
-  - expression: {double: torso_lift_joint}
-    lower: {double-subtraction: [0.0115, {double: torso_lift_joint}]}
-    upper: {double-subtraction: [0.325, {double: torso_lift_joint}]}
-  - expression: {double: l_shoulder_pan_joint}
-    lower: {double-subtraction: [-0.5646, {double: l_shoulder_pan_joint}]}
-    upper: {double-subtraction: [2.1353, {double: l_shoulder_pan_joint}]}
-  - expression: {double: l_shoulder_lift_joint}
-    lower: {double-subtraction: [-0.3536, {double: l_shoulder_lift_joint}]}
-    upper: {double-subtraction: [1.2963, {double: l_shoulder_lift_joint}]}
-  - expression: {double: l_upper_arm_roll_joint}
-    lower: {double-subtraction: [-0.65, {double: l_upper_arm_roll_joint}]}
-    upper: {double-subtraction: [3.75, {double: l_upper_arm_roll_joint}]}
-  - expression: {double: l_elbow_flex_joint}
-    lower: {double-subtraction: [-2.1213, {double: l_elbow_flex_joint}]}
-    upper: {double-subtraction: [-0.15, {double: l_elbow_flex_joint}]}
-  - expression: {double: l_wrist_flex_joint}
-    lower: {double-subtraction: [-2.0, {double: l_wrist_flex_joint}]}
-    upper: {double-subtraction: [-0.1, {double: l_wrist_flex_joint}]}
+  - expression: torso_lift_joint
+    lower: {double-subtraction: [0.0115, torso_lift_joint]}
+    upper: {double-subtraction: [0.325, torso_lift_joint]}
+  - expression: l_shoulder_pan_joint
+    lower: {double-subtraction: [-0.5646, l_shoulder_pan_joint]}
+    upper: {double-subtraction: [2.1353, l_shoulder_pan_joint]}
+  - expression: l_shoulder_lift_joint
+    lower: {double-subtraction: [-0.3536, l_shoulder_lift_joint]}
+    upper: {double-subtraction: [1.2963, l_shoulder_lift_joint]}
+  - expression: l_upper_arm_roll_joint
+    lower: {double-subtraction: [-0.65, l_upper_arm_roll_joint]}
+    upper: {double-subtraction: [3.75, l_upper_arm_roll_joint]}
+  - expression: l_elbow_flex_joint
+    lower: {double-subtraction: [-2.1213, l_elbow_flex_joint]}
+    upper: {double-subtraction: [-0.15, l_elbow_flex_joint]}
+  - expression: l_wrist_flex_joint
+    lower: {double-subtraction: [-2.0, l_wrist_flex_joint]}
+    upper: {double-subtraction: [-0.1, l_wrist_flex_joint]}
 

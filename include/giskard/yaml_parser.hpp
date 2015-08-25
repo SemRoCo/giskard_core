@@ -13,7 +13,18 @@ namespace YAML {
 
   inline bool is_const_double(const Node& node)
   {
-    return node.IsScalar();
+    if(!node.IsScalar())
+      return false;
+
+    try
+    {
+      node.as<double>();
+      return true;
+    }
+    catch (const YAML::Exception& e)
+    {
+      return false;
+    }
   }
 
   template<>
@@ -70,7 +81,18 @@ namespace YAML {
 
   inline bool is_double_reference(const Node& node)
   {
-    return node.IsMap() && (node.size() == 1) && node["double"];
+    if(!node.IsScalar())
+      return false;
+
+    try
+    {
+      node.as<std::string>();
+      return true;
+    }
+    catch (const YAML::Exception& e)
+    {
+      return false;
+    }
   }
 
   template<>
@@ -80,7 +102,7 @@ namespace YAML {
     static Node encode(const giskard::DoubleReferenceSpecPtr& rhs) 
     {
       Node node;
-      node["double"] = rhs->get_reference_name();
+      node = rhs->get_reference_name();
       return node;
     }
   
@@ -88,9 +110,9 @@ namespace YAML {
     {
       if(!is_double_reference(node))
         return false;
-  
+ 
       rhs = giskard::DoubleReferenceSpecPtr(new giskard::DoubleReferenceSpec());
-      rhs->set_reference_name(node["double"].as<std::string>());
+      rhs->set_reference_name(node.as<std::string>());
 
       return true;
     }
@@ -297,6 +319,7 @@ namespace YAML {
   
     static bool decode(const Node& node, giskard::DoubleSpecPtr& rhs) 
     {
+
       if(is_const_double(node))
       {
         rhs = node.as<giskard::DoubleConstSpecPtr>();
@@ -305,11 +328,6 @@ namespace YAML {
       else if(is_input(node))
       {
         rhs = node.as<giskard::DoubleInputSpecPtr>();
-        return true;
-      }
-      else if(is_double_reference(node))
-      {
-        rhs = node.as<giskard::DoubleReferenceSpecPtr>();
         return true;
       }
       else if(is_double_addition(node))
@@ -335,6 +353,11 @@ namespace YAML {
       else if(is_z_coord_of(node))
       {
         rhs = node.as<giskard::DoubleZCoordOfSpecPtr>();
+        return true;
+      }
+      else if(is_double_reference(node))
+      {
+        rhs = node.as<giskard::DoubleReferenceSpecPtr>();
         return true;
       }
       else
