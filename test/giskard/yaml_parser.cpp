@@ -50,7 +50,7 @@ TEST_F(YamlParserTest, ConstDoubleExpression)
 
 TEST_F(YamlParserTest, InputExpression)
 {
-  std::string i = "{input-variable: 2}";
+  std::string i = "{input-var: 2}";
 
   // parsing input double
   YAML::Node node = YAML::Load(i);
@@ -170,7 +170,7 @@ TEST_F(YamlParserTest, VectorConstructorSpec)
 
 TEST_F(YamlParserTest, AxisAngleSpec)
 {
-  std::string r = "{axis-angle: [{vector3: [1.0, 0.0, 0.0]}, {input-variable: 3}]}"; 
+  std::string r = "{axis-angle: [{vector3: [1.0, 0.0, 0.0]}, {input-var: 3}]}"; 
 
   // parsing into axis angle specification
   YAML::Node node = YAML::Load(r);
@@ -482,7 +482,7 @@ TEST_F(YamlParserTest, FrameMultiplicationSpec)
   std::string t2 = "{vector3: [-1.1, -2.2, -3.3]}";
   std::string f1 = "{frame: [" + r1 + ", " + t1 + "]}";
   std::string f2 = "{frame: [" + r2 + ", " + t2 + "]}";
-  std::string f3 = "{frame-multiplication: [" + f1 + ", " + f2 + "]}";
+  std::string f3 = "{frame-mul: [" + f1 + ", " + f2 + "]}";
   YAML::Node node = YAML::Load(f1);
   ASSERT_NO_THROW(node.as<giskard::FrameConstructorSpecPtr>());
   giskard::FrameConstructorSpecPtr s1 = node.as<giskard::FrameConstructorSpecPtr>();
@@ -490,7 +490,7 @@ TEST_F(YamlParserTest, FrameMultiplicationSpec)
   ASSERT_NO_THROW(node.as<giskard::FrameConstructorSpecPtr>());
   giskard::FrameConstructorSpecPtr s2 = node.as<giskard::FrameConstructorSpecPtr>();
  
-  // parsing into frame-multiplication specification
+  // parsing into frame-mul specification
   node = YAML::Load(f3);
   ASSERT_NO_THROW(node.as<giskard::FrameMultiplicationSpecPtr>());
   giskard::FrameMultiplicationSpecPtr s3 = node.as<giskard::FrameMultiplicationSpecPtr>();

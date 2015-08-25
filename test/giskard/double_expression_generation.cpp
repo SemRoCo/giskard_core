@@ -223,7 +223,7 @@ TEST_F(DoubleExpressionGenerationTest, VectorNorm)
 
 TEST_F(DoubleExpressionGenerationTest, DoubleMultiplication)
 {
-  std::string s = "{double-multiplication: [-0.5, 2.0, 3.5, 0.1]}";
+  std::string s = "{double-mul: [-0.5, 2.0, 3.5, 0.1]}";
 
   YAML::Node node = YAML::Load(s);
 
@@ -239,9 +239,9 @@ TEST_F(DoubleExpressionGenerationTest, DoubleMultiplication)
 
 TEST_F(DoubleExpressionGenerationTest, DoubleSubtraction)
 {
-  std::string s1 = "{double-subtraction: [-0.5]}";
-  std::string s2 = "{double-subtraction: [0.5, 2.0]}";
-  std::string s3 = "{double-subtraction: [1.1, 0.2, -0.3]}";
+  std::string s1 = "{double-sub: [-0.5]}";
+  std::string s2 = "{double-sub: [0.5, 2.0]}";
+  std::string s3 = "{double-sub: [1.1, 0.2, -0.3]}";
 
   YAML::Node node = YAML::Load(s1);
 

@@ -67,9 +67,9 @@ TEST_F(VectorExpressionGenerationTest, VectorSubtraction)
   std::string v1 = "{vector3: [1.1, 2.2, 3.3]}";
   std::string v2 = "{vector3: [-0.5, 0.5, 1.5]}";
 
-  std::string s1 = "{vector-subtraction: [" + v1 + "]}";
-  std::string s2 = "{vector-subtraction: [" + v1 + ", " + v2 + "]}";
-  std::string s3 = "{vector-subtraction: [" + v1 + ", " + v2 + ", " + v2 + "]}";
+  std::string s1 = "{vector-sub: [" + v1 + "]}";
+  std::string s2 = "{vector-sub: [" + v1 + ", " + v2 + "]}";
+  std::string s3 = "{vector-sub: [" + v1 + ", " + v2 + ", " + v2 + "]}";
 
   // test 1
   YAML::Node node = YAML::Load(s1);

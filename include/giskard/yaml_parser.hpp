@@ -52,8 +52,8 @@ namespace YAML {
 
   inline bool is_input(const Node& node)
   {
-    return node.IsMap() && (node.size() == 1) && node["input-variable"] && 
-        node["input-variable"].IsScalar();
+    return node.IsMap() && (node.size() == 1) && node["input-var"] && 
+        node["input-var"].IsScalar();
   }
 
   template<>
@@ -63,7 +63,7 @@ namespace YAML {
     static Node encode(const giskard::DoubleInputSpecPtr& rhs) 
     {
       Node node;
-      node["input-variable"] = rhs->get_input_num();
+      node["input-var"] = rhs->get_input_num();
       return node;
     }
   
@@ -73,7 +73,7 @@ namespace YAML {
         return false;
   
       rhs = giskard::DoubleInputSpecPtr(new giskard::DoubleInputSpec());
-      rhs->set_input_num(node["input-variable"].as<size_t>());
+      rhs->set_input_num(node["input-var"].as<size_t>());
 
       return true;
     }
@@ -120,8 +120,8 @@ namespace YAML {
 
   inline bool is_double_addition(const Node& node)
   {
-    return node.IsMap() && (node.size() == 1) && node["double-addition"] &&
-        node["double-addition"].IsSequence();
+    return node.IsMap() && (node.size() == 1) && node["double-add"] &&
+        node["double-add"].IsSequence();
   }
 
   template<>
@@ -130,7 +130,7 @@ namespace YAML {
     static Node encode(const giskard::DoubleAdditionSpecPtr& rhs) 
     {
       Node node;
-      node["double-addition"] = rhs->get_inputs();
+      node["double-add"] = rhs->get_inputs();
       return node;
     }
   
@@ -140,7 +140,7 @@ namespace YAML {
         return false;
 
       rhs = giskard::DoubleAdditionSpecPtr(new giskard::DoubleAdditionSpec()); 
-      rhs->set_inputs(node["double-addition"].as< std::vector<giskard::DoubleSpecPtr> >());
+      rhs->set_inputs(node["double-add"].as< std::vector<giskard::DoubleSpecPtr> >());
 
       return true;
     }
@@ -148,8 +148,8 @@ namespace YAML {
 
   inline bool is_double_subtraction(const Node& node)
   {
-    return node.IsMap() && (node.size() == 1) && node["double-subtraction"] &&
-        node["double-subtraction"].IsSequence();
+    return node.IsMap() && (node.size() == 1) && node["double-sub"] &&
+        node["double-sub"].IsSequence();
   }
 
   template<>
@@ -158,7 +158,7 @@ namespace YAML {
     static Node encode(const giskard::DoubleSubtractionSpecPtr& rhs) 
     {
       Node node;
-      node["double-subtraction"] = rhs->get_inputs();
+      node["double-sub"] = rhs->get_inputs();
       return node;
     }
   
@@ -168,7 +168,7 @@ namespace YAML {
         return false;
 
       rhs = giskard::DoubleSubtractionSpecPtr(new giskard::DoubleSubtractionSpec()); 
-      rhs->set_inputs(node["double-subtraction"].as< std::vector<giskard::DoubleSpecPtr> >());
+      rhs->set_inputs(node["double-sub"].as< std::vector<giskard::DoubleSpecPtr> >());
 
       return true;
     }
@@ -204,8 +204,8 @@ namespace YAML {
 
   inline bool is_double_multiplication(const Node& node)
   {
-    return node.IsMap() && (node.size() == 1) && node["double-multiplication"] &&
-        node["double-multiplication"].IsSequence();
+    return node.IsMap() && (node.size() == 1) && node["double-mul"] &&
+        node["double-mul"].IsSequence();
   }
 
   template<>
@@ -214,7 +214,7 @@ namespace YAML {
     static Node encode(const giskard::DoubleMultiplicationSpecPtr& rhs) 
     {
       Node node;
-      node["double-multiplication"] = rhs->get_inputs();
+      node["double-mul"] = rhs->get_inputs();
       return node;
     }
   
@@ -224,7 +224,7 @@ namespace YAML {
         return false;
 
       rhs = giskard::DoubleMultiplicationSpecPtr(new giskard::DoubleMultiplicationSpec()); 
-      rhs->set_inputs(node["double-multiplication"].as< std::vector<giskard::DoubleSpecPtr> >());
+      rhs->set_inputs(node["double-mul"].as< std::vector<giskard::DoubleSpecPtr> >());
 
       return true;
     }
@@ -470,8 +470,8 @@ namespace YAML {
 
   inline bool is_vector_subtraction(const Node& node)
   {
-    return node.IsMap() && (node.size() == 1) && node["vector-subtraction"] &&
-        node["vector-subtraction"].IsSequence();
+    return node.IsMap() && (node.size() == 1) && node["vector-sub"] &&
+        node["vector-sub"].IsSequence();
   }
 
   template<>
@@ -480,7 +480,7 @@ namespace YAML {
     static Node encode(const giskard::VectorSubtractionSpecPtr& rhs) 
     {
       Node node;
-      node["vector-subtraction"] = rhs->get_inputs();
+      node["vector-sub"] = rhs->get_inputs();
       return node;
     }
   
@@ -490,7 +490,7 @@ namespace YAML {
         return false;
 
       rhs = giskard::VectorSubtractionSpecPtr(new giskard::VectorSubtractionSpec()); 
-      rhs->set_inputs(node["vector-subtraction"].as< std::vector<giskard::VectorSpecPtr> >());
+      rhs->set_inputs(node["vector-sub"].as< std::vector<giskard::VectorSpecPtr> >());
 
       return true;
     }
@@ -674,8 +674,8 @@ namespace YAML {
 
   inline bool is_frame_multiplication(const Node& node)
   {
-    return node.IsMap() && (node.size() == 1) && node["frame-multiplication"] &&
-        node["frame-multiplication"].IsSequence();
+    return node.IsMap() && (node.size() == 1) && node["frame-mul"] &&
+        node["frame-mul"].IsSequence();
   }
 
   template<>
@@ -684,7 +684,7 @@ namespace YAML {
     static Node encode(const giskard::FrameMultiplicationSpecPtr& rhs) 
     {
       Node node;
-      node["frame-multiplication"] = rhs->get_inputs();
+      node["frame-mul"] = rhs->get_inputs();
       return node;
     }
   
@@ -694,7 +694,7 @@ namespace YAML {
         return false;
 
       rhs = giskard::FrameMultiplicationSpecPtr(new giskard::FrameMultiplicationSpec()); 
-      rhs->set_inputs(node["frame-multiplication"].as< std::vector<giskard::FrameSpecPtr> >());
+      rhs->set_inputs(node["frame-mul"].as< std::vector<giskard::FrameSpecPtr> >());
 
       return true;
     }

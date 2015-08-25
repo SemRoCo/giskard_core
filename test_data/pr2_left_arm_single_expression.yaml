@@ -1,4 +1,4 @@
-frame-multiplication:
+frame-mul:
   # torso_lift_link --> l_shoulder_pan_link
   # 
   # URDF DATA:
@@ -10,7 +10,7 @@ frame-multiplication:
   #    <child link="l_shoulder_pan_link"/>
   #  </joint>
   - frame:
-    - {axis-angle: [{vector3: [0, 0, 1]}, {input-variable: 0}]} # l_shoulder_pan_joint
+    - {axis-angle: [{vector3: [0, 0, 1]}, {input-var: 0}]} # l_shoulder_pan_joint
     - {vector3: [0.0, 0.188, 0.0]}
 
 
@@ -24,7 +24,7 @@ frame-multiplication:
   #    <child link="l_shoulder_lift_link"/>
   #  </joint>
   - frame:
-    - {axis-angle: [{vector3: [0, 1, 0]}, {input-variable: 1}]} # l_shoulder_lift_joint
+    - {axis-angle: [{vector3: [0, 1, 0]}, {input-var: 1}]} # l_shoulder_lift_joint
     - {vector3: [0.1, 0, 0]}
 
 
@@ -38,7 +38,7 @@ frame-multiplication:
   #    <child link="l_upper_arm_roll_link"/>
   #  </joint>
   - frame:
-    - {axis-angle: [{vector3: [1, 0, 0]}, {input-variable: 2}]} # l_upper_arm_roll_joint
+    - {axis-angle: [{vector3: [1, 0, 0]}, {input-var: 2}]} # l_upper_arm_roll_joint
     - {vector3: [0, 0, 0]}
 
 
@@ -52,7 +52,7 @@ frame-multiplication:
   #    <child link="l_elbow_flex_link"/>
   #  </joint>
   - frame:
-    - {axis-angle: [{vector3: [0, 1, 0]}, {input-variable: 3}]} # l_elbow_flex_joint
+    - {axis-angle: [{vector3: [0, 1, 0]}, {input-var: 3}]} # l_elbow_flex_joint
     - {vector3: [0.4, 0, 0]}
 
   # l_elbow_flew_link --> l_forearm_roll_link
@@ -65,7 +65,7 @@ frame-multiplication:
   #    <child link="l_forearm_roll_link"/>
   #  </joint>
   - frame:
-    - {axis-angle: [{vector3: [1, 0, 0]}, {input-variable: 4}]} # l_forearm_roll_joint
+    - {axis-angle: [{vector3: [1, 0, 0]}, {input-var: 4}]} # l_forearm_roll_joint
     - {vector3: [0, 0, 0]}
 
 
@@ -79,7 +79,7 @@ frame-multiplication:
   #    <child link="l_wrist_flex_link"/>
   #  </joint>
   - frame:
-    - {axis-angle: [{vector3: [0, 1, 0]}, {input-variable: 5}]} # l_wrist_flex_joint
+    - {axis-angle: [{vector3: [0, 1, 0]}, {input-var: 5}]} # l_wrist_flex_joint
     - {vector3: [0.321, 0, 0]}
 
   # l_wrist_flex_link --> l_wrist_roll_link
@@ -92,5 +92,5 @@ frame-multiplication:
   #    <child link="l_wrist_roll_link"/>
   #  </joint>
   - frame:
-    - {axis-angle: [{vector3: [1, 0, 0]}, {input-variable: 6}]} # l_wrist_roll_joint
+    - {axis-angle: [{vector3: [1, 0, 0]}, {input-var: 6}]} # l_wrist_roll_joint
     - {vector3: [0, 0, 0]}
