@@ -451,6 +451,80 @@ namespace giskard
 
   typedef typename boost::shared_ptr<DoubleMultiplicationSpec> DoubleMultiplicationSpecPtr;
 
+  class DoubleXCoordOfSpec : public DoubleSpec
+  {
+    public:
+      const giskard::VectorSpecPtr& get_vector() const
+      {
+        return vector_;
+      }
+
+      void set_vector(const giskard::VectorSpecPtr& vector)
+      {
+        vector_ = vector;
+      }
+
+      virtual bool equals(const Spec& other) const
+      {
+        if(!dynamic_cast<const DoubleXCoordOfSpec*>(&other))
+          return false;
+
+        return dynamic_cast<const DoubleXCoordOfSpec*>(&other)->get_vector()->equals(*(this->get_vector()));
+      }
+
+      virtual std::string to_string() const
+      {
+        return "todo: implement me";
+      }
+
+      virtual KDL::Expression<double>::Ptr get_expression(const giskard::Scope& scope)
+      {
+        return KDL::coord_x(get_vector()->get_expression(scope));
+      }
+
+    private:
+      giskard::VectorSpecPtr vector_;
+  };
+
+  typedef typename boost::shared_ptr<DoubleXCoordOfSpec> DoubleXCoordOfSpecPtr;
+
+  class DoubleYCoordOfSpec : public DoubleSpec
+  {
+    public:
+      const giskard::VectorSpecPtr& get_vector() const
+      {
+        return vector_;
+      }
+
+      void set_vector(const giskard::VectorSpecPtr& vector)
+      {
+        vector_ = vector;
+      }
+
+      virtual bool equals(const Spec& other) const
+      {
+        if(!dynamic_cast<const DoubleYCoordOfSpec*>(&other))
+          return false;
+
+        return dynamic_cast<const DoubleYCoordOfSpec*>(&other)->get_vector()->equals(*(this->get_vector()));
+      }
+
+      virtual std::string to_string() const
+      {
+        return "todo: implement me";
+      }
+
+      virtual KDL::Expression<double>::Ptr get_expression(const giskard::Scope& scope)
+      {
+        return KDL::coord_y(get_vector()->get_expression(scope));
+      }
+
+    private:
+      giskard::VectorSpecPtr vector_;
+  };
+
+  typedef typename boost::shared_ptr<DoubleYCoordOfSpec> DoubleYCoordOfSpecPtr;
+
   class DoubleZCoordOfSpec : public DoubleSpec
   {
     public:

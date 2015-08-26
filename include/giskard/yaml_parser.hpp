@@ -230,6 +230,60 @@ namespace YAML {
     }
   };
 
+  inline bool is_x_coord_of(const Node& node)
+  {
+    return node.IsMap() && (node.size() == 1) && node["x-coord"];
+  }
+
+  template<>
+  struct convert<giskard::DoubleXCoordOfSpecPtr> 
+  {
+    static Node encode(const giskard::DoubleXCoordOfSpecPtr& rhs) 
+    {
+      Node node;
+      node["x-coord"] = rhs->get_vector();
+      return node;
+    }
+  
+    static bool decode(const Node& node, giskard::DoubleXCoordOfSpecPtr& rhs) 
+    {
+      if(!is_x_coord_of(node))
+        return false;
+
+      rhs = giskard::DoubleXCoordOfSpecPtr(new giskard::DoubleXCoordOfSpec()); 
+      rhs->set_vector(node["x-coord"].as< giskard::VectorSpecPtr >());
+
+      return true;
+    }
+  };
+
+  inline bool is_y_coord_of(const Node& node)
+  {
+    return node.IsMap() && (node.size() == 1) && node["y-coord"];
+  }
+
+  template<>
+  struct convert<giskard::DoubleYCoordOfSpecPtr> 
+  {
+    static Node encode(const giskard::DoubleYCoordOfSpecPtr& rhs) 
+    {
+      Node node;
+      node["y-coord"] = rhs->get_vector();
+      return node;
+    }
+  
+    static bool decode(const Node& node, giskard::DoubleYCoordOfSpecPtr& rhs) 
+    {
+      if(!is_y_coord_of(node))
+        return false;
+
+      rhs = giskard::DoubleYCoordOfSpecPtr(new giskard::DoubleYCoordOfSpec()); 
+      rhs->set_vector(node["y-coord"].as< giskard::VectorSpecPtr >());
+
+      return true;
+    }
+  };
+
   inline bool is_z_coord_of(const Node& node)
   {
     return node.IsMap() && (node.size() == 1) && node["z-coord"];
@@ -307,6 +361,18 @@ namespace YAML {
             boost::dynamic_pointer_cast<giskard::DoubleMultiplicationSpec>(rhs);
         node = p;
       }
+      else if(boost::dynamic_pointer_cast<giskard::DoubleXCoordOfSpec>(rhs).get())
+      {
+        giskard::DoubleXCoordOfSpecPtr p = 
+            boost::dynamic_pointer_cast<giskard::DoubleXCoordOfSpec>(rhs);
+        node = p;
+      }
+      else if(boost::dynamic_pointer_cast<giskard::DoubleYCoordOfSpec>(rhs).get())
+      {
+        giskard::DoubleYCoordOfSpecPtr p = 
+            boost::dynamic_pointer_cast<giskard::DoubleYCoordOfSpec>(rhs);
+        node = p;
+      }
       else if(boost::dynamic_pointer_cast<giskard::DoubleZCoordOfSpec>(rhs).get())
       {
         giskard::DoubleZCoordOfSpecPtr p = 
@@ -348,6 +414,16 @@ namespace YAML {
       else if(is_double_norm_of(node))
       {
         rhs = node.as<giskard::DoubleNormOfSpecPtr>();
+        return true;
+      }
+      else if(is_x_coord_of(node))
+      {
+        rhs = node.as<giskard::DoubleXCoordOfSpecPtr>();
+        return true;
+      }
+      else if(is_y_coord_of(node))
+      {
+        rhs = node.as<giskard::DoubleYCoordOfSpecPtr>();
         return true;
       }
       else if(is_z_coord_of(node))
@@ -832,7 +908,7 @@ namespace YAML {
   {
     return is_const_double(node) || is_input(node) || is_double_reference(node) ||
         is_double_norm_of(node) || is_double_multiplication(node) || is_double_subtraction(node) ||
-        is_z_coord_of(node);
+        is_x_coord_of(node) || is_y_coord_of(node) || is_z_coord_of(node);
   }
 
   inline bool is_vector_spec(const Node& node)
