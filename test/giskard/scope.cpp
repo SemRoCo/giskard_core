@@ -11,12 +11,15 @@ class ScopeTest : public ::testing::Test
       double_b = KDL::Constant(1.0);
       frame_1 = KDL::frame(KDL::rot_x(KDL::Constant(M_PI/2.0)));
       frame_2 = KDL::frame(KDL::vector(KDL::Constant(1.0), KDL::Constant(2.0), KDL::Constant(3.0)));
+      rot_1 = KDL::rot_x(KDL::Constant(M_PI/2.0));
+      rot_2 = KDL::rot_x(KDL::Constant(-M_PI/2.0));
     }
 
     virtual void TearDown(){}
 
     KDL::Expression<double>::Ptr double_a, double_b;
     KDL::Expression<KDL::Frame>::Ptr frame_1, frame_2;
+    KDL::Expression<KDL::Rotation>::Ptr rot_1, rot_2;
 };
 
 TEST_F(ScopeTest, HasDouble)
@@ -40,6 +43,10 @@ TEST_F(ScopeTest, HasDouble)
   EXPECT_FALSE(scope.has_frame_expression("a"));
   EXPECT_FALSE(scope.has_frame_expression("b"));
   EXPECT_FALSE(scope.has_frame_expression("c"));
+
+  EXPECT_FALSE(scope.has_rotation_expression("1"));
+  EXPECT_FALSE(scope.has_rotation_expression("2"));
+  EXPECT_FALSE(scope.has_rotation_expression("3"));
 }
 
 TEST_F(ScopeTest, HasFrame)
@@ -63,6 +70,37 @@ TEST_F(ScopeTest, HasFrame)
   EXPECT_FALSE(scope.has_double_expression("1"));
   EXPECT_FALSE(scope.has_double_expression("2"));
   EXPECT_FALSE(scope.has_double_expression("3"));
+
+  EXPECT_FALSE(scope.has_rotation_expression("1"));
+  EXPECT_FALSE(scope.has_rotation_expression("2"));
+  EXPECT_FALSE(scope.has_rotation_expression("3"));
+}
+
+TEST_F(ScopeTest, HasRotation)
+{
+  giskard::Scope scope;
+
+  EXPECT_FALSE(scope.has_rotation_expression("1"));
+  EXPECT_FALSE(scope.has_rotation_expression("2"));
+  EXPECT_FALSE(scope.has_rotation_expression("3"));
+
+  scope.add_rotation_expression("1", rot_1);
+  EXPECT_TRUE(scope.has_rotation_expression("1"));
+  EXPECT_FALSE(scope.has_rotation_expression("2"));
+  EXPECT_FALSE(scope.has_rotation_expression("3"));
+
+  scope.add_rotation_expression("2", rot_2);
+  EXPECT_TRUE(scope.has_rotation_expression("1"));
+  EXPECT_TRUE(scope.has_rotation_expression("2"));
+  EXPECT_FALSE(scope.has_rotation_expression("3"));
+
+  EXPECT_FALSE(scope.has_double_expression("1"));
+  EXPECT_FALSE(scope.has_double_expression("2"));
+  EXPECT_FALSE(scope.has_double_expression("3"));
+
+  EXPECT_FALSE(scope.has_frame_expression("1"));
+  EXPECT_FALSE(scope.has_frame_expression("2"));
+  EXPECT_FALSE(scope.has_frame_expression("3"));
 }
 
 TEST_F(ScopeTest, FindDouble)
@@ -87,4 +125,16 @@ TEST_F(ScopeTest, FindFrame)
   scope.add_frame_expression("2", frame_2);
   EXPECT_EQ(frame_1, scope.find_frame_expression("1"));
   EXPECT_EQ(frame_2, scope.find_frame_expression("2"));
+}
+
+TEST_F(ScopeTest, FindRotation)
+{
+  giskard::Scope scope;
+
+  scope.add_rotation_expression("rot_1", rot_1);
+  EXPECT_EQ(rot_1, scope.find_rotation_expression("rot_1"));
+
+  scope.add_rotation_expression("rot_2", rot_2);
+  EXPECT_EQ(rot_1, scope.find_rotation_expression("rot_1"));
+  EXPECT_EQ(rot_2, scope.find_rotation_expression("rot_2"));
 }

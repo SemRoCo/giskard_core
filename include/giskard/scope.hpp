@@ -32,6 +32,17 @@ namespace giskard
         return it->second;
       }
 
+      const KDL::Expression<KDL::Rotation>::Ptr& find_rotation_expression(const std::string& reference_name) const
+      {
+        // TODO: throw exception here
+        assert(has_rotation_expression(reference_name));
+
+        std::map< std::string, KDL::Expression<KDL::Rotation>::Ptr >::const_iterator it =
+            rotation_references_.find(reference_name);
+
+        return it->second;
+      }
+
       const KDL::Expression<KDL::Frame>::Ptr& find_frame_expression(const std::string& reference_name) const
       {
         // TODO: throw exception here
@@ -51,6 +62,11 @@ namespace giskard
       bool has_vector_expression(const std::string& expression_name) const
       {
         return (vector_references_.count(expression_name) == 1);
+      }
+
+      bool has_rotation_expression(const std::string& expression_name) const
+      {
+        return (rotation_references_.count(expression_name) == 1);
       }
 
       bool has_frame_expression(const std::string& expression_name) const
@@ -74,6 +90,14 @@ namespace giskard
         vector_references_[reference_name] = expression;
       }
 
+      void add_rotation_expression(const std::string& reference_name, const KDL::Expression<KDL::Rotation>::Ptr& expression)
+      {
+        // TODO: throw warning here
+        assert(!has_rotation_expression(reference_name));
+
+        rotation_references_[reference_name] = expression;
+      }
+
       void add_frame_expression(const std::string& reference_name, const KDL::Expression<KDL::Frame>::Ptr& expression)
       {
         // TODO: throw warning here
@@ -85,10 +109,9 @@ namespace giskard
     private:
       std::map< std::string, KDL::Expression<double>::Ptr > double_references_;
       std::map< std::string, KDL::Expression<KDL::Vector>::Ptr > vector_references_;
+      std::map< std::string, KDL::Expression<KDL::Rotation>::Ptr > rotation_references_;
       std::map< std::string, KDL::Expression<KDL::Frame>::Ptr > frame_references_;
   };
-
-
 }
 
 #endif // GISKARD_SCOPE_HPP
