@@ -26,6 +26,9 @@ namespace giskard
       else if(boost::dynamic_pointer_cast<giskard::FrameSpec>(spec).get())
         scope.add_frame_expression(name,
             boost::dynamic_pointer_cast<giskard::FrameSpec>(spec)->get_expression(scope));
+      else if(boost::dynamic_pointer_cast<giskard::RotationSpec>(spec).get())
+        scope.add_rotation_expression(name,
+            boost::dynamic_pointer_cast<giskard::RotationSpec>(spec)->get_expression(scope));
       else
         // found non-supported type of specification in scope
         // TODO: issue warning, instead

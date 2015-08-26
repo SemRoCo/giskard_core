@@ -613,6 +613,45 @@ namespace YAML {
     }
   };
 
+  inline bool is_rotation_reference(const Node& node)
+  {
+    if(!node.IsScalar())
+      return false;
+
+    try
+    {
+      node.as<std::string>();
+      return true;
+    }
+    catch (const YAML::Exception& e)
+    {
+      return false;
+    }
+  }
+
+  template<>
+  struct convert<giskard::RotationReferenceSpecPtr> 
+  {
+    
+    static Node encode(const giskard::RotationReferenceSpecPtr& rhs) 
+    {
+      Node node;
+      node = rhs->get_reference_name();
+      return node;
+    }
+  
+    static bool decode(const Node& node, giskard::RotationReferenceSpecPtr& rhs) 
+    {
+      if(!is_rotation_reference(node))
+        return false;
+ 
+      rhs = giskard::RotationReferenceSpecPtr(new giskard::RotationReferenceSpec());
+      rhs->set_reference_name(node.as<std::string>());
+
+      return true;
+    }
+  };
+
   template<>
   struct convert<giskard::RotationSpecPtr> 
   {
@@ -622,6 +661,8 @@ namespace YAML {
 
       if(boost::dynamic_pointer_cast<giskard::AxisAngleSpec>(rhs).get())
         node = boost::dynamic_pointer_cast<giskard::AxisAngleSpec>(rhs);
+      else if(boost::dynamic_pointer_cast<giskard::RotationReferenceSpec>(rhs).get())
+        node = boost::dynamic_pointer_cast<giskard::RotationReferenceSpec>(rhs);
 
       return node;
     }
@@ -631,6 +672,11 @@ namespace YAML {
       if(is_axis_angle(node))
       {
         rhs = node.as<giskard::AxisAngleSpecPtr>();
+        return true;
+      }
+      if(is_rotation_reference(node))
+      {
+        rhs = node.as<giskard::RotationReferenceSpecPtr>();
         return true;
       }
       else
@@ -798,7 +844,7 @@ namespace YAML {
 
   inline bool is_rotation_spec(const Node& node)
   {
-    return is_axis_angle(node);
+    return is_axis_angle(node) || is_rotation_reference(node);
   }
 
   inline bool is_frame_spec(const Node& node)

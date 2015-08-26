@@ -850,6 +850,43 @@ namespace giskard
 
   typedef typename boost::shared_ptr<AxisAngleSpec> AxisAngleSpecPtr;
 
+  class RotationReferenceSpec : public RotationSpec
+  {
+    public:
+      const std::string& get_reference_name() const
+      {
+        return reference_name_;
+      }
+
+      void set_reference_name(const std::string& reference_name)
+      {
+        reference_name_ = reference_name;
+      }
+
+      virtual bool equals(const Spec& other) const
+      {
+        if(!dynamic_cast<const RotationReferenceSpec*>(&other))
+          return false;
+
+        return (dynamic_cast<const RotationReferenceSpec*>(&other)->get_reference_name().compare(this->get_reference_name()) == 0);
+      }
+
+      virtual std::string to_string() const
+      {
+        return "todo: implement me";
+      }
+
+      virtual KDL::Expression<KDL::Rotation>::Ptr get_expression(const giskard::Scope& scope)
+      {
+        return scope.find_rotation_expression(get_reference_name());
+      }
+
+    private:
+      std::string reference_name_;
+  };
+
+  typedef typename boost::shared_ptr<RotationReferenceSpec> RotationReferenceSpecPtr;
+
   ///
   /// specifications for frame expresssions
   ///
