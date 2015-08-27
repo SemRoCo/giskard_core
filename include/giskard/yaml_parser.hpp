@@ -250,6 +250,34 @@ namespace YAML {
     }
   };
 
+  inline bool is_double_division(const Node& node)
+  {
+    return node.IsMap() && (node.size() == 1) && node["double-div"] &&
+        node["double-div"].IsSequence();
+  }
+
+  template<>
+  struct convert<giskard::DoubleDivisionSpecPtr> 
+  {
+    static Node encode(const giskard::DoubleDivisionSpecPtr& rhs) 
+    {
+      Node node;
+      node["double-div"] = rhs->get_inputs();
+      return node;
+    }
+  
+    static bool decode(const Node& node, giskard::DoubleDivisionSpecPtr& rhs) 
+    {
+      if(!is_double_division(node))
+        return false;
+
+      rhs = giskard::DoubleDivisionSpecPtr(new giskard::DoubleDivisionSpec()); 
+      rhs->set_inputs(node["double-div"].as< std::vector<giskard::DoubleSpecPtr> >());
+
+      return true;
+    }
+  };
+
   inline bool is_x_coord_of(const Node& node)
   {
     return node.IsMap() && (node.size() == 1) && node["x-coord"];
@@ -381,6 +409,12 @@ namespace YAML {
             boost::dynamic_pointer_cast<giskard::DoubleMultiplicationSpec>(rhs);
         node = p;
       }
+      else if(boost::dynamic_pointer_cast<giskard::DoubleDivisionSpec>(rhs).get())
+      {
+        giskard::DoubleDivisionSpecPtr p = 
+            boost::dynamic_pointer_cast<giskard::DoubleDivisionSpec>(rhs);
+        node = p;
+      }
       else if(boost::dynamic_pointer_cast<giskard::DoubleXCoordOfSpec>(rhs).get())
       {
         giskard::DoubleXCoordOfSpecPtr p = 
@@ -429,6 +463,11 @@ namespace YAML {
       else if(is_double_multiplication(node))
       {
         rhs = node.as<giskard::DoubleMultiplicationSpecPtr>();
+        return true;
+      }
+      else if(is_double_division(node))
+      {
+        rhs = node.as<giskard::DoubleDivisionSpecPtr>();
         return true;
       }
       else if(is_double_norm_of(node))
@@ -927,7 +966,8 @@ namespace YAML {
   inline bool is_double_spec(const Node& node)
   {
     return is_const_double(node) || is_input(node) || is_double_reference(node) ||
-        is_double_norm_of(node) || is_double_multiplication(node) || is_double_subtraction(node) ||
+        is_double_norm_of(node) || is_double_multiplication(node) || is_double_division(node) ||
+        is_double_addition(node) || is_double_subtraction(node) ||
         is_x_coord_of(node) || is_y_coord_of(node) || is_z_coord_of(node);
   }
 

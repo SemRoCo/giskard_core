@@ -256,6 +256,42 @@ TEST_F(DoubleExpressionGenerationTest, DoubleMultiplication)
   EXPECT_NEAR(exp->value(), -0.35, 1e-10);
 }
 
+TEST_F(DoubleExpressionGenerationTest, DoubleDivision)
+{
+  std::string s1 = "{double-div: [2.0]}";
+  std::string s2 = "{double-div: [-1.0, 4.0]}";
+  std::string s3 = "{double-div: [1.0, 2.0, 5.0]}";
+
+  YAML::Node node = YAML::Load(s1);
+
+  ASSERT_NO_THROW(node.as<giskard::DoubleSpecPtr>());
+  giskard::DoubleSpecPtr spec = node.as<giskard::DoubleSpecPtr>();
+
+  KDL::Expression<double>::Ptr exp = spec->get_expression(giskard::Scope());
+  ASSERT_TRUE(exp.get());
+
+  EXPECT_NEAR(exp->value(), 0.5, 1e-10);
+
+  node = YAML::Load(s2);
+
+  ASSERT_NO_THROW(node.as<giskard::DoubleSpecPtr>());
+  spec = node.as<giskard::DoubleSpecPtr>();
+
+  exp = spec->get_expression(giskard::Scope());
+  ASSERT_TRUE(exp.get());
+
+  EXPECT_NEAR(exp->value(), -0.25, 1e-10);
+
+  node = YAML::Load(s3);
+
+  ASSERT_NO_THROW(node.as<giskard::DoubleSpecPtr>());
+  spec = node.as<giskard::DoubleSpecPtr>();
+
+  exp = spec->get_expression(giskard::Scope());
+  ASSERT_TRUE(exp.get());
+
+  EXPECT_NEAR(exp->value(), 0.1, 1e-10);
+}
 
 TEST_F(DoubleExpressionGenerationTest, DoubleSubtraction)
 {

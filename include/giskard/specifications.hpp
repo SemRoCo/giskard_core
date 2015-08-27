@@ -471,6 +471,83 @@ namespace giskard
 
   typedef typename boost::shared_ptr<DoubleMultiplicationSpec> DoubleMultiplicationSpecPtr;
 
+  class DoubleDivisionSpec: public DoubleSpec
+  {
+    public:
+      const std::vector<DoubleSpecPtr>& get_inputs() const
+      {
+        return inputs_;
+      }
+
+      void set_inputs(const std::vector<DoubleSpecPtr>& inputs)
+      {
+        inputs_ = inputs;
+      }
+
+      virtual bool equals(const Spec& other) const
+      {
+        if(!dynamic_cast<const DoubleDivisionSpec*>(&other))
+          return false;
+
+        const DoubleDivisionSpec* other_p = dynamic_cast<const DoubleDivisionSpec*>(&other);
+
+        if(get_inputs().size() != other_p->get_inputs().size())
+          return false;
+
+        if(!inputs_valid() || !other_p->inputs_valid())
+          return false;
+
+        for(size_t i=0; i<get_inputs().size(); ++i)
+          if(!get_inputs()[i]->equals(*(other_p->get_inputs()[i])))
+            return false;
+        
+        return true;
+      }
+
+      bool inputs_valid() const
+      {
+        for(size_t i=0; i<get_inputs().size(); ++i)
+          if(!get_inputs()[i].get())
+            return false;
+
+        return true;
+      }
+
+      virtual std::string to_string() const
+      {
+        // todo: implement me
+        return "";
+      }
+
+      virtual KDL::Expression<double>::Ptr get_expression(const giskard::Scope& scope)
+      {
+        // todo: throw exception here
+        assert(get_inputs().size() > 0);
+
+        using KDL::operator*;
+        using KDL::operator/;
+
+        KDL::Expression<double>::Ptr dividend = get_inputs()[0]->get_expression(scope);
+
+        if(get_inputs().size() == 1)
+          return  KDL::Constant(1.0)/dividend;
+        else
+        {
+          KDL::Expression<double>::Ptr divisor = get_inputs()[1]->get_expression(scope);
+
+          for(size_t i=2; i<get_inputs().size(); ++i)
+            divisor = divisor * get_inputs()[i]->get_expression(scope);
+
+          return dividend / divisor;
+        }
+      }
+
+    private:
+      std::vector<giskard::DoubleSpecPtr> inputs_;
+  };
+
+  typedef typename boost::shared_ptr<DoubleDivisionSpec> DoubleDivisionSpecPtr;
+
   class DoubleXCoordOfSpec : public DoubleSpec
   {
     public:
