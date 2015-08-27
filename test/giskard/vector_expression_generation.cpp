@@ -144,7 +144,6 @@ TEST_F(VectorExpressionGenerationTest, VectorFrameMultiplication)
   std::string s1 = "{transform-vector: [" + f + ", " + v2 + "]}";
 
   YAML::Node node = YAML::Load(s1);
-//std::cout << node << "\n\n";
   ASSERT_NO_THROW(node.as<giskard::VectorSpecPtr>());
   giskard::VectorSpecPtr spec = node.as<giskard::VectorSpecPtr>();
   
@@ -154,5 +153,22 @@ TEST_F(VectorExpressionGenerationTest, VectorFrameMultiplication)
   ASSERT_TRUE(exp.get());
   KDL::Vector val1 = exp->value();
   KDL::Vector val2 = KDL::Vector(1.1, 2.2, 3.3);
+  EXPECT_TRUE(KDL::Equal(val1, val2));
+}
+
+TEST_F(VectorExpressionGenerationTest, VectorDoubleMultiplication)
+{
+  std::string s1 = "{scale-vector: [0.5, {vector3: [1, 2, 3]}]}";
+
+  YAML::Node node = YAML::Load(s1);
+  ASSERT_NO_THROW(node.as<giskard::VectorSpecPtr>());
+  giskard::VectorSpecPtr spec = node.as<giskard::VectorSpecPtr>();
+  
+  ASSERT_NO_THROW(spec->get_expression(giskard::Scope()));
+  KDL::Expression<KDL::Vector>::Ptr exp = spec->get_expression(giskard::Scope());
+  
+  ASSERT_TRUE(exp.get());
+  KDL::Vector val1 = exp->value();
+  KDL::Vector val2 = KDL::Vector(0.5, 1.0, 1.5);
   EXPECT_TRUE(KDL::Equal(val1, val2));
 }

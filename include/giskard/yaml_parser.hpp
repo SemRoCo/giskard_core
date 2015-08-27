@@ -661,6 +661,36 @@ namespace YAML {
     }
   };
 
+  inline bool is_vector_double_multiplication(const Node& node)
+  {
+    return node.IsMap() && (node.size() == 1) && node["scale-vector"] &&
+        node["scale-vector"].IsSequence() && (node["scale-vector"].size() == 2);
+  }
+
+  template<>
+  struct convert<giskard::VectorDoubleMultiplicationSpecPtr> 
+  {
+    static Node encode(const giskard::VectorDoubleMultiplicationSpecPtr& rhs) 
+    {
+      Node node;
+      node["scale-vector"][0] = rhs->get_double();
+      node["scale-vector"][1] = rhs->get_vector();
+      return node;
+    }
+  
+    static bool decode(const Node& node, giskard::VectorDoubleMultiplicationSpecPtr& rhs) 
+    {
+      if(!is_vector_double_multiplication(node))
+        return false;
+
+      rhs = giskard::VectorDoubleMultiplicationSpecPtr(new giskard::VectorDoubleMultiplicationSpec()); 
+      rhs->set_double(node["scale-vector"][0].as< giskard::DoubleSpecPtr >());
+      rhs->set_vector(node["scale-vector"][1].as< giskard::VectorSpecPtr >());
+
+      return true;
+    }
+  };
+
   template<>
   struct convert<giskard::VectorSpecPtr> 
   {
@@ -678,6 +708,8 @@ namespace YAML {
         node = boost::dynamic_pointer_cast<giskard::VectorSubtractionSpec>(rhs);
       else if(boost::dynamic_pointer_cast<giskard::VectorFrameMultiplicationSpec>(rhs).get())
         node = boost::dynamic_pointer_cast<giskard::VectorFrameMultiplicationSpec>(rhs);
+      else if(boost::dynamic_pointer_cast<giskard::VectorDoubleMultiplicationSpec>(rhs).get())
+        node = boost::dynamic_pointer_cast<giskard::VectorDoubleMultiplicationSpec>(rhs);
 
       return node;
     }
@@ -707,6 +739,11 @@ namespace YAML {
       else if(is_vector_frame_multiplication(node))
       {
         rhs = node.as<giskard::VectorFrameMultiplicationSpecPtr>();
+        return true;
+      }
+      else if(is_vector_double_multiplication(node))
+      {
+        rhs = node.as<giskard::VectorDoubleMultiplicationSpecPtr>();
         return true;
       }
       else
@@ -975,7 +1012,7 @@ namespace YAML {
   {
     return is_constructor_vector(node) || is_vector_reference(node) ||
         is_vector_origin_of(node) || is_vector_subtraction(node) ||
-        is_vector_frame_multiplication(node);
+        is_vector_frame_multiplication(node) || is_vector_double_multiplication(node);
   }
 
   inline bool is_rotation_spec(const Node& node)

@@ -950,6 +950,62 @@ namespace giskard
 
   typedef typename boost::shared_ptr<VectorFrameMultiplicationSpec> VectorFrameMultiplicationSpecPtr;
 
+  class VectorDoubleMultiplicationSpec: public VectorSpec
+  {
+    public:
+      const VectorSpecPtr& get_vector() const
+      {
+        return vector_;
+      }
+
+      const DoubleSpecPtr& get_double() const
+      {
+        return double_;
+      }
+
+      void set_vector(const VectorSpecPtr& vector)
+      {
+        vector_ = vector;
+      }
+
+      void set_double(const DoubleSpecPtr& new_double)
+      {
+        double_ = new_double;
+      }
+
+      virtual bool equals(const Spec& other) const
+      {
+        if(!dynamic_cast<const VectorDoubleMultiplicationSpec*>(&other))
+          return false;
+
+        const VectorDoubleMultiplicationSpec* other_p = 
+            dynamic_cast<const VectorDoubleMultiplicationSpec*>(&other);
+
+        return get_double().get() && get_vector().get() && 
+            get_double()->equals(*(other_p->get_double())) &&
+            get_vector()->equals(*(other_p->get_vector()));
+      }
+
+      virtual std::string to_string() const
+      {
+        // todo: implement me
+        return "";
+      }
+
+      virtual KDL::Expression<KDL::Vector>::Ptr get_expression(const giskard::Scope& scope)
+      {
+        using KDL::operator*;
+
+        return get_double()->get_expression(scope) * get_vector()->get_expression(scope);
+      }
+
+    private:
+      VectorSpecPtr vector_;
+      DoubleSpecPtr double_;
+  };
+
+  typedef typename boost::shared_ptr<VectorDoubleMultiplicationSpec> VectorDoubleMultiplicationSpecPtr;
+
   ///
   /// specifications for rotation expresssions
   ///
