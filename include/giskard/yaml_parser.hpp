@@ -644,6 +644,34 @@ namespace YAML {
     }
   };
 
+  inline bool is_vector_addition(const Node& node)
+  {
+    return node.IsMap() && (node.size() == 1) && node["vector-add"] &&
+        node["vector-add"].IsSequence();
+  }
+
+  template<>
+  struct convert<giskard::VectorAdditionSpecPtr> 
+  {
+    static Node encode(const giskard::VectorAdditionSpecPtr& rhs) 
+    {
+      Node node;
+      node["vector-add"] = rhs->get_inputs();
+      return node;
+    }
+  
+    static bool decode(const Node& node, giskard::VectorAdditionSpecPtr& rhs) 
+    {
+      if(!is_vector_addition(node))
+        return false;
+
+      rhs = giskard::VectorAdditionSpecPtr(new giskard::VectorAdditionSpec()); 
+      rhs->set_inputs(node["vector-add"].as< std::vector<giskard::VectorSpecPtr> >());
+
+      return true;
+    }
+  };
+
   inline bool is_vector_subtraction(const Node& node)
   {
     return node.IsMap() && (node.size() == 1) && node["vector-sub"] &&
@@ -745,6 +773,8 @@ namespace YAML {
         node = boost::dynamic_pointer_cast<giskard::VectorReferenceSpec>(rhs);
       else if(boost::dynamic_pointer_cast<giskard::VectorOriginOfSpec>(rhs).get())
         node = boost::dynamic_pointer_cast<giskard::VectorOriginOfSpec>(rhs);
+      else if(boost::dynamic_pointer_cast<giskard::VectorAdditionSpec>(rhs).get())
+        node = boost::dynamic_pointer_cast<giskard::VectorAdditionSpec>(rhs);
       else if(boost::dynamic_pointer_cast<giskard::VectorSubtractionSpec>(rhs).get())
         node = boost::dynamic_pointer_cast<giskard::VectorSubtractionSpec>(rhs);
       else if(boost::dynamic_pointer_cast<giskard::VectorFrameMultiplicationSpec>(rhs).get())
@@ -770,6 +800,11 @@ namespace YAML {
       else if(is_vector_origin_of(node))
       {
         rhs = node.as<giskard::VectorOriginOfSpecPtr>();
+        return true;
+      }
+      else if(is_vector_addition(node))
+      {
+        rhs = node.as<giskard::VectorAdditionSpecPtr>();
         return true;
       }
       else if(is_vector_subtraction(node))
@@ -1053,7 +1088,8 @@ namespace YAML {
   inline bool is_vector_spec(const Node& node)
   {
     return is_constructor_vector(node) || is_vector_reference(node) ||
-        is_vector_origin_of(node) || is_vector_subtraction(node) ||
+        is_vector_origin_of(node) || is_vector_addition(node) ||
+        is_vector_subtraction(node) ||
         is_vector_frame_multiplication(node) || is_vector_double_multiplication(node);
   }
 
@@ -1137,7 +1173,6 @@ namespace YAML {
   
     static bool decode(const Node& node, giskard::ScopeEntry& rhs) 
     {
-std::cout << "Decoding: " << node << "\n";
       if(!is_scope_entry(node))
         return false;
 

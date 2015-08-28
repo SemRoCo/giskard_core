@@ -797,6 +797,72 @@ namespace giskard
 
   typedef typename boost::shared_ptr<VectorConstructorSpec> VectorConstructorSpecPtr;
 
+  class VectorAdditionSpec: public VectorSpec
+  {
+    public:
+      const std::vector<VectorSpecPtr>& get_inputs() const
+      {
+        return inputs_;
+      }
+
+      void set_inputs(const std::vector<VectorSpecPtr>& inputs)
+      {
+        inputs_ = inputs;
+      }
+
+      virtual bool equals(const Spec& other) const
+      {
+        if(!dynamic_cast<const VectorAdditionSpec*>(&other))
+          return false;
+
+        const VectorAdditionSpec* other_p = dynamic_cast<const VectorAdditionSpec*>(&other);
+
+        if(get_inputs().size() != other_p->get_inputs().size())
+          return false;
+
+        if(!inputs_valid() || !other_p->inputs_valid())
+          return false;
+
+        for(size_t i=0; i<get_inputs().size(); ++i)
+          if(!get_inputs()[i]->equals(*(other_p->get_inputs()[i])))
+            return false;
+        
+        return true;
+      }
+
+      bool inputs_valid() const
+      {
+        for(size_t i=0; i<get_inputs().size(); ++i)
+          if(!get_inputs()[i].get())
+            return false;
+
+        return true;
+      }
+
+      virtual std::string to_string() const
+      {
+        // todo: implement me
+        return "";
+      }
+
+      virtual KDL::Expression<KDL::Vector>::Ptr get_expression(const giskard::Scope& scope)
+      {
+        using KDL::operator+;
+
+        KDL::Expression<KDL::Vector>::Ptr result = KDL::vector(KDL::Constant(0.0), KDL::Constant(0.0), KDL::Constant(0.0));
+
+        for(size_t i=0; i<get_inputs().size(); ++i)
+          result = result + get_inputs()[i]->get_expression(scope);
+
+        return result;
+      }
+
+    private:
+      std::vector<giskard::VectorSpecPtr> inputs_;
+  };
+
+  typedef typename boost::shared_ptr<VectorAdditionSpec> VectorAdditionSpecPtr;
+
   class VectorSubtractionSpec: public VectorSpec
   {
     public:
