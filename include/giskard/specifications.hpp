@@ -659,6 +659,59 @@ namespace giskard
 
   typedef typename boost::shared_ptr<DoubleZCoordOfSpec> DoubleZCoordOfSpecPtr;
 
+  class VectorDotSpec: public DoubleSpec
+  {
+    public:
+      const VectorSpecPtr& get_lhs() const
+      {
+        return lhs_;
+      }
+
+      const VectorSpecPtr& get_rhs() const
+      {
+        return rhs_;
+      }
+
+      void set_lhs(const VectorSpecPtr& lhs)
+      {
+        lhs_ = lhs;
+      }
+
+      void set_rhs(const VectorSpecPtr& rhs)
+      {
+        rhs_ = rhs;
+      }
+
+      virtual bool equals(const Spec& other) const
+      {
+        if(!dynamic_cast<const VectorDotSpec*>(&other))
+          return false;
+
+        const VectorDotSpec* other_p = dynamic_cast<const VectorDotSpec*>(&other);
+
+        return get_lhs().get() && get_rhs().get() &&
+            other_p->get_lhs().get() && other_p->get_rhs().get() &&
+            get_lhs()->equals(*(other_p->get_lhs())) &&
+            get_rhs()->equals(*(other_p->get_rhs()));
+      }
+
+      virtual std::string to_string() const
+      {
+        // todo: implement me
+        return "";
+      }
+
+      virtual KDL::Expression<double>::Ptr get_expression(const giskard::Scope& scope)
+      {
+        return KDL::dot(get_lhs()->get_expression(scope), get_rhs()->get_expression(scope));
+      }
+
+    private:
+      giskard::VectorSpecPtr lhs_, rhs_;
+  };
+
+  typedef typename boost::shared_ptr<VectorDotSpec> VectorDotSpecPtr;
+
   ///
   /// specifications of vector expressions
   ///

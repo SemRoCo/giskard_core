@@ -359,6 +359,36 @@ namespace YAML {
     }
   };
 
+  inline bool is_vector_dot(const Node& node)
+  {
+    return node.IsMap() && (node.size() == 1) && node["vector-dot"] &&
+        node["vector-dot"].IsSequence() && (node["vector-dot"].size() == 2);
+  }
+
+  template<>
+  struct convert<giskard::VectorDotSpecPtr>
+  {
+    static Node encode(const giskard::VectorDotSpecPtr& rhs) 
+    {
+      Node node;
+      node["vector-dot"][0] = rhs->get_lhs();
+      node["vector-dot"][1] = rhs->get_rhs();
+      return node;
+    }
+  
+    static bool decode(const Node& node, giskard::VectorDotSpecPtr& rhs) 
+    {
+      if(!is_vector_dot(node))
+        return false;
+
+      rhs = giskard::VectorDotSpecPtr(new giskard::VectorDotSpec()); 
+      rhs->set_lhs(node["vector-dot"][0].as< giskard::VectorSpecPtr >());
+      rhs->set_rhs(node["vector-dot"][1].as< giskard::VectorSpecPtr >());
+
+      return true;
+    }
+  };
+
   template<>
   struct convert<giskard::DoubleSpecPtr> 
   {
@@ -433,6 +463,12 @@ namespace YAML {
             boost::dynamic_pointer_cast<giskard::DoubleZCoordOfSpec>(rhs);
         node = p;
       }
+      else if(boost::dynamic_pointer_cast<giskard::VectorDotSpec>(rhs).get())
+      {
+        giskard::VectorDotSpecPtr p = 
+            boost::dynamic_pointer_cast<giskard::VectorDotSpec>(rhs);
+        node = p;
+      }
 
       return node;
     }
@@ -493,6 +529,11 @@ namespace YAML {
       else if(is_double_reference(node))
       {
         rhs = node.as<giskard::DoubleReferenceSpecPtr>();
+        return true;
+      }
+      else if(is_vector_dot(node))
+      {
+        rhs = node.as<giskard::VectorDotSpecPtr>();
         return true;
       }
       else
@@ -1005,7 +1046,8 @@ namespace YAML {
     return is_const_double(node) || is_input(node) || is_double_reference(node) ||
         is_double_norm_of(node) || is_double_multiplication(node) || is_double_division(node) ||
         is_double_addition(node) || is_double_subtraction(node) ||
-        is_x_coord_of(node) || is_y_coord_of(node) || is_z_coord_of(node);
+        is_x_coord_of(node) || is_y_coord_of(node) || is_z_coord_of(node) ||
+        is_vector_dot(node);
   }
 
   inline bool is_vector_spec(const Node& node)
@@ -1095,6 +1137,7 @@ namespace YAML {
   
     static bool decode(const Node& node, giskard::ScopeEntry& rhs) 
     {
+std::cout << "Decoding: " << node << "\n";
       if(!is_scope_entry(node))
         return false;
 
