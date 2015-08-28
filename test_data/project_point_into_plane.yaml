@@ -1,0 +1,62 @@
+# 
+# Copyright (C) 2015 Georg Bartels <georg.bartels@cs.uni-bremen.de>
+# 
+# This file is part of giskard.
+# 
+# giskard is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# as published by the Free Software Foundation; either version 2
+# of the License, or (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+# 
+
+# PROBLEM 1: point to plane projection
+# input definitions...
+# ...plane definition
+- normal: {vector3: [0, 0, 0.1]}
+- origin: {vector3: [10, 5, 12]}
+# ...point definition
+- point: {vector3: [1, 1, 1]}
+
+# actual calculations:
+- unit-normal: {scale-vector: [{double-div: [{vector-norm: normal}]}, normal]}
+- distance: {double-sub: [{vector-dot: [unit-normal, point]}, {vector-dot: [unit-normal, origin]}]}
+- projected-point: {vector-sub: [point, {scale-vector: [distance, unit-normal]}]}
+
+# PROBLEM 2: point to plane projection with tilted plane
+# input definitions...
+# ...plane definition
+- normal2: {vector3: [0, 1, 1]}
+- origin2: {vector3: [0, 0, 0]}
+# ...point definition
+- point2: {vector3: [2, 2, 5]}
+
+# actual calculations:
+- unit-normal2: {scale-vector: [{double-div: [{vector-norm: normal2}]}, normal2]}
+- distance2: {double-sub: [{vector-dot: [unit-normal2, point2]}, {vector-dot: [unit-normal2, origin2]}]}
+- projected-point2: {vector-sub: [point2, {scale-vector: [distance2, unit-normal2]}]}
+
+# PROBLEM 3: point to circle projection
+# input definitions...
+# ...circle definition
+- normal3: {vector3: [0, 0, 0.1]}
+- origin3: {vector3: [0, 0, 8]}
+- radius: 2.5
+# ...point definition
+- point3: {vector3: [25, 0, 0]}
+
+# actual calculations:
+- unit-normal3: {scale-vector: [{double-div: [{vector-norm: normal3}]}, normal3]}
+- distance3: {double-sub: [{vector-dot: [unit-normal3, point3]}, {vector-dot: [unit-normal3, origin3]}]}
+- projected-point3: {vector-sub: [point3, {scale-vector: [distance3, unit-normal3]}]}
+- direction: {vector-sub: [projected-point3, origin3]}
+- unit-direction: {scale-vector: [{double-div: [{vector-norm: direction}]}, direction]}
+- circle-point: {vector-add: [{scale-vector: [radius, unit-direction]}, origin3]}

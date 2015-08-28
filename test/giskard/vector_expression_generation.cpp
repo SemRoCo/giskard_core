@@ -222,3 +222,29 @@ TEST_F(VectorExpressionGenerationTest, VectorDoubleMultiplication)
   KDL::Vector val2 = KDL::Vector(0.5, 1.0, 1.5);
   EXPECT_TRUE(KDL::Equal(val1, val2));
 }
+
+TEST_F(VectorExpressionGenerationTest, ProjectPointOnPlane)
+{
+  YAML::Node node = YAML::LoadFile("project_point_into_plane.yaml");
+  ASSERT_NO_THROW(node.as<giskard::ScopeSpec>());
+  giskard::ScopeSpec spec = node.as<giskard::ScopeSpec>();
+  
+  ASSERT_NO_THROW(giskard::generate(spec));
+  giskard::Scope scope = giskard::generate(spec);
+
+  ASSERT_TRUE(scope.has_vector_expression("projected-point"));
+  KDL::Expression<KDL::Vector>::Ptr exp = scope.find_vector_expression("projected-point");
+  EXPECT_TRUE(KDL::Equal(exp->value(), KDL::Vector(1, 1, 12)));
+
+  ASSERT_TRUE(scope.has_vector_expression("projected-point2"));
+  exp = scope.find_vector_expression("projected-point2");
+  EXPECT_TRUE(KDL::Equal(exp->value(), KDL::Vector(2,-1.5,1.5)));
+
+  ASSERT_TRUE(scope.has_vector_expression("projected-point3"));
+  exp = scope.find_vector_expression("projected-point3");
+  EXPECT_TRUE(KDL::Equal(exp->value(), KDL::Vector(25, 0, 8)));
+
+  ASSERT_TRUE(scope.has_vector_expression("circle-point"));
+  exp = scope.find_vector_expression("circle-point");
+  EXPECT_TRUE(KDL::Equal(exp->value(), KDL::Vector(2.5, 0, 8)));
+}
