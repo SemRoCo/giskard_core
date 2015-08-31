@@ -248,3 +248,19 @@ TEST_F(VectorExpressionGenerationTest, ProjectPointOnPlane)
   exp = scope.find_vector_expression("circle-point");
   EXPECT_TRUE(KDL::Equal(exp->value(), KDL::Vector(2.5, 0, 8)));
 }
+
+TEST_F(VectorExpressionGenerationTest, CachedVector)
+{
+  std::string s = "cached-vector: {vector3: [-0.1, -0.2, -0.3]}";
+  YAML::Node node = YAML::Load(s);
+
+  ASSERT_NO_THROW(node.as<giskard::VectorSpecPtr>());
+  giskard::VectorSpecPtr spec = node.as<giskard::VectorSpecPtr>();
+
+  ASSERT_NO_THROW(spec->get_expression(giskard::Scope()));  
+  KDL::Expression<KDL::Vector>::Ptr exp = spec->get_expression(giskard::Scope());
+
+  KDL::Vector vec(-0.1, -0.2, -0.3);
+
+  EXPECT_TRUE(KDL::Equal(vec, exp->value()));
+}

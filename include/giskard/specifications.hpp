@@ -716,6 +716,47 @@ namespace giskard
   /// specifications of vector expressions
   ///
 
+  class VectorCachedSpec: public VectorSpec
+  {
+    public:
+      const giskard::VectorSpecPtr& get_vector() const
+      {
+        return vector_;
+      }
+
+      void set_vector(const giskard::VectorSpecPtr& vector)
+      {
+        vector_ = vector;
+      }
+
+      virtual bool equals(const Spec& other) const
+      {
+        if(!dynamic_cast<const VectorCachedSpec*>(&other))
+          return false;
+
+        const VectorCachedSpec* other_p = dynamic_cast<const VectorCachedSpec*>(&other);
+
+        return get_vector().get() && other_p->get_vector().get() &&
+            get_vector()->equals(*(other_p->get_vector()));
+      }
+
+      virtual std::string to_string() const
+      {
+        // TODO: implement me
+        return "";
+      }
+
+      virtual KDL::Expression<KDL::Vector>::Ptr get_expression(const giskard::Scope& scope)
+      {
+        return KDL::cached<KDL::Vector>(get_vector()->get_expression(scope));
+      }
+
+    private:
+      VectorSpecPtr vector_;
+  };
+
+  typedef typename boost::shared_ptr<VectorCachedSpec> VectorCachedSpecPtr;
+
   class VectorConstructorSpec: public VectorSpec
   {
     public:

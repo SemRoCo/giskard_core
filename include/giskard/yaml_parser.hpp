@@ -545,6 +545,33 @@ namespace YAML {
   // parsing of vector specs
   //
 
+  inline bool is_cached_vector(const Node& node)
+  {
+    return node.IsMap() && (node.size() == 1) && node["cached-vector"];
+  }
+
+  template<>
+  struct convert<giskard::VectorCachedSpecPtr> 
+  {
+    static Node encode(const giskard::VectorCachedSpecPtr& rhs) 
+    {
+      Node node;
+      node["cached-vector"] = rhs->get_vector();
+      return node;
+    }
+  
+    static bool decode(const Node& node, giskard::VectorCachedSpecPtr& rhs) 
+    {
+      if(!is_cached_vector(node))
+        return false;
+
+      rhs = giskard::VectorCachedSpecPtr(new giskard::VectorCachedSpec()); 
+      rhs->set_vector(node["cached-vector"].as<giskard::VectorSpecPtr>());
+
+      return true;
+    }
+  };
+
   inline bool is_constructor_vector(const Node& node)
   {
     return node.IsMap() && (node.size() == 1) && node["vector3"] &&
@@ -767,7 +794,9 @@ namespace YAML {
     {
       Node node;
 
-      if(boost::dynamic_pointer_cast<giskard::VectorConstructorSpec>(rhs).get())
+      if(boost::dynamic_pointer_cast<giskard::VectorCachedSpec>(rhs).get())
+        node = boost::dynamic_pointer_cast<giskard::VectorCachedSpec>(rhs);
+      else if(boost::dynamic_pointer_cast<giskard::VectorConstructorSpec>(rhs).get())
         node = boost::dynamic_pointer_cast<giskard::VectorConstructorSpec>(rhs);
       else if(boost::dynamic_pointer_cast<giskard::VectorReferenceSpec>(rhs).get())
         node = boost::dynamic_pointer_cast<giskard::VectorReferenceSpec>(rhs);
@@ -787,7 +816,12 @@ namespace YAML {
   
     static bool decode(const Node& node, giskard::VectorSpecPtr& rhs) 
     {
-      if(is_constructor_vector(node))
+      if(is_cached_vector(node))
+      {
+        rhs = node.as<giskard::VectorCachedSpecPtr>();
+        return true;
+      }
+      else if(is_constructor_vector(node))
       {
         rhs = node.as<giskard::VectorConstructorSpecPtr>();
         return true;
@@ -1121,7 +1155,7 @@ namespace YAML {
 
   inline bool is_vector_spec(const Node& node)
   {
-    return is_constructor_vector(node) || is_vector_reference(node) ||
+    return is_cached_vector(node) || is_constructor_vector(node) || is_vector_reference(node) ||
         is_vector_origin_of(node) || is_vector_addition(node) ||
         is_vector_subtraction(node) ||
         is_vector_frame_multiplication(node) || is_vector_double_multiplication(node);
