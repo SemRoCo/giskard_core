@@ -1237,6 +1237,47 @@ namespace giskard
   /// specifications for frame expresssions
   ///
 
+  class FrameCachedSpec: public FrameSpec
+  {
+    public:
+      const giskard::FrameSpecPtr& get_frame() const
+      {
+        return frame_;
+      }
+
+      void set_frame(const giskard::FrameSpecPtr& frame)
+      {
+        frame_ = frame;
+      }
+
+      virtual bool equals(const Spec& other) const
+      {
+        if(!dynamic_cast<const FrameCachedSpec*>(&other))
+          return false;
+
+        const FrameCachedSpec* other_p = dynamic_cast<const FrameCachedSpec*>(&other);
+
+        return get_frame().get() && other_p->get_frame().get() &&
+            get_frame()->equals(*(other_p->get_frame()));
+      }
+
+      virtual std::string to_string() const
+      {
+        // TODO: implement me
+        return "";
+      }
+
+      virtual KDL::Expression<KDL::Frame>::Ptr get_expression(const giskard::Scope& scope)
+      {
+        return KDL::cached<KDL::Frame>(get_frame()->get_expression(scope));
+      }
+
+    private:
+      FrameSpecPtr frame_;
+  };
+
+  typedef typename boost::shared_ptr<FrameCachedSpec> FrameCachedSpecPtr;
+
   class FrameConstructorSpec: public FrameSpec
   {
     public:

@@ -258,3 +258,19 @@ TEST_F(FrameGenerationTest, MultiplicationEquality)
   EXPECT_NE(a1, a4);
   EXPECT_EQ(a1, a5);
 }
+
+TEST_F(FrameGenerationTest, Cached)
+{
+  std::string s = "cached-frame: {frame: [{axis-angle: [{vector3: [1,0,0]}, 0.5]}, {vector3: [0.1, 0.2, 0.3]}]}";
+  YAML::Node node = YAML::Load(s);
+
+  ASSERT_NO_THROW(node.as<giskard::FrameSpecPtr>());
+  giskard::FrameSpecPtr spec = node.as<giskard::FrameSpecPtr>();
+
+  ASSERT_NO_THROW(spec->get_expression(giskard::Scope()));  
+  KDL::Expression<KDL::Frame>::Ptr exp = spec->get_expression(giskard::Scope());
+
+  KDL::Frame frame(KDL::Rotation::RotX(0.5), KDL::Vector(0.1, 0.2, 0.3));
+
+  EXPECT_TRUE(KDL::Equal(frame, exp->value()));
+}

@@ -936,6 +936,33 @@ namespace YAML {
   /// parsing frame specifications
   ///
 
+  inline bool is_cached_frame(const Node& node)
+  {
+    return node.IsMap() && (node.size() == 1) && node["cached-frame"];
+  }
+
+  template<>
+  struct convert<giskard::FrameCachedSpecPtr> 
+  {
+    static Node encode(const giskard::FrameCachedSpecPtr& rhs) 
+    {
+      Node node;
+      node["cached-frame"] = rhs->get_frame();
+      return node;
+    }
+  
+    static bool decode(const Node& node, giskard::FrameCachedSpecPtr& rhs) 
+    {
+      if(!is_cached_frame(node))
+        return false;
+
+      rhs = giskard::FrameCachedSpecPtr(new giskard::FrameCachedSpec()); 
+      rhs->set_frame(node["cached-frame"].as<giskard::FrameSpecPtr>());
+
+      return true;
+    }
+  };
+
   inline bool is_constructor_frame(const Node& node)
   {
     return node.IsMap() && (node.size() == 1) && node["frame"] &&
@@ -1040,7 +1067,9 @@ namespace YAML {
     {
       Node node;
 
-      if(boost::dynamic_pointer_cast<giskard::FrameConstructorSpec>(rhs).get())
+      if(boost::dynamic_pointer_cast<giskard::FrameCachedSpec>(rhs).get())
+        node = boost::dynamic_pointer_cast<giskard::FrameCachedSpec>(rhs);
+      else if(boost::dynamic_pointer_cast<giskard::FrameConstructorSpec>(rhs).get())
         node = boost::dynamic_pointer_cast<giskard::FrameConstructorSpec>(rhs);
       else if (boost::dynamic_pointer_cast<giskard::FrameMultiplicationSpec>(rhs).get())
         node = boost::dynamic_pointer_cast<giskard::FrameMultiplicationSpec>(rhs);
@@ -1052,7 +1081,12 @@ namespace YAML {
   
     static bool decode(const Node& node, giskard::FrameSpecPtr& rhs) 
     {
-      if(is_constructor_frame(node))
+      if(is_cached_frame(node))
+      {
+        rhs = node.as<giskard::FrameCachedSpecPtr>();
+        return true;
+      }
+      else if(is_constructor_frame(node))
       {
         rhs = node.as<giskard::FrameConstructorSpecPtr>();
         return true;
@@ -1100,8 +1134,8 @@ namespace YAML {
 
   inline bool is_frame_spec(const Node& node)
   {
-    return is_constructor_frame(node) || is_frame_multiplication(node) || 
-        is_frame_reference(node);
+    return is_cached_frame(node) || is_constructor_frame(node) || 
+        is_frame_multiplication(node) || is_frame_reference(node);
   }
 
   template<>
