@@ -46,7 +46,7 @@ scope:
 
   # definition of features
   - mug-bottom: {origin-of: mug-frame}
-  - mug-top: {transform-vector: [mug-frame, {vector3: [0, 0, 0.1]}]}
+  - mug-top: {transform-vector: [mug-frame, {vector3: [0, 0, 0.108]}]}
   - maker-top: {origin-of: maker-frame}
 
   # expressions used in constraints 
