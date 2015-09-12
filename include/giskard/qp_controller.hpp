@@ -60,10 +60,20 @@ namespace giskard
       {
         qp_builder_.update(observables);
 
-        return qp_problem_.init(qp_builder_.get_H().data(), qp_builder_.get_g().data(), 
+        qpOASES::returnValue return_value = qp_problem_.init(qp_builder_.get_H().data(), qp_builder_.get_g().data(), 
             qp_builder_.get_A().data(), qp_builder_.get_lb().data(), qp_builder_.get_ub().data(),
-            qp_builder_.get_lbA().data(), qp_builder_.get_ubA().data(), nWSR) == qpOASES::SUCCESSFUL_RETURN;
+            qp_builder_.get_lbA().data(), qp_builder_.get_ubA().data(), nWSR);
+
+        if(return_value != qpOASES::SUCCESSFUL_RETURN)
+        {
+          std::cout << "Init of QP-Problem returned without success! Printing internals." << std::endl;
+          qp_builder_.print_internals();
+          std::cout << "nWSR: " << nWSR << std::endl;
+        }
+        
+        return return_value == qpOASES::SUCCESSFUL_RETURN;
       }
+      
  
       bool update(const Eigen::VectorXd& observables, int nWSR)
       {

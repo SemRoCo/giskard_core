@@ -123,6 +123,16 @@ namespace giskard
         return num_controllables() + num_soft_constraints();
       }
 
+      const DoubleExpressionVector& get_controllable_lower_bounds() const
+      {
+        return controllable_lower_bounds_.get_expressions();
+      }
+
+      const DoubleExpressionVector& get_controllable_upper_bounds() const
+      {
+        return controllable_upper_bounds_.get_expressions();
+      }
+
       const DoubleExpressionVector& get_soft_lower_bounds() const
       {
         return soft_lower_bounds_.get_expressions();
@@ -143,6 +153,17 @@ namespace giskard
         return soft_weights_.get_expressions();
       }
     
+      void print_internals() const
+      {
+        print_matrix("H", get_H());
+        print_vector("g", get_g());
+        print_matrix("A", get_A());
+        print_vector("lb", get_lb());
+        print_vector("ub", get_ub());
+        print_vector("lbA", get_lbA());
+        print_vector("ubA", get_ubA());
+      }
+
     private:
       KDL::DoubleExpressionArray controllable_lower_bounds_, controllable_upper_bounds_,
          controllable_weights_, soft_expressions_, soft_lower_bounds_, soft_upper_bounds_,
@@ -150,6 +171,19 @@ namespace giskard
 
       Matrix H_, A_;
       Vector g_, lb_, ub_, lbA_, ubA_;
+
+      void print_matrix(const std::string& name, const Matrix& m) const
+      {
+        std::cout << name << ": " << std::endl << m << std::endl;
+      }
+
+      void print_vector(const std::string& name, const Vector& v) const
+      {
+        std::cout << name << ": ";
+        for(size_t i=0; i<v.size(); ++i)
+          std::cout << v[i] << " ";
+        std::cout << std::endl;
+      }
 
       void set_expressions(const DoubleExpressionVector& controllable_lower_bounds,
           const DoubleExpressionVector& controllable_upper_bounds, const DoubleExpressionVector& controllable_weights,
