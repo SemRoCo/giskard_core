@@ -164,6 +164,11 @@ namespace giskard
         print_vector("ubA", get_ubA());
       }
 
+      bool are_internals_valid() const
+      {
+        return are_controllables_valid();
+      }
+
     private:
       KDL::DoubleExpressionArray controllable_lower_bounds_, controllable_upper_bounds_,
          controllable_weights_, soft_expressions_, soft_lower_bounds_, soft_upper_bounds_,
@@ -171,6 +176,28 @@ namespace giskard
 
       Matrix H_, A_;
       Vector g_, lb_, ub_, lbA_, ubA_;
+
+      bool are_controllables_valid() const
+      {
+        bool result = true;
+        if(get_lb().rows() != get_ub().rows())
+        {
+          std::cout << "Lower and upper boundaries of controllable constraints do not match." << std::endl;
+          result = false;
+        }
+        else
+        {
+          for(size_t i=0; i<get_lb().rows(); ++i)
+            if(get_lb()(i) > get_ub()(i))
+            {
+              std::cout << "Lower controllable boundary bigger than upper boundary (dim=" << i << ")"
+                        << " lower: " << get_lb()(i) << " upper: " << get_ub()(i) << std::endl;
+              result = false;
+            }
+        }
+
+        return result;
+      }
 
       void print_matrix(const std::string& name, const Matrix& m) const
       {
