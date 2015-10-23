@@ -4,7 +4,9 @@ project(giskard)
 find_package(catkin REQUIRED COMPONENTS expressiongraph qpoases kdl_parser)
 
 ## System dependencies are found with CMake's conventions
-# find_package(Boost REQUIRED COMPONENTS system)
+#find_package(Boost REQUIRED COMPONENTS system)
+
+#catkin_package(DEPENDS Boost)
 
 ## Finding system dependencies which come without cmake
 find_package(PkgConfig)
@@ -24,9 +26,13 @@ catkin_package(
 ##############
 
 include_directories(
-  include 
+  include
   ${catkin_INCLUDE_DIRS}
   ${YAML_CPP_INCLUDE_DIRS})
+
+add_executable(extract_expression src/${PROJECT_NAME}/extract_expression.cpp)
+target_link_libraries(extract_expression
+  ${catkin_LIBRARIES} yaml-cpp)
 
 #############
 ## Testing ##
@@ -50,6 +56,6 @@ set(TEST_SRCS
 catkin_add_gtest(${PROJECT_NAME}-test ${TEST_SRCS}
   WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/test_data)
 if(TARGET ${PROJECT_NAME}-test)
-  target_link_libraries(${PROJECT_NAME}-test 
+  target_link_libraries(${PROJECT_NAME}-test
       ${catkin_LIBRARIES} ${YAML_CPP_LIBRARIES})
 endif()

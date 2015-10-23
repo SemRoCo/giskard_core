@@ -49,16 +49,13 @@ def joint_transform_definition(chain):
     return joint_transforms
 
 def prismatic_joint_transform(joint):
-    print 'asda'
     translation = []
     for i in range(0,3):
         if joint.axis[i] == 1:
-            print 'dfg'
             translation.append(
                 {'double-add': [joint.origin.xyz[i], joint.name + '_var']}
             )
         else:
-            print 'jhg'
             translation.append(joint.origin.xyz[i])
     transform = {(joint.name + '_frame'): {'frame': [
                     {'axis-angle': [{'vector3': joint.axis}, 0]},
