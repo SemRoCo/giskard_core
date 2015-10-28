@@ -14,6 +14,6 @@ A library and some ROS nodes for robot motion control.
 * catkin_make run_tests    (2 fails: expressiongraph.Frame, expressiongraph.Rotation)
 
 ## Parsing urdfs into yamls
-`rosrun giskard extract_expression.py <start_link> <end_link> -f <urdf_file> -o <output_file>`
+`rosrun giskard extract_expression <start_link> <end_link> <urdf_file> (optional <output_file>)`
 Example:
-`rosrun giskard extract_expression.py torso_list_link l_wrist_roll_link -f test_data/pr2_left_arm.urdf -o asd.yml`
+`rosrun giskard extract_expression torso_lift_link l_wrist_roll_link test_data/pr2.urdf asd.yaml`
