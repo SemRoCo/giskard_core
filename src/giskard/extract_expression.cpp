@@ -25,9 +25,9 @@
 
 int main(int argc, char **argv)
 {
-  if (argc < 4 || argc > 5)
+  if (argc != 4 && argc != 5)
   {
-    std::cout << "Usage: rosrun giskard extract_expression <start_link> <end_link> <urdf> (optional <ouput_file>)"<< std::endl;
+    std::cout << "Usage: rosrun giskard extract_expression <start_link> <end_link> <urdf> (optional <output_file>)"<< std::endl;
     return 0;
   }
   std::string start_link = argv[1];
@@ -49,6 +49,10 @@ int main(int argc, char **argv)
     {
       std::cout << out.c_str() << std::endl;
     }
+  }
+  else
+  {
+    std::cerr << "Failed to extract expression." << std::endl;
   }
   return 0;
 }

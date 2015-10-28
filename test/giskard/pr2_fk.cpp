@@ -1,18 +1,18 @@
 /*
  * Copyright (C) 2015 Georg Bartels <georg.bartels@cs.uni-bremen.de>
- * 
+ *
  * This file is part of giskard.
- * 
+ *
  * giskard is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
@@ -26,15 +26,48 @@
 
 class PR2FKTest : public ::testing::Test
 {
-   protected:
+  protected:
     virtual void SetUp()
     {
       urdf::Model urdf;
       urdf.initFile("pr2.urdf"); tree;
       assert(kdl_parser::treeFromUrdfModel(urdf, tree));
-   }
+    }
 
     virtual void TearDown(){}
+
+    virtual void TestFrameExpression(KDL::Expression<KDL::Frame>::Ptr exp, std::string start_link, std::string end_link)
+    {
+      ASSERT_TRUE(exp.get());
+
+      KDL::Chain chain;
+      ASSERT_TRUE(tree.getChain(start_link, end_link, chain));
+      ASSERT_EQ(chain.getNrOfJoints(), exp->number_of_derivatives());
+
+      boost::shared_ptr<KDL::ChainFkSolverPos_recursive> fk_solver;
+      fk_solver = boost::shared_ptr<KDL::ChainFkSolverPos_recursive>(
+          new KDL::ChainFkSolverPos_recursive(chain));
+
+      for(int i=-11; i<12; ++i)
+      {
+        std::vector<double> exp_in;
+        KDL::JntArray solver_in(exp->number_of_derivatives());
+        for(size_t j=0; j<exp->number_of_derivatives(); ++j)
+        {
+          double value = 0.1*i;
+          exp_in.push_back(value);
+          solver_in(j) = value;
+        }
+
+        exp->setInputValues(exp_in);
+        KDL::Frame exp_frame = exp->value();
+
+        KDL::Frame solver_frame;
+        ASSERT_GE(fk_solver->JntToCart(solver_in, solver_frame), 0);
+
+        EXPECT_TRUE(KDL::Equal(exp_frame, solver_frame));
+      }
+    }
 
     KDL::Tree tree;
 };
@@ -46,39 +79,11 @@ TEST_F(PR2FKTest, SingleExpression)
 
   giskard::FrameSpecPtr spec = node.as<giskard::FrameSpecPtr>();
   ASSERT_NO_THROW(spec->get_expression(giskard::Scope()));
-  
-  KDL::Expression<KDL::Frame>::Ptr exp = spec->get_expression(giskard::Scope());
-  ASSERT_TRUE(exp.get()); 
 
+  KDL::Expression<KDL::Frame>::Ptr exp = spec->get_expression(giskard::Scope());
   std::string base = "torso_lift_link";
   std::string tip = "l_wrist_roll_link";
-  KDL::Chain chain;
-  ASSERT_TRUE(tree.getChain(base, tip, chain));
-  ASSERT_EQ(chain.getNrOfJoints(), exp->number_of_derivatives());
-
-  boost::shared_ptr<KDL::ChainFkSolverPos_recursive> fk_solver;
-  fk_solver = boost::shared_ptr<KDL::ChainFkSolverPos_recursive>(
-      new KDL::ChainFkSolverPos_recursive(chain));
-
-  for(int i=-11; i<12; ++i)
-  {
-    std::vector<double> exp_in;
-    KDL::JntArray solver_in(exp->number_of_derivatives());
-    for(size_t j=0; j<exp->number_of_derivatives(); ++j)
-    {
-      double value = 0.1*i;
-      exp_in.push_back(value);
-      solver_in(j) = value;
-    }
-
-    exp->setInputValues(exp_in);
-    KDL::Frame exp_frame = exp->value();
-
-    KDL::Frame solver_frame;
-    ASSERT_GE(fk_solver->JntToCart(solver_in, solver_frame), 0);
-
-    EXPECT_TRUE(KDL::Equal(exp_frame, solver_frame));
-  }
+  TestFrameExpression(exp, base, tip);
 }
 
 TEST_F(PR2FKTest, Scope)
@@ -87,45 +92,54 @@ TEST_F(PR2FKTest, Scope)
 
   ASSERT_NO_THROW(node.as< giskard::ScopeSpec >());
   giskard::ScopeSpec scope_spec = node.as<giskard::ScopeSpec>();
-  
+
   ASSERT_NO_THROW(giskard::generate(scope_spec));
   giskard::Scope scope = giskard::generate(scope_spec);
 
   ASSERT_TRUE(scope.has_frame_expression("pr2_fk"));
 
   KDL::Expression<KDL::Frame>::Ptr exp = scope.find_frame_expression("pr2_fk");
-  ASSERT_TRUE(exp.get()); 
-
   std::string base = "base_link";
   std::string tip = "l_wrist_roll_link";
-  KDL::Chain chain;
-  ASSERT_TRUE(tree.getChain(base, tip, chain));
-  ASSERT_EQ(chain.getNrOfJoints(), exp->number_of_derivatives());
+  TestFrameExpression(exp, base, tip);
+}
 
-  boost::shared_ptr<KDL::ChainFkSolverPos_recursive> fk_solver;
-  fk_solver = boost::shared_ptr<KDL::ChainFkSolverPos_recursive>(
-      new KDL::ChainFkSolverPos_recursive(chain));
+TEST_F(PR2FKTest, GeneratedFromUrdf)
+{
+  std::string base = "base_link";
+  std::string tip = "l_wrist_roll_link";
+  YAML::Node node;
+  ASSERT_TRUE(giskard::extract_expression(base, tip, "pr2.urdf", node));
 
-  for(int i=-11; i<12; ++i)
-  {
-    std::vector<double> exp_in;
-    KDL::JntArray solver_in(exp->number_of_derivatives());
-    for(size_t j=0; j<exp->number_of_derivatives(); ++j)
-    {
-      double value = 0.1*i;
-      exp_in.push_back(value);
-      solver_in(j) = value;
-    }
+  ASSERT_NO_THROW(node.as< giskard::ScopeSpec >());
+  giskard::ScopeSpec scope_spec = node.as<giskard::ScopeSpec>();
 
-    exp->setInputValues(exp_in);
-    KDL::Frame exp_frame = exp->value();
+  ASSERT_NO_THROW(giskard::generate(scope_spec));
+  giskard::Scope scope = giskard::generate(scope_spec);
 
-    KDL::Frame solver_frame;
-    ASSERT_GE(fk_solver->JntToCart(solver_in, solver_frame), 0);
+  ASSERT_TRUE(scope.has_frame_expression("fk"));
 
-    EXPECT_TRUE(KDL::Equal(exp_frame, solver_frame));
-  }
+  KDL::Expression<KDL::Frame>::Ptr exp = scope.find_frame_expression("fk");
+  TestFrameExpression(exp, base, tip);
+}
 
+TEST_F(PR2FKTest, GeneratedFromTree)
+{
+  std::string base = "base_link";
+  std::string tip = "l_wrist_roll_link";
+  YAML::Node node;
+  ASSERT_TRUE(giskard::extract_expression(base, tip, tree, node));
+
+  ASSERT_NO_THROW(node.as< giskard::ScopeSpec >());
+  giskard::ScopeSpec scope_spec = node.as<giskard::ScopeSpec>();
+
+  ASSERT_NO_THROW(giskard::generate(scope_spec));
+  giskard::Scope scope = giskard::generate(scope_spec);
+
+  ASSERT_TRUE(scope.has_frame_expression("fk"));
+
+  KDL::Expression<KDL::Frame>::Ptr exp = scope.find_frame_expression("fk");
+  TestFrameExpression(exp, base, tip);
 }
 
 TEST_F(PR2FKTest, QPPositionControl)
@@ -151,7 +165,7 @@ TEST_F(PR2FKTest, QPPositionControl)
   double dt = 0.01;
   std::vector<double> state_tmp;
   state_tmp.resize(state.rows());
-  
+
   error->setInputValues(state_tmp);
   EXPECT_GE(error->value(), 0.3);
 
@@ -202,7 +216,7 @@ TEST_F(PR2FKTest, QPPositionControlWithDeactivatedControllables)
   double dt = 0.01;
   std::vector<double> state_tmp;
   state_tmp.resize(state.rows());
-  
+
   error->setInputValues(state_tmp);
   EXPECT_GE(error->value(), 0.3);
 
@@ -256,7 +270,7 @@ TEST_F(PR2FKTest, QPPositionControlWithExcessObservables)
   double dt = 0.01;
   std::vector<double> state_tmp;
   state_tmp.resize(state.rows());
-  
+
   error->setInputValues(state_tmp);
   EXPECT_GE(error->value(), 0.3);
 

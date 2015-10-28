@@ -29,13 +29,20 @@ namespace giskard
 {
   inline void add_input_varibale_definitions(const KDL::Chain& chain, YAML::Node& node)
   {
-    for (int i = 0; i < chain.segments.size(); i++)
+    KDL::Joint joint;
+    int i = 0;
+    for (std::vector<KDL::Segment>::const_iterator seg = chain.segments.begin(); seg != chain.segments.end(); ++seg)
     {
-      YAML::Node var_name;
-      YAML::Node var_input;
-      var_input["input-var"] = i;
-      var_name[chain.segments[i].getJoint().getName() + "_var"] = var_input;
-      node.push_back(var_name);
+      joint = seg->getJoint();
+      if (joint.getType() != KDL::Joint::None)
+      {
+        YAML::Node var_name;
+        YAML::Node var_input;
+        var_input["input-var"] = i;
+        var_name[joint.getName() + "_var"] = var_input;
+        node.push_back(var_name);
+        i++;
+      }
     }
   }
 
@@ -86,19 +93,23 @@ namespace giskard
 
   inline void add_joint_transform_definitions(const KDL::Chain& chain, YAML::Node& node)
   {
+    KDL::Joint joint;
     for (int i = 0; i < chain.segments.size(); i++)
     {
-      YAML::Node frame_name;
-      YAML::Node frame;
-      YAML::Node axis_angle;
-      YAML::Node translation;
-      get_axis_angle(chain.segments[i].getJoint(), axis_angle);
-      get_translation(chain.segments[i].getJoint(), translation);
-      frame["frame"].push_back(axis_angle);
-      frame["frame"].push_back(translation);
-      frame_name[chain.segments[i].getJoint().getName() + "_frame"] = frame;
-
-      node.push_back(frame_name);
+      joint = chain.segments[i].getJoint();
+      if (joint.getType() != KDL::Joint::None)
+      {
+        YAML::Node frame_name;
+        YAML::Node frame;
+        YAML::Node axis_angle;
+        YAML::Node translation;
+        get_axis_angle(joint, axis_angle);
+        get_translation(joint, translation);
+        frame["frame"].push_back(axis_angle);
+        frame["frame"].push_back(translation);
+        frame_name[chain.segments[i].getJoint().getName() + "_frame"] = frame;
+        node.push_back(frame_name);
+      }
     }
   }
 
@@ -106,20 +117,25 @@ namespace giskard
   {
     YAML::Node fk_name;
     YAML::Node frame_mul;
+    KDL::Joint joint;
     for (int i = 0; i < chain.segments.size(); i++)
     {
-      frame_mul["frame-mul"].push_back(chain.segments[i].getJoint().getName() + "_frame");
+      joint = chain.segments[i].getJoint();
+      if (joint.getType() != KDL::Joint::None)
+      {
+        frame_mul["frame-mul"].push_back(joint.getName() + "_frame");
+      }
     }
     fk_name["fk"] = frame_mul;
     node.push_back(fk_name);
   }
 
-  inline bool get_scope_yaml(std::string start_link, std::string end_link, const KDL::Tree& robot_tree, YAML::Node& node)
+  inline bool extract_expression(std::string start_link, std::string end_link, const KDL::Tree& robot_tree, YAML::Node& node)
   {
     KDL::Chain chain;
     if (!robot_tree.getChain(start_link, end_link, chain))
     {
-      std::cout << "Couldn't get chain: " << start_link << " -> " << end_link << std::endl;
+      std::cerr << "Couldn't get chain: " << start_link << " -> " << end_link << std::endl;
       return false;
     }
 
@@ -136,7 +152,7 @@ namespace giskard
     urdf.initFile(urdf_path);
     KDL::Tree tree;
     kdl_parser::treeFromUrdfModel(urdf, tree);
-    return get_scope_yaml(start_link, end_link, tree, node);
+    return extract_expression(start_link, end_link, tree, node);
   }
 
 }
