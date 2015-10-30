@@ -108,8 +108,7 @@ TEST_F(PR2FKTest, GeneratedFromUrdf)
 {
   std::string base = "base_link";
   std::string tip = "l_wrist_roll_link";
-  YAML::Node node;
-  ASSERT_TRUE(giskard::extract_expression(base, tip, "pr2.urdf", node));
+  YAML::Node node = giskard::extract_expression(base, tip, "pr2.urdf");
 
   ASSERT_NO_THROW(node.as< giskard::ScopeSpec >());
   giskard::ScopeSpec scope_spec = node.as<giskard::ScopeSpec>();
@@ -127,8 +126,7 @@ TEST_F(PR2FKTest, GeneratedFromTree)
 {
   std::string base = "base_link";
   std::string tip = "l_wrist_roll_link";
-  YAML::Node node;
-  ASSERT_TRUE(giskard::extract_expression(base, tip, tree, node));
+  YAML::Node node = giskard::extract_expression(base, tip, tree);
 
   ASSERT_NO_THROW(node.as< giskard::ScopeSpec >());
   giskard::ScopeSpec scope_spec = node.as<giskard::ScopeSpec>();
