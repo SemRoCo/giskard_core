@@ -29,12 +29,12 @@
 namespace giskard
 {
 
-  inline boost::shared_ptr<YAML::Node> get_origin_node(const KDL::Joint& joint)
+  inline boost::shared_ptr<YAML::Node> get_origin_node(const KDL::Segment& seg)
   {
     boost::shared_ptr<YAML::Node> joint_origin_ptr( new YAML::Node());
-    (*joint_origin_ptr)["vector3"].push_back(joint.JointOrigin()[0]);
-    (*joint_origin_ptr)["vector3"].push_back(joint.JointOrigin()[1]);
-    (*joint_origin_ptr)["vector3"].push_back(joint.JointOrigin()[2]);
+    (*joint_origin_ptr)["vector3"].push_back(seg.getFrameToTip().p[0]);
+    (*joint_origin_ptr)["vector3"].push_back(seg.getFrameToTip().p[1]);
+    (*joint_origin_ptr)["vector3"].push_back(seg.getFrameToTip().p[2]);
 
     return joint_origin_ptr;
   }
@@ -56,13 +56,13 @@ namespace giskard
     YAML::Node frame_mul;
 
     int input_var_index = 0;
-    std::vector<KDL::Joint> prev_fixed_joints;
+    std::vector<KDL::Segment> prev_fixed_joints;
     for (std::vector<KDL::Segment>::const_iterator it = chain.segments.begin(); it != chain.segments.end(); ++it)
     {
       KDL::Joint joint = it->getJoint();
       if (joint.getType() == KDL::Joint::None)
       {
-        prev_fixed_joints.push_back(joint);
+        prev_fixed_joints.push_back(*it);
         continue;
       }
 
@@ -78,7 +78,7 @@ namespace giskard
       // Set joint transform
       YAML::Node translation;
       YAML::Node rotation;
-      boost::shared_ptr<YAML::Node> joint_origin_ptr = get_origin_node(joint);
+      boost::shared_ptr<YAML::Node> joint_origin_ptr = get_origin_node(*it);
       while (!prev_fixed_joints.empty())
       {
         boost::shared_ptr<YAML::Node> add(new YAML::Node);
