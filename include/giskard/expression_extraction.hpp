@@ -56,6 +56,8 @@ namespace giskard
     YAML::Node frame_mul;
 
     int input_var_index = 0;
+    boost::shared_ptr<YAML::Node> null_vector_ptr(new YAML::Node);
+    *null_vector_ptr = YAML::Load("{vector3: [0, 0, 0]}");
     std::vector<KDL::Segment> prev_fixed_joints;
     for (std::vector<KDL::Segment>::const_iterator it = chain.segments.begin(); it != chain.segments.end(); ++it)
     {
@@ -78,7 +80,16 @@ namespace giskard
       // Set joint transform
       YAML::Node translation;
       YAML::Node rotation;
-      boost::shared_ptr<YAML::Node> joint_origin_ptr = get_origin_node(*it);
+      boost::shared_ptr<YAML::Node> joint_origin_ptr;
+      if (!KDL::Equal(it->getFrameToTip().p, joint.JointOrigin()))
+      {
+        joint_origin_ptr = null_vector_ptr;
+      }
+      else
+      {
+        joint_origin_ptr = get_origin_node(*it);
+      }
+      // Add previous fixed joints to origin
       while (!prev_fixed_joints.empty())
       {
         boost::shared_ptr<YAML::Node> add(new YAML::Node);
@@ -88,6 +99,11 @@ namespace giskard
         prev_fixed_joints.pop_back();
       }
       YAML::Node joint_origin = *joint_origin_ptr;
+      if (!KDL::Equal(it->getFrameToTip().p, joint.JointOrigin()))
+      {
+        prev_fixed_joints.push_back(*it);
+      }
+      // Set joint axis
       YAML::Node joint_axis;
       joint_axis["vector3"].push_back(joint.JointAxis()[0]);
       joint_axis["vector3"].push_back(joint.JointAxis()[1]);
@@ -107,6 +123,7 @@ namespace giskard
         translation = joint_origin;
         rotation["axis-angle"].push_back(var_name);
       }
+      // Create frame and add to list
       YAML::Node joint_transform;
       joint_transform[frame_name]["frame"].push_back(rotation);
       joint_transform[frame_name]["frame"].push_back(translation);
@@ -114,6 +131,26 @@ namespace giskard
 
       // Set fk
       frame_mul.push_back(frame_name);
+    }
+
+    // Add frame for remaining fixed joints
+    if (!prev_fixed_joints.empty())
+    {
+      boost::shared_ptr<YAML::Node> fixed_joint_origin_ptr = null_vector_ptr;
+      while (!prev_fixed_joints.empty())
+      {
+        boost::shared_ptr<YAML::Node> add(new YAML::Node);
+        (*add)["vector-add"].push_back(*fixed_joint_origin_ptr);
+        (*add)["vector-add"].push_back(*get_origin_node(prev_fixed_joints.back()));
+        fixed_joint_origin_ptr = add;
+        prev_fixed_joints.pop_back();
+      }
+      YAML::Node rotation = YAML::Load("{axis-angle: [{vector3: [1,0,0]}, 0]}");
+      YAML::Node joint_transform;
+      joint_transform["dummy_frame"]["frame"].push_back(rotation);
+      joint_transform["dummy_frame"]["frame"].push_back(*fixed_joint_origin_ptr);
+      joint_transforms.push_back(joint_transform);
+      frame_mul.push_back("dummy_frame");
     }
 
     // Merge nodes

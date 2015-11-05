@@ -48,7 +48,7 @@ class PR2FKTest : public ::testing::Test
       fk_solver = boost::shared_ptr<KDL::ChainFkSolverPos_recursive>(
           new KDL::ChainFkSolverPos_recursive(chain));
 
-      for(int i=-11; i<12; ++i)
+      for(int i=0; i<12; ++i)
       {
         std::vector<double> exp_in;
         KDL::JntArray solver_in(exp->number_of_derivatives());
@@ -138,6 +138,60 @@ TEST_F(PR2FKTest, GeneratedFromTree)
 
   KDL::Expression<KDL::Frame>::Ptr exp = scope.find_frame_expression("fk");
   TestFrameExpression(exp, base, tip);
+}
+
+TEST_F(PR2FKTest, TipToForearm)
+{
+  std::string base = "l_forearm_link";
+  std::string tip = "l_wrist_flex_link";
+  YAML::Node node = giskard::extract_expression(tip, base, tree);
+
+  ASSERT_NO_THROW(node.as< giskard::ScopeSpec >());
+  giskard::ScopeSpec scope_spec = node.as<giskard::ScopeSpec>();
+
+  ASSERT_NO_THROW(giskard::generate(scope_spec));
+  giskard::Scope scope = giskard::generate(scope_spec);
+
+  ASSERT_TRUE(scope.has_frame_expression("fk"));
+
+  KDL::Expression<KDL::Frame>::Ptr exp = scope.find_frame_expression("fk");
+  TestFrameExpression(exp, tip, base);
+}
+
+TEST_F(PR2FKTest, TipToBase)
+{
+  std::string base = "base_link";
+  std::string tip = "l_wrist_flex_link";
+  YAML::Node node = giskard::extract_expression(tip, base, tree);
+
+  ASSERT_NO_THROW(node.as< giskard::ScopeSpec >());
+  giskard::ScopeSpec scope_spec = node.as<giskard::ScopeSpec>();
+
+  ASSERT_NO_THROW(giskard::generate(scope_spec));
+  giskard::Scope scope = giskard::generate(scope_spec);
+
+  ASSERT_TRUE(scope.has_frame_expression("fk"));
+
+  KDL::Expression<KDL::Frame>::Ptr exp = scope.find_frame_expression("fk");
+  TestFrameExpression(exp, tip, base);
+}
+
+TEST_F(PR2FKTest, TipToTip)
+{
+  std::string base = "r_wrist_flex_link";
+  std::string tip = "l_wrist_flex_link";
+  YAML::Node node = giskard::extract_expression(tip, base, tree);
+
+  ASSERT_NO_THROW(node.as< giskard::ScopeSpec >());
+  giskard::ScopeSpec scope_spec = node.as<giskard::ScopeSpec>();
+
+  ASSERT_NO_THROW(giskard::generate(scope_spec));
+  giskard::Scope scope = giskard::generate(scope_spec);
+
+  ASSERT_TRUE(scope.has_frame_expression("fk"));
+
+  KDL::Expression<KDL::Frame>::Ptr exp = scope.find_frame_expression("fk");
+  TestFrameExpression(exp, tip, base);
 }
 
 TEST_F(PR2FKTest, QPPositionControl)
