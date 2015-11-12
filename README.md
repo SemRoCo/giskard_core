@@ -15,5 +15,6 @@ A library and some ROS nodes for robot motion control.
 
 ## Parsing urdfs into yamls
 `rosrun giskard extract_expression <start_link> <end_link> <urdf_file> (optional <output_file>)`
+
 Example:
 `rosrun giskard extract_expression torso_lift_link l_wrist_roll_link test_data/pr2.urdf asd.yaml`
