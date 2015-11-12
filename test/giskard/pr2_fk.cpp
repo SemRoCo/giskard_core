@@ -194,6 +194,42 @@ TEST_F(PR2FKTest, TipToTip)
   TestFrameExpression(exp, tip, base);
 }
 
+TEST_F(PR2FKTest, BaseToCam)
+{
+  std::string base = "base_link";
+  std::string tip = "l_forearm_cam_frame";
+  YAML::Node node = giskard::extract_expression(tip, base, tree);
+
+  ASSERT_NO_THROW(node.as< giskard::ScopeSpec >());
+  giskard::ScopeSpec scope_spec = node.as<giskard::ScopeSpec>();
+
+  ASSERT_NO_THROW(giskard::generate(scope_spec));
+  giskard::Scope scope = giskard::generate(scope_spec);
+
+  ASSERT_TRUE(scope.has_frame_expression("fk"));
+
+  KDL::Expression<KDL::Frame>::Ptr exp = scope.find_frame_expression("fk");
+  TestFrameExpression(exp, tip, base);
+}
+
+TEST_F(PR2FKTest, CamToBase)
+{
+  std::string base = "l_forearm_cam_frame";
+  std::string tip = "base_link";
+  YAML::Node node = giskard::extract_expression(tip, base, tree);
+
+  ASSERT_NO_THROW(node.as< giskard::ScopeSpec >());
+  giskard::ScopeSpec scope_spec = node.as<giskard::ScopeSpec>();
+
+  ASSERT_NO_THROW(giskard::generate(scope_spec));
+  giskard::Scope scope = giskard::generate(scope_spec);
+
+  ASSERT_TRUE(scope.has_frame_expression("fk"));
+
+  KDL::Expression<KDL::Frame>::Ptr exp = scope.find_frame_expression("fk");
+  TestFrameExpression(exp, tip, base);
+}
+
 TEST_F(PR2FKTest, QPPositionControl)
 {
   YAML::Node node = YAML::LoadFile("pr2_qp_position_control.yaml");

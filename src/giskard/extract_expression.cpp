@@ -27,14 +27,13 @@ int main(int argc, char **argv)
 {
   if (argc != 4 && argc != 5)
   {
-    std::cout << "Usage: rosrun giskard extract_expression <start_link> <end_link> <urdf> (optional <output_file>)"<< std::endl;
+    std::cout << "Usage: rosrun giskard extract_expression <start_link> <end_link> <urdf> (optional <output_file>)" << std::endl;
     return 0;
   }
   std::string start_link = argv[1];
   std::string end_link = argv[2];
   std::string urdf_path = argv[3];
-  YAML::Node yaml = giskard::extract_expression(start_link, end_link, urdf_path);
-
+  YAML::Node yaml = giskard::ExpressionExtractor::extract(start_link, end_link, urdf_path);
   YAML::Emitter out;
   out << yaml;
   if (argc == 5)
