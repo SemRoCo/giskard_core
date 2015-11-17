@@ -17,7 +17,7 @@ find_library(YAML_CPP_LIBRARIES NAMES yaml-cpp)
 catkin_package(
   INCLUDE_DIRS include
 #  LIBRARIES ${PROJECT_NAME}
-  CATKIN_DEPENDS expressiongraph qpoases
+  CATKIN_DEPENDS expressiongraph qpoases kdl_parser
   DEPENDS yaml_cpp
 )
 
@@ -29,6 +29,10 @@ include_directories(
   include
   ${catkin_INCLUDE_DIRS}
   ${YAML_CPP_INCLUDE_DIRS})
+
+# add_library(${PROJECT_NAME} include/giskard/giskard.hpp)
+# target_link_libraries(${PROJECT_NAME}
+#   ${catkin_LIBRARIES} yaml-cpp)
 
 add_executable(extract_expression src/${PROJECT_NAME}/extract_expression.cpp)
 target_link_libraries(extract_expression
