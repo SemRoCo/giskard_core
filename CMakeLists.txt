@@ -4,7 +4,9 @@ project(giskard)
 find_package(catkin REQUIRED COMPONENTS expressiongraph qpoases kdl_parser)
 
 ## System dependencies are found with CMake's conventions
-# find_package(Boost REQUIRED COMPONENTS system)
+#find_package(Boost REQUIRED COMPONENTS system)
+
+#catkin_package(DEPENDS Boost)
 
 ## Finding system dependencies which come without cmake
 find_package(PkgConfig)
@@ -15,7 +17,7 @@ find_library(YAML_CPP_LIBRARIES NAMES yaml-cpp)
 catkin_package(
   INCLUDE_DIRS include
 #  LIBRARIES ${PROJECT_NAME}
-  CATKIN_DEPENDS expressiongraph qpoases
+  CATKIN_DEPENDS expressiongraph qpoases kdl_parser
   DEPENDS yaml_cpp
 )
 
@@ -24,9 +26,17 @@ catkin_package(
 ##############
 
 include_directories(
-  include 
+  include
   ${catkin_INCLUDE_DIRS}
   ${YAML_CPP_INCLUDE_DIRS})
+
+# add_library(${PROJECT_NAME} include/giskard/giskard.hpp)
+# target_link_libraries(${PROJECT_NAME}
+#   ${catkin_LIBRARIES} yaml-cpp)
+
+add_executable(extract_expression src/${PROJECT_NAME}/extract_expression.cpp)
+target_link_libraries(extract_expression
+  ${catkin_LIBRARIES} yaml-cpp)
 
 #############
 ## Testing ##
@@ -50,6 +60,6 @@ set(TEST_SRCS
 catkin_add_gtest(${PROJECT_NAME}-test ${TEST_SRCS}
   WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/test_data)
 if(TARGET ${PROJECT_NAME}-test)
-  target_link_libraries(${PROJECT_NAME}-test 
+  target_link_libraries(${PROJECT_NAME}-test
       ${catkin_LIBRARIES} ${YAML_CPP_LIBRARIES})
 endif()

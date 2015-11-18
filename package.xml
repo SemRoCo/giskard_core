@@ -18,6 +18,7 @@
   <depend>yaml_cpp</depend>
   <depend>expressiongraph</depend>
   <depend>qpoases</depend>
+  <depend>kdl_parser</depend>
   <test_depend>kdl_parser</test_depend>
   <test_depend>gtest</test_depend>
 </package>
