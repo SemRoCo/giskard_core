@@ -31,7 +31,7 @@ namespace giskard
   class ExpressionExtractor
   {
     public:
-      static inline YAML::Node extract(const std::string& start_link, const std::string& end_link, const KDL::Chain& chain)
+      static inline YAML::Node extract(const KDL::Chain& chain)
       {
         std::string var_suffix = "_var";
         std::string frame_suffix = "_frame";
@@ -127,7 +127,7 @@ namespace giskard
         {
           throw InvalidChain(start_link, end_link);
         }
-        return extract(start_link, end_link, chain);
+        return extract(chain);
       }
 
       static inline YAML::Node extract(const std::string& start_link, const std::string& end_link, const std::string& urdf_path)
@@ -201,9 +201,9 @@ namespace giskard
       }
   };
 
-  static YAML::Node extract_expression(const std::string& start_link, const std::string& end_link, const KDL::Chain& chain)
+  static YAML::Node extract_expression(const KDL::Chain& chain)
   {
-    return ExpressionExtractor::extract(start_link, end_link, chain);
+    return ExpressionExtractor::extract(chain);
   }
 
   static YAML::Node extract_expression(const std::string& start_link, const std::string& end_link, const KDL::Tree& robot_tree)
