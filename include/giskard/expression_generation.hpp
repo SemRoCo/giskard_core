@@ -98,9 +98,10 @@ namespace giskard
     giskard::QPController controller;
    
     // TODO: throw an exception, instead
-    assert(controller.init(controllable_lower, controllable_upper, controllable_weight,
+    if(!(controller.init(controllable_lower, controllable_upper, controllable_weight,
                            soft_exp, soft_lower, soft_upper, soft_weight,
-                           hard_exp, hard_lower, hard_upper));
+                           hard_exp, hard_lower, hard_upper)))
+      assert(false);
 
     return controller;
   }
