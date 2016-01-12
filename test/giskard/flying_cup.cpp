@@ -38,12 +38,18 @@ class FlyingCupTest : public ::testing::Test
 TEST_F(FlyingCupTest, ApproachMotion)
 {
   YAML::Node node = YAML::LoadFile("flying_cup_approach_motion.yaml");
-  ASSERT_NO_THROW(node.as<giskard::QPControllerSpec>());
 
+  ASSERT_NO_THROW(node.as<giskard::QPControllerSpec>());
   giskard::QPControllerSpec spec = node.as<giskard::QPControllerSpec>();
-  ASSERT_NO_THROW(generate(spec));
+
+  EXPECT_EQ(14, spec.scope_.size());
+  EXPECT_EQ(6, spec.controllable_constraints_.size());
+  EXPECT_EQ(0, spec.hard_constraints_.size());
+  EXPECT_EQ(2, spec.soft_constraints_.size());
 
   giskard::Scope scope = giskard::generate(spec.scope_);
+  ASSERT_TRUE(scope.has_double_expression("mug-above-maker"));
+  ASSERT_TRUE(scope.has_double_expression("mug-upright"));
   KDL::Expression<double>::Ptr mug_above = scope.find_double_expression("mug-above-maker");
   KDL::Expression<double>::Ptr mug_upright = scope.find_double_expression("mug-upright");
 
@@ -51,8 +57,13 @@ TEST_F(FlyingCupTest, ApproachMotion)
   using Eigen::operator<<;
   state << 0.2, 0.1, 1.855, 0.01, 0.01, 0, 0.3, 0.4, 0.89, 0, 0, 0;
   int nWSR = 10;
+
   ASSERT_NO_THROW(giskard::generate(spec));
   giskard::QPController controller = giskard::generate(spec);
+  ASSERT_EQ(8, controller.get_qp_builder().get_H().rows());
+  ASSERT_EQ(8, controller.get_qp_builder().get_H().cols());
+  ASSERT_EQ(2, controller.get_qp_builder().get_A().rows());
+  ASSERT_EQ(8, controller.get_qp_builder().get_A().cols());
 
   // setup
   size_t iterations = 500;
