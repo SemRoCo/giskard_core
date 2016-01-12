@@ -30,13 +30,14 @@ class PR2FKTest : public ::testing::Test
     virtual void SetUp()
     {
       urdf::Model urdf;
-      urdf.initFile("pr2.urdf"); tree;
-      assert(kdl_parser::treeFromUrdfModel(urdf, tree));
+      ASSERT_TRUE(urdf.initFile("pr2.urdf"));
+      ASSERT_TRUE(kdl_parser::treeFromUrdfModel(urdf, tree));
     }
 
     virtual void TearDown(){}
 
-    virtual void TestFrameExpression(KDL::Expression<KDL::Frame>::Ptr exp, std::string start_link, std::string end_link)
+    virtual void TestFrameExpression(const KDL::Expression<KDL::Frame>::Ptr& exp, 
+        const std::string& start_link, const std::string& end_link)
     {
       ASSERT_TRUE(exp.get());
 
