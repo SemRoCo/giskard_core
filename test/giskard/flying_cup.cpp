@@ -58,6 +58,11 @@ TEST_F(FlyingCupTest, ApproachMotion)
   state << 0.2, 0.1, 1.855, 0.01, 0.01, 0, 0.3, 0.4, 0.89, 0, 0, 0;
   int nWSR = 10;
 
+  EXPECT_EQ(14, spec.scope_.size());
+  EXPECT_EQ(6, spec.controllable_constraints_.size());
+  EXPECT_EQ(0, spec.hard_constraints_.size());
+  EXPECT_EQ(2, spec.soft_constraints_.size());
+
   ASSERT_NO_THROW(giskard::generate(spec));
   giskard::QPController controller = giskard::generate(spec);
   ASSERT_EQ(8, controller.get_qp_builder().get_H().rows());
