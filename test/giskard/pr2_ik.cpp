@@ -30,8 +30,8 @@ class PR2IKTest : public ::testing::Test
     virtual void SetUp()
     {
       urdf::Model urdf;
-      urdf.initFile("pr2.urdf"); tree;
-      assert(kdl_parser::treeFromUrdfModel(urdf, tree));
+      urdf.initFile("pr2.urdf");
+      ASSERT_TRUE(kdl_parser::treeFromUrdfModel(urdf, tree));
    }
 
     virtual void TearDown(){}
