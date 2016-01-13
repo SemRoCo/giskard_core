@@ -454,7 +454,7 @@ TEST_F(YamlParserTest, FrameConstructorSpec)
   ASSERT_TRUE(s5.get());
   ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::FrameConstructorSpec>(s5).get());
   giskard::FrameConstructorSpecPtr s6 =
-      boost::dynamic_pointer_cast<giskard::FrameConstructorSpec>(s6);
+      boost::dynamic_pointer_cast<giskard::FrameConstructorSpec>(s5);
 
   ASSERT_TRUE(s6->get_rotation().get());
   ASSERT_TRUE(s6->get_translation().get());
