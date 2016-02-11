@@ -301,6 +301,59 @@ TEST_F(YamlParserTest, AxisAngleSpec)
   EXPECT_DOUBLE_EQ(boost::dynamic_pointer_cast<giskard::DoubleConstSpec>(axis->get_z())->get_value(), 0.0);
 };
 
+TEST_F(YamlParserTest, RotationQuaternionConstructorSpec)
+{
+  std::string v = "{quaternion: [0.70710678118, 0.0, -0.70710678118, 0.0]}";
+
+  // parsing constructor vector
+  YAML::Node node = YAML::Load(v);
+  ASSERT_NO_THROW(node.as<giskard::RotationQuaternionConstructorSpecPtr>());
+  giskard::RotationQuaternionConstructorSpecPtr s1 = node.as<giskard::RotationQuaternionConstructorSpecPtr>();
+
+  //std::cout << "x=" << x << ", y=" << y << ", z=" << z << ", w=" << w << std::endl;
+
+  EXPECT_DOUBLE_EQ(0.70710678118, s1->get_x());
+  EXPECT_DOUBLE_EQ(0.0, s1->get_y());
+  EXPECT_DOUBLE_EQ(-0.70710678118, s1->get_z());
+  EXPECT_DOUBLE_EQ(0.0, s1->get_w());
+
+  // roundtrip with generation
+  YAML::Node node2;
+  node2 = s1;
+  ASSERT_NO_THROW(node2.as<giskard::RotationQuaternionConstructorSpecPtr>());
+  giskard::RotationQuaternionConstructorSpecPtr s2 = node2.as<giskard::RotationQuaternionConstructorSpecPtr>();
+
+  EXPECT_DOUBLE_EQ(0.70710678118, s2->get_x());
+  EXPECT_DOUBLE_EQ(0.0, s2->get_y());
+  EXPECT_DOUBLE_EQ(-0.70710678118, s2->get_z());
+  EXPECT_DOUBLE_EQ(0.0, s2->get_w());
+
+  // parsing to vector spec
+  ASSERT_NO_THROW(node.as<giskard::RotationSpecPtr>());
+  giskard::RotationSpecPtr s3 = node.as<giskard::RotationSpecPtr>();
+  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::RotationQuaternionConstructorSpec>(s3).get());
+  giskard::RotationQuaternionConstructorSpecPtr s4 = 
+    boost::dynamic_pointer_cast<giskard::RotationQuaternionConstructorSpec>(s3);
+
+  EXPECT_DOUBLE_EQ(0.70710678118, s4->get_x());
+  EXPECT_DOUBLE_EQ(0.0, s4->get_y());
+  EXPECT_DOUBLE_EQ(-0.70710678118, s4->get_z());
+  EXPECT_DOUBLE_EQ(0.0, s4->get_w());
+
+  // roundtrip with generation from rotation spec
+  YAML::Node node3;
+  node3 = s3;
+  ASSERT_NO_THROW(node3.as<giskard::RotationQuaternionConstructorSpecPtr>());
+  giskard::RotationQuaternionConstructorSpecPtr s5 = 
+    node3.as<giskard::RotationQuaternionConstructorSpecPtr>();
+
+  EXPECT_DOUBLE_EQ(0.70710678118, s5->get_x());
+  EXPECT_DOUBLE_EQ(0.0, s5->get_y());
+  EXPECT_DOUBLE_EQ(-0.70710678118, s5->get_z());
+  EXPECT_DOUBLE_EQ(0.0, s5->get_w());
+};
+
+
 TEST_F(YamlParserTest, FrameConstructorSpec)
 {
   std::string r = "{axis-angle: [{vector3: [0.0, -2.0, 0.0]}, " + boost::lexical_cast<std::string>(M_PI/-2.0) + "]}";

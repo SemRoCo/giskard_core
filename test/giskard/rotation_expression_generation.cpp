@@ -93,3 +93,58 @@ TEST_F(RotationGenerationTest, AxisAngleEquality)
   EXPECT_NE(s1, s3);
   EXPECT_EQ(s1, s4);
 }
+
+TEST_F(RotationGenerationTest, QuaternionConstructor)
+{
+  giskard::RotationQuaternionConstructorSpec spec;
+  spec.set_x(0.0);
+  spec.set_y(0.70710678118);
+  spec.set_z(0.0);
+  spec.set_w(-0.70710678118);
+
+  giskard::Scope scope;
+  KDL::Rotation rot = spec.get_expression(scope)->value();
+  KDL::Rotation rot2 = KDL::Rotation::Quaternion(0.0, 0.70710678118, 0.0, -0.70710678118);
+
+  EXPECT_TRUE(KDL::Equal(rot, rot2));
+}
+
+TEST_F(RotationGenerationTest, QuaternionConstructorEquality)
+{
+  giskard::RotationQuaternionConstructorSpec s1, s2, s3, s4;
+  s1.set_x(0.0);
+  s1.set_y(0.70710678118);
+  s1.set_z(0.0);
+  s1.set_w(-0.70710678118);
+ 
+  s2.set_x(0.0);
+  s2.set_y(0.70710678118);
+  s2.set_z(0.0);
+  s2.set_w(-0.70710678118);
+ 
+  s3.set_y(0.0);
+  s3.set_x(0.70710678118);
+  s3.set_z(0.0);
+  s3.set_w(-0.70710678118);
+ 
+  s4.set_x(0.0);
+  s4.set_y(0.70710678118);
+  s4.set_w(0.0);
+  s4.set_z(-0.70710678118);
+ 
+  EXPECT_TRUE(s1.equals(s1));
+  EXPECT_TRUE(s1.equals(s2));
+  EXPECT_TRUE(s2.equals(s1));
+  EXPECT_FALSE(s1.equals(s3));
+  EXPECT_FALSE(s1.equals(s4));
+  EXPECT_FALSE(s3.equals(s4));
+  EXPECT_FALSE(s4.equals(s3));
+
+  EXPECT_EQ(s1, s1);
+  EXPECT_EQ(s1, s2);
+  EXPECT_EQ(s2, s1);
+  EXPECT_NE(s1, s3);
+  EXPECT_NE(s1, s4);
+  EXPECT_NE(s3, s4);
+  EXPECT_NE(s4, s3);
+}

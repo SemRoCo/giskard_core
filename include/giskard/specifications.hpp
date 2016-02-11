@@ -1170,6 +1170,77 @@ namespace giskard
   /// specifications for rotation expresssions
   ///
 
+  class RotationQuaternionConstructorSpec : public RotationSpec
+  {
+    public:
+      double get_x() const
+      {
+        return x_;
+      }
+
+      double get_y() const
+      {
+        return y_;
+      }
+
+      double get_z() const
+      {
+        return z_;
+      }
+
+      double get_w() const
+      {
+        return w_;
+      }
+
+      void set_x(double x)
+      {
+        x_ = x;
+      }
+
+      void set_y(double y)
+      {
+        y_ = y;
+      }
+      
+      void set_z(double z)
+      {
+        z_ = z;
+      }
+
+      void set_w(double w)
+      {
+        w_ = w;
+      }
+
+      virtual bool equals(const Spec& other) const
+      {
+        if(!dynamic_cast<const RotationQuaternionConstructorSpec*>(&other))
+          return false;
+
+        return (KDL::epsilon > std::abs(dynamic_cast<const RotationQuaternionConstructorSpec*>(&other)->get_x() - this->get_x())) &&
+            (KDL::epsilon > std::abs(dynamic_cast<const RotationQuaternionConstructorSpec*>(&other)->get_y() - this->get_y())) &&
+            (KDL::epsilon > std::abs(dynamic_cast<const RotationQuaternionConstructorSpec*>(&other)->get_z() - this->get_z())) &&
+            (KDL::epsilon > std::abs(dynamic_cast<const RotationQuaternionConstructorSpec*>(&other)->get_w() - this->get_w()));
+      }
+
+      virtual std::string to_string() const
+      {
+        // TODO: implement me
+        return "";
+      }
+
+      virtual KDL::Expression<KDL::Rotation>::Ptr get_expression(const giskard::Scope& scope)
+      {
+        return KDL::Constant(KDL::Rotation::Quaternion(get_x(), get_y(), get_z(), get_w()));
+      }
+
+    private:
+      double x_, y_, z_, w_;
+  };
+
+  typedef typename boost::shared_ptr<RotationQuaternionConstructorSpec> RotationQuaternionConstructorSpecPtr;
+
   class AxisAngleSpec: public RotationSpec
   {
     public:

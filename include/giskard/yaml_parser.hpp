@@ -865,6 +865,41 @@ namespace YAML {
   /// parsing rotation specs
   ///
 
+  inline bool is_quaternion_constructor(const Node& node)
+  {
+    return node.IsMap() && (node.size() == 1) && node["quaternion"] &&
+        node["quaternion"].IsSequence() && (node["quaternion"].size() == 4);
+  }
+
+  template<>
+  struct convert<giskard::RotationQuaternionConstructorSpecPtr> 
+  {
+    static Node encode(const giskard::RotationQuaternionConstructorSpecPtr& rhs) 
+    {
+      Node node;
+      node["quaternion"][0] = rhs->get_x();
+      node["quaternion"][1] = rhs->get_y();
+      node["quaternion"][2] = rhs->get_z();
+      node["quaternion"][3] = rhs->get_w();
+
+      return node;
+    }
+  
+    static bool decode(const Node& node, giskard::RotationQuaternionConstructorSpecPtr& rhs) 
+    {
+      if(!is_quaternion_constructor(node))
+        return false;
+
+      rhs = giskard::RotationQuaternionConstructorSpecPtr(new giskard::RotationQuaternionConstructorSpec());
+      rhs->set_x(node["quaternion"][0].as<double>());
+      rhs->set_y(node["quaternion"][1].as<double>());
+      rhs->set_z(node["quaternion"][2].as<double>());
+      rhs->set_w(node["quaternion"][3].as<double>());
+
+      return true;
+    }
+  };
+
   inline bool is_axis_angle(const Node& node)
   {
     return node.IsMap() && (node.size() == 1) && node["axis-angle"] &&
@@ -943,6 +978,8 @@ namespace YAML {
 
       if(boost::dynamic_pointer_cast<giskard::AxisAngleSpec>(rhs).get())
         node = boost::dynamic_pointer_cast<giskard::AxisAngleSpec>(rhs);
+      if(boost::dynamic_pointer_cast<giskard::RotationQuaternionConstructorSpec>(rhs).get())
+        node = boost::dynamic_pointer_cast<giskard::RotationQuaternionConstructorSpec>(rhs);
       else if(boost::dynamic_pointer_cast<giskard::RotationReferenceSpec>(rhs).get())
         node = boost::dynamic_pointer_cast<giskard::RotationReferenceSpec>(rhs);
 
@@ -955,8 +992,13 @@ namespace YAML {
       {
         rhs = node.as<giskard::AxisAngleSpecPtr>();
         return true;
+      } 
+      else if(is_quaternion_constructor(node))
+      {
+        rhs = node.as<giskard::RotationQuaternionConstructorSpecPtr>();
+        return true;
       }
-      if(is_rotation_reference(node))
+      else if(is_rotation_reference(node))
       {
         rhs = node.as<giskard::RotationReferenceSpecPtr>();
         return true;
@@ -1163,7 +1205,7 @@ namespace YAML {
 
   inline bool is_rotation_spec(const Node& node)
   {
-    return is_axis_angle(node) || is_rotation_reference(node);
+    return is_quaternion_constructor(node) || is_axis_angle(node) || is_rotation_reference(node);
   }
 
   inline bool is_frame_spec(const Node& node)
