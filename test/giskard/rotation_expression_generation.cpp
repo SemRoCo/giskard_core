@@ -61,7 +61,6 @@ TEST_F(RotationGenerationTest, AxisAngle)
 
 TEST_F(RotationGenerationTest, AxisAngleEquality)
 {
-  using namespace giskard;
   VectorConstructorSpecPtr axis1 = 
     vector_constructor_spec(double_const_spec(1.0), double_const_spec(0.0), double_const_spec(0.0));
   VectorConstructorSpecPtr axis2 = 
@@ -143,4 +142,31 @@ TEST_F(RotationGenerationTest, QuaternionConstructorEquality)
   EXPECT_NE(s1, s4);
   EXPECT_NE(s3, s4);
   EXPECT_NE(s4, s3);
+}
+
+void test_rotation_generation(const RotationSpecPtr& spec, const KDL::Rotation& rot) 
+{
+  ASSERT_TRUE(spec.get() != NULL);
+  ASSERT_NO_THROW(spec->get_expression(Scope()));
+  Expression<Rotation>::Ptr exp = spec->get_expression(Scope());
+  EXPECT_TRUE(Equal(rot, exp->value()));
+}
+
+TEST_F(RotationGenerationTest, OrientationOf)
+{
+  test_rotation_generation(orientation_of_spec(frame_constructor_spec(
+      vector_constructor_spec(), quaternion_spec(0.0, 1.0, 0.0, 0.0))), 
+      KDL::Rotation::Quaternion(0.0, 1.0, 0.0, 0.0));
+
+  test_rotation_generation(orientation_of_spec(frame_constructor_spec(
+      vector_constructor_spec(), quaternion_spec(1.0, 0.0, 0.0, 0.0))), 
+      KDL::Rotation::Quaternion(1.0, 0.0, 0.0, 0.0));
+
+  test_rotation_generation(orientation_of_spec(frame_constructor_spec(
+      vector_constructor_spec(), quaternion_spec(0.0, 0.0, 0.0, 1.0))), 
+      KDL::Rotation::Quaternion(0.0, 0.0, 0.0, 1.0));
+
+  test_rotation_generation(orientation_of_spec(frame_constructor_spec(
+      vector_constructor_spec(), quaternion_spec(0.0, 0.0, 0.1, 0.0))), 
+      KDL::Rotation::Quaternion(0.0, 0.0, 0.1, 0.0));
 }

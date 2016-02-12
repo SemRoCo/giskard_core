@@ -965,6 +965,34 @@ namespace YAML {
     }
   };
 
+  inline bool is_orientation_of(const Node& node)
+  {
+    return node.IsMap() && (node.size() == 1) && node["orientation-of"];
+  }
+
+  template<>
+  struct convert<giskard::OrientationOfSpecPtr> 
+  {
+    
+    static Node encode(const giskard::OrientationOfSpecPtr& rhs) 
+    {
+      Node node;
+      node["orientation-of"] = rhs->get_frame();
+      return node;
+    }
+  
+    static bool decode(const Node& node, giskard::OrientationOfSpecPtr& rhs) 
+    {
+      if(!is_orientation_of(node))
+        return false;
+  
+      rhs = giskard::OrientationOfSpecPtr(new giskard::OrientationOfSpec());
+      rhs->set_frame(node["orientation-of"].as<giskard::FrameSpecPtr>());
+
+      return true;
+    }
+  };
+
   inline bool is_rotation_reference(const Node& node)
   {
     if(!node.IsScalar())
@@ -1013,8 +1041,10 @@ namespace YAML {
 
       if(boost::dynamic_pointer_cast<giskard::AxisAngleSpec>(rhs).get())
         node = boost::dynamic_pointer_cast<giskard::AxisAngleSpec>(rhs);
-      if(boost::dynamic_pointer_cast<giskard::RotationQuaternionConstructorSpec>(rhs).get())
+      else if(boost::dynamic_pointer_cast<giskard::RotationQuaternionConstructorSpec>(rhs).get())
         node = boost::dynamic_pointer_cast<giskard::RotationQuaternionConstructorSpec>(rhs);
+      else if(boost::dynamic_pointer_cast<giskard::OrientationOfSpec>(rhs).get())
+        node = boost::dynamic_pointer_cast<giskard::OrientationOfSpec>(rhs);
       else if(boost::dynamic_pointer_cast<giskard::RotationReferenceSpec>(rhs).get())
         node = boost::dynamic_pointer_cast<giskard::RotationReferenceSpec>(rhs);
 
@@ -1036,6 +1066,11 @@ namespace YAML {
       else if(is_rotation_reference(node))
       {
         rhs = node.as<giskard::RotationReferenceSpecPtr>();
+        return true;
+      }
+      else if(is_orientation_of(node))
+      {
+        rhs = node.as<giskard::OrientationOfSpecPtr>();
         return true;
       }
       else
@@ -1241,7 +1276,8 @@ namespace YAML {
 
   inline bool is_rotation_spec(const Node& node)
   {
-    return is_quaternion_constructor(node) || is_axis_angle(node) || is_rotation_reference(node);
+    return is_quaternion_constructor(node) || is_axis_angle(node) || 
+      is_rotation_reference(node) || is_orientation_of(node);
   }
 
   inline bool is_frame_spec(const Node& node)

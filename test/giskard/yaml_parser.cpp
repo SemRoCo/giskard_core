@@ -669,6 +669,55 @@ TEST_F(YamlParserTest, FrameMultiplicationSpec)
   EXPECT_TRUE(s7->get_inputs()[1]->equals(*s2));
 }
 
+TEST_F(YamlParserTest, OrientationOfSpec)
+{
+  std::string r = "{axis-angle: [{vector3: [0.0, 1.0, 0.0]}, 1.5]}";
+  std::string t = "{vector3: [1.1, 2.2, 3.3]}";
+  std::string f = "{frame: [" + r + ", " + t + "]}";
+  std::string r1 = "{orientation-of: " + f + "}";
+
+  ASSERT_NO_THROW(YAML::Load(f).as<giskard::FrameSpecPtr>());
+  giskard::FrameSpecPtr fs = YAML::Load(f).as<giskard::FrameSpecPtr>();
+  ASSERT_TRUE(fs.get() != NULL);
+
+  // parsing into OrientationOfSpec
+  YAML::Node node = YAML::Load(r1);
+  ASSERT_NO_THROW(node.as<giskard::OrientationOfSpecPtr>());
+  giskard::OrientationOfSpecPtr s1 = node.as<giskard::OrientationOfSpecPtr>();
+
+  ASSERT_TRUE(s1->get_frame().get() != NULL);
+  EXPECT_TRUE(fs->equals(*(s1->get_frame())));
+
+  // roundtrip with YAML generation
+  YAML::Node node2;
+  node2 = s1;
+  ASSERT_NO_THROW(node2.as<giskard::OrientationOfSpecPtr>());
+  giskard::OrientationOfSpecPtr s2 = node2.as<giskard::OrientationOfSpecPtr>();
+
+  ASSERT_TRUE(s2->get_frame().get() != NULL);
+  EXPECT_TRUE(fs->equals(*(s2->get_frame())));
+
+  // parsing into RotationSpec
+  ASSERT_NO_THROW(node.as<giskard::RotationSpecPtr>());
+  giskard::RotationSpecPtr s3 = node.as<giskard::RotationSpecPtr>();
+
+  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::OrientationOfSpec>(s3).get());
+  giskard::OrientationOfSpecPtr s4 = boost::dynamic_pointer_cast<giskard::OrientationOfSpec>(s3);
+
+  ASSERT_TRUE(s4->get_frame().get() != NULL);
+  EXPECT_TRUE(fs->equals(*(s4->get_frame())));
+
+  // roundtrip with generation from RotationSpec
+  YAML::Node node3;
+  node3 = s3;
+
+  ASSERT_NO_THROW(node3.as<giskard::OrientationOfSpecPtr>());
+  giskard::OrientationOfSpecPtr s5 = node3.as<giskard::OrientationOfSpecPtr>();
+
+  ASSERT_TRUE(s5->get_frame().get() != NULL);
+  EXPECT_TRUE(fs->equals(*(s5->get_frame())));
+}
+ 
 TEST_F(YamlParserTest, ControllableConstraintSpec)
 {
   std::string s = "controllable-constraint: [-0.1, 0.2, 5.0, 2]";

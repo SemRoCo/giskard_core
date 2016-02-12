@@ -1541,6 +1541,56 @@ namespace giskard
     return FrameConstructorSpecPtr(new FrameConstructorSpec(translation, rotation));
   }
 
+  class OrientationOfSpec : public RotationSpec
+  {
+    public:
+      OrientationOfSpec() :
+        frame_( FrameConstructorSpecPtr(new FrameConstructorSpec())) {}
+      OrientationOfSpec(const OrientationOfSpec& other) :
+        frame_( other.get_frame() ) {}
+      OrientationOfSpec(const FrameSpecPtr& frame) :
+        frame_( frame ) {}
+      ~OrientationOfSpec() {}
+
+      const giskard::FrameSpecPtr& get_frame() const
+      {
+        return frame_;
+      }
+
+      void set_frame(const giskard::FrameSpecPtr& frame)
+      {
+        frame_ = frame;
+      }
+
+      virtual bool equals(const Spec& other) const
+      {
+        if(!dynamic_cast<const OrientationOfSpec*>(&other))
+          return false;
+
+        return dynamic_cast<const OrientationOfSpec*>(&other)->get_frame()->equals(*(this->get_frame()));
+      }
+
+      virtual std::string to_string() const
+      {
+        return "todo: implement me";
+      }
+
+      virtual KDL::Expression<KDL::Rotation>::Ptr get_expression(const giskard::Scope& scope)
+      {
+        return KDL::rotation(get_frame()->get_expression(scope));
+      }
+
+    private:
+      giskard::FrameSpecPtr frame_;
+  };
+
+  typedef typename boost::shared_ptr<OrientationOfSpec> OrientationOfSpecPtr;
+
+  inline OrientationOfSpecPtr orientation_of_spec(const FrameSpecPtr& frame)
+  {
+    return OrientationOfSpecPtr(new OrientationOfSpec(frame));
+  }
+
   class FrameMultiplicationSpec: public FrameSpec
   {
     public:
