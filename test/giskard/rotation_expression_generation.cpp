@@ -185,3 +185,22 @@ TEST_F(RotationGenerationTest, InverseRotation)
   test_rotation_generation(inverse_rotation_spec(quaternion_spec(0.0, 0.0, 0.1, 0.0)), 
       KDL::Rotation::Quaternion(0.0, 0.0, 0.1, 0.0).Inverse());
 }
+
+TEST_F(RotationGenerationTest, RotationMultiplication)
+{
+  std::vector<RotationSpecPtr> rots1, rots2;
+  rots1.push_back(quaternion_spec(0.0, 1.0, 0.0, 0.0));
+  rots1.push_back(quaternion_spec(1.0, 0.0, 0.0, 0.0));
+
+  rots2 = rots1;
+  rots2.push_back(quaternion_spec(0.0, 0.0, 0.1, 0.0));
+
+  KDL::Rotation rot1, rot2;
+  rot1 = KDL::Rotation::Quaternion(0.0, 1.0, 0.0, 0.0) *
+    KDL::Rotation::Quaternion(1.0, 0.0, 0.0, 0.0);
+
+  rot2 = rot1 * KDL::Rotation::Quaternion(0.0, 0.0, 0.1, 0.0);
+
+  test_rotation_generation(rotation_multiplication_spec(rots1), rot1);
+  test_rotation_generation(rotation_multiplication_spec(rots2), rot2);
+}

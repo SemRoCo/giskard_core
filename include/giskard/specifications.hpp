@@ -1467,6 +1467,84 @@ namespace giskard
     return InverseRotationSpecPtr(new InverseRotationSpec(rotation));
   }
 
+  class RotationMultiplicationSpec: public RotationSpec
+  {
+    public:
+      RotationMultiplicationSpec() :
+        inputs_( std::vector<RotationSpecPtr>() ) {}
+      RotationMultiplicationSpec(const RotationMultiplicationSpec& other) :
+        inputs_ ( other.get_inputs() ) {}
+      RotationMultiplicationSpec(const std::vector<RotationSpecPtr>& inputs) :
+        inputs_( inputs ) {}
+      ~RotationMultiplicationSpec() {}
+
+      const std::vector<RotationSpecPtr>& get_inputs() const
+      {
+        return inputs_;
+      }
+
+      void set_inputs(const std::vector<RotationSpecPtr>& inputs)
+      {
+        inputs_ = inputs;
+      }
+
+      virtual bool equals(const Spec& other) const
+      {
+        if(!dynamic_cast<const RotationMultiplicationSpec*>(&other))
+          return false;
+
+        const RotationMultiplicationSpec* other_p = 
+          dynamic_cast<const RotationMultiplicationSpec*>(&other);
+
+        if(get_inputs().size() != other_p->get_inputs().size())
+          return false;
+
+        if(!inputs_valid() || !other_p->inputs_valid())
+          return false;
+
+        for(size_t i=0; i<get_inputs().size(); ++i)
+          if(!get_inputs()[i]->equals(*(other_p->get_inputs()[i])))
+            return false;
+        
+        return true;
+      }
+
+      bool inputs_valid() const
+      {
+        for(size_t i=0; i<get_inputs().size(); ++i)
+          if(!get_inputs()[i].get())
+            return false;
+
+        return true;
+      }
+
+      virtual std::string to_string() const
+      {
+        return "todo: implement me";
+      }
+
+      virtual KDL::Expression<KDL::Rotation>::Ptr get_expression(const giskard::Scope& scope)
+      {
+        KDL::Expression<KDL::Rotation>::Ptr result = KDL::Constant(KDL::Rotation::Identity());
+
+        using KDL::operator*;
+        for(size_t i=0; i<get_inputs().size(); ++i)
+          result = result * get_inputs()[i]->get_expression(scope);
+
+        return result; 
+      }
+
+    private:
+      std::vector<giskard::RotationSpecPtr> inputs_;
+  };
+
+  typedef typename boost::shared_ptr<RotationMultiplicationSpec> RotationMultiplicationSpecPtr;
+
+  inline RotationMultiplicationSpecPtr rotation_multiplication_spec(const std::vector<RotationSpecPtr>& inputs)
+  {
+    return RotationMultiplicationSpecPtr(new RotationMultiplicationSpec(inputs));
+  }
+
   ///
   /// specifications for frame expresssions
   ///
