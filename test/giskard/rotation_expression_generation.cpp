@@ -21,6 +21,8 @@
 #include <gtest/gtest.h>
 #include <giskard/giskard.hpp>
 
+using namespace giskard;
+using namespace KDL;
 
 class RotationGenerationTest : public ::testing::Test
 {
@@ -59,21 +61,15 @@ TEST_F(RotationGenerationTest, AxisAngle)
 
 TEST_F(RotationGenerationTest, AxisAngleEquality)
 {
-  giskard::DoubleConstSpecPtr x(new giskard::DoubleConstSpec());
-  x->set_value(1.0);
-  giskard::DoubleConstSpecPtr y(new giskard::DoubleConstSpec());
-  y->set_value(0.0);
-  giskard::DoubleConstSpecPtr z(new giskard::DoubleConstSpec());
-  z->set_value(0.0);
-  giskard::DoubleConstSpecPtr angle(new giskard::DoubleConstSpec());
-  angle->set_value(M_PI/2.0);
+  using namespace giskard;
+  VectorConstructorSpecPtr axis1 = 
+    vector_constructor_spec(double_const_spec(1.0), double_const_spec(0.0), double_const_spec(0.0));
+  VectorConstructorSpecPtr axis2 = 
+    vector_constructor_spec(double_const_spec(1.0), double_const_spec(1.0), double_const_spec(1.0));
+  DoubleConstSpecPtr angle = double_const_spec(M_PI/2.0);
+  DoubleConstSpecPtr x = double_const_spec(1.0);
 
-  giskard::VectorConstructorSpecPtr axis1(new giskard::VectorConstructorSpec());
-  giskard::VectorConstructorSpecPtr axis2(new giskard::VectorConstructorSpec());
-  axis1->set(x, y, z);
-  axis2->set(x, x, x);
- 
-  giskard::AxisAngleSpec s1, s2, s3, s4;
+  AxisAngleSpec s1, s2, s3, s4;
   s1.set_axis(axis1);
   s1.set_angle(angle);
   s2.set_axis(axis1);
