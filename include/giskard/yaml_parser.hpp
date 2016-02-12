@@ -787,6 +787,34 @@ namespace YAML {
     }
   };
 
+  inline bool is_vector_rotation_vector(const Node& node)
+  {
+    return node.IsMap() && (node.size() == 1) && node["rot-vector"];
+  }
+
+  template<>
+  struct convert<giskard::VectorRotationVectorSpecPtr> 
+  {
+    
+    static Node encode(const giskard::VectorRotationVectorSpecPtr& rhs) 
+    {
+      Node node;
+      node["rot-vector"] = rhs->get_rotation();
+      return node;
+    }
+  
+    static bool decode(const Node& node, giskard::VectorRotationVectorSpecPtr& rhs) 
+    {
+      if(!is_vector_rotation_vector(node))
+        return false;
+  
+      rhs = giskard::VectorRotationVectorSpecPtr(new giskard::VectorRotationVectorSpec());
+      rhs->set_rotation(node["rot-vector"].as<giskard::RotationSpecPtr>());
+
+      return true;
+    }
+  };
+
   template<>
   struct convert<giskard::VectorSpecPtr> 
   {
@@ -810,6 +838,8 @@ namespace YAML {
         node = boost::dynamic_pointer_cast<giskard::VectorFrameMultiplicationSpec>(rhs);
       else if(boost::dynamic_pointer_cast<giskard::VectorDoubleMultiplicationSpec>(rhs).get())
         node = boost::dynamic_pointer_cast<giskard::VectorDoubleMultiplicationSpec>(rhs);
+      else if(boost::dynamic_pointer_cast<giskard::VectorRotationVectorSpec>(rhs).get())
+        node = boost::dynamic_pointer_cast<giskard::VectorRotationVectorSpec>(rhs);
 
       return node;
     }
@@ -854,6 +884,11 @@ namespace YAML {
       else if(is_vector_double_multiplication(node))
       {
         rhs = node.as<giskard::VectorDoubleMultiplicationSpecPtr>();
+        return true;
+      }
+      else if(is_vector_rotation_vector(node))
+      {
+        rhs = node.as<giskard::VectorRotationVectorSpecPtr>();
         return true;
       }
       else
@@ -1200,7 +1235,8 @@ namespace YAML {
     return is_cached_vector(node) || is_constructor_vector(node) || is_vector_reference(node) ||
         is_vector_origin_of(node) || is_vector_addition(node) ||
         is_vector_subtraction(node) ||
-        is_vector_frame_multiplication(node) || is_vector_double_multiplication(node);
+        is_vector_frame_multiplication(node) || is_vector_double_multiplication(node) ||
+        is_vector_rotation_vector(node);
   }
 
   inline bool is_rotation_spec(const Node& node)

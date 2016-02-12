@@ -106,6 +106,72 @@ TEST_F(YamlParserTest, InputExpression)
   EXPECT_EQ(2, s6->get_input_num());
 };
 
+TEST_F(YamlParserTest, RotationVectorSpec)
+{
+  std::string v = "{rot-vector: {quaternion: [0.70710678118, 0.0, -0.70710678118, 0.0]}}";
+
+  // parsing rotation vector spec
+  YAML::Node node = YAML::Load(v);
+  ASSERT_NO_THROW(node.as<giskard::VectorRotationVectorSpecPtr>());
+  giskard::VectorRotationVectorSpecPtr s1 = node.as<giskard::VectorRotationVectorSpecPtr>();
+
+  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::RotationQuaternionConstructorSpec>(s1->get_rotation()).get());
+  giskard::RotationQuaternionConstructorSpecPtr r1 =
+    boost::dynamic_pointer_cast<giskard::RotationQuaternionConstructorSpec>(s1->get_rotation());
+
+  EXPECT_DOUBLE_EQ(0.70710678118, r1->get_x());
+  EXPECT_DOUBLE_EQ(0.0, r1->get_y());
+  EXPECT_DOUBLE_EQ(-0.70710678118, r1->get_z());
+  EXPECT_DOUBLE_EQ(0.0, r1->get_w());
+
+  // roundtrip with generation
+  YAML::Node node2;
+  node2 = s1;
+  ASSERT_NO_THROW(node2.as<giskard::VectorRotationVectorSpecPtr>());
+  giskard::VectorRotationVectorSpecPtr s2 = node2.as<giskard::VectorRotationVectorSpecPtr>();
+
+  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::RotationQuaternionConstructorSpec>(s2->get_rotation()).get());
+  giskard::RotationQuaternionConstructorSpecPtr r2 =
+    boost::dynamic_pointer_cast<giskard::RotationQuaternionConstructorSpec>(s2->get_rotation());
+
+  EXPECT_DOUBLE_EQ(0.70710678118, r2->get_x());
+  EXPECT_DOUBLE_EQ(0.0, r2->get_y());
+  EXPECT_DOUBLE_EQ(-0.70710678118, r2->get_z());
+  EXPECT_DOUBLE_EQ(0.0, r2->get_w());
+
+  // parsing to vector spec
+  ASSERT_NO_THROW(node.as<giskard::VectorSpecPtr>());
+  giskard::VectorSpecPtr s3 = node.as<giskard::VectorSpecPtr>();
+  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::VectorRotationVectorSpec>(s3).get());
+  giskard::VectorRotationVectorSpecPtr s4 = boost::dynamic_pointer_cast<giskard::VectorRotationVectorSpec>(s3);
+
+  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::RotationQuaternionConstructorSpec>(s4->get_rotation()).get());
+  giskard::RotationQuaternionConstructorSpecPtr r3 =
+    boost::dynamic_pointer_cast<giskard::RotationQuaternionConstructorSpec>(s4->get_rotation());
+
+  EXPECT_DOUBLE_EQ(0.70710678118, r3->get_x());
+  EXPECT_DOUBLE_EQ(0.0, r3->get_y());
+  EXPECT_DOUBLE_EQ(-0.70710678118, r3->get_z());
+  EXPECT_DOUBLE_EQ(0.0, r3->get_w());
+
+  // roundtrip with generation to double spec
+  YAML::Node node3;
+  node3 = s3;
+  ASSERT_NO_THROW(node3.as<giskard::VectorSpecPtr>());
+  giskard::VectorSpecPtr s5 = node.as<giskard::VectorSpecPtr>();
+  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::VectorRotationVectorSpec>(s5).get());
+  giskard::VectorRotationVectorSpecPtr s6 = boost::dynamic_pointer_cast<giskard::VectorRotationVectorSpec>(s5);
+
+  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::RotationQuaternionConstructorSpec>(s6->get_rotation()).get());
+  giskard::RotationQuaternionConstructorSpecPtr r4 =
+    boost::dynamic_pointer_cast<giskard::RotationQuaternionConstructorSpec>(s6->get_rotation());
+
+  EXPECT_DOUBLE_EQ(0.70710678118, r4->get_x());
+  EXPECT_DOUBLE_EQ(0.0, r4->get_y());
+  EXPECT_DOUBLE_EQ(-0.70710678118, r4->get_z());
+  EXPECT_DOUBLE_EQ(0.0, r4->get_w());
+}
+ 
 TEST_F(YamlParserTest, VectorConstructorSpec)
 {
   std::string v = "{vector3: [1.1, 2.2, 3.3]}";
@@ -309,8 +375,6 @@ TEST_F(YamlParserTest, RotationQuaternionConstructorSpec)
   YAML::Node node = YAML::Load(v);
   ASSERT_NO_THROW(node.as<giskard::RotationQuaternionConstructorSpecPtr>());
   giskard::RotationQuaternionConstructorSpecPtr s1 = node.as<giskard::RotationQuaternionConstructorSpecPtr>();
-
-  //std::cout << "x=" << x << ", y=" << y << ", z=" << z << ", w=" << w << std::endl;
 
   EXPECT_DOUBLE_EQ(0.70710678118, s1->get_x());
   EXPECT_DOUBLE_EQ(0.0, s1->get_y());

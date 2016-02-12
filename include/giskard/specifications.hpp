@@ -1166,6 +1166,43 @@ namespace giskard
 
   typedef typename boost::shared_ptr<VectorDoubleMultiplicationSpec> VectorDoubleMultiplicationSpecPtr;
 
+  class VectorRotationVectorSpec : public VectorSpec
+  {
+    public:
+      const giskard::RotationSpecPtr& get_rotation() const
+      {
+        return rotation_;
+      }
+
+      void set_rotation(const giskard::RotationSpecPtr& rotation)
+      {
+        rotation_ = rotation;
+      }
+
+      virtual bool equals(const Spec& other) const
+      {
+        if(!dynamic_cast<const VectorRotationVectorSpec*>(&other))
+          return false;
+
+        return dynamic_cast<const VectorRotationVectorSpec*>(&other)->get_rotation()->equals(*(this->get_rotation()));
+      }
+
+      virtual std::string to_string() const
+      {
+        return "todo: implement me";
+      }
+
+      virtual KDL::Expression<KDL::Vector>::Ptr get_expression(const giskard::Scope& scope)
+      {
+        return KDL::getRotVec(get_rotation()->get_expression(scope));
+      }
+
+    private:
+      giskard::RotationSpecPtr rotation_;
+  };
+
+  typedef typename boost::shared_ptr<VectorRotationVectorSpec> VectorRotationVectorSpecPtr;
+
   ///
   /// specifications for rotation expresssions
   ///
@@ -1219,9 +1256,7 @@ namespace giskard
           return false;
 
         return (KDL::epsilon > std::abs(dynamic_cast<const RotationQuaternionConstructorSpec*>(&other)->get_x() - this->get_x())) &&
-            (KDL::epsilon > std::abs(dynamic_cast<const RotationQuaternionConstructorSpec*>(&other)->get_y() - this->get_y())) &&
-            (KDL::epsilon > std::abs(dynamic_cast<const RotationQuaternionConstructorSpec*>(&other)->get_z() - this->get_z())) &&
-            (KDL::epsilon > std::abs(dynamic_cast<const RotationQuaternionConstructorSpec*>(&other)->get_w() - this->get_w()));
+            (KDL::epsilon > std::abs(dynamic_cast<const RotationQuaternionConstructorSpec*>(&other)->get_y() - this->get_y())) && (KDL::epsilon > std::abs(dynamic_cast<const RotationQuaternionConstructorSpec*>(&other)->get_z() - this->get_z())) && (KDL::epsilon > std::abs(dynamic_cast<const RotationQuaternionConstructorSpec*>(&other)->get_w() - this->get_w()));
       }
 
       virtual std::string to_string() const

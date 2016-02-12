@@ -264,3 +264,28 @@ TEST_F(VectorExpressionGenerationTest, CachedVector)
 
   EXPECT_TRUE(KDL::Equal(vec, exp->value()));
 }
+
+void test_rot_vector(const std::string& s, const KDL::Vector& v)
+{
+  YAML::Node node = YAML::Load(s);
+
+  ASSERT_NO_THROW(node.as<giskard::VectorSpecPtr>());
+  giskard::VectorSpecPtr spec = node.as<giskard::VectorSpecPtr>();
+
+  ASSERT_NO_THROW(spec->get_expression(giskard::Scope()));  
+  KDL::Expression<KDL::Vector>::Ptr exp = spec->get_expression(giskard::Scope());
+
+  EXPECT_TRUE(KDL::Equal(v, exp->value(), 0.00001));
+}
+
+TEST_F(VectorExpressionGenerationTest, RotationVector)
+{
+  test_rot_vector("{rot-vector: {quaternion: [0.0, 0.0, 0.0, 1.0]}}",
+      KDL::Vector());
+  test_rot_vector("{rot-vector: {quaternion: [1.0, 0.0, 0.0, 0.0]}}",
+      KDL::Vector(M_PI, 0, 0));
+  test_rot_vector("{rot-vector: {quaternion: [0.0, 0.707107, 0.0, 0.707107]}}",
+      KDL::Vector(0, M_PI/2, 0));
+  test_rot_vector("{rot-vector: {quaternion: [0.0, 0.0, -0.382683, 0.92388]}}",
+      KDL::Vector(0, 0, -M_PI/4));
+}
