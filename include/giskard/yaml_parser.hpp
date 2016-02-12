@@ -1032,6 +1032,34 @@ namespace YAML {
     }
   };
 
+  inline bool is_inverse_rotation(const Node& node)
+  {
+    return node.IsMap() && (node.size() == 1) && node["inverse-rotation"];
+  }
+
+  template<>
+  struct convert<giskard::InverseRotationSpecPtr> 
+  {
+    
+    static Node encode(const giskard::InverseRotationSpecPtr& rhs) 
+    {
+      Node node;
+      node["inverse-rotation"] = rhs->get_rotation();
+      return node;
+    }
+  
+    static bool decode(const Node& node, giskard::InverseRotationSpecPtr& rhs) 
+    {
+      if(!is_inverse_rotation(node))
+        return false;
+
+      rhs = giskard::InverseRotationSpecPtr(new giskard::InverseRotationSpec());
+      rhs->set_rotation(node["inverse-rotation"].as<giskard::RotationSpecPtr>());
+
+      return true;
+    }
+  };
+
   template<>
   struct convert<giskard::RotationSpecPtr> 
   {
@@ -1047,6 +1075,8 @@ namespace YAML {
         node = boost::dynamic_pointer_cast<giskard::OrientationOfSpec>(rhs);
       else if(boost::dynamic_pointer_cast<giskard::RotationReferenceSpec>(rhs).get())
         node = boost::dynamic_pointer_cast<giskard::RotationReferenceSpec>(rhs);
+      else if(boost::dynamic_pointer_cast<giskard::InverseRotationSpec>(rhs).get())
+        node = boost::dynamic_pointer_cast<giskard::InverseRotationSpec>(rhs);
 
       return node;
     }
@@ -1071,6 +1101,11 @@ namespace YAML {
       else if(is_orientation_of(node))
       {
         rhs = node.as<giskard::OrientationOfSpecPtr>();
+        return true;
+      }
+      else if(is_inverse_rotation(node))
+      {
+        rhs = node.as<giskard::InverseRotationSpecPtr>();
         return true;
       }
       else
@@ -1277,7 +1312,8 @@ namespace YAML {
   inline bool is_rotation_spec(const Node& node)
   {
     return is_quaternion_constructor(node) || is_axis_angle(node) || 
-      is_rotation_reference(node) || is_orientation_of(node);
+      is_rotation_reference(node) || is_orientation_of(node) ||
+      is_inverse_rotation(node);
   }
 
   inline bool is_frame_spec(const Node& node)
