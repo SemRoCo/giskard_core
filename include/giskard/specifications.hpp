@@ -1417,6 +1417,56 @@ namespace giskard
 
   typedef typename boost::shared_ptr<RotationReferenceSpec> RotationReferenceSpecPtr;
 
+  class InverseRotationSpec : public RotationSpec
+  {
+    public:
+      InverseRotationSpec() :
+        rotation_( quaternion_spec(0, 0, 0, 1) ) {}
+      InverseRotationSpec(const InverseRotationSpec& other) :
+        rotation_( other.get_rotation() ) {}
+      InverseRotationSpec(const RotationSpecPtr& rotation) :
+        rotation_( rotation ) {}
+      ~InverseRotationSpec() {}
+
+      const RotationSpecPtr& get_rotation() const
+      {
+        return rotation_;
+      }
+
+      void set_rotation(const RotationSpecPtr& rotation)
+      {
+        rotation_ = rotation;
+      }
+
+      virtual bool equals(const Spec& other) const
+      {
+        if(!dynamic_cast<const InverseRotationSpec*>(&other))
+          return false;
+
+        return dynamic_cast<const InverseRotationSpec*>(&other)->get_rotation()->equals(*(this->get_rotation()));
+      }
+
+      virtual std::string to_string() const
+      {
+        return "todo: implement me";
+      }
+
+      virtual KDL::Expression<KDL::Rotation>::Ptr get_expression(const giskard::Scope& scope)
+      {
+        return KDL::inv(get_rotation()->get_expression(scope));
+      }
+
+    private:
+      RotationSpecPtr rotation_;
+  };
+
+  typedef typename boost::shared_ptr<InverseRotationSpec> InverseRotationSpecPtr;
+  
+  inline InverseRotationSpecPtr inverse_rotation_spec(const RotationSpecPtr& rotation)
+  {
+    return InverseRotationSpecPtr(new InverseRotationSpec(rotation));
+  }
+
   ///
   /// specifications for frame expresssions
   ///

@@ -170,3 +170,18 @@ TEST_F(RotationGenerationTest, OrientationOf)
       vector_constructor_spec(), quaternion_spec(0.0, 0.0, 0.1, 0.0))), 
       KDL::Rotation::Quaternion(0.0, 0.0, 0.1, 0.0));
 }
+
+TEST_F(RotationGenerationTest, InverseRotation)
+{
+  test_rotation_generation(inverse_rotation_spec(quaternion_spec(0.0, 1.0, 0.0, 0.0)), 
+      KDL::Rotation::Quaternion(0.0, 1.0, 0.0, 0.0).Inverse());
+
+  test_rotation_generation(inverse_rotation_spec(quaternion_spec(1.0, 0.0, 0.0, 0.0)), 
+      KDL::Rotation::Quaternion(1.0, 0.0, 0.0, 0.0).Inverse());
+
+  test_rotation_generation(inverse_rotation_spec(quaternion_spec(0.0, 0.0, 0.0, 1.0)), 
+      KDL::Rotation::Quaternion(0.0, 0.0, 0.0, 1.0).Inverse());
+
+  test_rotation_generation(inverse_rotation_spec(quaternion_spec(0.0, 0.0, 0.1, 0.0)), 
+      KDL::Rotation::Quaternion(0.0, 0.0, 0.1, 0.0).Inverse());
+}
