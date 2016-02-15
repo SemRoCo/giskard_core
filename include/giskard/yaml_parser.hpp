@@ -1060,6 +1060,34 @@ namespace YAML {
     }
   };
 
+  inline bool is_rotation_multiplication(const Node& node)
+  {
+    return node.IsMap() && (node.size() == 1) && node["rotation-mul"] &&
+        node["rotation-mul"].IsSequence();
+  }
+
+  template<>
+  struct convert<giskard::RotationMultiplicationSpecPtr> 
+  {
+    static Node encode(const giskard::RotationMultiplicationSpecPtr& rhs) 
+    {
+      Node node;
+      node["rotation-mul"] = rhs->get_inputs();
+      return node;
+    }
+  
+    static bool decode(const Node& node, giskard::RotationMultiplicationSpecPtr& rhs) 
+    {
+      if(!is_rotation_multiplication(node))
+        return false;
+
+      rhs = giskard::RotationMultiplicationSpecPtr(new giskard::RotationMultiplicationSpec()); 
+      rhs->set_inputs(node["rotation-mul"].as< std::vector<giskard::RotationSpecPtr> >());
+
+      return true;
+    }
+  };
+
   template<>
   struct convert<giskard::RotationSpecPtr> 
   {
@@ -1077,6 +1105,8 @@ namespace YAML {
         node = boost::dynamic_pointer_cast<giskard::RotationReferenceSpec>(rhs);
       else if(boost::dynamic_pointer_cast<giskard::InverseRotationSpec>(rhs).get())
         node = boost::dynamic_pointer_cast<giskard::InverseRotationSpec>(rhs);
+      else if(boost::dynamic_pointer_cast<giskard::RotationMultiplicationSpec>(rhs).get())
+        node = boost::dynamic_pointer_cast<giskard::RotationMultiplicationSpec>(rhs);
 
       return node;
     }
@@ -1106,6 +1136,11 @@ namespace YAML {
       else if(is_inverse_rotation(node))
       {
         rhs = node.as<giskard::InverseRotationSpecPtr>();
+        return true;
+      }
+      else if(is_rotation_multiplication(node))
+      {
+        rhs = node.as<giskard::RotationMultiplicationSpecPtr>();
         return true;
       }
       else
@@ -1313,7 +1348,7 @@ namespace YAML {
   {
     return is_quaternion_constructor(node) || is_axis_angle(node) || 
       is_rotation_reference(node) || is_orientation_of(node) ||
-      is_inverse_rotation(node);
+      is_inverse_rotation(node) || is_rotation_multiplication(node);
   }
 
   inline bool is_frame_spec(const Node& node)

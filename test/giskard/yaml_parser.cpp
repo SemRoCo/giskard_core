@@ -765,6 +765,68 @@ TEST_F(YamlParserTest, InverseRotationSpec)
   EXPECT_TRUE(rs->equals(*(s5->get_rotation())));
 }
 
+void equality_check_rot_specs(const giskard::RotationSpecPtr& r1, const giskard::RotationSpecPtr& r2)
+{
+  ASSERT_TRUE(r1.get() != NULL);
+  ASSERT_TRUE(r2.get() != NULL);
+  EXPECT_TRUE(r1->equals(*r2));
+}
+
+void equality_check_rot_mul(const giskard::RotationMultiplicationSpecPtr& mul,
+    const std::vector<giskard::RotationSpecPtr>& rots)
+{
+  ASSERT_TRUE(mul.get() != NULL);
+  ASSERT_EQ(mul->get_inputs().size(), rots.size());
+  for(size_t i=0; i<rots.size(); ++i)
+    equality_check_rot_specs(mul->get_inputs()[i], rots[i]);
+}
+
+TEST_F(YamlParserTest, RotationMultiplicationSpec)
+{
+  std::string r1 = "{axis-angle: [{vector3: [0.0, 1.0, 0.0]}, 1.5]}";
+  std::string r2 = "{quaternion: [0.0, 0.0, 1.0, 0.0]}";
+  std::string r = "{rotation-mul: [" + r1 + ", " + r2 + "]}";
+
+  std::vector< giskard::RotationSpecPtr > rots;
+  ASSERT_NO_THROW(YAML::Load(r1).as<giskard::RotationSpecPtr>());
+  rots.push_back(YAML::Load(r1).as<giskard::RotationSpecPtr>());
+  ASSERT_NO_THROW(YAML::Load(r2).as<giskard::RotationSpecPtr>());
+  rots.push_back(YAML::Load(r2).as<giskard::RotationSpecPtr>());
+
+  // parsing into RotationMultiplicationSpec
+  YAML::Node node = YAML::Load(r);
+  ASSERT_NO_THROW(node.as<giskard::RotationMultiplicationSpecPtr>());
+  giskard::RotationMultiplicationSpecPtr s1 = node.as<giskard::RotationMultiplicationSpecPtr>();
+
+  equality_check_rot_mul(s1, rots);
+
+  // roundtrip with YAML generation
+  YAML::Node node2;
+  node2 = s1;
+  ASSERT_NO_THROW(node2.as<giskard::RotationMultiplicationSpecPtr>());
+  giskard::RotationMultiplicationSpecPtr s2 = node2.as<giskard::RotationMultiplicationSpecPtr>();
+
+  equality_check_rot_mul(s2, rots);
+
+  // parsing into RotationSpec
+  ASSERT_NO_THROW(node.as<giskard::RotationSpecPtr>());
+  giskard::RotationSpecPtr s3 = node.as<giskard::RotationSpecPtr>();
+
+  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard::RotationMultiplicationSpec>(s3).get());
+  giskard::RotationMultiplicationSpecPtr s4 = boost::dynamic_pointer_cast<giskard::RotationMultiplicationSpec>(s3);
+
+  equality_check_rot_mul(s4, rots);
+
+  // roundtrip with generation from RotationSpec
+  YAML::Node node3;
+  node3 = s3;
+
+  ASSERT_NO_THROW(node3.as<giskard::RotationMultiplicationSpecPtr>());
+  giskard::RotationMultiplicationSpecPtr s5 = node3.as<giskard::RotationMultiplicationSpecPtr>();
+
+  equality_check_rot_mul(s5, rots);
+}
+
 TEST_F(YamlParserTest, ControllableConstraintSpec)
 {
   std::string s = "controllable-constraint: [-0.1, 0.2, 5.0, 2]";
