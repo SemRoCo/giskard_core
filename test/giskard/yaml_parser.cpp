@@ -827,6 +827,15 @@ TEST_F(YamlParserTest, RotationMultiplicationSpec)
   equality_check_rot_mul(s5, rots);
 }
 
+TEST_F(YamlParserTest, GithubIssueNo1)
+{
+  std::string s = "{double-mul: [-1, {vector3: [1, 2, 3]}]}";
+
+  YAML::Node node = YAML::Load(s);
+  EXPECT_ANY_THROW(node.as<giskard::DoubleSpecPtr>());
+  node.as<giskard::DoubleSpecPtr>();
+}
+
 TEST_F(YamlParserTest, ControllableConstraintSpec)
 {
   std::string s = "controllable-constraint: [-0.1, 0.2, 5.0, 2]";
