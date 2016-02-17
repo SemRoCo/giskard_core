@@ -833,7 +833,6 @@ TEST_F(YamlParserTest, GithubIssueNo1)
 
   YAML::Node node = YAML::Load(s);
   EXPECT_ANY_THROW(node.as<giskard::DoubleSpecPtr>());
-  node.as<giskard::DoubleSpecPtr>();
 }
 
 TEST_F(YamlParserTest, ControllableConstraintSpec)
