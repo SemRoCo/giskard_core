@@ -352,8 +352,8 @@ namespace giskard
 
       virtual KDL::Expression<double>::Ptr get_expression(const giskard::Scope& scope)
       {
-        // todo: throw exception here
-        assert(get_inputs().size() > 0);
+        if(get_inputs().size() == 0)
+          throw std::length_error("Found DoubleSubtractionSpec with zero inputs.");
 
         using KDL::operator+;
         using KDL::operator-;
@@ -531,8 +531,8 @@ namespace giskard
 
       virtual KDL::Expression<double>::Ptr get_expression(const giskard::Scope& scope)
       {
-        // todo: throw exception here
-        assert(get_inputs().size() > 0);
+        if(get_inputs().size() == 0)
+          throw std::length_error("Found DoubleDivisionSpec with zero inputs.");
 
         using KDL::operator*;
         using KDL::operator/;
@@ -978,8 +978,8 @@ namespace giskard
 
       virtual KDL::Expression<KDL::Vector>::Ptr get_expression(const giskard::Scope& scope)
       {
-        // todo: throw exception here
-        assert(get_inputs().size() > 0);
+        if(get_inputs().size() == 0)
+          throw std::length_error("Found VectorSubtractionSpec with zero inputs.");
 
         using KDL::operator+;
         using KDL::operator-;

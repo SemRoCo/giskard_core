@@ -23,6 +23,7 @@
 
 #include <string>
 #include <map>
+#include <stdexcept>
 #include <giskard/expressiontree.hpp>
 
 namespace giskard
@@ -32,8 +33,8 @@ namespace giskard
     public:
       const KDL::Expression<double>::Ptr& find_double_expression(const std::string& reference_name) const
       {
-        // TODO: throw exception here
-        assert(has_double_expression(reference_name));
+        if(!has_double_expression(reference_name))
+          throw std::invalid_argument("Could not find double expression with name: "+ reference_name);
 
         std::map< std::string, KDL::Expression<double>::Ptr >::const_iterator it =
             double_references_.find(reference_name);
@@ -43,8 +44,8 @@ namespace giskard
 
       const KDL::Expression<KDL::Vector>::Ptr& find_vector_expression(const std::string& reference_name) const
       {
-        // TODO: throw exception here
-        assert(has_vector_expression(reference_name));
+        if(!has_vector_expression(reference_name))
+          throw std::invalid_argument("Could not find vector expression with name: "+ reference_name);
 
         std::map< std::string, KDL::Expression<KDL::Vector>::Ptr >::const_iterator it =
             vector_references_.find(reference_name);
@@ -54,8 +55,9 @@ namespace giskard
 
       const KDL::Expression<KDL::Rotation>::Ptr& find_rotation_expression(const std::string& reference_name) const
       {
-        // TODO: throw exception here
-        assert(has_rotation_expression(reference_name));
+        if(!has_rotation_expression(reference_name))
+          throw std::invalid_argument("Could not find rotation expression with name: "+ reference_name);
+
 
         std::map< std::string, KDL::Expression<KDL::Rotation>::Ptr >::const_iterator it =
             rotation_references_.find(reference_name);
@@ -65,8 +67,8 @@ namespace giskard
 
       const KDL::Expression<KDL::Frame>::Ptr& find_frame_expression(const std::string& reference_name) const
       {
-        // TODO: throw exception here
-        assert(has_frame_expression(reference_name));
+        if(!has_frame_expression(reference_name))
+          throw std::invalid_argument("Could not find frame expression with name: "+ reference_name);
 
         std::map< std::string, KDL::Expression<KDL::Frame>::Ptr >::const_iterator it =
             frame_references_.find(reference_name);
@@ -96,32 +98,36 @@ namespace giskard
 
       void add_double_expression(const std::string& reference_name, const KDL::Expression<double>::Ptr& expression)
       {
-        // TODO: throw warning here
-        assert(!has_double_expression(reference_name));
+        if(has_double_expression(reference_name))
+          throw std::invalid_argument("Could not add double expression to scope because name already taken: "
+              + reference_name);
 
         double_references_[reference_name] = expression;
       }
 
       void add_vector_expression(const std::string& reference_name, const KDL::Expression<KDL::Vector>::Ptr& expression)
       {
-        // TODO: throw warning here
-        assert(!has_vector_expression(reference_name));
+        if(has_vector_expression(reference_name))
+          throw std::invalid_argument("Could not add vector expression to scope because name already taken: "
+              + reference_name);
 
         vector_references_[reference_name] = expression;
       }
 
       void add_rotation_expression(const std::string& reference_name, const KDL::Expression<KDL::Rotation>::Ptr& expression)
       {
-        // TODO: throw warning here
-        assert(!has_rotation_expression(reference_name));
+        if(has_rotation_expression(reference_name))
+          throw std::invalid_argument("Could not add rotation expression to scope because name already taken: "
+              + reference_name);
 
         rotation_references_[reference_name] = expression;
       }
 
       void add_frame_expression(const std::string& reference_name, const KDL::Expression<KDL::Frame>::Ptr& expression)
       {
-        // TODO: throw warning here
-        assert(!has_frame_expression(reference_name));
+        if(has_frame_expression(reference_name))
+          throw std::invalid_argument("Could not add frame expression to scope because name already taken: "
+              + reference_name);
 
         frame_references_[reference_name] = expression;
       }
