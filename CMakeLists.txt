@@ -52,6 +52,7 @@ set(TEST_SRCS
   test/${PROJECT_NAME}/pr2_ik.cpp
   test/${PROJECT_NAME}/qp_controller.cpp
   test/${PROJECT_NAME}/qp_problem_builder.cpp
+  test/${PROJECT_NAME}/rotation_control.cpp
   test/${PROJECT_NAME}/rotation_expression_generation.cpp
   test/${PROJECT_NAME}/scope.cpp
   test/${PROJECT_NAME}/vector_expression_generation.cpp
