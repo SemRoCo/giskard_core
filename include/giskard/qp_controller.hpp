@@ -66,7 +66,9 @@ namespace giskard
 
         if(return_value != qpOASES::SUCCESSFUL_RETURN)
         {
-          std::cout << "Init of QP-Problem returned without success! Printing internals." << std::endl;
+          std::cout << "Init of QP-Problem returned without success! ERROR MESSAGE: " << 
+            qpOASES::MessageHandling::getErrorCodeMessage(return_value) << std::endl;
+          std::cout << "Printing internals." << std::endl;
           qp_builder_.print_internals();
           std::cout << "nWSR: " << nWSR << std::endl;
           qp_builder_.are_internals_valid();
