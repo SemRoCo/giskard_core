@@ -51,7 +51,9 @@ namespace giskard
 
         xdot_full_.resize(qp_builder_.num_weights());
 
-        xdot_partial_.resize(qp_builder_.num_controllables());
+        xdot_control_.resize(qp_builder_.num_controllables());
+
+        xdot_slack_.resize(qp_builder_.num_soft_constraints());
 
         return true;
       }
@@ -89,14 +91,20 @@ namespace giskard
           return false;
 
         qp_problem_.getPrimalSolution(xdot_full_.data());
-        xdot_partial_ = xdot_full_.segment(0, qp_builder_.num_controllables());
+        xdot_control_ = xdot_full_.segment(0, qp_builder_.num_controllables());
+        xdot_slack_ = xdot_full_.segment(qp_builder_.num_controllables(), qp_builder_.num_soft_constraints());
 
         return true;
       }
 
       const Eigen::VectorXd& get_command() const
       {
-        return xdot_partial_;
+        return xdot_control_;
+      }
+
+      const Eigen::VectorXd& get_slack() const
+      {
+        return xdot_slack_;
       }
 
       const QPProblemBuilder& get_qp_builder() const
@@ -107,7 +115,7 @@ namespace giskard
     private:
       giskard::QPProblemBuilder qp_builder_;
       qpOASES::SQProblem qp_problem_;
-      Eigen::VectorXd xdot_full_, xdot_partial_;
+      Eigen::VectorXd xdot_full_, xdot_control_, xdot_slack_;
   };
 
 }
