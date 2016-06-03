@@ -2,16 +2,21 @@
 A library and some ROS nodes for robot motion control.
 
 ## Installation
-`.rosinstall`:
+Using ```catkin_tools``` and ```wstool``` in a new workspace for ```ROS Indigo```:
 ```
-- git: {local-name: src/giskard, uri: 'git@github.com:airballking/giskard.git'}
-- git: {local-name: src/expressiongraph, uri: 'git@github.com:airballking/expressiongraph.git'}
-- git: {local-name: src/qpOASES, uri: 'git@github.com:airballking/qpOASES.git'}
+$ source /opt/ros/indigo/setup.bash          # start using ROS Indigo
+$ mkdir -p ~/giskard_ws/src                  # create directory for workspace
+$ cd ~/giskard_ws                            # go to workspace directory
+$ catkin init                                # init workspace
+$ cd src                                     # go to source directory of workspace
+$ wstool init                                # init rosinstall
+$ wstool merge https://raw.githubusercontent.com/SemRoCo/giskard/master/rosinstall/catkin.rosinstall
+                                             # update rosinstall file
+$ wstool update                              # pull source repositories
+$ cd ..                                      # go to workspace directory
+$ catkin build                               # build packages
+$ source ~/giskard_ws/devel/setup.bash       # source new overlay
 ```
-
-* roscd expressiongraph
-* git checkout catkin
-* catkin_make run_tests    (2 fails: expressiongraph.Frame, expressiongraph.Rotation)
 
 ## Parsing urdfs into yamls
 `rosrun giskard extract_expression <start_link> <end_link> <urdf_file> (optional <output_file>)`
