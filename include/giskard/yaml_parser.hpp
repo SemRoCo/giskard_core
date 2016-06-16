@@ -1439,7 +1439,7 @@ namespace YAML {
   inline bool is_controllable_spec(const Node& node)
   {
     return node.IsMap() && (node.size() == 1) && node["controllable-constraint"] &&
-        node["controllable-constraint"].IsSequence() && (node["controllable-constraint"].size() == 4);
+        node["controllable-constraint"].IsSequence() && (node["controllable-constraint"].size() == 5);
   }
 
   template<>
@@ -1453,6 +1453,7 @@ namespace YAML {
       node["controllable-constraint"][1] = rhs.upper_;
       node["controllable-constraint"][2] = rhs.weight_;
       node["controllable-constraint"][3] = rhs.input_number_;
+      node["controllable-constraint"][4] = rhs.name_;
 
       return node;
     }
@@ -1466,6 +1467,7 @@ namespace YAML {
       rhs.upper_ = node["controllable-constraint"][1].as<giskard::DoubleSpecPtr>();
       rhs.weight_ = node["controllable-constraint"][2].as<giskard::DoubleSpecPtr>();
       rhs.input_number_ = node["controllable-constraint"][3].as<size_t>();
+      rhs.name_ = node["controllable-constraint"][4].as<std::string>();
 
       return true;
     }
@@ -1474,7 +1476,7 @@ namespace YAML {
   inline bool is_soft_constraint_spec(const Node& node)
   {
     return node.IsMap() && (node.size() == 1) && node["soft-constraint"] &&
-        node["soft-constraint"].IsSequence() && (node["soft-constraint"].size() == 4);
+        node["soft-constraint"].IsSequence() && (node["soft-constraint"].size() == 5);
   }
 
   template<>
@@ -1488,6 +1490,7 @@ namespace YAML {
       node["soft-constraint"][1] = rhs.upper_;
       node["soft-constraint"][2] = rhs.weight_;
       node["soft-constraint"][3] = rhs.expression_;
+      node["soft-constraint"][4] = rhs.name_;
 
       return node;
     }
@@ -1501,6 +1504,7 @@ namespace YAML {
       rhs.upper_ = node["soft-constraint"][1].as<giskard::DoubleSpecPtr>();
       rhs.weight_ = node["soft-constraint"][2].as<giskard::DoubleSpecPtr>();
       rhs.expression_ = node["soft-constraint"][3].as<giskard::DoubleSpecPtr>();
+      rhs.name_ = node["soft-constraint"][4].as<std::string>();
 
       return true;
     }

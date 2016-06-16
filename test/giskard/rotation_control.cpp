@@ -92,22 +92,25 @@ TEST_F(RotationControlTest, QPControlSingleAxis)
   QPController::DoubleExpressionVector controllable_lower, controllable_upper, controllable_weights;
   QPController::DoubleExpressionVector soft_exp, soft_lower, soft_upper, soft_weights;
   QPController::DoubleExpressionVector hard_exp, hard_lower, hard_upper;
+  QPController::StringVector soft_names, controllable_names;
 
   for(size_t i=0; i<joints.rows(); ++i)
   {
     controllable_lower.push_back(Constant(-0.05));
     controllable_upper.push_back(Constant(0.05));
     controllable_weights.push_back(Constant(1.0));
+    controllable_names.push_back("joint " + i);
   }
 
   soft_exp.push_back(error);
   soft_lower.push_back(control);
   soft_upper.push_back(control);
   soft_weights.push_back(Constant(1.0));
+  soft_names.push_back("rot control single-axis");
 
   QPController controller;
   ASSERT_TRUE(controller.init(controllable_lower, controllable_upper, controllable_weights,
-      soft_exp, soft_lower, soft_upper, soft_weights,
+      controllable_names, soft_exp, soft_lower, soft_upper, soft_weights, soft_names,
       hard_exp, hard_lower, hard_upper));
 
   ASSERT_TRUE(controller.start(joints, 100));
@@ -142,22 +145,25 @@ TEST_F(RotationControlTest, QPControlSeveralAxes)
   QPController::DoubleExpressionVector controllable_lower, controllable_upper, controllable_weights;
   QPController::DoubleExpressionVector soft_exp, soft_lower, soft_upper, soft_weights;
   QPController::DoubleExpressionVector hard_exp, hard_lower, hard_upper;
+  QPController::StringVector soft_names, controllable_names;
 
   for(size_t i=0; i<joints.rows(); ++i)
   {
     controllable_lower.push_back(Constant(-0.05));
     controllable_upper.push_back(Constant(0.05));
     controllable_weights.push_back(Constant(1.0));
+    controllable_names.push_back("joint " + i);
   }
 
   soft_exp.push_back(error2);
   soft_lower.push_back(control2);
   soft_upper.push_back(control2);
   soft_weights.push_back(Constant(1.0));
+  soft_names.push_back("rot control multi-axis");
 
   QPController controller;
   ASSERT_TRUE(controller.init(controllable_lower, controllable_upper, controllable_weights,
-      soft_exp, soft_lower, soft_upper, soft_weights,
+      controllable_names, soft_exp, soft_lower, soft_upper, soft_weights, soft_names,
       hard_exp, hard_lower, hard_upper));
 
   ASSERT_TRUE(controller.start(joints, 100));

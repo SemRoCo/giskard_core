@@ -1842,6 +1842,7 @@ namespace giskard
     public:
       giskard::DoubleSpecPtr lower_, upper_, weight_;
       size_t input_number_;
+      std::string name_;
   };
 
   typedef typename boost::shared_ptr<ControllableConstraintSpec> ControllableConstraintSpecPtr;
@@ -1850,6 +1851,7 @@ namespace giskard
   {
     public:
       giskard::DoubleSpecPtr expression_, lower_, upper_, weight_;
+      std::string name_;
   };
 
   typedef typename boost::shared_ptr<SoftConstraintSpec> SoftConstraintSpecPtr;

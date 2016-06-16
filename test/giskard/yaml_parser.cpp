@@ -837,7 +837,7 @@ TEST_F(YamlParserTest, GithubIssueNo1)
 
 TEST_F(YamlParserTest, ControllableConstraintSpec)
 {
-  std::string s = "controllable-constraint: [-0.1, 0.2, 5.0, 2]";
+  std::string s = "controllable-constraint: [-0.1, 0.2, 5.0, 2, my name]";
 
   YAML::Node node = YAML::Load(s);
 
@@ -848,11 +848,12 @@ TEST_F(YamlParserTest, ControllableConstraintSpec)
   EXPECT_DOUBLE_EQ(spec.upper_->get_expression(giskard::Scope())->value(), 0.2);
   EXPECT_DOUBLE_EQ(spec.weight_->get_expression(giskard::Scope())->value(), 5.0);
   EXPECT_EQ(spec.input_number_, 2);
+  EXPECT_STREQ(spec.name_.c_str(), "my name");
 }
 
 TEST_F(YamlParserTest, SoftConstraintSpec)
 {
-  std::string s = "{soft-constraint: [-10.1, 120.2, 5.0, 1.1]}";
+  std::string s = "{soft-constraint: [-10.1, 120.2, 5.0, 1.1, some name]}";
 
   YAML::Node node = YAML::Load(s);
 
@@ -863,6 +864,7 @@ TEST_F(YamlParserTest, SoftConstraintSpec)
   EXPECT_DOUBLE_EQ(spec.upper_->get_expression(giskard::Scope())->value(), 120.2);
   EXPECT_DOUBLE_EQ(spec.weight_->get_expression(giskard::Scope())->value(), 5.0);
   EXPECT_DOUBLE_EQ(spec.expression_->get_expression(giskard::Scope())->value(), 1.1);
+  EXPECT_STREQ(spec.name_.c_str(), "some name");
 }
 
 TEST_F(YamlParserTest, HardConstraintSpec)
@@ -882,8 +884,8 @@ TEST_F(YamlParserTest, HardConstraintSpec)
 TEST_F(YamlParserTest, QPControllerSpec)
 {
   std::string sc = "scope: []";
-  std::string co = "controllable-constraints: [{controllable-constraint: [-0.1, 0.2, 5.0, 2]}]";
-  std::string so = "soft-constraints: [{soft-constraint: [-10.1, 120.2, 5.0, 1.1]}]";
+  std::string co = "controllable-constraints: [{controllable-constraint: [-0.1, 0.2, 5.0, 2, controllable1]}]";
+  std::string so = "soft-constraints: [{soft-constraint: [-10.1, 120.2, 5.0, 1.1, goal1]}]";
   std::string ha = "hard-constraints: [{hard-constraint: [-33.1, 110.3, 17.1]}]";
 
   std::string s = sc + "\n" + co + "\n" + so + "\n" + ha;
@@ -902,11 +904,13 @@ TEST_F(YamlParserTest, QPControllerSpec)
   EXPECT_DOUBLE_EQ(spec.controllable_constraints_[0].upper_->get_expression(giskard::Scope())->value(), 0.2);
   EXPECT_DOUBLE_EQ(spec.controllable_constraints_[0].weight_->get_expression(giskard::Scope())->value(), 5.0);
   EXPECT_EQ(spec.controllable_constraints_[0].input_number_, 2);
+  EXPECT_STREQ(spec.controllable_constraints_[0].name_.c_str(), "controllable1");
 
   EXPECT_DOUBLE_EQ(spec.soft_constraints_[0].lower_->get_expression(giskard::Scope())->value(), -10.1);
   EXPECT_DOUBLE_EQ(spec.soft_constraints_[0].upper_->get_expression(giskard::Scope())->value(), 120.2);
   EXPECT_DOUBLE_EQ(spec.soft_constraints_[0].weight_->get_expression(giskard::Scope())->value(), 5.0);
   EXPECT_DOUBLE_EQ(spec.soft_constraints_[0].expression_->get_expression(giskard::Scope())->value(), 1.1);
+  EXPECT_STREQ(spec.soft_constraints_[0].name_.c_str(), "goal1");
 
   EXPECT_DOUBLE_EQ(spec.hard_constraints_[0].lower_->get_expression(giskard::Scope())->value(), -33.1);
   EXPECT_DOUBLE_EQ(spec.hard_constraints_[0].upper_->get_expression(giskard::Scope())->value(), 110.3);

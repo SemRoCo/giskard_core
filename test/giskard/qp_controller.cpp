@@ -37,7 +37,10 @@ class QPControllerTest : public ::testing::Test
 
       controllable_weights.push_back(KDL::Constant(mu * 1.1));
       controllable_weights.push_back(KDL::Constant(mu * 1.2));
- 
+
+      controllable_names.push_back("dof 1");
+      controllable_names.push_back("dof 2");
+
       KDL::Expression<double>::Ptr exp1 = KDL::cached<double>(KDL::input(0));
       KDL::Expression<double>::Ptr exp2 = KDL::cached<double>(KDL::input(1));
       KDL::Expression<double>::Ptr exp3 = KDL::cached<double>(KDL::Constant(2.0)*exp1 + exp2);
@@ -60,6 +63,10 @@ class QPControllerTest : public ::testing::Test
       soft_weights.push_back(KDL::Constant(mu + 12));
       soft_weights.push_back(KDL::Constant(mu + 13));
 
+      soft_names.push_back("dof 1 goal");
+      soft_names.push_back("dof 2 goal");
+      soft_names.push_back("dof 1 and 2 combined goal");
+
       hard_expressions.push_back(exp1);
       hard_expressions.push_back(exp2);
 
@@ -79,6 +86,7 @@ class QPControllerTest : public ::testing::Test
     std::vector< KDL::Expression<double>::Ptr > controllable_lower, controllable_upper,
         controllable_weights, soft_expressions, soft_lower, soft_upper, soft_weights,
         hard_expressions, hard_lower, hard_upper;
+    std::vector<std::string> soft_names, controllable_names;
     Eigen::VectorXd initial_state;
 
     double mu;
@@ -96,8 +104,9 @@ TEST_F(QPControllerTest, Init)
 {
    giskard::QPController c;
 
-   ASSERT_TRUE(c.init(controllable_lower, controllable_upper, controllable_weights, soft_expressions,
-      soft_lower, soft_upper, soft_weights, hard_expressions, hard_lower, hard_upper));
+   ASSERT_TRUE(c.init(controllable_lower, controllable_upper, controllable_weights, 
+         controllable_names, soft_expressions, soft_lower, soft_upper, soft_weights, 
+         soft_names, hard_expressions, hard_lower, hard_upper));
 
    ASSERT_TRUE(c.start(initial_state, nWSR));
 
@@ -108,8 +117,9 @@ TEST_F(QPControllerTest, Update)
 {
    // setup controller
    giskard::QPController c;
-   ASSERT_TRUE(c.init(controllable_lower, controllable_upper, controllable_weights, soft_expressions,
-      soft_lower, soft_upper, soft_weights, hard_expressions, hard_lower, hard_upper));
+   ASSERT_TRUE(c.init(controllable_lower, controllable_upper, controllable_weights, 
+         controllable_names, soft_expressions, soft_lower, soft_upper, soft_weights, 
+         soft_names, hard_expressions, hard_lower, hard_upper));
    ASSERT_TRUE(c.start(initial_state, nWSR));
 
    // run several dozen simulation runs; enough to converge

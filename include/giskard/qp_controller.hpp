@@ -22,6 +22,7 @@
 #define GISKARD_QP_CONTROLLER_HPP
 
 #include <giskard/qp_problem_builder.hpp>
+#include <boost/lexical_cast.hpp>
 #include <qpOASES.hpp>
 
 namespace giskard
@@ -30,11 +31,13 @@ namespace giskard
   {
     public:
       typedef typename std::vector< KDL::Expression<double>::Ptr > DoubleExpressionVector;
+      typedef typename std::vector< std::string> StringVector;
       
       bool init(const DoubleExpressionVector& controllable_lower_bounds,
           const DoubleExpressionVector& controllable_upper_bounds, const DoubleExpressionVector& controllable_weights,
-          const DoubleExpressionVector& soft_expressions, const DoubleExpressionVector& soft_lower_bounds,
-          const DoubleExpressionVector& soft_upper_bounds, const DoubleExpressionVector& soft_weights,
+          const StringVector& controllable_names, const DoubleExpressionVector& soft_expressions,
+          const DoubleExpressionVector& soft_lower_bounds, const DoubleExpressionVector& soft_upper_bounds,
+          const DoubleExpressionVector& soft_weights, const StringVector& soft_names,
           const DoubleExpressionVector& hard_expressions, const DoubleExpressionVector& hard_lower_bounds,
           const DoubleExpressionVector& hard_upper_bounds)
       {
@@ -54,6 +57,18 @@ namespace giskard
         xdot_control_.resize(qp_builder_.num_controllables());
 
         xdot_slack_.resize(qp_builder_.num_soft_constraints());
+
+        if( controllable_names.size() != qp_builder_.num_controllables() )
+          throw std::runtime_error("Received " + boost::lexical_cast<std::string>(controllable_names_.size()) + 
+              " controllable names, but " + boost::lexical_cast<std::string>(qp_builder_.num_controllables()) + 
+              " controllables were specified.");
+        controllable_names_ = controllable_names;
+
+        if( soft_names.size() != qp_builder_.num_soft_constraints() )
+          throw std::runtime_error("Received " + boost::lexical_cast<std::string>(soft_names.size()) + 
+              " soft constraint names, but " + boost::lexical_cast<std::string>(qp_builder_.num_soft_constraints()) + 
+              " soft constraints were specified.");
+        soft_constraint_names_ = soft_names;
 
         return true;
       }
@@ -112,10 +127,21 @@ namespace giskard
         return qp_builder_;
       }
 
+      const std::vector<std::string>& get_controllable_names() const
+      {
+        return controllable_names_;
+      }
+
+      const std::vector<std::string>& get_soft_constraint_names() const
+      {
+        return soft_constraint_names_;
+      }
+
     private:
       giskard::QPProblemBuilder qp_builder_;
       qpOASES::SQProblem qp_problem_;
       Eigen::VectorXd xdot_full_, xdot_control_, xdot_slack_;
+      std::vector<std::string> controllable_names_, soft_constraint_names_;
   };
 
 }

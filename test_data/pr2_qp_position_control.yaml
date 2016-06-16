@@ -74,18 +74,18 @@ scope:
 
 
 controllable-constraints:
-  - controllable-constraint: [-0.1, 0.1, 10.0, 0]
-  - controllable-constraint: [-0.3, 0.3, 1.0, 1]
-  - controllable-constraint: [-0.3, 0.3, 1.0, 2]
-  - controllable-constraint: [-0.3, 0.3, 1.0, 3]
-  - controllable-constraint: [-0.3, 0.3, 1.0, 4]
-  - controllable-constraint: [-0.3, 0.3, 1.0, 5]
-  - controllable-constraint: [-0.3, 0.3, 1.0, 6]
-  - controllable-constraint: [-0.3, 0.3, 1.0, 7]
+  - controllable-constraint: [-0.1, 0.1, 10.0, 0, torso_lift_joint]
+  - controllable-constraint: [-0.3, 0.3, 1.0, 1, l_shoulder_pan_joint]
+  - controllable-constraint: [-0.3, 0.3, 1.0, 2, l_shoulder_lift_joint]
+  - controllable-constraint: [-0.3, 0.3, 1.0, 3, l_upper_arm_roll_joint]
+  - controllable-constraint: [-0.3, 0.3, 1.0, 4, l_elbow_flex_joint]
+  - controllable-constraint: [-0.3, 0.3, 1.0, 5, l_forearm_roll_joint]
+  - controllable-constraint: [-0.3, 0.3, 1.0, 6, l_wrist_flex_joint]
+  - controllable-constraint: [-0.3, 0.3, 1.0, 7, l_wrist_roll_joint]
 
 
 soft-constraints:
-  - soft-constraint: [pr2_fk_control_law, pr2_fk_control_law, 10.0, pr2_fk_error]
+  - soft-constraint: [pr2_fk_control_law, pr2_fk_control_law, 10.0, pr2_fk_error, l_arm_pos_control]
 
 hard-constraints:
   - hard-constraint: 

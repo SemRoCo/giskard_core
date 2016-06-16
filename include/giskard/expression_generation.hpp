@@ -63,6 +63,7 @@ namespace giskard
     // generate controllable constraints
     std::vector< KDL::Expression<double>::Ptr > controllable_lower, controllable_upper,
         controllable_weight;
+    std::vector<std::string> controllable_name;
     for(size_t i=0; i<spec.controllable_constraints_.size(); ++i)
     {
       if(spec.controllable_constraints_[i].input_number_ != i)
@@ -74,17 +75,20 @@ namespace giskard
       controllable_lower.push_back(spec.controllable_constraints_[i].lower_->get_expression(scope));
       controllable_upper.push_back(spec.controllable_constraints_[i].upper_->get_expression(scope));
       controllable_weight.push_back(spec.controllable_constraints_[i].weight_->get_expression(scope));
+      controllable_name.push_back(spec.controllable_constraints_[i].name_);
     }
 
     // generate soft constraints
     std::vector< KDL::Expression<double>::Ptr > soft_lower, soft_upper,
         soft_weight, soft_exp;
+    std::vector< std::string> soft_name;
     for(size_t i=0; i<spec.soft_constraints_.size(); ++i)
     {
       soft_lower.push_back(spec.soft_constraints_[i].lower_->get_expression(scope));
       soft_upper.push_back(spec.soft_constraints_[i].upper_->get_expression(scope));
       soft_weight.push_back(spec.soft_constraints_[i].weight_->get_expression(scope));
       soft_exp.push_back(spec.soft_constraints_[i].expression_->get_expression(scope));
+      soft_name.push_back(spec.soft_constraints_[i].name_);
     }
 
     // generate hard constraints
@@ -99,8 +103,8 @@ namespace giskard
     giskard::QPController controller;
    
     if(!(controller.init(controllable_lower, controllable_upper, controllable_weight,
-                           soft_exp, soft_lower, soft_upper, soft_weight,
-                           hard_exp, hard_lower, hard_upper)))
+                           controllable_name, soft_exp, soft_lower, soft_upper, 
+                           soft_weight, soft_name, hard_exp, hard_lower, hard_upper)))
       throw std::runtime_error("QPController generation: Init of controller failed.");
 
     return controller;

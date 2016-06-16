@@ -69,6 +69,19 @@ TEST_F(FlyingCupTest, ApproachMotion)
   ASSERT_EQ(8, controller.get_qp_builder().get_H().cols());
   ASSERT_EQ(2, controller.get_qp_builder().get_A().rows());
   ASSERT_EQ(8, controller.get_qp_builder().get_A().cols());
+  ASSERT_EQ(6, controller.get_controllable_names().size());
+  ASSERT_EQ(2, controller.get_soft_constraint_names().size());
+
+  // test names
+  EXPECT_STREQ("mug_pos_x", controller.get_controllable_names()[0].c_str());
+  EXPECT_STREQ("mug_pos_y", controller.get_controllable_names()[1].c_str());
+  EXPECT_STREQ("mug_pos_z", controller.get_controllable_names()[2].c_str());
+  EXPECT_STREQ("mug_rot_x", controller.get_controllable_names()[3].c_str());
+  EXPECT_STREQ("mug_rot_y", controller.get_controllable_names()[4].c_str());
+  EXPECT_STREQ("mug_rot_z", controller.get_controllable_names()[5].c_str());
+
+  EXPECT_STREQ("mug_above_maker", controller.get_soft_constraint_names()[0].c_str());
+  EXPECT_STREQ("mug_upright", controller.get_soft_constraint_names()[1].c_str());
 
   // setup
   size_t iterations = 500;

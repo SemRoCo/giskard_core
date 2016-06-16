@@ -58,12 +58,12 @@ scope:
   - constraint-weight: 10.001 # mu + 10
 
 controllable-constraints:
-  - controllable-constraint: [-0.3, 0.3, controllable-weight, 0]
-  - controllable-constraint: [-0.3, 0.3, controllable-weight, 1]
-  - controllable-constraint: [-0.3, 0.3, controllable-weight, 2]
-  - controllable-constraint: [-0.5, 0.5, controllable-weight, 3]
-  - controllable-constraint: [-0.5, 0.5, controllable-weight, 4]
-  - controllable-constraint: [-0.5, 0.5, controllable-weight, 5]
+  - controllable-constraint: [-0.3, 0.3, controllable-weight, 0, mug_pos_x]
+  - controllable-constraint: [-0.3, 0.3, controllable-weight, 1, mug_pos_y]
+  - controllable-constraint: [-0.3, 0.3, controllable-weight, 2, mug_pos_z]
+  - controllable-constraint: [-0.5, 0.5, controllable-weight, 3, mug_rot_x]
+  - controllable-constraint: [-0.5, 0.5, controllable-weight, 4, mug_rot_y]
+  - controllable-constraint: [-0.5, 0.5, controllable-weight, 5, mug_rot_z]
 
 soft-constraints: 
   - soft-constraint: 
@@ -71,10 +71,12 @@ soft-constraints:
       - {double-sub: [0.35, mug-above-maker]} # control law for upper boundary
       - constraint-weight # weight of this constraint
       - mug-above-maker # expression used for Jacobian calcuation
+      - mug_above_maker # name of expression reported
   - soft-constraint: 
       - {double-sub: [0.02, mug-upright]} # control law for lower boundary
       - {double-sub: [0.04, mug-upright]} # control law for upper boundary
       - constraint-weight # weight of this constraint
       - mug-upright # expression used for Jacobian calcuation
+      - mug_upright # name of expression reported
 
 hard-constraints: [] # no hard constraints used in this motion
