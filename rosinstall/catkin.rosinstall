@@ -10,3 +10,7 @@
     local-name: giskard
     uri: https://github.com/SemRoCo/giskard.git
     version: master
+- git: 
+    local-name: giskard_msgs
+    uri: https://github.com/SemRoCo/giskard_msgs.git
+    version: master
