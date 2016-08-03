@@ -22,6 +22,7 @@
 #define GISKARD_QP_CONTROLLER_HPP
 
 #include <giskard/qp_problem_builder.hpp>
+#include <giskard/scope.hpp>
 #include <boost/lexical_cast.hpp>
 #include <qpOASES.hpp>
 
@@ -137,11 +138,22 @@ namespace giskard
         return soft_constraint_names_;
       }
 
+      const giskard::Scope& get_scope() const
+      {
+        return scope_;
+      }
+
+      void set_scope(const giskard::Scope& scope)
+      {
+        scope_ = scope;
+      }
+
     private:
       giskard::QPProblemBuilder qp_builder_;
       qpOASES::SQProblem qp_problem_;
       Eigen::VectorXd xdot_full_, xdot_control_, xdot_slack_;
       std::vector<std::string> controllable_names_, soft_constraint_names_;
+      giskard::Scope scope_;
   };
 
 }

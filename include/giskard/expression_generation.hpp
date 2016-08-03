@@ -107,6 +107,8 @@ namespace giskard
                            soft_weight, soft_name, hard_exp, hard_lower, hard_upper)))
       throw std::runtime_error("QPController generation: Init of controller failed.");
 
+    controller.set_scope(scope);
+
     return controller;
   }
 }
