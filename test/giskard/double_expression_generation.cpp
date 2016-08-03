@@ -389,3 +389,18 @@ TEST_F(DoubleExpressionGenerationTest, VectorDot)
 
   EXPECT_NEAR(exp->value(), 32, 1e-10);
 }
+
+TEST_F(DoubleExpressionGenerationTest, Minimum)
+{
+  std::string s1 = "{min: [1.2, -2.1]}";
+
+  YAML::Node node = YAML::Load(s1);
+
+  ASSERT_NO_THROW(node.as<giskard::DoubleSpecPtr>());
+  giskard::DoubleSpecPtr spec = node.as<giskard::DoubleSpecPtr>();
+
+  KDL::Expression<double>::Ptr exp = spec->get_expression(giskard::Scope());
+  ASSERT_TRUE(exp.get());
+
+  EXPECT_NEAR(exp->value(), -2.1, 1e-10);
+}

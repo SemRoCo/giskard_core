@@ -250,7 +250,7 @@ TEST_F(PR2FKTest, QPPositionControl)
   giskard::QPController controller = giskard::generate(spec);
 
   // setup
-  size_t iterations = 300;
+  size_t iterations = 400;
   double dt = 0.01;
   std::vector<double> state_tmp;
   state_tmp.resize(state.rows());

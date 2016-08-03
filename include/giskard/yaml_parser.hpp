@@ -389,6 +389,36 @@ namespace YAML {
     }
   };
 
+  inline bool is_min(const Node& node)
+  {
+    return node.IsMap() && (node.size() == 1) && node["min"] &&
+        node["min"].IsSequence() && (node["min"].size() == 2);
+  }
+
+  template<>
+  struct convert<giskard::MinSpecPtr>
+  {
+    static Node encode(const giskard::MinSpecPtr& rhs) 
+    {
+      Node node;
+      node["min"][0] = rhs->get_lhs();
+      node["min"][1] = rhs->get_rhs();
+      return node;
+    }
+  
+    static bool decode(const Node& node, giskard::MinSpecPtr& rhs) 
+    {
+      if(!is_min(node))
+        return false;
+
+      rhs = giskard::MinSpecPtr(new giskard::MinSpec()); 
+      rhs->set_lhs(node["min"][0].as< giskard::DoubleSpecPtr >());
+      rhs->set_rhs(node["min"][1].as< giskard::DoubleSpecPtr >());
+
+      return true;
+    }
+  };
+
   template<>
   struct convert<giskard::DoubleSpecPtr> 
   {
@@ -469,6 +499,12 @@ namespace YAML {
             boost::dynamic_pointer_cast<giskard::VectorDotSpec>(rhs);
         node = p;
       }
+      else if(boost::dynamic_pointer_cast<giskard::MinSpec>(rhs).get())
+      {
+        giskard::MinSpecPtr p = 
+            boost::dynamic_pointer_cast<giskard::MinSpec>(rhs);
+        node = p;
+      }
 
       return node;
     }
@@ -534,6 +570,11 @@ namespace YAML {
       else if(is_vector_dot(node))
       {
         rhs = node.as<giskard::VectorDotSpecPtr>();
+        return true;
+      }
+      else if(is_min(node))
+      {
+        rhs = node.as<giskard::MinSpecPtr>();
         return true;
       }
       else
@@ -1332,7 +1373,7 @@ namespace YAML {
         is_double_norm_of(node) || is_double_multiplication(node) || is_double_division(node) ||
         is_double_addition(node) || is_double_subtraction(node) ||
         is_x_coord_of(node) || is_y_coord_of(node) || is_z_coord_of(node) ||
-        is_vector_dot(node);
+        is_vector_dot(node) || is_min(node);
   }
 
   inline bool is_vector_spec(const Node& node)

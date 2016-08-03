@@ -722,6 +722,59 @@ namespace giskard
 
   typedef typename boost::shared_ptr<VectorDotSpec> VectorDotSpecPtr;
 
+  class MinSpec: public DoubleSpec
+  {
+    public:
+      const DoubleSpecPtr& get_lhs() const
+      {
+        return lhs_;
+      }
+
+      const DoubleSpecPtr& get_rhs() const
+      {
+        return rhs_;
+      }
+
+      void set_lhs(const DoubleSpecPtr& lhs)
+      {
+        lhs_ = lhs;
+      }
+
+      void set_rhs(const DoubleSpecPtr& rhs)
+      {
+        rhs_ = rhs;
+      }
+
+      virtual bool equals(const Spec& other) const
+      {
+        if(!dynamic_cast<const MinSpec*>(&other))
+          return false;
+
+        const MinSpec* other_p = dynamic_cast<const MinSpec*>(&other);
+
+        return get_lhs().get() && get_rhs().get() &&
+            other_p->get_lhs().get() && other_p->get_rhs().get() &&
+            get_lhs()->equals(*(other_p->get_lhs())) &&
+            get_rhs()->equals(*(other_p->get_rhs()));
+      }
+
+      virtual std::string to_string() const
+      {
+        // todo: implement me
+        return "";
+      }
+
+      virtual KDL::Expression<double>::Ptr get_expression(const giskard::Scope& scope)
+      {
+        return KDL::minimum(get_lhs()->get_expression(scope), get_rhs()->get_expression(scope));
+      }
+
+    private:
+      giskard::DoubleSpecPtr lhs_, rhs_;
+  };
+
+  typedef typename boost::shared_ptr<MinSpec> MinSpecPtr;
+
   ///
   /// specifications of vector expressions
   ///
