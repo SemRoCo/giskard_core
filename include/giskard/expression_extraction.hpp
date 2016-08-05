@@ -163,24 +163,16 @@ namespace giskard
         // Set rpy
         if(!KDL::Equal(frame.M, KDL::Rotation::Identity()))
         {
-          std::vector<double> rpy(3);
-          frame.M.GetRPY(rpy[0],rpy[1],rpy[2]);
-          for (std::vector<double>::size_type i = rpy.size() - 1;
-                i != (std::vector<double>::size_type) -1; i--)
-          {
-            if(rpy[i] != 0)
-            {
-              YAML::Node rpy_frame;
-              YAML::Node axis_angle;
-              KDL::Vector axis;
-              axis[i] = 1;
-              axis_angle["axis-angle"].push_back(get_vector3(axis));
-              axis_angle["axis-angle"].push_back(rpy[i]);
-              rpy_frame["frame"].push_back(axis_angle);
-              rpy_frame["frame"].push_back(get_vector3(0, 0, 0));
-              frames.push_back(rpy_frame);
-            }
-          }
+          double x, y, z, w;
+          frame.M.GetQuaternion(x, y, z, w);
+          YAML::Node quat, quat_frame;
+          quat["quaternion"].push_back(x);
+          quat["quaternion"].push_back(y);
+          quat["quaternion"].push_back(z);
+          quat["quaternion"].push_back(w);
+          quat_frame["frame"].push_back(quat);
+          quat_frame["frame"].push_back(get_vector3(0, 0, 0));
+          frames.push_back(quat_frame);
         }
 
         return frames;

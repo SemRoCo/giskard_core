@@ -44,6 +44,7 @@ target_link_libraries(extract_expression
 
 set(TEST_SRCS
   test/main.cpp
+  test/${PROJECT_NAME}/boxy_fk.cpp
   test/${PROJECT_NAME}/double_expression_generation.cpp
   test/${PROJECT_NAME}/expression_arrays.cpp
   test/${PROJECT_NAME}/frame_expression_generation.cpp
