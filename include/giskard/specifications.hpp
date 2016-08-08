@@ -775,6 +775,47 @@ namespace giskard
 
   typedef typename boost::shared_ptr<MinSpec> MinSpecPtr;
 
+  class AbsSpec: public DoubleSpec
+  {
+    public:
+      const DoubleSpecPtr& get_value() const
+      {
+        return value_;
+      }
+
+      void set_value(const DoubleSpecPtr& value)
+      {
+        value_ = value;
+      }
+
+      virtual bool equals(const Spec& other) const
+      {
+        if(!dynamic_cast<const AbsSpec*>(&other))
+          return false;
+
+        const AbsSpec* other_p = dynamic_cast<const AbsSpec*>(&other);
+
+        return get_value().get() && other_p->get_value().get() &&
+            get_value()->equals(*(other_p->get_value()));
+      }
+
+      virtual std::string to_string() const
+      {
+        // todo: implement me
+        return "";
+      }
+
+      virtual KDL::Expression<double>::Ptr get_expression(const giskard::Scope& scope)
+      {
+        return KDL::abs(get_value()->get_expression(scope));
+      }
+
+    private:
+      giskard::DoubleSpecPtr value_;
+  };
+
+  typedef typename boost::shared_ptr<AbsSpec> AbsSpecPtr;
+
   class DoubleIfSpec: public DoubleSpec
   {
     public:

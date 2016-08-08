@@ -389,6 +389,33 @@ namespace YAML {
     }
   };
 
+  inline bool is_abs(const Node& node)
+  {
+    return node.IsMap() && (node.size() == 1) && node["abs"];
+  }
+
+  template<>
+  struct convert<giskard::AbsSpecPtr>
+  {
+    static Node encode(const giskard::AbsSpecPtr& rhs) 
+    {
+      Node node;
+      node["abs"] = rhs->get_value();
+      return node;
+    }
+  
+    static bool decode(const Node& node, giskard::AbsSpecPtr& rhs) 
+    {
+      if(!is_abs(node))
+        return false;
+
+      rhs = giskard::AbsSpecPtr(new giskard::AbsSpec()); 
+      rhs->set_value(node["abs"].as< giskard::DoubleSpecPtr >());
+
+      return true;
+    }
+  };
+
   inline bool is_min(const Node& node)
   {
     return node.IsMap() && (node.size() == 1) && node["min"] &&
@@ -537,6 +564,12 @@ namespace YAML {
             boost::dynamic_pointer_cast<giskard::MinSpec>(rhs);
         node = p;
       }
+      else if(boost::dynamic_pointer_cast<giskard::AbsSpec>(rhs).get())
+      {
+        giskard::AbsSpecPtr p = 
+            boost::dynamic_pointer_cast<giskard::AbsSpec>(rhs);
+        node = p;
+      }
       else if(boost::dynamic_pointer_cast<giskard::DoubleIfSpec>(rhs).get())
       {
         giskard::DoubleIfSpecPtr p = 
@@ -613,6 +646,11 @@ namespace YAML {
       else if(is_min(node))
       {
         rhs = node.as<giskard::MinSpecPtr>();
+        return true;
+      }
+      else if(is_abs(node))
+      {
+        rhs = node.as<giskard::AbsSpecPtr>();
         return true;
       }
       else if(is_double_if(node))
@@ -1416,7 +1454,7 @@ namespace YAML {
         is_double_norm_of(node) || is_double_multiplication(node) || is_double_division(node) ||
         is_double_addition(node) || is_double_subtraction(node) ||
         is_x_coord_of(node) || is_y_coord_of(node) || is_z_coord_of(node) ||
-        is_vector_dot(node) || is_min(node) || is_double_if(node);
+        is_vector_dot(node) || is_min(node) || is_double_if(node) || is_abs(node);
   }
 
   inline bool is_vector_spec(const Node& node)
