@@ -775,6 +775,111 @@ namespace giskard
 
   typedef typename boost::shared_ptr<MinSpec> MinSpecPtr;
 
+  class AbsSpec: public DoubleSpec
+  {
+    public:
+      const DoubleSpecPtr& get_value() const
+      {
+        return value_;
+      }
+
+      void set_value(const DoubleSpecPtr& value)
+      {
+        value_ = value;
+      }
+
+      virtual bool equals(const Spec& other) const
+      {
+        if(!dynamic_cast<const AbsSpec*>(&other))
+          return false;
+
+        const AbsSpec* other_p = dynamic_cast<const AbsSpec*>(&other);
+
+        return get_value().get() && other_p->get_value().get() &&
+            get_value()->equals(*(other_p->get_value()));
+      }
+
+      virtual std::string to_string() const
+      {
+        // todo: implement me
+        return "";
+      }
+
+      virtual KDL::Expression<double>::Ptr get_expression(const giskard::Scope& scope)
+      {
+        return KDL::abs(get_value()->get_expression(scope));
+      }
+
+    private:
+      giskard::DoubleSpecPtr value_;
+  };
+
+  typedef typename boost::shared_ptr<AbsSpec> AbsSpecPtr;
+
+  class DoubleIfSpec: public DoubleSpec
+  {
+    public:
+      const DoubleSpecPtr& get_condition() const
+      {
+        return condition_;
+      }
+
+      const DoubleSpecPtr& get_if() const
+      {
+        return if_;
+      }
+
+      const DoubleSpecPtr& get_else() const
+      {
+        return else_;
+      }
+
+      void set_condition(const DoubleSpecPtr& condition)
+      {
+        condition_ = condition;
+      }
+
+      void set_if(const DoubleSpecPtr& new_if)
+      {
+        if_ = new_if;
+      }
+
+      void set_else(const DoubleSpecPtr& new_else)
+      {
+        else_ = new_else;
+      }
+
+      virtual bool equals(const Spec& other) const
+      {
+        if(!dynamic_cast<const DoubleIfSpec*>(&other))
+          return false;
+
+        const DoubleIfSpec* other_p = dynamic_cast<const DoubleIfSpec*>(&other);
+
+        return get_condition().get() && get_if().get() && get_else().get() &&
+            other_p->get_condition().get() && other_p->get_if().get() && other_p->get_else().get() &&
+            get_condition()->equals(*(other_p->get_condition())) &&
+            get_if()->equals(*(other_p->get_if())) &&
+            get_else()->equals(*(other_p->get_else()));
+      }
+
+      virtual std::string to_string() const
+      {
+        // todo: implement me
+        return "";
+      }
+
+      virtual KDL::Expression<double>::Ptr get_expression(const giskard::Scope& scope)
+      {
+        return KDL::conditional<double>(get_condition()->get_expression(scope), get_if()->get_expression(scope), get_else()->get_expression(scope));
+      }
+
+    private:
+      giskard::DoubleSpecPtr condition_, if_, else_;
+  };
+
+  typedef typename boost::shared_ptr<DoubleIfSpec> DoubleIfSpecPtr;
+
   ///
   /// specifications of vector expressions
   ///

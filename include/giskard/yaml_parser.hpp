@@ -389,6 +389,33 @@ namespace YAML {
     }
   };
 
+  inline bool is_abs(const Node& node)
+  {
+    return node.IsMap() && (node.size() == 1) && node["abs"];
+  }
+
+  template<>
+  struct convert<giskard::AbsSpecPtr>
+  {
+    static Node encode(const giskard::AbsSpecPtr& rhs) 
+    {
+      Node node;
+      node["abs"] = rhs->get_value();
+      return node;
+    }
+  
+    static bool decode(const Node& node, giskard::AbsSpecPtr& rhs) 
+    {
+      if(!is_abs(node))
+        return false;
+
+      rhs = giskard::AbsSpecPtr(new giskard::AbsSpec()); 
+      rhs->set_value(node["abs"].as< giskard::DoubleSpecPtr >());
+
+      return true;
+    }
+  };
+
   inline bool is_min(const Node& node)
   {
     return node.IsMap() && (node.size() == 1) && node["min"] &&
@@ -414,6 +441,38 @@ namespace YAML {
       rhs = giskard::MinSpecPtr(new giskard::MinSpec()); 
       rhs->set_lhs(node["min"][0].as< giskard::DoubleSpecPtr >());
       rhs->set_rhs(node["min"][1].as< giskard::DoubleSpecPtr >());
+
+      return true;
+    }
+  };
+
+  inline bool is_double_if(const Node& node)
+  {
+    return node.IsMap() && (node.size() == 1) && node["double-if"] &&
+        node["double-if"].IsSequence() && (node["double-if"].size() == 3);
+  }
+
+  template<>
+  struct convert<giskard::DoubleIfSpecPtr>
+  {
+    static Node encode(const giskard::DoubleIfSpecPtr& rhs) 
+    {
+      Node node;
+      node["double-if"][0] = rhs->get_condition();
+      node["double-if"][1] = rhs->get_if();
+      node["double-if"][2] = rhs->get_else();
+      return node;
+    }
+  
+    static bool decode(const Node& node, giskard::DoubleIfSpecPtr& rhs) 
+    {
+      if(!is_double_if(node))
+        return false;
+
+      rhs = giskard::DoubleIfSpecPtr(new giskard::DoubleIfSpec()); 
+      rhs->set_condition(node["double-if"][0].as< giskard::DoubleSpecPtr >());
+      rhs->set_if(node["double-if"][1].as< giskard::DoubleSpecPtr >());
+      rhs->set_else(node["double-if"][2].as< giskard::DoubleSpecPtr >());
 
       return true;
     }
@@ -505,6 +564,18 @@ namespace YAML {
             boost::dynamic_pointer_cast<giskard::MinSpec>(rhs);
         node = p;
       }
+      else if(boost::dynamic_pointer_cast<giskard::AbsSpec>(rhs).get())
+      {
+        giskard::AbsSpecPtr p = 
+            boost::dynamic_pointer_cast<giskard::AbsSpec>(rhs);
+        node = p;
+      }
+      else if(boost::dynamic_pointer_cast<giskard::DoubleIfSpec>(rhs).get())
+      {
+        giskard::DoubleIfSpecPtr p = 
+            boost::dynamic_pointer_cast<giskard::DoubleIfSpec>(rhs);
+        node = p;
+      }
 
       return node;
     }
@@ -575,6 +646,16 @@ namespace YAML {
       else if(is_min(node))
       {
         rhs = node.as<giskard::MinSpecPtr>();
+        return true;
+      }
+      else if(is_abs(node))
+      {
+        rhs = node.as<giskard::AbsSpecPtr>();
+        return true;
+      }
+      else if(is_double_if(node))
+      {
+        rhs = node.as<giskard::DoubleIfSpecPtr>();
         return true;
       }
       else
@@ -1373,7 +1454,7 @@ namespace YAML {
         is_double_norm_of(node) || is_double_multiplication(node) || is_double_division(node) ||
         is_double_addition(node) || is_double_subtraction(node) ||
         is_x_coord_of(node) || is_y_coord_of(node) || is_z_coord_of(node) ||
-        is_vector_dot(node) || is_min(node);
+        is_vector_dot(node) || is_min(node) || is_double_if(node) || is_abs(node);
   }
 
   inline bool is_vector_spec(const Node& node)
