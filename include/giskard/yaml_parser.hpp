@@ -416,6 +416,36 @@ namespace YAML {
     }
   };
 
+  inline bool is_fmod(const Node& node)
+  {
+    return node.IsMap() && (node.size() == 1) && node["fmod"] &&
+      node["fmod"].IsSequence() && (node["fmod"].size() == 2);
+  }
+
+  template<>
+  struct convert<giskard::FmodSpecPtr>
+  {
+    static Node encode(const giskard::FmodSpecPtr& rhs) 
+    {
+      Node node;
+      node["fmod"][0] = rhs->get_nominator();
+      node["fmod"][1] = rhs->get_denominator();
+      return node;
+    }
+  
+    static bool decode(const Node& node, giskard::FmodSpecPtr& rhs) 
+    {
+      if(!is_fmod(node))
+        return false;
+
+      rhs = giskard::FmodSpecPtr(new giskard::FmodSpec()); 
+      rhs->set_nominator(node["fmod"][0].as< giskard::DoubleSpecPtr >());
+      rhs->set_denominator(node["fmod"][1].as< giskard::DoubleSpecPtr >());
+
+      return true;
+    }
+  };
+
   inline bool is_min(const Node& node)
   {
     return node.IsMap() && (node.size() == 1) && node["min"] &&
@@ -570,6 +600,12 @@ namespace YAML {
             boost::dynamic_pointer_cast<giskard::AbsSpec>(rhs);
         node = p;
       }
+      else if(boost::dynamic_pointer_cast<giskard::FmodSpec>(rhs).get())
+      {
+        giskard::FmodSpecPtr p = 
+            boost::dynamic_pointer_cast<giskard::FmodSpec>(rhs);
+        node = p;
+      }
       else if(boost::dynamic_pointer_cast<giskard::DoubleIfSpec>(rhs).get())
       {
         giskard::DoubleIfSpecPtr p = 
@@ -651,6 +687,11 @@ namespace YAML {
       else if(is_abs(node))
       {
         rhs = node.as<giskard::AbsSpecPtr>();
+        return true;
+      }
+      else if(is_fmod(node))
+      {
+        rhs = node.as<giskard::FmodSpecPtr>();
         return true;
       }
       else if(is_double_if(node))
@@ -1454,7 +1495,8 @@ namespace YAML {
         is_double_norm_of(node) || is_double_multiplication(node) || is_double_division(node) ||
         is_double_addition(node) || is_double_subtraction(node) ||
         is_x_coord_of(node) || is_y_coord_of(node) || is_z_coord_of(node) ||
-        is_vector_dot(node) || is_min(node) || is_double_if(node) || is_abs(node);
+        is_vector_dot(node) || is_min(node) || is_double_if(node) || is_abs(node) ||
+        is_fmod(node);
   }
 
   inline bool is_vector_spec(const Node& node)

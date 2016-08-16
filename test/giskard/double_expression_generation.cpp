@@ -480,3 +480,41 @@ TEST_F(DoubleExpressionGenerationTest, Abs)
 
   EXPECT_NEAR(exp->value(), 0.0, 1e-10);
 }
+
+TEST_F(DoubleExpressionGenerationTest, Fmod)
+{
+  std::string s1 = "{fmod: [0.1, 1]}";
+  std::string s2 = "{fmod: [-3.2, 2]}";
+  std::string s3 = "{fmod: [2.1, 1.5]}";
+
+  // CASE 1
+  YAML::Node node = YAML::Load(s1);
+
+  ASSERT_NO_THROW(node.as<giskard::DoubleSpecPtr>());
+  giskard::DoubleSpecPtr spec = node.as<giskard::DoubleSpecPtr>();
+
+  KDL::Expression<double>::Ptr exp = spec->get_expression(giskard::Scope());
+  ASSERT_TRUE(exp.get());
+
+  EXPECT_NEAR(exp->value(), std::fmod(0.1, 1.0), 1e-10);
+
+  // CASE 2
+  node = YAML::Load(s2);
+  ASSERT_NO_THROW(node.as<giskard::DoubleSpecPtr>());
+  spec = node.as<giskard::DoubleSpecPtr>();
+
+  exp = spec->get_expression(giskard::Scope());
+  ASSERT_TRUE(exp.get());
+
+  EXPECT_NEAR(exp->value(), std::fmod(-3.2, 2.0), 1e-10);
+
+  // CASE 3
+  node = YAML::Load(s3);
+  ASSERT_NO_THROW(node.as<giskard::DoubleSpecPtr>());
+  spec = node.as<giskard::DoubleSpecPtr>();
+
+  exp = spec->get_expression(giskard::Scope());
+  ASSERT_TRUE(exp.get());
+
+  EXPECT_NEAR(exp->value(), std::fmod(2.1, 1.5), 1e-10);
+}

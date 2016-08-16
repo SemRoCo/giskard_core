@@ -880,6 +880,70 @@ namespace giskard
 
   typedef typename boost::shared_ptr<DoubleIfSpec> DoubleIfSpecPtr;
 
+  class FmodSpec: public DoubleSpec
+  {
+    public:
+      const DoubleSpecPtr& get_nominator() const
+      {
+        return nominator_;
+      }
+
+      void set_nominator(const DoubleSpecPtr& nominator)
+      {
+        nominator_ = nominator;
+      }
+
+      const DoubleSpecPtr& get_denominator() const
+      {
+        return denominator_;
+      }
+
+      void set_denominator(const DoubleSpecPtr& denominator)
+      {
+        denominator_ = denominator;
+      }
+
+      bool members_valid() const
+      {
+        return get_nominator().get() && get_denominator().get();
+      }
+
+      virtual bool equals(const Spec& other) const
+      {
+        if(!dynamic_cast<const FmodSpec*>(&other))
+          return false;
+
+        const FmodSpec* other_p = dynamic_cast<const FmodSpec*>(&other);
+
+        if(!members_valid() || !other_p->members_valid())
+          return false;
+
+        return (get_nominator()->equals(*(other_p->get_nominator()))) && 
+               (get_denominator()->equals(*( other_p->get_denominator())));
+      }
+
+      virtual std::string to_string() const
+      {
+        // TODO: implement me
+        return "";
+      }
+
+      virtual KDL::Expression<double>::Ptr get_expression(const giskard::Scope& scope)
+      {
+        // note: This expression only expects a TRUE expressions for the nominator.
+        //       While this makes sense, it does break code symmetry.
+        KDL::Expression<double>::Ptr nominator = get_nominator()->get_expression(scope);
+        double denominator = get_denominator()->get_expression(scope)->value();
+
+        return KDL::fmod(nominator, denominator);
+      }
+
+    private:
+      DoubleSpecPtr nominator_, denominator_;
+  };
+
+  typedef typename boost::shared_ptr<FmodSpec> FmodSpecPtr;
+
   ///
   /// specifications of vector expressions
   ///
