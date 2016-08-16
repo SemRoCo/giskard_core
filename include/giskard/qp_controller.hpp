@@ -49,7 +49,7 @@ namespace giskard
 
         qp_problem_ = qpOASES::SQProblem(qp_builder_.num_weights(), qp_builder_.num_constraints());
         qpOASES::Options options;
-        options.setToMPC();
+        options.setToReliable();
         options.printLevel = qpOASES::PL_NONE;
         qp_problem_.setOptions(options);
 
