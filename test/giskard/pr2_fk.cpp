@@ -245,7 +245,7 @@ TEST_F(PR2FKTest, QPPositionControl)
   Eigen::VectorXd state(8);
   using Eigen::operator<<;
   state << 0.02, 0.0, 0.0, 0.0, -0.16, 0.0, -0.11, 0.0;
-  int nWSR = 10;
+  int nWSR = 100;
   ASSERT_NO_THROW(giskard::generate(spec));
   giskard::QPController controller = giskard::generate(spec);
 
@@ -296,7 +296,7 @@ TEST_F(PR2FKTest, QPPositionControlWithDeactivatedControllables)
   Eigen::VectorXd state(8);
   using Eigen::operator<<;
   state << 0.02, 0.0, 0.0, 0.0, -0.16, 0.0, -0.11, 0.0;
-  int nWSR = 10;
+  int nWSR = 100;
   ASSERT_NO_THROW(giskard::generate(spec));
   giskard::QPController controller = giskard::generate(spec);
 
@@ -350,7 +350,7 @@ TEST_F(PR2FKTest, QPPositionControlWithExcessObservables)
   Eigen::VectorXd state(8);
   using Eigen::operator<<;
   state << 0.02, 0.0, 0.0, 0.0, -0.16, 0.0, -0.11, 0.0;
-  int nWSR = 10;
+  int nWSR = 100;
   ASSERT_NO_THROW(giskard::generate(spec));
   giskard::QPController controller = giskard::generate(spec);
 

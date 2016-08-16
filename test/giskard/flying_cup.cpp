@@ -56,7 +56,7 @@ TEST_F(FlyingCupTest, ApproachMotion)
   Eigen::VectorXd state(12);
   using Eigen::operator<<;
   state << 0.2, 0.1, 1.855, 0.01, 0.01, 0, 0.3, 0.4, 0.89, 0, 0, 0;
-  int nWSR = 10;
+  int nWSR = 100;
 
   EXPECT_EQ(14, spec.scope_.size());
   EXPECT_EQ(6, spec.controllable_constraints_.size());
