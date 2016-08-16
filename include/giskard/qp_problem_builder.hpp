@@ -169,6 +169,26 @@ namespace giskard
         return are_controllables_valid();
       }
 
+      size_t num_observables() const
+      {
+        size_t result = 0;
+        result = std::max(controllable_lower_bounds_.num_inputs(), result);
+        result = std::max(controllable_upper_bounds_.num_inputs(), result);
+        result = std::max(controllable_weights_.num_inputs(), result);
+
+        result = std::max(soft_expressions_.num_inputs(), result);
+        result = std::max(soft_lower_bounds_.num_inputs(), result);
+        result = std::max(soft_upper_bounds_.num_inputs(), result);
+        result = std::max(soft_weights_.num_inputs(), result);
+
+        result = std::max(hard_expressions_.num_inputs(), result);
+        result = std::max(hard_lower_bounds_.num_inputs(), result);
+        result = std::max(hard_upper_bounds_.num_inputs(), result);
+
+        return result;
+      }
+
+
     private:
       KDL::DoubleExpressionArray controllable_lower_bounds_, controllable_upper_bounds_,
          controllable_weights_, soft_expressions_, soft_lower_bounds_, soft_upper_bounds_,

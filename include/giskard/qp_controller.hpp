@@ -148,6 +148,21 @@ namespace giskard
         scope_ = scope;
       }
 
+      size_t num_controllables() const
+      {
+        return get_controllable_names().size();
+      }
+
+      size_t num_soft_constraints() const
+      {
+        return get_soft_constraint_names().size();
+      }
+
+      size_t num_observables() const
+      {
+        return qp_builder_.num_observables();
+      }
+
     private:
       giskard::QPProblemBuilder qp_builder_;
       qpOASES::SQProblem qp_problem_;
