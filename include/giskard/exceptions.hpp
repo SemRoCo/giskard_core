@@ -21,6 +21,9 @@
 #ifndef GISKARD_EXCEPTIONS_HPP
 #define GISKARD_EXCEPTIONS_HPP
 
+#include <exception>
+#include <string>
+
 namespace giskard
 {
   namespace ErrorMsg
@@ -49,7 +52,7 @@ namespace giskard
   {
     public:
       InvalidChain() : Exception(ErrorMsg::INVALID_CHAIN) {};
-      InvalidChain(std::string start_link, std::string end_link)
+      InvalidChain(const std::string& start_link, const std::string& end_link)
       {
           std::string msg = "No transform found from '" + start_link + "' to '" + end_link + "'.";
           err_msg = msg.c_str();
@@ -60,7 +63,7 @@ namespace giskard
   {
     public:
       InvalidUrdf() : Exception(ErrorMsg::INVALID_URDF) {};
-      InvalidUrdf(std::string path)
+      InvalidUrdf(const std::string& path)
       {
           std::string msg = "Couldn't parse urdf: '" + path + "'.";
           err_msg = msg.c_str();
@@ -70,7 +73,7 @@ namespace giskard
   class WriteError: public Exception
   {
     public:
-      WriteError(std::string path)
+      WriteError(const std::string& path)
       {
           std::string msg = "Failed to write file '" + path + "'.";
           err_msg = msg.c_str();
