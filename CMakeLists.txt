@@ -56,6 +56,7 @@ set(TEST_SRCS
   test/${PROJECT_NAME}/rotation_control.cpp
   test/${PROJECT_NAME}/rotation_expression_generation.cpp
   test/${PROJECT_NAME}/scope.cpp
+  test/${PROJECT_NAME}/slerp.cpp
   test/${PROJECT_NAME}/vector_expression_generation.cpp
   test/${PROJECT_NAME}/yaml_parser.cpp)
 
