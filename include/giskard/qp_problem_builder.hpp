@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Georg Bartels <georg.bartels@cs.uni-bremen.de>
+ * Copyright (C) 2015-2016 Georg Bartels <georg.bartels@cs.uni-bremen.de>
  * 
  * This file is part of giskard.
  * 
@@ -162,11 +162,12 @@ namespace giskard
         print_vector("ub", get_ub());
         print_vector("lbA", get_lbA());
         print_vector("ubA", get_ubA());
+
       }
 
       bool are_internals_valid() const
       {
-        return are_controllables_valid();
+        return are_controllables_valid() && are_soft_constraints_valid();
       }
 
       size_t num_observables() const
@@ -217,6 +218,30 @@ namespace giskard
         }
 
         return result;
+      }
+
+      bool are_soft_constraints_valid() const
+      {
+        bool result = true;
+        if(get_lbA().rows() != get_ubA().rows())
+        {
+          std::cout << "Lower and upper boundaries of soft constraints do not match." << std::endl;
+          result = false;
+        }
+        else
+        {
+          for(size_t i=0; i<get_lbA().rows(); ++i)
+            if(get_lbA()(i) > get_ubA()(i))
+            {
+              std::cout << "Lower soft constraint boundary bigger than upper boundary (dim=" << i << ")"
+                        << " lower: " << get_lbA()(i) << " upper: " << get_ubA()(i) << std::endl;
+              std::cout << "Number of hard constraints: " << num_hard_constraints() << std::endl;
+              result = false;
+            }
+        }
+
+        return result;
+
       }
 
       void print_matrix(const std::string& name, const Matrix& m) const
