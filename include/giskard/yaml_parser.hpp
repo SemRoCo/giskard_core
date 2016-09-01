@@ -1098,6 +1098,38 @@ namespace YAML {
     }
   };
 
+  inline bool is_slerp(const Node& node)
+  {
+    return node.IsMap() && (node.size() == 1) && node["slerp"] &&
+        node["slerp"].IsSequence() && (node["slerp"].size() == 3);
+  }
+
+  template<>
+  struct convert<giskard::SlerpSpecPtr> 
+  {
+    static Node encode(const giskard::SlerpSpecPtr& rhs) 
+    {
+      Node node;
+      node["slerp"][0] = rhs->get_from();
+      node["slerp"][1] = rhs->get_to();
+      node["slerp"][2] = rhs->get_param();
+      return node;
+    }
+  
+    static bool decode(const Node& node, giskard::SlerpSpecPtr& rhs) 
+    {
+      if(!is_slerp(node))
+        return false;
+
+      rhs = giskard::SlerpSpecPtr(new giskard::SlerpSpec()); 
+      rhs->set_from(node["slerp"][0].as<giskard::RotationSpecPtr>());
+      rhs->set_to(node["slerp"][1].as<giskard::RotationSpecPtr>());
+      rhs->set_param(node["slerp"][2].as<giskard::DoubleSpecPtr>());
+
+      return true;
+    }
+  };
+
   inline bool is_axis_angle(const Node& node)
   {
     return node.IsMap() && (node.size() == 1) && node["axis-angle"] &&
@@ -1270,6 +1302,8 @@ namespace YAML {
         node = boost::dynamic_pointer_cast<giskard::InverseRotationSpec>(rhs);
       else if(boost::dynamic_pointer_cast<giskard::RotationMultiplicationSpec>(rhs).get())
         node = boost::dynamic_pointer_cast<giskard::RotationMultiplicationSpec>(rhs);
+      else if(boost::dynamic_pointer_cast<giskard::SlerpSpec>(rhs).get())
+        node = boost::dynamic_pointer_cast<giskard::SlerpSpec>(rhs);
 
       return node;
     }
@@ -1279,6 +1313,11 @@ namespace YAML {
       if(is_axis_angle(node))
       {
         rhs = node.as<giskard::AxisAngleSpecPtr>();
+        return true;
+      } 
+      else if(is_slerp(node))
+      {
+        rhs = node.as<giskard::SlerpSpecPtr>();
         return true;
       } 
       else if(is_quaternion_constructor(node))
@@ -1512,7 +1551,8 @@ namespace YAML {
   {
     return is_quaternion_constructor(node) || is_axis_angle(node) || 
       is_rotation_reference(node) || is_orientation_of(node) ||
-      is_inverse_rotation(node) || is_rotation_multiplication(node);
+      is_inverse_rotation(node) || is_rotation_multiplication(node) ||
+      is_slerp(node);
   }
 
   inline bool is_frame_spec(const Node& node)

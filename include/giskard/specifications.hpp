@@ -27,6 +27,7 @@
 #include <boost/lexical_cast.hpp>
 #include <giskard/expressiontree.hpp>
 #include <giskard/scope.hpp>
+#include <giskard/slerp.hpp>
 
 namespace giskard
 {
@@ -1601,6 +1602,83 @@ namespace giskard
   };
 
   typedef typename boost::shared_ptr<AxisAngleSpec> AxisAngleSpecPtr;
+
+  class SlerpSpec: public RotationSpec
+  {
+    public:
+      const RotationSpecPtr& get_from() const
+      {
+        return from_;
+      }
+
+      void set_from(const RotationSpecPtr& from)
+      {
+        from_ = from;
+      }
+
+      const RotationSpecPtr& get_to() const
+      {
+        return to_;
+      }
+
+      void set_to(const RotationSpecPtr& to)
+      {
+        to_ = to;
+      }
+
+      const DoubleSpecPtr& get_param() const
+      {
+        return param_;
+      }
+
+      void set_param(const DoubleSpecPtr& param)
+      {
+        param_ = param;
+      }
+
+      bool members_valid() const
+      {
+        return get_from().get() && get_to().get() && get_param().get();
+      }
+
+      virtual bool equals(const Spec& other) const
+      {
+        if(!dynamic_cast<const SlerpSpec*>(&other))
+          return false;
+
+        const SlerpSpec* other_p = dynamic_cast<const SlerpSpec*>(&other);
+
+        if(!members_valid() || !other_p->members_valid())
+          return false;
+
+        return (get_from()->equals(*(other_p->get_from()))) && 
+               (get_to()->equals(*( other_p->get_to()))) &&
+               (get_param()->equals(*( other_p->get_param())));
+      }
+
+      virtual std::string to_string() const
+      {
+        return "TODO: implement slerp printing.";
+      }
+
+      virtual KDL::Expression<KDL::Rotation>::Ptr get_expression(const giskard::Scope& scope)
+      {
+        // note: This type of rotation expressions is not part of KDL::expressiongraph.
+        //       So, no support for derivatives or dynamic evaluation of inputs. Sorry.
+        double param = get_param()->get_expression(scope)->value();
+        KDL::Rotation from = get_from()->get_expression(scope)->value();
+        KDL::Rotation to = get_to()->get_expression(scope)->value();
+        KDL::Rotation result = giskard::slerp(from, to , param);
+
+        return KDL::Constant(result);
+      }
+
+    private:
+      RotationSpecPtr from_, to_;
+      DoubleSpecPtr param_;
+  };
+
+  typedef typename boost::shared_ptr<SlerpSpec> SlerpSpecPtr;
 
   class RotationReferenceSpec : public RotationSpec
   {
