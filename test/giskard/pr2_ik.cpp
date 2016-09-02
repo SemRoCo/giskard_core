@@ -83,3 +83,50 @@ TEST_F(PR2IKTest, SingleExpression)
     EXPECT_TRUE(KDL::Equal(solver_jac, exp_jac));
   }
 }
+
+TEST_F(PR2IKTest, SingleRowRotation)
+{
+  YAML::Node node = YAML::LoadFile("pr2_left_arm_scope.yaml");
+
+  ASSERT_NO_THROW(node.as< giskard::ScopeSpec >());
+  giskard::ScopeSpec scope_spec = node.as<giskard::ScopeSpec>();
+
+  ASSERT_NO_THROW(giskard::generate(scope_spec));
+  giskard::Scope scope = giskard::generate(scope_spec);
+
+  ASSERT_TRUE(scope.has_double_expression("pr2_rot_x"));
+
+  KDL::Expression<double>::Ptr exp = scope.find_double_expression("pr2_rot_x");
+  ASSERT_TRUE(exp.get()); 
+
+  std::string base = "base_link";
+  std::string tip = "l_wrist_roll_link";
+  KDL::Chain chain;
+  ASSERT_TRUE(tree.getChain(base, tip, chain));
+  ASSERT_EQ(chain.getNrOfJoints(), exp->number_of_derivatives());
+
+  boost::shared_ptr<KDL::ChainJntToJacSolver> jac_solver;
+  jac_solver = boost::shared_ptr<KDL::ChainJntToJacSolver>(
+      new KDL::ChainJntToJacSolver(chain));
+
+  for(int i=-11; i<12; ++i)
+  {
+    std::vector<double> exp_in;
+    KDL::JntArray solver_in(exp->number_of_derivatives());
+    for(size_t j=0; j<exp->number_of_derivatives(); ++j)
+    {
+      double value = 0.1*i;
+      exp_in.push_back(value);
+      solver_in(j) = value;
+    }
+
+    exp->setInputValues(exp_in);
+    exp->value();
+
+    KDL::Jacobian solver_jac(chain.getNrOfJoints());
+    ASSERT_GE(jac_solver->JntToJac(solver_in, solver_jac), 0.0);
+
+    for (size_t j=0; j<chain.getNrOfJoints(); ++j)
+      EXPECT_DOUBLE_EQ(solver_jac(3,j), exp->derivative(j));
+  }
+}
