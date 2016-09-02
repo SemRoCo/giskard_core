@@ -204,3 +204,46 @@ TEST_F(RotationGenerationTest, RotationMultiplication)
   test_rotation_generation(rotation_multiplication_spec(rots1), rot1);
   test_rotation_generation(rotation_multiplication_spec(rots2), rot2);
 }
+
+TEST_F(RotationGenerationTest, Slerp)
+{
+  std::string q1 = "{quaternion: [0.348, -0.52, 0.616, -0.479]}";
+  std::string q2 = "{quaternion: [0.845, 0.262, 0.363, 0.293]}";
+  std::string s1 = "{slerp: [" + q1 + ", " + q2 + ", 0]}";
+  std::string s2 = "{slerp: [" + q1 + ", " + q2 + ", 0.5]}";
+  std::string s3 = "{slerp: [" + q1 + ", " + q2 + ", 1]}";
+  double eps = 0.001;
+
+  // CASE 1
+  YAML::Node node = YAML::Load(s1);
+  ASSERT_NO_THROW(node.as<giskard::RotationSpecPtr>());
+  RotationSpecPtr spec = node.as<giskard::RotationSpecPtr>();
+
+  ASSERT_NO_THROW(spec->get_expression(giskard::Scope()));
+  KDL::Expression<KDL::Rotation>::Ptr exp = spec->get_expression(giskard::Scope());
+  ASSERT_TRUE(exp.get());
+  KDL::Rotation r = exp->value();
+  EXPECT_TRUE(KDL::Equal(r, KDL::Rotation::Quaternion(0.348, -0.52, 0.616, -0.479), eps));
+
+  // CASE 2
+  node = YAML::Load(s2);
+  ASSERT_NO_THROW(node.as<giskard::RotationSpecPtr>());
+  spec = node.as<giskard::RotationSpecPtr>();
+
+  ASSERT_NO_THROW(spec->get_expression(giskard::Scope()));
+  exp = spec->get_expression(giskard::Scope());
+  ASSERT_TRUE(exp.get());
+  r = exp->value();
+  EXPECT_TRUE(KDL::Equal(r, KDL::Rotation::Quaternion(0.757226, -0.163759, 0.621395, -0.118059), eps));
+
+  // CASE 3
+  node = YAML::Load(s3);
+  ASSERT_NO_THROW(node.as<giskard::RotationSpecPtr>());
+  spec = node.as<giskard::RotationSpecPtr>();
+
+  ASSERT_NO_THROW(spec->get_expression(giskard::Scope()));
+  exp = spec->get_expression(giskard::Scope());
+  ASSERT_TRUE(exp.get());
+  r = exp->value();
+  EXPECT_TRUE(KDL::Equal(r, KDL::Rotation::Quaternion(0.845, 0.262, 0.363, 0.293), eps));
+}

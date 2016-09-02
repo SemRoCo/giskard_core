@@ -49,6 +49,7 @@ set(TEST_SRCS
   test/${PROJECT_NAME}/expression_arrays.cpp
   test/${PROJECT_NAME}/frame_expression_generation.cpp
   test/${PROJECT_NAME}/flying_cup.cpp
+  test/${PROJECT_NAME}/pr2_cart_cart.cpp
   test/${PROJECT_NAME}/pr2_fk.cpp
   test/${PROJECT_NAME}/pr2_ik.cpp
   test/${PROJECT_NAME}/qp_controller.cpp
@@ -56,8 +57,10 @@ set(TEST_SRCS
   test/${PROJECT_NAME}/rotation_control.cpp
   test/${PROJECT_NAME}/rotation_expression_generation.cpp
   test/${PROJECT_NAME}/scope.cpp
+  test/${PROJECT_NAME}/slerp.cpp
   test/${PROJECT_NAME}/vector_expression_generation.cpp
-  test/${PROJECT_NAME}/yaml_parser.cpp)
+  test/${PROJECT_NAME}/yaml_parser.cpp
+  )
 
 catkin_add_gtest(${PROJECT_NAME}-test ${TEST_SRCS}
   WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/test_data)

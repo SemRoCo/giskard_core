@@ -890,6 +890,36 @@ namespace YAML {
     }
   };
 
+  inline bool is_vector_rotation_multiplication(const Node& node)
+  {
+    return node.IsMap() && (node.size() == 1) && node["rotate-vector"] &&
+        node["rotate-vector"].IsSequence() && (node["rotate-vector"].size() == 2);
+  }
+
+  template<>
+  struct convert<giskard::VectorRotationMultiplicationSpecPtr> 
+  {
+    static Node encode(const giskard::VectorRotationMultiplicationSpecPtr& rhs) 
+    {
+      Node node;
+      node["rotate-vector"][0] = rhs->get_rotation();
+      node["rotate-vector"][1] = rhs->get_vector();
+      return node;
+    }
+  
+    static bool decode(const Node& node, giskard::VectorRotationMultiplicationSpecPtr& rhs) 
+    {
+      if(!is_vector_rotation_multiplication(node))
+        return false;
+
+      rhs = giskard::VectorRotationMultiplicationSpecPtr(new giskard::VectorRotationMultiplicationSpec()); 
+      rhs->set_rotation(node["rotate-vector"][0].as< giskard::RotationSpecPtr >());
+      rhs->set_vector(node["rotate-vector"][1].as< giskard::VectorSpecPtr >());
+
+      return true;
+    }
+  };
+
   inline bool is_vector_frame_multiplication(const Node& node)
   {
     return node.IsMap() && (node.size() == 1) && node["transform-vector"] &&
@@ -999,6 +1029,8 @@ namespace YAML {
         node = boost::dynamic_pointer_cast<giskard::VectorSubtractionSpec>(rhs);
       else if(boost::dynamic_pointer_cast<giskard::VectorFrameMultiplicationSpec>(rhs).get())
         node = boost::dynamic_pointer_cast<giskard::VectorFrameMultiplicationSpec>(rhs);
+      else if(boost::dynamic_pointer_cast<giskard::VectorRotationMultiplicationSpec>(rhs).get())
+        node = boost::dynamic_pointer_cast<giskard::VectorRotationMultiplicationSpec>(rhs);
       else if(boost::dynamic_pointer_cast<giskard::VectorDoubleMultiplicationSpec>(rhs).get())
         node = boost::dynamic_pointer_cast<giskard::VectorDoubleMultiplicationSpec>(rhs);
       else if(boost::dynamic_pointer_cast<giskard::VectorRotationVectorSpec>(rhs).get())
@@ -1042,6 +1074,11 @@ namespace YAML {
       else if(is_vector_frame_multiplication(node))
       {
         rhs = node.as<giskard::VectorFrameMultiplicationSpecPtr>();
+        return true;
+      }
+      else if(is_vector_rotation_multiplication(node))
+      {
+        rhs = node.as<giskard::VectorRotationMultiplicationSpecPtr>();
         return true;
       }
       else if(is_vector_double_multiplication(node))
@@ -1093,6 +1130,38 @@ namespace YAML {
       rhs->set_y(node["quaternion"][1].as<double>());
       rhs->set_z(node["quaternion"][2].as<double>());
       rhs->set_w(node["quaternion"][3].as<double>());
+
+      return true;
+    }
+  };
+
+  inline bool is_slerp(const Node& node)
+  {
+    return node.IsMap() && (node.size() == 1) && node["slerp"] &&
+        node["slerp"].IsSequence() && (node["slerp"].size() == 3);
+  }
+
+  template<>
+  struct convert<giskard::SlerpSpecPtr> 
+  {
+    static Node encode(const giskard::SlerpSpecPtr& rhs) 
+    {
+      Node node;
+      node["slerp"][0] = rhs->get_from();
+      node["slerp"][1] = rhs->get_to();
+      node["slerp"][2] = rhs->get_param();
+      return node;
+    }
+  
+    static bool decode(const Node& node, giskard::SlerpSpecPtr& rhs) 
+    {
+      if(!is_slerp(node))
+        return false;
+
+      rhs = giskard::SlerpSpecPtr(new giskard::SlerpSpec()); 
+      rhs->set_from(node["slerp"][0].as<giskard::RotationSpecPtr>());
+      rhs->set_to(node["slerp"][1].as<giskard::RotationSpecPtr>());
+      rhs->set_param(node["slerp"][2].as<giskard::DoubleSpecPtr>());
 
       return true;
     }
@@ -1270,6 +1339,8 @@ namespace YAML {
         node = boost::dynamic_pointer_cast<giskard::InverseRotationSpec>(rhs);
       else if(boost::dynamic_pointer_cast<giskard::RotationMultiplicationSpec>(rhs).get())
         node = boost::dynamic_pointer_cast<giskard::RotationMultiplicationSpec>(rhs);
+      else if(boost::dynamic_pointer_cast<giskard::SlerpSpec>(rhs).get())
+        node = boost::dynamic_pointer_cast<giskard::SlerpSpec>(rhs);
 
       return node;
     }
@@ -1279,6 +1350,11 @@ namespace YAML {
       if(is_axis_angle(node))
       {
         rhs = node.as<giskard::AxisAngleSpecPtr>();
+        return true;
+      } 
+      else if(is_slerp(node))
+      {
+        rhs = node.as<giskard::SlerpSpecPtr>();
         return true;
       } 
       else if(is_quaternion_constructor(node))
@@ -1505,14 +1581,15 @@ namespace YAML {
         is_vector_origin_of(node) || is_vector_addition(node) ||
         is_vector_subtraction(node) ||
         is_vector_frame_multiplication(node) || is_vector_double_multiplication(node) ||
-        is_vector_rotation_vector(node);
+        is_vector_rotation_vector(node) || is_vector_rotation_multiplication(node);
   }
 
   inline bool is_rotation_spec(const Node& node)
   {
     return is_quaternion_constructor(node) || is_axis_angle(node) || 
       is_rotation_reference(node) || is_orientation_of(node) ||
-      is_inverse_rotation(node) || is_rotation_multiplication(node);
+      is_inverse_rotation(node) || is_rotation_multiplication(node) ||
+      is_slerp(node);
   }
 
   inline bool is_frame_spec(const Node& node)

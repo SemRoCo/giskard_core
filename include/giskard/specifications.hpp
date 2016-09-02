@@ -1356,6 +1356,62 @@ namespace giskard
 
   typedef typename boost::shared_ptr<VectorFrameMultiplicationSpec> VectorFrameMultiplicationSpecPtr;
 
+  class VectorRotationMultiplicationSpec: public VectorSpec
+  {
+    public:
+      const VectorSpecPtr& get_vector() const
+      {
+        return vector_;
+      }
+
+      const RotationSpecPtr& get_rotation() const
+      {
+        return rotation_;
+      }
+
+      void set_vector(const VectorSpecPtr& vector)
+      {
+        vector_ = vector;
+      }
+
+      void set_rotation(const RotationSpecPtr& rotation)
+      {
+        rotation_ = rotation;
+      }
+
+      virtual bool equals(const Spec& other) const
+      {
+        if(!dynamic_cast<const VectorRotationMultiplicationSpec*>(&other))
+          return false;
+
+        const VectorRotationMultiplicationSpec* other_p = dynamic_cast<const VectorRotationMultiplicationSpec*>(&other);
+
+        return get_rotation().get() && get_vector().get() && 
+            get_rotation()->equals(*(other_p->get_rotation())) &&
+            get_vector()->equals(*(other_p->get_vector()));
+      }
+
+      virtual std::string to_string() const
+      {
+        // todo: implement me
+        return "";
+      }
+
+      virtual KDL::Expression<KDL::Vector>::Ptr get_expression(const giskard::Scope& scope)
+      {
+        using KDL::operator*;
+
+        return get_rotation()->get_expression(scope) * get_vector()->get_expression(scope);
+      }
+
+    private:
+      VectorSpecPtr vector_;
+      RotationSpecPtr rotation_;
+  };
+
+  typedef typename boost::shared_ptr<VectorRotationMultiplicationSpec> VectorRotationMultiplicationSpecPtr;
+
+
   class VectorDoubleMultiplicationSpec: public VectorSpec
   {
     public:
@@ -1601,6 +1657,80 @@ namespace giskard
   };
 
   typedef typename boost::shared_ptr<AxisAngleSpec> AxisAngleSpecPtr;
+
+  class SlerpSpec: public RotationSpec
+  {
+    public:
+      const RotationSpecPtr& get_from() const
+      {
+        return from_;
+      }
+
+      void set_from(const RotationSpecPtr& from)
+      {
+        from_ = from;
+      }
+
+      const RotationSpecPtr& get_to() const
+      {
+        return to_;
+      }
+
+      void set_to(const RotationSpecPtr& to)
+      {
+        to_ = to;
+      }
+
+      const DoubleSpecPtr& get_param() const
+      {
+        return param_;
+      }
+
+      void set_param(const DoubleSpecPtr& param)
+      {
+        param_ = param;
+      }
+
+      bool members_valid() const
+      {
+        return get_from().get() && get_to().get() && get_param().get();
+      }
+
+      virtual bool equals(const Spec& other) const
+      {
+        if(!dynamic_cast<const SlerpSpec*>(&other))
+          return false;
+
+        const SlerpSpec* other_p = dynamic_cast<const SlerpSpec*>(&other);
+
+        if(!members_valid() || !other_p->members_valid())
+          return false;
+
+        return (get_from()->equals(*(other_p->get_from()))) && 
+               (get_to()->equals(*( other_p->get_to()))) &&
+               (get_param()->equals(*( other_p->get_param())));
+      }
+
+      virtual std::string to_string() const
+      {
+        return "TODO: implement slerp printing.";
+      }
+
+      virtual KDL::Expression<KDL::Rotation>::Ptr get_expression(const giskard::Scope& scope)
+      {
+        // NOTE: This type of expression not part of the original KDL::expressiongraph
+        //       library. It is actually part of giskard.
+        return KDL::slerp(get_from()->get_expression(scope),
+            get_to()->get_expression(scope), 
+            get_param()->get_expression(scope));
+      }
+
+    private:
+      RotationSpecPtr from_, to_;
+      DoubleSpecPtr param_;
+  };
+
+  typedef typename boost::shared_ptr<SlerpSpec> SlerpSpecPtr;
 
   class RotationReferenceSpec : public RotationSpec
   {

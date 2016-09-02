@@ -65,3 +65,7 @@
       - l_forearm_roll 
       - l_wrist_flex 
       - l_wrist_roll 
+
+# x-row of rotation
+- pr2_rot_x:
+    x-coord: {rot-vector: {orientation-of: pr2_fk}}

@@ -172,6 +172,12 @@ namespace giskard
 
       size_t num_observables() const
       {
+        // FIXME: calculate this based on the contents of the scope!
+        //        For certain cases this is too conservative, i.e.
+        //        some inputs are defined but only used to calculate
+        //        expressions in the scope which are reported as feedback.
+        //        Strictly speaking, that is not an input to the controller.
+        //        Still, I had intermediate use-cases for this.
         size_t result = 0;
         result = std::max(controllable_lower_bounds_.num_inputs(), result);
         result = std::max(controllable_upper_bounds_.num_inputs(), result);
