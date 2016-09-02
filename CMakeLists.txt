@@ -49,6 +49,7 @@ set(TEST_SRCS
   test/${PROJECT_NAME}/expression_arrays.cpp
   test/${PROJECT_NAME}/frame_expression_generation.cpp
   test/${PROJECT_NAME}/flying_cup.cpp
+  test/${PROJECT_NAME}/pr2_cart_cart.cpp
   test/${PROJECT_NAME}/pr2_fk.cpp
   test/${PROJECT_NAME}/pr2_ik.cpp
   test/${PROJECT_NAME}/qp_controller.cpp
