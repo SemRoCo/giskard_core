@@ -27,7 +27,6 @@
 #include <boost/lexical_cast.hpp>
 #include <giskard/expressiontree.hpp>
 #include <giskard/scope.hpp>
-#include <giskard/slerp.hpp>
 
 namespace giskard
 {
@@ -1663,14 +1662,11 @@ namespace giskard
 
       virtual KDL::Expression<KDL::Rotation>::Ptr get_expression(const giskard::Scope& scope)
       {
-        // note: This type of rotation expressions is not part of KDL::expressiongraph.
-        //       So, no support for derivatives or dynamic evaluation of inputs. Sorry.
-        double param = get_param()->get_expression(scope)->value();
-        KDL::Rotation from = get_from()->get_expression(scope)->value();
-        KDL::Rotation to = get_to()->get_expression(scope)->value();
-        KDL::Rotation result = giskard::slerp(from, to , param);
-
-        return KDL::Constant(result);
+        // NOTE: This type of expression not part of the original KDL::expressiongraph
+        //       library. It is actually part of giskard.
+        return KDL::slerp(get_from()->get_expression(scope),
+            get_to()->get_expression(scope), 
+            get_param()->get_expression(scope));
       }
 
     private:

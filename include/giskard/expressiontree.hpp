@@ -23,5 +23,6 @@
 
 #include <kdl/expressiontree.hpp>
 #include <giskard/expression_arrays.hpp>
+#include <giskard/slerp.hpp>
 
 #endif // GISKARD_EXPRESSIONTREE_HPP

@@ -58,7 +58,8 @@ set(TEST_SRCS
   test/${PROJECT_NAME}/scope.cpp
   test/${PROJECT_NAME}/slerp.cpp
   test/${PROJECT_NAME}/vector_expression_generation.cpp
-  test/${PROJECT_NAME}/yaml_parser.cpp)
+  test/${PROJECT_NAME}/yaml_parser.cpp
+  )
 
 catkin_add_gtest(${PROJECT_NAME}-test ${TEST_SRCS}
   WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/test_data)
