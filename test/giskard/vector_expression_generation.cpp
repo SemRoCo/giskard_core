@@ -289,3 +289,22 @@ TEST_F(VectorExpressionGenerationTest, RotationVector)
   test_rot_vector("{rot-vector: {quaternion: [0.0, 0.0, -0.382683, 0.92388]}}",
       KDL::Vector(0, 0, -M_PI/4));
 }
+
+TEST_F(VectorExpressionGenerationTest, VectorRotationMultiplication)
+{
+  std::string v = "{vector3: [0.1, -1.2, 0.03]}";
+  std::string r = "{quaternion: [0.348, -0.52, 0.616, -0.479]}";
+  std::string s = "{rotate-vector: [" + r + ", " + v + "]}";
+
+  YAML::Node node = YAML::Load(s);
+  ASSERT_NO_THROW(node.as<giskard::VectorSpecPtr>());
+  giskard::VectorSpecPtr spec = node.as<giskard::VectorSpecPtr>();
+  
+  ASSERT_NO_THROW(spec->get_expression(giskard::Scope()));
+  KDL::Expression<KDL::Vector>::Ptr exp = spec->get_expression(giskard::Scope());
+  
+  ASSERT_TRUE(exp.get());
+  using namespace KDL;
+  Vector result = Rotation::Quaternion(0.348, -0.52, 0.616, -0.479) * Vector(0.1, -1.2, 0.03);
+  EXPECT_TRUE(Equal(exp->value(), result));
+}

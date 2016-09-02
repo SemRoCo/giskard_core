@@ -1356,6 +1356,62 @@ namespace giskard
 
   typedef typename boost::shared_ptr<VectorFrameMultiplicationSpec> VectorFrameMultiplicationSpecPtr;
 
+  class VectorRotationMultiplicationSpec: public VectorSpec
+  {
+    public:
+      const VectorSpecPtr& get_vector() const
+      {
+        return vector_;
+      }
+
+      const RotationSpecPtr& get_rotation() const
+      {
+        return rotation_;
+      }
+
+      void set_vector(const VectorSpecPtr& vector)
+      {
+        vector_ = vector;
+      }
+
+      void set_rotation(const RotationSpecPtr& rotation)
+      {
+        rotation_ = rotation;
+      }
+
+      virtual bool equals(const Spec& other) const
+      {
+        if(!dynamic_cast<const VectorRotationMultiplicationSpec*>(&other))
+          return false;
+
+        const VectorRotationMultiplicationSpec* other_p = dynamic_cast<const VectorRotationMultiplicationSpec*>(&other);
+
+        return get_rotation().get() && get_vector().get() && 
+            get_rotation()->equals(*(other_p->get_rotation())) &&
+            get_vector()->equals(*(other_p->get_vector()));
+      }
+
+      virtual std::string to_string() const
+      {
+        // todo: implement me
+        return "";
+      }
+
+      virtual KDL::Expression<KDL::Vector>::Ptr get_expression(const giskard::Scope& scope)
+      {
+        using KDL::operator*;
+
+        return get_rotation()->get_expression(scope) * get_vector()->get_expression(scope);
+      }
+
+    private:
+      VectorSpecPtr vector_;
+      RotationSpecPtr rotation_;
+  };
+
+  typedef typename boost::shared_ptr<VectorRotationMultiplicationSpec> VectorRotationMultiplicationSpecPtr;
+
+
   class VectorDoubleMultiplicationSpec: public VectorSpec
   {
     public:
