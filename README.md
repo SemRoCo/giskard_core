@@ -1,4 +1,4 @@
-# giskard
+# giskard [![Build Status](https://travis-ci.org/SemRoCo/giskard.svg?branch=master)](https://travis-ci.org/SemRoCo/giskard)
 A library and some ROS nodes for robot motion control.
 
 ## Installation
