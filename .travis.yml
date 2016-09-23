@@ -67,8 +67,9 @@ before_install:
   - sudo sh -c "echo \"deb http://packages.ros.org/ros/ubuntu $ROS_CI_DESKTOP main\" > /etc/apt/sources.list.d/ros-latest.list"
   - wget http://packages.ros.org/ros.key -O - | sudo apt-key add -
   - sudo apt-get update -qq
-  - sudo apt-get install -y python-catkin-pkg python-rosdep python-wstool ros-$ROS_DISTRO-catkin
+  - sudo apt-get install -y python-catkin-pkg python-rosdep python-wstool ros-$ROS_DISTRO-catkin lcov
   - source /opt/ros/$ROS_DISTRO/setup.bash
+  - gem install coveralls-lcov
   # Prepare rosdep to install dependencies.
   - sudo rosdep init
   - rosdep update
@@ -115,4 +116,8 @@ script:
   # Run the tests, ensuring the path is set correctly.
   - source devel/setup.bash
     #  - catkin_make run_tests && catkin_make test
-  - catkin_make run_tests_giskard
+  - catkin_make run_tests_giskard && catkin_make test
+
+after_success:
+  - lcov --compat-libtool --directory . --capture --output-file coverage.info
+  - coveralls-lcov --repo-token ${COVERALLS_REPO_TOKEN} coverage.info

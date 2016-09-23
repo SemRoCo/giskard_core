@@ -3,10 +3,8 @@ project(giskard)
 
 find_package(catkin REQUIRED COMPONENTS expressiongraph qpoases kdl_parser)
 
-## System dependencies are found with CMake's conventions
-#find_package(Boost REQUIRED COMPONENTS system)
-
-#catkin_package(DEPENDS Boost)
+# setting additional cmake flags, used for integration with Coveralls.io
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${MY_CMAKE_CXX_FLAGS}")
 
 ## Finding system dependencies which come without cmake
 find_package(PkgConfig)
