@@ -120,4 +120,6 @@ script:
 
 after_success:
   - lcov --compat-libtool --directory . --capture --output-file coverage.info
+  - lcov --remove coverage.info '/usr/*' --output-file coverage.info # filter out unrelated code
+  - lcov --list coverage.info # debug before upload
   - coveralls-lcov --repo-token ${COVERALLS_REPO_TOKEN} coverage.info
