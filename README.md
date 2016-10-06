@@ -1,4 +1,7 @@
-# giskard [![Build Status](https://travis-ci.org/SemRoCo/giskard.svg?branch=master)](https://travis-ci.org/SemRoCo/giskard)
+# giskard 
+[![Build Status](https://travis-ci.org/SemRoCo/giskard.svg?branch=master)](https://travis-ci.org/SemRoCo/giskard)
+[![Coverage Status](https://coveralls.io/repos/github/SemRoCo/giskard/badge.svg?branch=master)](https://coveralls.io/github/SemRoCo/giskard?branch=master)
+
 A library and some ROS nodes for robot motion control.
 
 ## Installation
