@@ -38,9 +38,6 @@ namespace giskard
   { 
     public:
       virtual bool equals(const Spec& other) const = 0;
-
-      // TODO: extend this with a parameter for indention
-      virtual std::string to_string() const = 0;
   };
 
   inline bool operator==(const Spec& lhs, const Spec& rhs)
@@ -51,12 +48,6 @@ namespace giskard
   inline bool operator!=(const Spec& lhs, const Spec& rhs)
   {
     return !operator==(lhs,rhs);
-  }
-
-  inline std::ostream& operator<<(std::ostream& os, const Spec& spec)
-  {
-    os << spec.to_string();
-    return os;
   }
 
   typedef typename boost::shared_ptr<Spec> SpecPtr;
@@ -70,8 +61,6 @@ namespace giskard
     public:
       virtual bool equals(const Spec& other) const = 0;
 
-      virtual std::string to_string() const = 0;
-
       virtual KDL::Expression<double>::Ptr get_expression(const giskard::Scope& scope) = 0;
   };
 
@@ -81,8 +70,6 @@ namespace giskard
   {
     public:
       virtual bool equals(const Spec& other) const = 0;
-
-      virtual std::string to_string() const = 0;
 
       virtual KDL::Expression<KDL::Vector>::Ptr get_expression(const giskard::Scope& scope) = 0;
   };
@@ -94,8 +81,6 @@ namespace giskard
     public:
       virtual bool equals(const Spec& other) const = 0;
 
-      virtual std::string to_string() const = 0;
-
       virtual KDL::Expression<KDL::Rotation>::Ptr get_expression(const giskard::Scope& scope) = 0;
   };
 
@@ -105,8 +90,6 @@ namespace giskard
   {
     public:
       virtual bool equals(const Spec& other) const = 0;
-
-      virtual std::string to_string() const = 0;
 
       virtual KDL::Expression<KDL::Frame>::Ptr get_expression(const giskard::Scope& scope) = 0;
   };
@@ -142,11 +125,6 @@ namespace giskard
 
         return KDL::epsilon >
             std::abs(dynamic_cast<const DoubleConstSpec*>(&other)->get_value() - this->get_value());
-      }
-
-      virtual std::string to_string() const
-      {
-        return boost::lexical_cast<std::string>(get_value());
       }
 
       virtual KDL::Expression<double>::Ptr get_expression(const giskard::Scope& scope)
@@ -186,11 +164,6 @@ namespace giskard
         return dynamic_cast<const DoubleInputSpec*>(&other)->get_input_num() == this->get_input_num();
       }
 
-      virtual std::string to_string() const
-      {
-        return "todo: implement me";
-      }
-
       virtual KDL::Expression<double>::Ptr get_expression(const giskard::Scope& scope)
       {
         return KDL::input(get_input_num());
@@ -221,11 +194,6 @@ namespace giskard
           return false;
 
         return (dynamic_cast<const DoubleReferenceSpec*>(&other)->get_reference_name().compare(this->get_reference_name()) == 0);
-      }
-
-      virtual std::string to_string() const
-      {
-        return "todo: implement me";
       }
 
       virtual KDL::Expression<double>::Ptr get_expression(const giskard::Scope& scope)
@@ -279,11 +247,6 @@ namespace giskard
             return false;
 
         return true;
-      }
-
-      virtual std::string to_string() const
-      {
-        return "todo: implement me";
       }
 
       virtual KDL::Expression<double>::Ptr get_expression(const giskard::Scope& scope)
@@ -344,12 +307,6 @@ namespace giskard
         return true;
       }
 
-      virtual std::string to_string() const
-      {
-        // todo: implement me
-        return "";
-      }
-
       virtual KDL::Expression<double>::Ptr get_expression(const giskard::Scope& scope)
       {
         if(get_inputs().size() == 0)
@@ -398,11 +355,6 @@ namespace giskard
           return false;
 
         return dynamic_cast<const DoubleNormOfSpec*>(&other)->get_vector()->equals(*(this->get_vector()));
-      }
-
-      virtual std::string to_string() const
-      {
-        return "todo: implement me";
       }
 
       virtual KDL::Expression<double>::Ptr get_expression(const giskard::Scope& scope)
@@ -456,12 +408,6 @@ namespace giskard
             return false;
 
         return true;
-      }
-
-      virtual std::string to_string() const
-      {
-        // todo: implement me
-        return "";
       }
 
       virtual KDL::Expression<double>::Ptr get_expression(const giskard::Scope& scope)
@@ -523,12 +469,6 @@ namespace giskard
         return true;
       }
 
-      virtual std::string to_string() const
-      {
-        // todo: implement me
-        return "";
-      }
-
       virtual KDL::Expression<double>::Ptr get_expression(const giskard::Scope& scope)
       {
         if(get_inputs().size() == 0)
@@ -579,11 +519,6 @@ namespace giskard
         return dynamic_cast<const DoubleXCoordOfSpec*>(&other)->get_vector()->equals(*(this->get_vector()));
       }
 
-      virtual std::string to_string() const
-      {
-        return "todo: implement me";
-      }
-
       virtual KDL::Expression<double>::Ptr get_expression(const giskard::Scope& scope)
       {
         return KDL::coord_x(get_vector()->get_expression(scope));
@@ -616,11 +551,6 @@ namespace giskard
         return dynamic_cast<const DoubleYCoordOfSpec*>(&other)->get_vector()->equals(*(this->get_vector()));
       }
 
-      virtual std::string to_string() const
-      {
-        return "todo: implement me";
-      }
-
       virtual KDL::Expression<double>::Ptr get_expression(const giskard::Scope& scope)
       {
         return KDL::coord_y(get_vector()->get_expression(scope));
@@ -651,11 +581,6 @@ namespace giskard
           return false;
 
         return dynamic_cast<const DoubleZCoordOfSpec*>(&other)->get_vector()->equals(*(this->get_vector()));
-      }
-
-      virtual std::string to_string() const
-      {
-        return "todo: implement me";
       }
 
       virtual KDL::Expression<double>::Ptr get_expression(const giskard::Scope& scope)
@@ -705,12 +630,6 @@ namespace giskard
             get_rhs()->equals(*(other_p->get_rhs()));
       }
 
-      virtual std::string to_string() const
-      {
-        // todo: implement me
-        return "";
-      }
-
       virtual KDL::Expression<double>::Ptr get_expression(const giskard::Scope& scope)
       {
         return KDL::dot(get_lhs()->get_expression(scope), get_rhs()->get_expression(scope));
@@ -758,12 +677,6 @@ namespace giskard
             get_rhs()->equals(*(other_p->get_rhs()));
       }
 
-      virtual std::string to_string() const
-      {
-        // todo: implement me
-        return "";
-      }
-
       virtual KDL::Expression<double>::Ptr get_expression(const giskard::Scope& scope)
       {
         return KDL::minimum(get_lhs()->get_expression(scope), get_rhs()->get_expression(scope));
@@ -797,12 +710,6 @@ namespace giskard
 
         return get_value().get() && other_p->get_value().get() &&
             get_value()->equals(*(other_p->get_value()));
-      }
-
-      virtual std::string to_string() const
-      {
-        // todo: implement me
-        return "";
       }
 
       virtual KDL::Expression<double>::Ptr get_expression(const giskard::Scope& scope)
@@ -863,12 +770,6 @@ namespace giskard
             get_else()->equals(*(other_p->get_else()));
       }
 
-      virtual std::string to_string() const
-      {
-        // todo: implement me
-        return "";
-      }
-
       virtual KDL::Expression<double>::Ptr get_expression(const giskard::Scope& scope)
       {
         return KDL::conditional<double>(get_condition()->get_expression(scope), get_if()->get_expression(scope), get_else()->get_expression(scope));
@@ -922,12 +823,6 @@ namespace giskard
                (get_denominator()->equals(*( other_p->get_denominator())));
       }
 
-      virtual std::string to_string() const
-      {
-        // TODO: implement me
-        return "";
-      }
-
       virtual KDL::Expression<double>::Ptr get_expression(const giskard::Scope& scope)
       {
         // note: This expression only expects a TRUE expressions for the nominator.
@@ -970,12 +865,6 @@ namespace giskard
 
         return get_vector().get() && other_p->get_vector().get() &&
             get_vector()->equals(*(other_p->get_vector()));
-      }
-
-      virtual std::string to_string() const
-      {
-        // TODO: implement me
-        return "";
       }
 
       virtual KDL::Expression<KDL::Vector>::Ptr get_expression(const giskard::Scope& scope)
@@ -1057,15 +946,6 @@ namespace giskard
         return get_x().get() && get_y().get() && get_z().get();
       }
 
-      virtual std::string to_string() const
-      {
-        std::string result = "type: VECTOR3(";
-        result += get_x()->to_string() + ", ";
-        result += get_y()->to_string() + ", ";
-        result += get_z()->to_string() + ")";
-        return result;
-      }
-
       virtual KDL::Expression<KDL::Vector>::Ptr get_expression(const giskard::Scope& scope)
       {
         return KDL::vector(get_x()->get_expression(scope), 
@@ -1124,12 +1004,6 @@ namespace giskard
             return false;
 
         return true;
-      }
-
-      virtual std::string to_string() const
-      {
-        // todo: implement me
-        return "";
       }
 
       virtual KDL::Expression<KDL::Vector>::Ptr get_expression(const giskard::Scope& scope)
@@ -1192,12 +1066,6 @@ namespace giskard
         return true;
       }
 
-      virtual std::string to_string() const
-      {
-        // todo: implement me
-        return "";
-      }
-
       virtual KDL::Expression<KDL::Vector>::Ptr get_expression(const giskard::Scope& scope)
       {
         if(get_inputs().size() == 0)
@@ -1248,11 +1116,6 @@ namespace giskard
         return (dynamic_cast<const VectorReferenceSpec*>(&other)->get_reference_name().compare(this->get_reference_name()) == 0);
       }
 
-      virtual std::string to_string() const
-      {
-        return "todo: implement me";
-      }
-
       virtual KDL::Expression<KDL::Vector>::Ptr get_expression(const giskard::Scope& scope)
       {
         return scope.find_vector_expression(get_reference_name());
@@ -1283,11 +1146,6 @@ namespace giskard
           return false;
 
         return dynamic_cast<const VectorOriginOfSpec*>(&other)->get_frame()->equals(*(this->get_frame()));
-      }
-
-      virtual std::string to_string() const
-      {
-        return "todo: implement me";
       }
 
       virtual KDL::Expression<KDL::Vector>::Ptr get_expression(const giskard::Scope& scope)
@@ -1334,12 +1192,6 @@ namespace giskard
         return get_frame().get() && get_vector().get() && 
             get_frame()->equals(*(other_p->get_frame())) &&
             get_vector()->equals(*(other_p->get_vector()));
-      }
-
-      virtual std::string to_string() const
-      {
-        // todo: implement me
-        return "";
       }
 
       virtual KDL::Expression<KDL::Vector>::Ptr get_expression(const giskard::Scope& scope)
@@ -1389,12 +1241,6 @@ namespace giskard
         return get_rotation().get() && get_vector().get() && 
             get_rotation()->equals(*(other_p->get_rotation())) &&
             get_vector()->equals(*(other_p->get_vector()));
-      }
-
-      virtual std::string to_string() const
-      {
-        // todo: implement me
-        return "";
       }
 
       virtual KDL::Expression<KDL::Vector>::Ptr get_expression(const giskard::Scope& scope)
@@ -1448,12 +1294,6 @@ namespace giskard
             get_vector()->equals(*(other_p->get_vector()));
       }
 
-      virtual std::string to_string() const
-      {
-        // todo: implement me
-        return "";
-      }
-
       virtual KDL::Expression<KDL::Vector>::Ptr get_expression(const giskard::Scope& scope)
       {
         using KDL::operator*;
@@ -1487,11 +1327,6 @@ namespace giskard
           return false;
 
         return dynamic_cast<const VectorRotationVectorSpec*>(&other)->get_rotation()->equals(*(this->get_rotation()));
-      }
-
-      virtual std::string to_string() const
-      {
-        return "todo: implement me";
       }
 
       virtual KDL::Expression<KDL::Vector>::Ptr get_expression(const giskard::Scope& scope)
@@ -1569,12 +1404,6 @@ namespace giskard
             (KDL::epsilon > std::abs(dynamic_cast<const RotationQuaternionConstructorSpec*>(&other)->get_y() - this->get_y())) && (KDL::epsilon > std::abs(dynamic_cast<const RotationQuaternionConstructorSpec*>(&other)->get_z() - this->get_z())) && (KDL::epsilon > std::abs(dynamic_cast<const RotationQuaternionConstructorSpec*>(&other)->get_w() - this->get_w()));
       }
 
-      virtual std::string to_string() const
-      {
-        // TODO: implement me
-        return "";
-      }
-
       virtual KDL::Expression<KDL::Rotation>::Ptr get_expression(const giskard::Scope& scope)
       {
         return KDL::Constant(KDL::Rotation::Quaternion(get_x(), get_y(), get_z(), get_w()));
@@ -1631,14 +1460,6 @@ namespace giskard
 
         return (get_angle()->equals(*(other_p->get_angle()))) && 
                (get_axis()->equals(*( other_p->get_axis())));
-      }
-
-      virtual std::string to_string() const
-      {
-        std::string result = "type: ROTATION\naxis:\n";
-        result += get_axis()->to_string() + "\nangle:\n";
-        result += get_angle()->to_string();
-        return result;
       }
 
       virtual KDL::Expression<KDL::Rotation>::Ptr get_expression(const giskard::Scope& scope)
@@ -1711,11 +1532,6 @@ namespace giskard
                (get_param()->equals(*( other_p->get_param())));
       }
 
-      virtual std::string to_string() const
-      {
-        return "TODO: implement slerp printing.";
-      }
-
       virtual KDL::Expression<KDL::Rotation>::Ptr get_expression(const giskard::Scope& scope)
       {
         // NOTE: This type of expression not part of the original KDL::expressiongraph
@@ -1751,11 +1567,6 @@ namespace giskard
           return false;
 
         return (dynamic_cast<const RotationReferenceSpec*>(&other)->get_reference_name().compare(this->get_reference_name()) == 0);
-      }
-
-      virtual std::string to_string() const
-      {
-        return "todo: implement me";
       }
 
       virtual KDL::Expression<KDL::Rotation>::Ptr get_expression(const giskard::Scope& scope)
@@ -1796,11 +1607,6 @@ namespace giskard
           return false;
 
         return dynamic_cast<const InverseRotationSpec*>(&other)->get_rotation()->equals(*(this->get_rotation()));
-      }
-
-      virtual std::string to_string() const
-      {
-        return "todo: implement me";
       }
 
       virtual KDL::Expression<KDL::Rotation>::Ptr get_expression(const giskard::Scope& scope)
@@ -1870,11 +1676,6 @@ namespace giskard
         return true;
       }
 
-      virtual std::string to_string() const
-      {
-        return "todo: implement me";
-      }
-
       virtual KDL::Expression<KDL::Rotation>::Ptr get_expression(const giskard::Scope& scope)
       {
         KDL::Expression<KDL::Rotation>::Ptr result = KDL::Constant(KDL::Rotation::Identity());
@@ -1923,12 +1724,6 @@ namespace giskard
 
         return get_frame().get() && other_p->get_frame().get() &&
             get_frame()->equals(*(other_p->get_frame()));
-      }
-
-      virtual std::string to_string() const
-      {
-        // TODO: implement me
-        return "";
       }
 
       virtual KDL::Expression<KDL::Frame>::Ptr get_expression(const giskard::Scope& scope)
@@ -1992,14 +1787,6 @@ namespace giskard
         return get_translation().get() && get_rotation().get();
       }
 
-      virtual std::string to_string() const
-      {
-        std::string result = "type: FRAME\ntranslation:\n";
-        result += get_translation()->to_string() + "\nrotation:\n";
-        result += get_rotation()->to_string();
-        return result;
-      }
-
       virtual KDL::Expression<KDL::Frame>::Ptr get_expression(const giskard::Scope& scope)
       {
         KDL::Expression<KDL::Rotation>::Ptr rot = get_rotation()->get_expression(scope);
@@ -2048,11 +1835,6 @@ namespace giskard
           return false;
 
         return dynamic_cast<const OrientationOfSpec*>(&other)->get_frame()->equals(*(this->get_frame()));
-      }
-
-      virtual std::string to_string() const
-      {
-        return "todo: implement me";
       }
 
       virtual KDL::Expression<KDL::Rotation>::Ptr get_expression(const giskard::Scope& scope)
@@ -2113,15 +1895,6 @@ namespace giskard
         return true;
       }
 
-      virtual std::string to_string() const
-      {
-        std::string result = "type: FRAME-MULTIPLICATION\ninputs:[";
-        for(size_t i=0; i<get_inputs().size(); ++i)
-          result += "\n" + get_inputs()[i]->to_string();
-        result += "]";
-        return result;
-      }
-
       virtual KDL::Expression<KDL::Frame>::Ptr get_expression(const giskard::Scope& scope)
       {
         KDL::Expression<KDL::Frame>::Ptr result = KDL::Constant(KDL::Frame::Identity());
@@ -2158,11 +1931,6 @@ namespace giskard
           return false;
 
         return (dynamic_cast<const FrameReferenceSpec*>(&other)->get_reference_name().compare(this->get_reference_name()) == 0);
-      }
-
-      virtual std::string to_string() const
-      {
-        return "todo: implement me";
       }
 
       virtual KDL::Expression<KDL::Frame>::Ptr get_expression(const giskard::Scope& scope)

@@ -50,7 +50,7 @@ namespace giskard
         scope.add_rotation_expression(name,
             boost::dynamic_pointer_cast<giskard::RotationSpec>(spec)->get_expression(scope));
       else
-        throw std::domain_error("Scope generation: found entry of non-supported type. " + spec->to_string());
+        throw std::domain_error("Scope generation: found entry of non-supported type.");
     }
 
     return scope;
