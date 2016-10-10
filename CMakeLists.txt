@@ -9,8 +9,8 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${MY_CMAKE_CXX_FLAGS}")
 ## Finding system dependencies which come without cmake
 find_package(PkgConfig)
 pkg_check_modules(YamlCpp yaml-cpp)
-find_path(YAML_CPP_INCLUDE_DIRS yaml-cpp/yaml.h PATH_SUFFIXES include)
-find_library(YAML_CPP_LIBRARIES NAMES yaml-cpp)
+find_path(yaml_cpp_INCLUDE_DIRS yaml-cpp/yaml.h PATH_SUFFIXES include)
+find_library(yaml_cpp_LIBRARIES NAMES yaml-cpp)
 
 catkin_package(
   INCLUDE_DIRS include
@@ -26,7 +26,7 @@ catkin_package(
 include_directories(
   include
   ${catkin_INCLUDE_DIRS}
-  ${YAML_CPP_INCLUDE_DIRS})
+  ${yaml_cpp_INCLUDE_DIRS})
 
 # add_library(${PROJECT_NAME} include/giskard/giskard.hpp)
 # target_link_libraries(${PROJECT_NAME}
@@ -64,5 +64,5 @@ catkin_add_gtest(${PROJECT_NAME}-test ${TEST_SRCS}
   WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/test_data)
 if(TARGET ${PROJECT_NAME}-test)
   target_link_libraries(${PROJECT_NAME}-test
-      ${catkin_LIBRARIES} ${YAML_CPP_LIBRARIES})
+      ${catkin_LIBRARIES} ${yaml_cpp_LIBRARIES})
 endif()
