@@ -84,8 +84,8 @@ class PR2CartCartControlTest : public ::testing::Test
       q.block<6,1>(q_name_list.size(), 0) = to_eigen(l_arm_goal);
       q.block<6,1>(q_name_list.size() + 6, 0) = to_eigen(r_arm_goal);
 
-      using namespace Eigen;
-      std::cout << q << std::endl;
+//      using namespace Eigen;
+//      std::cout << q << std::endl;
       nWSR = 1000;
     }
 
@@ -126,23 +126,24 @@ TEST_F(PR2CartCartControlTest, SlerpControl)
 
   ASSERT_NO_THROW(controller.start(q, nWSR));
 
-  std::vector<std::string> doubles, rotations, vectors;
-  doubles.push_back("l_rot_scaling");
-  doubles.push_back("l_rot_error");
+//  std::vector<std::string> doubles, rotations, vectors;
+//  doubles.push_back("l_rot_scaling");
+//  doubles.push_back("l_rot_error");
+//
+//  rotations.push_back("l_rot");
+//  rotations.push_back("l_intermediate_goal_rot");
+//  rotations.push_back("l_goal_rot");
+//
+//  vectors.push_back("l_rot_control2");
+//
+//  for (size_t i=0; i<doubles.size(); ++i)
+//    print_double(controller, doubles[i]);
+//  std::cout << "a\n";
+//  for (size_t i=0; i<rotations.size(); ++i)
+//    print_rotation(controller, rotations[i]);
+//  for (size_t i=0; i<vectors.size(); ++i)
+//    print_vector(controller, vectors[i]);
+//  std::cout << "a\n";
 
-  rotations.push_back("l_rot");
-  rotations.push_back("l_intermediate_goal_rot");
-  rotations.push_back("l_goal_rot");
-
-  vectors.push_back("l_rot_control2");
-
-  for (size_t i=0; i<doubles.size(); ++i)
-    print_double(controller, doubles[i]);
-  std::cout << "a\n";
-  for (size_t i=0; i<rotations.size(); ++i)
-    print_rotation(controller, rotations[i]);
-  for (size_t i=0; i<vectors.size(); ++i)
-    print_vector(controller, vectors[i]);
-  std::cout << "a\n";
-
+  // TODO: finish test-case
 }

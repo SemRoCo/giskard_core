@@ -59,8 +59,4 @@ TEST_F(SlerpTest, Interpolation)
   EXPECT_TRUE(Equal(giskard::slerp(to, from, 1.0),
         Rotation::Quaternion(0.348000, -0.520000, 0.616000, -0.479000),
         0.001));
-
-//  std::cout << giskard::slerp(from, to, 0.1) << std::endl;
-//  std::cout << Rotation::Quaternion(0.448726, -0.462604, 0.639831, -0.419085) << std::endl;
-
 }
