@@ -1987,6 +1987,7 @@ namespace giskard
   class QPControllerSpec
   {
     public:
+      // TODO: turn this into a map
       std::vector< giskard::ScopeEntry > scope_;
       std::vector< giskard::ControllableConstraintSpec > controllable_constraints_;
       std::vector< giskard::SoftConstraintSpec > soft_constraints_;
