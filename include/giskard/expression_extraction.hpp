@@ -124,9 +124,8 @@ namespace giskard
       {
         KDL::Chain chain;
         if (!robot_tree.getChain(start_link, end_link, chain))
-        {
-          throw InvalidChain(start_link, end_link);
-        }
+          throw std::runtime_error("No transform found from '" + start_link + "' to '" + end_link + "'.");
+
         return extract(chain);
       }
 
@@ -134,9 +133,8 @@ namespace giskard
       {
         urdf::Model urdf;
         if (!urdf.initFile(urdf_path))
-        {
-          throw InvalidUrdf(urdf_path);
-        }
+          throw std::runtime_error("Could not parse urdf: '" + urdf_path + "'.");
+
         KDL::Tree tree;
         kdl_parser::treeFromUrdfModel(urdf, tree);
         return extract(start_link, end_link, tree);
