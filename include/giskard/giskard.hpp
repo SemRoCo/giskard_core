@@ -21,7 +21,6 @@
 #ifndef GISKARD_GISKARD_HPP
 #define GISKARD_GISKARD_HPP
 
-#include <giskard/exceptions.hpp>
 #include <giskard/expression_generation.hpp>
 #include <giskard/expression_extraction.hpp>
 #include <giskard/expressiontree.hpp>

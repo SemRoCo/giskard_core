@@ -41,7 +41,7 @@ int main(int argc, char **argv)
     std::ofstream output_file;
     output_file.open(argv[4]);
     if (!output_file.is_open())
-      throw giskard::WriteError(argv[4]);
+      throw std::runtime_error("Failred to write file '" + std::string(argv[4]) + "'.");
     output_file << out.c_str();
     output_file.close();
   }
