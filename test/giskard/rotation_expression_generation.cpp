@@ -247,3 +247,19 @@ TEST_F(RotationGenerationTest, Slerp)
   r = exp->value();
   EXPECT_TRUE(KDL::Equal(r, KDL::Rotation::Quaternion(0.845, 0.262, 0.363, 0.293), eps));
 }
+
+TEST_F(RotationGenerationTest, ZeroAxisAngle)
+{
+  std::string s = "{axis-angle: [{vector3: [0,0,0]}, 1]}";
+  YAML::Node node = YAML::Load(s);
+
+  ASSERT_NO_THROW(node.as<giskard::RotationSpecPtr>());
+  giskard::RotationSpecPtr spec = node.as<giskard::RotationSpecPtr>();
+
+  ASSERT_NO_THROW(spec->get_expression(giskard::Scope()));  
+  KDL::Expression<KDL::Rotation>::Ptr exp = spec->get_expression(giskard::Scope());
+
+  using namespace KDL;
+  std::cout << exp->value() << std::endl;
+  EXPECT_TRUE(KDL::Equal(KDL::Rotation::Identity(), exp->value()));
+}

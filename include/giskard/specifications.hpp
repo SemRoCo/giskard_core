@@ -1464,12 +1464,9 @@ namespace giskard
 
       virtual KDL::Expression<KDL::Rotation>::Ptr get_expression(const giskard::Scope& scope)
       {
-        // note: this type of rotation expressions only expect expressions for their axis, not
-        //       the angle. while this my make sense, it does break code symmetry.
-        KDL::Expression<double>::Ptr angle = get_angle()->get_expression(scope);
-        KDL::Vector axis = get_axis()->get_expression(scope)->value();
-
-        return KDL::rot(axis, angle);
+        // FIXME: add normalization of rotation axis
+        return KDL::rotVec(get_axis()->get_expression(scope),
+            get_angle()->get_expression(scope));
       }
 
     private:

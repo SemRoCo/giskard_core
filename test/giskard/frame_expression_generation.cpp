@@ -66,7 +66,7 @@ TEST_F(FrameGenerationTest, ConstructorFrame)
   giskard::Scope scope;
 
   KDL::Frame frame1 = spec.get_expression(scope)->value();
-  KDL::Frame frame2 = KDL::Frame(KDL::Rotation::Rot(KDL::Vector(1.0, 2.0, 3.0), -4.0),
+  KDL::Frame frame2 = KDL::Frame(KDL::Rotation::Rot2(KDL::Vector(1.0, 2.0, 3.0), -4.0),
       KDL::Vector(-0.1, -0.2, -0.3));
 
   EXPECT_TRUE(KDL::Equal(frame1, frame2));
