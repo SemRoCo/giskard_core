@@ -1,18 +1,16 @@
 <?xml version="1.0"?>
 <package format="2">
-  <name>giskard</name>
+  <name>giskard_core</name>
   <version>0.1.2</version>
-  <description>The giskard package</description>
+  <description>
+    This package provides the core C++ library of giskard, a constraint and
+    optimization-based framework for robot motion control.
+  </description>
 
   <maintainer email="georg.bartels@cs.uni-bremen.de">Georg Bartels</maintainer>
   <author email="georg.bartels@cs.uni-bremen.de">Georg Bartels</author>
 
   <license>GPLv2</license>
-
-  <!-- Url tags are optional, but mutiple are allowed, one per tag -->
-  <!-- Optional attribute type can be: website, bugtracker, or repository -->
-  <!-- Example: -->
-  <!-- <url type="website">http://wiki.ros.org/giskard</url> -->
 
   <buildtool_depend>catkin</buildtool_depend>
   <depend>yaml-cpp</depend>

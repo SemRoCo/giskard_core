@@ -18,10 +18,11 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-#include <gtest/gtest.h>
+#ifndef GISKARD_CORE_EXPRESSIONTREE_HPP
+#define GISKARD_CORE_EXPRESSIONTREE_HPP
 
-int main(int argc, char **argv)
-{
-  testing::InitGoogleTest(&argc, argv);
-  return RUN_ALL_TESTS();
-}
+#include <kdl/expressiontree.hpp>
+#include <giskard_core/expression_arrays.hpp>
+#include <giskard_core/slerp.hpp>
+
+#endif // GISKARD_CORE_EXPRESSIONTREE_HPP

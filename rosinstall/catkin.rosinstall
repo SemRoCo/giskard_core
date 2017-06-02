@@ -8,5 +8,5 @@
     version: master
 - git: 
     local-name: giskard
-    uri: https://github.com/SemRoCo/giskard.git
+    uri: https://github.com/SemRoCo/giskard_core.git
     version: master
