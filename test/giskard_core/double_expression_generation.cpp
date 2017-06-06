@@ -34,8 +34,8 @@ class DoubleExpressionGenerationTest : public ::testing::Test
 
 TEST_F(DoubleExpressionGenerationTest, Constants)
 {
-  giskard::core::DoubleConstSpec descr;
-  giskard::core::Scope scope;
+  giskard_core::DoubleConstSpec descr;
+  giskard_core::Scope scope;
 
   descr.set_value(1.1);
   EXPECT_DOUBLE_EQ(descr.get_value(), 1.1);
@@ -49,7 +49,7 @@ TEST_F(DoubleExpressionGenerationTest, Constants)
 
 TEST_F(DoubleExpressionGenerationTest, ConstDoubleEquality)
 {
-  giskard::core::DoubleConstSpec d1, d2, d3;
+  giskard_core::DoubleConstSpec d1, d2, d3;
 
   d1.set_value(1.1);
   d2.set_value(2.0);
@@ -74,8 +74,8 @@ TEST_F(DoubleExpressionGenerationTest, ConstDoubleEquality)
 
 TEST_F(DoubleExpressionGenerationTest, Inputs)
 {
-  giskard::core::DoubleInputSpec descr;
-  giskard::core::Scope scope;
+  giskard_core::DoubleInputSpec descr;
+  giskard_core::Scope scope;
 
   descr.set_input_num(2);
   EXPECT_EQ(descr.get_input_num(), 2);
@@ -95,8 +95,8 @@ TEST_F(DoubleExpressionGenerationTest, Inputs)
 
 TEST_F(DoubleExpressionGenerationTest, InputEquality)
 {
-  giskard::core::DoubleInputSpec d1, d2, d3;
-  giskard::core::Scope scope;
+  giskard_core::DoubleInputSpec d1, d2, d3;
+  giskard_core::Scope scope;
 
   d1.set_input_num(1);
   d2.set_input_num(0);
@@ -121,8 +121,8 @@ TEST_F(DoubleExpressionGenerationTest, InputEquality)
 
 TEST_F(DoubleExpressionGenerationTest, ReferenceEquality)
 {
-  giskard::core::DoubleReferenceSpec d1, d2, d3;
-  giskard::core::Scope scope;
+  giskard_core::DoubleReferenceSpec d1, d2, d3;
+  giskard_core::Scope scope;
 
   d1.set_reference_name("my_var"); 
   d2.set_reference_name("your_var");
@@ -147,15 +147,15 @@ TEST_F(DoubleExpressionGenerationTest, ReferenceEquality)
 
 TEST_F(DoubleExpressionGenerationTest, Addition)
 {
-  giskard::core::DoubleConstSpecPtr const_descr1(new
-      giskard::core::DoubleConstSpec());
-  giskard::core::DoubleConstSpecPtr const_descr2(new
-      giskard::core::DoubleConstSpec());
-  giskard::core::DoubleInputSpecPtr input_descr(new
-      giskard::core::DoubleInputSpec());
+  giskard_core::DoubleConstSpecPtr const_descr1(new
+      giskard_core::DoubleConstSpec());
+  giskard_core::DoubleConstSpecPtr const_descr2(new
+      giskard_core::DoubleConstSpec());
+  giskard_core::DoubleInputSpecPtr input_descr(new
+      giskard_core::DoubleInputSpec());
 
-  giskard::core::DoubleAdditionSpec add_descr;
-  giskard::core::Scope scope;
+  giskard_core::DoubleAdditionSpec add_descr;
+  giskard_core::Scope scope;
 
   const_descr1->set_value(-0.7);
   EXPECT_DOUBLE_EQ(const_descr1->get_value(), -0.7);
@@ -166,7 +166,7 @@ TEST_F(DoubleExpressionGenerationTest, Addition)
   input_descr->set_input_num(1);
   EXPECT_EQ(input_descr->get_input_num(), 1);
 
-  std::vector<giskard::core::DoubleSpecPtr> input_descrs;
+  std::vector<giskard_core::DoubleSpecPtr> input_descrs;
   input_descrs.push_back(const_descr1);
   input_descrs.push_back(input_descr);
   input_descrs.push_back(const_descr2);
@@ -190,15 +190,15 @@ TEST_F(DoubleExpressionGenerationTest, Addition)
 
 TEST_F(DoubleExpressionGenerationTest, AdditionEquality)
 {
-  giskard::core::DoubleConstSpecPtr dd1(new giskard::core::DoubleConstSpec());
-  giskard::core::DoubleConstSpecPtr dd2(new giskard::core::DoubleConstSpec());
-  giskard::core::DoubleInputSpecPtr dd3(new giskard::core::DoubleInputSpec());
+  giskard_core::DoubleConstSpecPtr dd1(new giskard_core::DoubleConstSpec());
+  giskard_core::DoubleConstSpecPtr dd2(new giskard_core::DoubleConstSpec());
+  giskard_core::DoubleInputSpecPtr dd3(new giskard_core::DoubleInputSpec());
 
   dd1->set_value(1.0);
   dd2->set_value(2.0);
   dd3->set_input_num(3);
 
-  std::vector<giskard::core::DoubleSpecPtr> in1, in2, in3, in4, in5;
+  std::vector<giskard_core::DoubleSpecPtr> in1, in2, in3, in4, in5;
   in1.push_back(dd1);
   in2.push_back(dd2);
   in3.push_back(dd3);
@@ -206,7 +206,7 @@ TEST_F(DoubleExpressionGenerationTest, AdditionEquality)
   in4.push_back(dd3);
   in5.push_back(dd1);
 
-  giskard::core::DoubleAdditionSpec a1, a2, a3, a4, a5;
+  giskard_core::DoubleAdditionSpec a1, a2, a3, a4, a5;
   a1.set_inputs(in1);
   a2.set_inputs(in2);
   a3.set_inputs(in3);
@@ -232,10 +232,10 @@ TEST_F(DoubleExpressionGenerationTest, VectorNorm)
 
   YAML::Node node = YAML::Load(s);
 
-  ASSERT_NO_THROW(node.as<giskard::core::DoubleSpecPtr>());
-  giskard::core::DoubleSpecPtr spec = node.as<giskard::core::DoubleSpecPtr>();
+  ASSERT_NO_THROW(node.as<giskard_core::DoubleSpecPtr>());
+  giskard_core::DoubleSpecPtr spec = node.as<giskard_core::DoubleSpecPtr>();
 
-  KDL::Expression<double>::Ptr exp = spec->get_expression(giskard::core::Scope());
+  KDL::Expression<double>::Ptr exp = spec->get_expression(giskard_core::Scope());
   ASSERT_TRUE(exp.get());
 
   EXPECT_NEAR(exp->value(), 3.0, 1e-10);
@@ -247,10 +247,10 @@ TEST_F(DoubleExpressionGenerationTest, DoubleMultiplication)
 
   YAML::Node node = YAML::Load(s);
 
-  ASSERT_NO_THROW(node.as<giskard::core::DoubleSpecPtr>());
-  giskard::core::DoubleSpecPtr spec = node.as<giskard::core::DoubleSpecPtr>();
+  ASSERT_NO_THROW(node.as<giskard_core::DoubleSpecPtr>());
+  giskard_core::DoubleSpecPtr spec = node.as<giskard_core::DoubleSpecPtr>();
 
-  KDL::Expression<double>::Ptr exp = spec->get_expression(giskard::core::Scope());
+  KDL::Expression<double>::Ptr exp = spec->get_expression(giskard_core::Scope());
   ASSERT_TRUE(exp.get());
 
   EXPECT_NEAR(exp->value(), -0.35, 1e-10);
@@ -264,30 +264,30 @@ TEST_F(DoubleExpressionGenerationTest, DoubleDivision)
 
   YAML::Node node = YAML::Load(s1);
 
-  ASSERT_NO_THROW(node.as<giskard::core::DoubleSpecPtr>());
-  giskard::core::DoubleSpecPtr spec = node.as<giskard::core::DoubleSpecPtr>();
+  ASSERT_NO_THROW(node.as<giskard_core::DoubleSpecPtr>());
+  giskard_core::DoubleSpecPtr spec = node.as<giskard_core::DoubleSpecPtr>();
 
-  KDL::Expression<double>::Ptr exp = spec->get_expression(giskard::core::Scope());
+  KDL::Expression<double>::Ptr exp = spec->get_expression(giskard_core::Scope());
   ASSERT_TRUE(exp.get());
 
   EXPECT_NEAR(exp->value(), 0.5, 1e-10);
 
   node = YAML::Load(s2);
 
-  ASSERT_NO_THROW(node.as<giskard::core::DoubleSpecPtr>());
-  spec = node.as<giskard::core::DoubleSpecPtr>();
+  ASSERT_NO_THROW(node.as<giskard_core::DoubleSpecPtr>());
+  spec = node.as<giskard_core::DoubleSpecPtr>();
 
-  exp = spec->get_expression(giskard::core::Scope());
+  exp = spec->get_expression(giskard_core::Scope());
   ASSERT_TRUE(exp.get());
 
   EXPECT_NEAR(exp->value(), -0.25, 1e-10);
 
   node = YAML::Load(s3);
 
-  ASSERT_NO_THROW(node.as<giskard::core::DoubleSpecPtr>());
-  spec = node.as<giskard::core::DoubleSpecPtr>();
+  ASSERT_NO_THROW(node.as<giskard_core::DoubleSpecPtr>());
+  spec = node.as<giskard_core::DoubleSpecPtr>();
 
-  exp = spec->get_expression(giskard::core::Scope());
+  exp = spec->get_expression(giskard_core::Scope());
   ASSERT_TRUE(exp.get());
 
   EXPECT_NEAR(exp->value(), 0.1, 1e-10);
@@ -301,30 +301,30 @@ TEST_F(DoubleExpressionGenerationTest, DoubleSubtraction)
 
   YAML::Node node = YAML::Load(s1);
 
-  ASSERT_NO_THROW(node.as<giskard::core::DoubleSpecPtr>());
-  giskard::core::DoubleSpecPtr spec = node.as<giskard::core::DoubleSpecPtr>();
+  ASSERT_NO_THROW(node.as<giskard_core::DoubleSpecPtr>());
+  giskard_core::DoubleSpecPtr spec = node.as<giskard_core::DoubleSpecPtr>();
 
-  KDL::Expression<double>::Ptr exp = spec->get_expression(giskard::core::Scope());
+  KDL::Expression<double>::Ptr exp = spec->get_expression(giskard_core::Scope());
   ASSERT_TRUE(exp.get());
 
   EXPECT_NEAR(exp->value(), 0.5, 1e-10);
 
   node = YAML::Load(s2);
 
-  ASSERT_NO_THROW(node.as<giskard::core::DoubleSpecPtr>());
-  spec = node.as<giskard::core::DoubleSpecPtr>();
+  ASSERT_NO_THROW(node.as<giskard_core::DoubleSpecPtr>());
+  spec = node.as<giskard_core::DoubleSpecPtr>();
 
-  exp = spec->get_expression(giskard::core::Scope());
+  exp = spec->get_expression(giskard_core::Scope());
   ASSERT_TRUE(exp.get());
 
   EXPECT_NEAR(exp->value(), -1.5, 1e-10);
 
   node = YAML::Load(s3);
 
-  ASSERT_NO_THROW(node.as<giskard::core::DoubleSpecPtr>());
-  spec = node.as<giskard::core::DoubleSpecPtr>();
+  ASSERT_NO_THROW(node.as<giskard_core::DoubleSpecPtr>());
+  spec = node.as<giskard_core::DoubleSpecPtr>();
 
-  exp = spec->get_expression(giskard::core::Scope());
+  exp = spec->get_expression(giskard_core::Scope());
   ASSERT_TRUE(exp.get());
 
   EXPECT_NEAR(exp->value(), 1.2, 1e-10);
@@ -336,10 +336,10 @@ TEST_F(DoubleExpressionGenerationTest, XCoordOf)
 
   YAML::Node node = YAML::Load(s1);
 
-  ASSERT_NO_THROW(node.as<giskard::core::DoubleSpecPtr>());
-  giskard::core::DoubleSpecPtr spec = node.as<giskard::core::DoubleSpecPtr>();
+  ASSERT_NO_THROW(node.as<giskard_core::DoubleSpecPtr>());
+  giskard_core::DoubleSpecPtr spec = node.as<giskard_core::DoubleSpecPtr>();
 
-  KDL::Expression<double>::Ptr exp = spec->get_expression(giskard::core::Scope());
+  KDL::Expression<double>::Ptr exp = spec->get_expression(giskard_core::Scope());
   ASSERT_TRUE(exp.get());
 
   EXPECT_NEAR(exp->value(), 1.1, 1e-10);
@@ -351,10 +351,10 @@ TEST_F(DoubleExpressionGenerationTest, YCoordOf)
 
   YAML::Node node = YAML::Load(s1);
 
-  ASSERT_NO_THROW(node.as<giskard::core::DoubleSpecPtr>());
-  giskard::core::DoubleSpecPtr spec = node.as<giskard::core::DoubleSpecPtr>();
+  ASSERT_NO_THROW(node.as<giskard_core::DoubleSpecPtr>());
+  giskard_core::DoubleSpecPtr spec = node.as<giskard_core::DoubleSpecPtr>();
 
-  KDL::Expression<double>::Ptr exp = spec->get_expression(giskard::core::Scope());
+  KDL::Expression<double>::Ptr exp = spec->get_expression(giskard_core::Scope());
   ASSERT_TRUE(exp.get());
 
   EXPECT_NEAR(exp->value(), 2.2, 1e-10);
@@ -366,10 +366,10 @@ TEST_F(DoubleExpressionGenerationTest, ZCoordOf)
 
   YAML::Node node = YAML::Load(s1);
 
-  ASSERT_NO_THROW(node.as<giskard::core::DoubleSpecPtr>());
-  giskard::core::DoubleSpecPtr spec = node.as<giskard::core::DoubleSpecPtr>();
+  ASSERT_NO_THROW(node.as<giskard_core::DoubleSpecPtr>());
+  giskard_core::DoubleSpecPtr spec = node.as<giskard_core::DoubleSpecPtr>();
 
-  KDL::Expression<double>::Ptr exp = spec->get_expression(giskard::core::Scope());
+  KDL::Expression<double>::Ptr exp = spec->get_expression(giskard_core::Scope());
   ASSERT_TRUE(exp.get());
 
   EXPECT_NEAR(exp->value(), 3.3, 1e-10);
@@ -381,10 +381,10 @@ TEST_F(DoubleExpressionGenerationTest, VectorDot)
 
   YAML::Node node = YAML::Load(s1);
 
-  ASSERT_NO_THROW(node.as<giskard::core::DoubleSpecPtr>());
-  giskard::core::DoubleSpecPtr spec = node.as<giskard::core::DoubleSpecPtr>();
+  ASSERT_NO_THROW(node.as<giskard_core::DoubleSpecPtr>());
+  giskard_core::DoubleSpecPtr spec = node.as<giskard_core::DoubleSpecPtr>();
 
-  KDL::Expression<double>::Ptr exp = spec->get_expression(giskard::core::Scope());
+  KDL::Expression<double>::Ptr exp = spec->get_expression(giskard_core::Scope());
   ASSERT_TRUE(exp.get());
 
   EXPECT_NEAR(exp->value(), 32, 1e-10);
@@ -396,10 +396,10 @@ TEST_F(DoubleExpressionGenerationTest, Minimum)
 
   YAML::Node node = YAML::Load(s1);
 
-  ASSERT_NO_THROW(node.as<giskard::core::DoubleSpecPtr>());
-  giskard::core::DoubleSpecPtr spec = node.as<giskard::core::DoubleSpecPtr>();
+  ASSERT_NO_THROW(node.as<giskard_core::DoubleSpecPtr>());
+  giskard_core::DoubleSpecPtr spec = node.as<giskard_core::DoubleSpecPtr>();
 
-  KDL::Expression<double>::Ptr exp = spec->get_expression(giskard::core::Scope());
+  KDL::Expression<double>::Ptr exp = spec->get_expression(giskard_core::Scope());
   ASSERT_TRUE(exp.get());
 
   EXPECT_NEAR(exp->value(), -2.1, 1e-10);
@@ -414,30 +414,30 @@ TEST_F(DoubleExpressionGenerationTest, DoubleIf)
   // CASE 1
   YAML::Node node = YAML::Load(s1);
 
-  ASSERT_NO_THROW(node.as<giskard::core::DoubleSpecPtr>());
-  giskard::core::DoubleSpecPtr spec = node.as<giskard::core::DoubleSpecPtr>();
+  ASSERT_NO_THROW(node.as<giskard_core::DoubleSpecPtr>());
+  giskard_core::DoubleSpecPtr spec = node.as<giskard_core::DoubleSpecPtr>();
 
-  KDL::Expression<double>::Ptr exp = spec->get_expression(giskard::core::Scope());
+  KDL::Expression<double>::Ptr exp = spec->get_expression(giskard_core::Scope());
   ASSERT_TRUE(exp.get());
 
   EXPECT_NEAR(exp->value(), 1.1, 1e-10);
 
   // CASE 2
   node = YAML::Load(s2);
-  ASSERT_NO_THROW(node.as<giskard::core::DoubleSpecPtr>());
-  spec = node.as<giskard::core::DoubleSpecPtr>();
+  ASSERT_NO_THROW(node.as<giskard_core::DoubleSpecPtr>());
+  spec = node.as<giskard_core::DoubleSpecPtr>();
 
-  exp = spec->get_expression(giskard::core::Scope());
+  exp = spec->get_expression(giskard_core::Scope());
   ASSERT_TRUE(exp.get());
 
   EXPECT_NEAR(exp->value(), 2.2, 1e-10);
 
   // CASE 3
   node = YAML::Load(s3);
-  ASSERT_NO_THROW(node.as<giskard::core::DoubleSpecPtr>());
-  spec = node.as<giskard::core::DoubleSpecPtr>();
+  ASSERT_NO_THROW(node.as<giskard_core::DoubleSpecPtr>());
+  spec = node.as<giskard_core::DoubleSpecPtr>();
 
-  exp = spec->get_expression(giskard::core::Scope());
+  exp = spec->get_expression(giskard_core::Scope());
   ASSERT_TRUE(exp.get());
 
   EXPECT_NEAR(exp->value(), 1.1, 1e-10);
@@ -452,30 +452,30 @@ TEST_F(DoubleExpressionGenerationTest, Abs)
   // CASE 1
   YAML::Node node = YAML::Load(s1);
 
-  ASSERT_NO_THROW(node.as<giskard::core::DoubleSpecPtr>());
-  giskard::core::DoubleSpecPtr spec = node.as<giskard::core::DoubleSpecPtr>();
+  ASSERT_NO_THROW(node.as<giskard_core::DoubleSpecPtr>());
+  giskard_core::DoubleSpecPtr spec = node.as<giskard_core::DoubleSpecPtr>();
 
-  KDL::Expression<double>::Ptr exp = spec->get_expression(giskard::core::Scope());
+  KDL::Expression<double>::Ptr exp = spec->get_expression(giskard_core::Scope());
   ASSERT_TRUE(exp.get());
 
   EXPECT_NEAR(exp->value(), 0.1, 1e-10);
 
   // CASE 2
   node = YAML::Load(s2);
-  ASSERT_NO_THROW(node.as<giskard::core::DoubleSpecPtr>());
-  spec = node.as<giskard::core::DoubleSpecPtr>();
+  ASSERT_NO_THROW(node.as<giskard_core::DoubleSpecPtr>());
+  spec = node.as<giskard_core::DoubleSpecPtr>();
 
-  exp = spec->get_expression(giskard::core::Scope());
+  exp = spec->get_expression(giskard_core::Scope());
   ASSERT_TRUE(exp.get());
 
   EXPECT_NEAR(exp->value(), 0.2, 1e-10);
 
   // CASE 3
   node = YAML::Load(s3);
-  ASSERT_NO_THROW(node.as<giskard::core::DoubleSpecPtr>());
-  spec = node.as<giskard::core::DoubleSpecPtr>();
+  ASSERT_NO_THROW(node.as<giskard_core::DoubleSpecPtr>());
+  spec = node.as<giskard_core::DoubleSpecPtr>();
 
-  exp = spec->get_expression(giskard::core::Scope());
+  exp = spec->get_expression(giskard_core::Scope());
   ASSERT_TRUE(exp.get());
 
   EXPECT_NEAR(exp->value(), 0.0, 1e-10);
@@ -490,30 +490,30 @@ TEST_F(DoubleExpressionGenerationTest, Fmod)
   // CASE 1
   YAML::Node node = YAML::Load(s1);
 
-  ASSERT_NO_THROW(node.as<giskard::core::DoubleSpecPtr>());
-  giskard::core::DoubleSpecPtr spec = node.as<giskard::core::DoubleSpecPtr>();
+  ASSERT_NO_THROW(node.as<giskard_core::DoubleSpecPtr>());
+  giskard_core::DoubleSpecPtr spec = node.as<giskard_core::DoubleSpecPtr>();
 
-  KDL::Expression<double>::Ptr exp = spec->get_expression(giskard::core::Scope());
+  KDL::Expression<double>::Ptr exp = spec->get_expression(giskard_core::Scope());
   ASSERT_TRUE(exp.get());
 
   EXPECT_NEAR(exp->value(), std::fmod(0.1, 1.0), 1e-10);
 
   // CASE 2
   node = YAML::Load(s2);
-  ASSERT_NO_THROW(node.as<giskard::core::DoubleSpecPtr>());
-  spec = node.as<giskard::core::DoubleSpecPtr>();
+  ASSERT_NO_THROW(node.as<giskard_core::DoubleSpecPtr>());
+  spec = node.as<giskard_core::DoubleSpecPtr>();
 
-  exp = spec->get_expression(giskard::core::Scope());
+  exp = spec->get_expression(giskard_core::Scope());
   ASSERT_TRUE(exp.get());
 
   EXPECT_NEAR(exp->value(), std::fmod(-3.2, 2.0), 1e-10);
 
   // CASE 3
   node = YAML::Load(s3);
-  ASSERT_NO_THROW(node.as<giskard::core::DoubleSpecPtr>());
-  spec = node.as<giskard::core::DoubleSpecPtr>();
+  ASSERT_NO_THROW(node.as<giskard_core::DoubleSpecPtr>());
+  spec = node.as<giskard_core::DoubleSpecPtr>();
 
-  exp = spec->get_expression(giskard::core::Scope());
+  exp = spec->get_expression(giskard_core::Scope());
   ASSERT_TRUE(exp.get());
 
   EXPECT_NEAR(exp->value(), std::fmod(2.1, 1.5), 1e-10);

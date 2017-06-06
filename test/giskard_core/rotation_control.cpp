@@ -85,7 +85,7 @@ TEST_F(RotationControlTest, KDLBasics)
 TEST_F(RotationControlTest, QPControlSingleAxis)
 {
   using namespace KDL;
-  using namespace giskard::core;
+  using namespace giskard_core;
   using namespace Eigen;
   using namespace std;
 
@@ -138,7 +138,7 @@ TEST_F(RotationControlTest, QPControlSingleAxis)
 TEST_F(RotationControlTest, QPControlSeveralAxes)
 {
   using namespace KDL;
-  using namespace giskard::core;
+  using namespace giskard_core;
   using namespace Eigen;
   using namespace std;
 

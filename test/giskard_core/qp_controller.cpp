@@ -95,14 +95,14 @@ class QPControllerTest : public ::testing::Test
 
 TEST_F(QPControllerTest, Constructor)
 {
-  giskard::core::QPController c;
+  giskard_core::QPController c;
 
   EXPECT_EQ(0, c.get_command().rows());
 }
 
 TEST_F(QPControllerTest, Init)
 {
-   giskard::core::QPController c;
+   giskard_core::QPController c;
 
    ASSERT_TRUE(c.init(controllable_lower, controllable_upper, controllable_weights, 
          controllable_names, soft_expressions, soft_lower, soft_upper, soft_weights, 
@@ -116,7 +116,7 @@ TEST_F(QPControllerTest, Init)
 TEST_F(QPControllerTest, Update)
 {
    // setup controller
-   giskard::core::QPController c;
+   giskard_core::QPController c;
    ASSERT_TRUE(c.init(controllable_lower, controllable_upper, controllable_weights, 
          controllable_names, soft_expressions, soft_lower, soft_upper, soft_weights, 
          soft_names, hard_expressions, hard_lower, hard_upper));

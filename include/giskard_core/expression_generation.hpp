@@ -25,30 +25,30 @@
 #include <giskard_core/qp_controller.hpp>
 #include <giskard_core/specifications.hpp>
 
-namespace giskard { namespace core
+namespace giskard_core
 {
 
-  inline giskard::core::Scope generate(const giskard::core::ScopeSpec& scope_spec)
+  inline giskard_core::Scope generate(const giskard_core::ScopeSpec& scope_spec)
   {
-    giskard::core::Scope scope;
+    giskard_core::Scope scope;
 
     for(size_t i=0; i<scope_spec.size(); ++i)
     {
       std::string name = scope_spec[i].name;
-      giskard::core::SpecPtr spec = scope_spec[i].spec;
+      giskard_core::SpecPtr spec = scope_spec[i].spec;
 
-      if(boost::dynamic_pointer_cast<giskard::core::DoubleSpec>(spec).get())
+      if(boost::dynamic_pointer_cast<giskard_core::DoubleSpec>(spec).get())
         scope.add_double_expression(name,
-            boost::dynamic_pointer_cast<giskard::core::DoubleSpec>(spec)->get_expression(scope));
-      else if(boost::dynamic_pointer_cast<giskard::core::VectorSpec>(spec).get())
+            boost::dynamic_pointer_cast<giskard_core::DoubleSpec>(spec)->get_expression(scope));
+      else if(boost::dynamic_pointer_cast<giskard_core::VectorSpec>(spec).get())
         scope.add_vector_expression(name,
-            boost::dynamic_pointer_cast<giskard::core::VectorSpec>(spec)->get_expression(scope));
-      else if(boost::dynamic_pointer_cast<giskard::core::FrameSpec>(spec).get())
+            boost::dynamic_pointer_cast<giskard_core::VectorSpec>(spec)->get_expression(scope));
+      else if(boost::dynamic_pointer_cast<giskard_core::FrameSpec>(spec).get())
         scope.add_frame_expression(name,
-            boost::dynamic_pointer_cast<giskard::core::FrameSpec>(spec)->get_expression(scope));
-      else if(boost::dynamic_pointer_cast<giskard::core::RotationSpec>(spec).get())
+            boost::dynamic_pointer_cast<giskard_core::FrameSpec>(spec)->get_expression(scope));
+      else if(boost::dynamic_pointer_cast<giskard_core::RotationSpec>(spec).get())
         scope.add_rotation_expression(name,
-            boost::dynamic_pointer_cast<giskard::core::RotationSpec>(spec)->get_expression(scope));
+            boost::dynamic_pointer_cast<giskard_core::RotationSpec>(spec)->get_expression(scope));
       else
         throw std::domain_error("Scope generation: found entry of non-supported type.");
     }
@@ -56,9 +56,9 @@ namespace giskard { namespace core
     return scope;
   }
 
-  inline giskard::core::QPController generate(const giskard::core::QPControllerSpec& spec)
+  inline giskard_core::QPController generate(const giskard_core::QPControllerSpec& spec)
   {
-    giskard::core::Scope scope = generate(spec.scope_);
+    giskard_core::Scope scope = generate(spec.scope_);
 
     // generate controllable constraints
     std::vector< KDL::Expression<double>::Ptr > controllable_lower, controllable_upper,
@@ -100,7 +100,7 @@ namespace giskard { namespace core
       hard_exp.push_back(spec.hard_constraints_[i].expression_->get_expression(scope));
     }
 
-    giskard::core::QPController controller;
+    giskard_core::QPController controller;
    
     if(!(controller.init(controllable_lower, controllable_upper, controllable_weight,
                            controllable_name, soft_exp, soft_lower, soft_upper, 
@@ -111,6 +111,6 @@ namespace giskard { namespace core
 
     return controller;
   }
-}}
+}
 
 #endif // GISKARD_CORE_EXPRESSION_GENERATION_HPP

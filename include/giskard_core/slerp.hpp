@@ -24,7 +24,7 @@
 #include <kdl/frames.hpp>
 #include <kdl/expressiontree.hpp>
 
-namespace giskard { namespace core
+namespace giskard_core
 {
   inline KDL::Rotation slerp(const KDL::Rotation& a, const KDL::Rotation& b,
       double t)
@@ -68,7 +68,7 @@ namespace giskard { namespace core
         ratio_a * wa + ratio_b *wb);
   }
 
-}}
+}
 
 namespace KDL
 {
@@ -84,7 +84,7 @@ namespace KDL
                       const TExpr::Argument3Expr::Ptr& arg3) : TExpr("slerp_rotation",arg1,arg2,arg3) {}  
       virtual KDL::Rotation value() 
       {
-        return giskard::core::slerp(argument1->value(), argument2->value(), argument3->value());
+        return giskard_core::slerp(argument1->value(), argument2->value(), argument3->value());
       }
       virtual KDL::Vector derivative(int i) 
       {

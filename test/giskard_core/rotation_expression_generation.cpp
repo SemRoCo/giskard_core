@@ -21,7 +21,7 @@
 #include <gtest/gtest.h>
 #include <giskard_core/giskard_core.hpp>
 
-using namespace giskard::core;
+using namespace giskard_core;
 using namespace KDL;
 
 class RotationGenerationTest : public ::testing::Test
@@ -36,23 +36,23 @@ class RotationGenerationTest : public ::testing::Test
 
 TEST_F(RotationGenerationTest, AxisAngle)
 {
-  giskard::core::DoubleConstSpecPtr x(new giskard::core::DoubleConstSpec());
+  giskard_core::DoubleConstSpecPtr x(new giskard_core::DoubleConstSpec());
   x->set_value(1.0);
-  giskard::core::DoubleConstSpecPtr y(new giskard::core::DoubleConstSpec());
+  giskard_core::DoubleConstSpecPtr y(new giskard_core::DoubleConstSpec());
   y->set_value(0.0);
-  giskard::core::DoubleConstSpecPtr z(new giskard::core::DoubleConstSpec());
+  giskard_core::DoubleConstSpecPtr z(new giskard_core::DoubleConstSpec());
   z->set_value(0.0);
-  giskard::core::DoubleConstSpecPtr angle(new giskard::core::DoubleConstSpec());
+  giskard_core::DoubleConstSpecPtr angle(new giskard_core::DoubleConstSpec());
   angle->set_value(M_PI/2.0);
 
-  giskard::core::VectorConstructorSpecPtr axis(new giskard::core::VectorConstructorSpec());
+  giskard_core::VectorConstructorSpecPtr axis(new giskard_core::VectorConstructorSpec());
   axis->set(x, y, z);
  
-  giskard::core::AxisAngleSpec spec;
+  giskard_core::AxisAngleSpec spec;
   spec.set_axis(axis);
   spec.set_angle(angle);
 
-  giskard::core::Scope scope;
+  giskard_core::Scope scope;
   KDL::Rotation rot = spec.get_expression(scope)->value();
   KDL::Rotation rot2 = KDL::Rotation::Rot(KDL::Vector(1.0, 0.0, 0.0), M_PI/2.0);
 
@@ -91,13 +91,13 @@ TEST_F(RotationGenerationTest, AxisAngleEquality)
 
 TEST_F(RotationGenerationTest, QuaternionConstructor)
 {
-  giskard::core::RotationQuaternionConstructorSpec spec;
+  giskard_core::RotationQuaternionConstructorSpec spec;
   spec.set_x(0.0);
   spec.set_y(0.70710678118);
   spec.set_z(0.0);
   spec.set_w(-0.70710678118);
 
-  giskard::core::Scope scope;
+  giskard_core::Scope scope;
   KDL::Rotation rot = spec.get_expression(scope)->value();
   KDL::Rotation rot2 = KDL::Rotation::Quaternion(0.0, 0.70710678118, 0.0, -0.70710678118);
 
@@ -106,7 +106,7 @@ TEST_F(RotationGenerationTest, QuaternionConstructor)
 
 TEST_F(RotationGenerationTest, QuaternionConstructorEquality)
 {
-  giskard::core::RotationQuaternionConstructorSpec s1, s2, s3, s4;
+  giskard_core::RotationQuaternionConstructorSpec s1, s2, s3, s4;
   s1.set_x(0.0);
   s1.set_y(0.70710678118);
   s1.set_z(0.0);
@@ -216,33 +216,33 @@ TEST_F(RotationGenerationTest, Slerp)
 
   // CASE 1
   YAML::Node node = YAML::Load(s1);
-  ASSERT_NO_THROW(node.as<giskard::core::RotationSpecPtr>());
-  RotationSpecPtr spec = node.as<giskard::core::RotationSpecPtr>();
+  ASSERT_NO_THROW(node.as<giskard_core::RotationSpecPtr>());
+  RotationSpecPtr spec = node.as<giskard_core::RotationSpecPtr>();
 
-  ASSERT_NO_THROW(spec->get_expression(giskard::core::Scope()));
-  KDL::Expression<KDL::Rotation>::Ptr exp = spec->get_expression(giskard::core::Scope());
+  ASSERT_NO_THROW(spec->get_expression(giskard_core::Scope()));
+  KDL::Expression<KDL::Rotation>::Ptr exp = spec->get_expression(giskard_core::Scope());
   ASSERT_TRUE(exp.get());
   KDL::Rotation r = exp->value();
   EXPECT_TRUE(KDL::Equal(r, KDL::Rotation::Quaternion(0.348, -0.52, 0.616, -0.479), eps));
 
   // CASE 2
   node = YAML::Load(s2);
-  ASSERT_NO_THROW(node.as<giskard::core::RotationSpecPtr>());
-  spec = node.as<giskard::core::RotationSpecPtr>();
+  ASSERT_NO_THROW(node.as<giskard_core::RotationSpecPtr>());
+  spec = node.as<giskard_core::RotationSpecPtr>();
 
-  ASSERT_NO_THROW(spec->get_expression(giskard::core::Scope()));
-  exp = spec->get_expression(giskard::core::Scope());
+  ASSERT_NO_THROW(spec->get_expression(giskard_core::Scope()));
+  exp = spec->get_expression(giskard_core::Scope());
   ASSERT_TRUE(exp.get());
   r = exp->value();
   EXPECT_TRUE(KDL::Equal(r, KDL::Rotation::Quaternion(0.757226, -0.163759, 0.621395, -0.118059), eps));
 
   // CASE 3
   node = YAML::Load(s3);
-  ASSERT_NO_THROW(node.as<giskard::core::RotationSpecPtr>());
-  spec = node.as<giskard::core::RotationSpecPtr>();
+  ASSERT_NO_THROW(node.as<giskard_core::RotationSpecPtr>());
+  spec = node.as<giskard_core::RotationSpecPtr>();
 
-  ASSERT_NO_THROW(spec->get_expression(giskard::core::Scope()));
-  exp = spec->get_expression(giskard::core::Scope());
+  ASSERT_NO_THROW(spec->get_expression(giskard_core::Scope()));
+  exp = spec->get_expression(giskard_core::Scope());
   ASSERT_TRUE(exp.get());
   r = exp->value();
   EXPECT_TRUE(KDL::Equal(r, KDL::Rotation::Quaternion(0.845, 0.262, 0.363, 0.293), eps));

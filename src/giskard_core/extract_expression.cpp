@@ -34,7 +34,7 @@ int main(int argc, char **argv)
   std::string start_link = argv[1];
   std::string end_link = argv[2];
   std::string urdf_path = argv[3];
-  YAML::Node yaml = giskard::core::ExpressionExtractor::extract(start_link, end_link, urdf_path);
+  YAML::Node yaml = giskard_core::ExpressionExtractor::extract(start_link, end_link, urdf_path);
   YAML::Emitter out;
   out << yaml;
   if (argc == 5)

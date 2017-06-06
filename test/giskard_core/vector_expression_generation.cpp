@@ -27,9 +27,9 @@ class VectorExpressionGenerationTest : public ::testing::Test
    protected:
     virtual void SetUp()
     {
-      x = giskard::core::DoubleConstSpecPtr(new giskard::core::DoubleConstSpec());
-      y = giskard::core::DoubleConstSpecPtr(new giskard::core::DoubleConstSpec());
-      z = giskard::core::DoubleConstSpecPtr(new giskard::core::DoubleConstSpec());
+      x = giskard_core::DoubleConstSpecPtr(new giskard_core::DoubleConstSpec());
+      y = giskard_core::DoubleConstSpecPtr(new giskard_core::DoubleConstSpec());
+      z = giskard_core::DoubleConstSpecPtr(new giskard_core::DoubleConstSpec());
 
       x->set_value(1.1);
       y->set_value(2.2);
@@ -38,13 +38,13 @@ class VectorExpressionGenerationTest : public ::testing::Test
 
     virtual void TearDown(){}
 
-    giskard::core::DoubleConstSpecPtr x, y, z;
+    giskard_core::DoubleConstSpecPtr x, y, z;
 };
 
 TEST_F(VectorExpressionGenerationTest, Constructor)
 {
-  giskard::core::VectorConstructorSpec descr;
-  giskard::core::Scope scope;
+  giskard_core::VectorConstructorSpec descr;
+  giskard_core::Scope scope;
 
   descr.set_x(x);
   descr.set_y(y);
@@ -59,7 +59,7 @@ TEST_F(VectorExpressionGenerationTest, Constructor)
 
 TEST_F(VectorExpressionGenerationTest, ConstructorEquality)
 {
-  giskard::core::VectorConstructorSpec d1, d2, d3;
+  giskard_core::VectorConstructorSpec d1, d2, d3;
 
   d1.set(x, y, z);
   d2.set(x, y, y);
@@ -91,10 +91,10 @@ TEST_F(VectorExpressionGenerationTest, VectorAddition)
   // test 1
   YAML::Node node = YAML::Load(s1);
 
-  ASSERT_NO_THROW(node.as<giskard::core::VectorSpecPtr>());
-  giskard::core::VectorSpecPtr spec = node.as<giskard::core::VectorSpecPtr>();
+  ASSERT_NO_THROW(node.as<giskard_core::VectorSpecPtr>());
+  giskard_core::VectorSpecPtr spec = node.as<giskard_core::VectorSpecPtr>();
   
-  giskard::core::Scope scope;
+  giskard_core::Scope scope;
   ASSERT_NO_THROW(spec->get_expression(scope));
   KDL::Expression<KDL::Vector>::Ptr exp = spec->get_expression(scope);
   
@@ -106,8 +106,8 @@ TEST_F(VectorExpressionGenerationTest, VectorAddition)
   // test 2
   node = YAML::Load(s2);
 
-  ASSERT_NO_THROW(node.as<giskard::core::VectorSpecPtr>());
-  spec = node.as<giskard::core::VectorSpecPtr>();
+  ASSERT_NO_THROW(node.as<giskard_core::VectorSpecPtr>());
+  spec = node.as<giskard_core::VectorSpecPtr>();
   
   ASSERT_NO_THROW(spec->get_expression(scope));
   exp = spec->get_expression(scope);
@@ -120,8 +120,8 @@ TEST_F(VectorExpressionGenerationTest, VectorAddition)
   // test 3
   node = YAML::Load(s3);
 
-  ASSERT_NO_THROW(node.as<giskard::core::VectorSpecPtr>());
-  spec = node.as<giskard::core::VectorSpecPtr>();
+  ASSERT_NO_THROW(node.as<giskard_core::VectorSpecPtr>());
+  spec = node.as<giskard_core::VectorSpecPtr>();
   
   ASSERT_NO_THROW(spec->get_expression(scope));
   exp = spec->get_expression(scope);
@@ -144,10 +144,10 @@ TEST_F(VectorExpressionGenerationTest, VectorSubtraction)
   // test 1
   YAML::Node node = YAML::Load(s1);
 
-  ASSERT_NO_THROW(node.as<giskard::core::VectorSpecPtr>());
-  giskard::core::VectorSpecPtr spec = node.as<giskard::core::VectorSpecPtr>();
+  ASSERT_NO_THROW(node.as<giskard_core::VectorSpecPtr>());
+  giskard_core::VectorSpecPtr spec = node.as<giskard_core::VectorSpecPtr>();
   
-  giskard::core::Scope scope;
+  giskard_core::Scope scope;
   ASSERT_NO_THROW(spec->get_expression(scope));
   KDL::Expression<KDL::Vector>::Ptr exp = spec->get_expression(scope);
   
@@ -159,8 +159,8 @@ TEST_F(VectorExpressionGenerationTest, VectorSubtraction)
   // test 2
   node = YAML::Load(s2);
 
-  ASSERT_NO_THROW(node.as<giskard::core::VectorSpecPtr>());
-  spec = node.as<giskard::core::VectorSpecPtr>();
+  ASSERT_NO_THROW(node.as<giskard_core::VectorSpecPtr>());
+  spec = node.as<giskard_core::VectorSpecPtr>();
   
   ASSERT_NO_THROW(spec->get_expression(scope));
   exp = spec->get_expression(scope);
@@ -173,8 +173,8 @@ TEST_F(VectorExpressionGenerationTest, VectorSubtraction)
   // test 3
   node = YAML::Load(s3);
 
-  ASSERT_NO_THROW(node.as<giskard::core::VectorSpecPtr>());
-  spec = node.as<giskard::core::VectorSpecPtr>();
+  ASSERT_NO_THROW(node.as<giskard_core::VectorSpecPtr>());
+  spec = node.as<giskard_core::VectorSpecPtr>();
   
   ASSERT_NO_THROW(spec->get_expression(scope));
   exp = spec->get_expression(scope);
@@ -194,11 +194,11 @@ TEST_F(VectorExpressionGenerationTest, VectorFrameMultiplication)
   std::string s1 = "{transform-vector: [" + f + ", " + v2 + "]}";
 
   YAML::Node node = YAML::Load(s1);
-  ASSERT_NO_THROW(node.as<giskard::core::VectorSpecPtr>());
-  giskard::core::VectorSpecPtr spec = node.as<giskard::core::VectorSpecPtr>();
+  ASSERT_NO_THROW(node.as<giskard_core::VectorSpecPtr>());
+  giskard_core::VectorSpecPtr spec = node.as<giskard_core::VectorSpecPtr>();
   
-  ASSERT_NO_THROW(spec->get_expression(giskard::core::Scope()));
-  KDL::Expression<KDL::Vector>::Ptr exp = spec->get_expression(giskard::core::Scope());
+  ASSERT_NO_THROW(spec->get_expression(giskard_core::Scope()));
+  KDL::Expression<KDL::Vector>::Ptr exp = spec->get_expression(giskard_core::Scope());
   
   ASSERT_TRUE(exp.get());
   KDL::Vector val1 = exp->value();
@@ -211,11 +211,11 @@ TEST_F(VectorExpressionGenerationTest, VectorDoubleMultiplication)
   std::string s1 = "{scale-vector: [0.5, {vector3: [1, 2, 3]}]}";
 
   YAML::Node node = YAML::Load(s1);
-  ASSERT_NO_THROW(node.as<giskard::core::VectorSpecPtr>());
-  giskard::core::VectorSpecPtr spec = node.as<giskard::core::VectorSpecPtr>();
+  ASSERT_NO_THROW(node.as<giskard_core::VectorSpecPtr>());
+  giskard_core::VectorSpecPtr spec = node.as<giskard_core::VectorSpecPtr>();
   
-  ASSERT_NO_THROW(spec->get_expression(giskard::core::Scope()));
-  KDL::Expression<KDL::Vector>::Ptr exp = spec->get_expression(giskard::core::Scope());
+  ASSERT_NO_THROW(spec->get_expression(giskard_core::Scope()));
+  KDL::Expression<KDL::Vector>::Ptr exp = spec->get_expression(giskard_core::Scope());
   
   ASSERT_TRUE(exp.get());
   KDL::Vector val1 = exp->value();
@@ -226,11 +226,11 @@ TEST_F(VectorExpressionGenerationTest, VectorDoubleMultiplication)
 TEST_F(VectorExpressionGenerationTest, ProjectPointOnPlane)
 {
   YAML::Node node = YAML::LoadFile("project_point_into_plane.yaml");
-  ASSERT_NO_THROW(node.as<giskard::core::ScopeSpec>());
-  giskard::core::ScopeSpec spec = node.as<giskard::core::ScopeSpec>();
+  ASSERT_NO_THROW(node.as<giskard_core::ScopeSpec>());
+  giskard_core::ScopeSpec spec = node.as<giskard_core::ScopeSpec>();
   
-  ASSERT_NO_THROW(giskard::core::generate(spec));
-  giskard::core::Scope scope = giskard::core::generate(spec);
+  ASSERT_NO_THROW(giskard_core::generate(spec));
+  giskard_core::Scope scope = giskard_core::generate(spec);
 
   ASSERT_TRUE(scope.has_vector_expression("projected-point"));
   KDL::Expression<KDL::Vector>::Ptr exp = scope.find_vector_expression("projected-point");
@@ -254,11 +254,11 @@ TEST_F(VectorExpressionGenerationTest, CachedVector)
   std::string s = "cached-vector: {vector3: [-0.1, -0.2, -0.3]}";
   YAML::Node node = YAML::Load(s);
 
-  ASSERT_NO_THROW(node.as<giskard::core::VectorSpecPtr>());
-  giskard::core::VectorSpecPtr spec = node.as<giskard::core::VectorSpecPtr>();
+  ASSERT_NO_THROW(node.as<giskard_core::VectorSpecPtr>());
+  giskard_core::VectorSpecPtr spec = node.as<giskard_core::VectorSpecPtr>();
 
-  ASSERT_NO_THROW(spec->get_expression(giskard::core::Scope()));  
-  KDL::Expression<KDL::Vector>::Ptr exp = spec->get_expression(giskard::core::Scope());
+  ASSERT_NO_THROW(spec->get_expression(giskard_core::Scope()));  
+  KDL::Expression<KDL::Vector>::Ptr exp = spec->get_expression(giskard_core::Scope());
 
   KDL::Vector vec(-0.1, -0.2, -0.3);
 
@@ -269,11 +269,11 @@ void test_rot_vector(const std::string& s, const KDL::Vector& v)
 {
   YAML::Node node = YAML::Load(s);
 
-  ASSERT_NO_THROW(node.as<giskard::core::VectorSpecPtr>());
-  giskard::core::VectorSpecPtr spec = node.as<giskard::core::VectorSpecPtr>();
+  ASSERT_NO_THROW(node.as<giskard_core::VectorSpecPtr>());
+  giskard_core::VectorSpecPtr spec = node.as<giskard_core::VectorSpecPtr>();
 
-  ASSERT_NO_THROW(spec->get_expression(giskard::core::Scope()));  
-  KDL::Expression<KDL::Vector>::Ptr exp = spec->get_expression(giskard::core::Scope());
+  ASSERT_NO_THROW(spec->get_expression(giskard_core::Scope()));  
+  KDL::Expression<KDL::Vector>::Ptr exp = spec->get_expression(giskard_core::Scope());
 
   EXPECT_TRUE(KDL::Equal(v, exp->value(), 0.00001));
 }
@@ -297,11 +297,11 @@ TEST_F(VectorExpressionGenerationTest, VectorRotationMultiplication)
   std::string s = "{rotate-vector: [" + r + ", " + v + "]}";
 
   YAML::Node node = YAML::Load(s);
-  ASSERT_NO_THROW(node.as<giskard::core::VectorSpecPtr>());
-  giskard::core::VectorSpecPtr spec = node.as<giskard::core::VectorSpecPtr>();
+  ASSERT_NO_THROW(node.as<giskard_core::VectorSpecPtr>());
+  giskard_core::VectorSpecPtr spec = node.as<giskard_core::VectorSpecPtr>();
   
-  ASSERT_NO_THROW(spec->get_expression(giskard::core::Scope()));
-  KDL::Expression<KDL::Vector>::Ptr exp = spec->get_expression(giskard::core::Scope());
+  ASSERT_NO_THROW(spec->get_expression(giskard_core::Scope()));
+  KDL::Expression<KDL::Vector>::Ptr exp = spec->get_expression(giskard_core::Scope());
   
   ASSERT_TRUE(exp.get());
   using namespace KDL;

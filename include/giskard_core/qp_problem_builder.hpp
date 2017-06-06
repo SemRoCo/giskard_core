@@ -23,7 +23,7 @@
 
 #include <giskard_core/expressiontree.hpp>
 
-namespace giskard { namespace core
+namespace giskard_core
 {
   class QPProblemBuilder
   {
@@ -348,6 +348,6 @@ namespace giskard { namespace core
         expressions.update(values.segment(0, expressions.num_inputs()));
       }
   };
-}} 
+} 
 
 #endif // GISKARD_CORE_QP_PROBLEM_BUILDER_HPP

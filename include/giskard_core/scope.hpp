@@ -26,7 +26,7 @@
 #include <stdexcept>
 #include <giskard_core/expressiontree.hpp>
 
-namespace giskard { namespace core
+namespace giskard_core
 {
   class Scope
   {
@@ -138,6 +138,6 @@ namespace giskard { namespace core
       std::map< std::string, KDL::Expression<KDL::Rotation>::Ptr > rotation_references_;
       std::map< std::string, KDL::Expression<KDL::Frame>::Ptr > frame_references_;
   };
-}}
+}
 
 #endif // GISKARD_CORE_SCOPE_HPP

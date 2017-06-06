@@ -48,22 +48,22 @@ namespace YAML {
   }
 
   template<>
-  struct convert<giskard::core::DoubleConstSpecPtr> 
+  struct convert<giskard_core::DoubleConstSpecPtr> 
   {
     
-    static Node encode(const giskard::core::DoubleConstSpecPtr& rhs) 
+    static Node encode(const giskard_core::DoubleConstSpecPtr& rhs) 
     {
       Node node;
       node = rhs->get_value();
       return node;
     }
   
-    static bool decode(const Node& node, giskard::core::DoubleConstSpecPtr& rhs) 
+    static bool decode(const Node& node, giskard_core::DoubleConstSpecPtr& rhs) 
     {
       if(!is_const_double(node))
         return false;
   
-      rhs = giskard::core::DoubleConstSpecPtr(new giskard::core::DoubleConstSpec());
+      rhs = giskard_core::DoubleConstSpecPtr(new giskard_core::DoubleConstSpec());
       rhs->set_value(node.as<double>());
 
       return true;
@@ -77,22 +77,22 @@ namespace YAML {
   }
 
   template<>
-  struct convert<giskard::core::DoubleInputSpecPtr> 
+  struct convert<giskard_core::DoubleInputSpecPtr> 
   {
     
-    static Node encode(const giskard::core::DoubleInputSpecPtr& rhs) 
+    static Node encode(const giskard_core::DoubleInputSpecPtr& rhs) 
     {
       Node node;
       node["input-var"] = rhs->get_input_num();
       return node;
     }
   
-    static bool decode(const Node& node, giskard::core::DoubleInputSpecPtr& rhs) 
+    static bool decode(const Node& node, giskard_core::DoubleInputSpecPtr& rhs) 
     {
       if(!is_input(node))
         return false;
   
-      rhs = giskard::core::DoubleInputSpecPtr(new giskard::core::DoubleInputSpec());
+      rhs = giskard_core::DoubleInputSpecPtr(new giskard_core::DoubleInputSpec());
       rhs->set_input_num(node["input-var"].as<size_t>());
 
       return true;
@@ -116,22 +116,22 @@ namespace YAML {
   }
 
   template<>
-  struct convert<giskard::core::DoubleReferenceSpecPtr> 
+  struct convert<giskard_core::DoubleReferenceSpecPtr> 
   {
     
-    static Node encode(const giskard::core::DoubleReferenceSpecPtr& rhs) 
+    static Node encode(const giskard_core::DoubleReferenceSpecPtr& rhs) 
     {
       Node node;
       node = rhs->get_reference_name();
       return node;
     }
   
-    static bool decode(const Node& node, giskard::core::DoubleReferenceSpecPtr& rhs) 
+    static bool decode(const Node& node, giskard_core::DoubleReferenceSpecPtr& rhs) 
     {
       if(!is_double_reference(node))
         return false;
  
-      rhs = giskard::core::DoubleReferenceSpecPtr(new giskard::core::DoubleReferenceSpec());
+      rhs = giskard_core::DoubleReferenceSpecPtr(new giskard_core::DoubleReferenceSpec());
       rhs->set_reference_name(node.as<std::string>());
 
       return true;
@@ -145,22 +145,22 @@ namespace YAML {
   }
 
   template<>
-  struct convert<giskard::core::DoubleAdditionSpecPtr> 
+  struct convert<giskard_core::DoubleAdditionSpecPtr> 
   {
-    static Node encode(const giskard::core::DoubleAdditionSpecPtr& rhs) 
+    static Node encode(const giskard_core::DoubleAdditionSpecPtr& rhs) 
     {
       Node node;
       node["double-add"] = rhs->get_inputs();
       return node;
     }
   
-    static bool decode(const Node& node, giskard::core::DoubleAdditionSpecPtr& rhs) 
+    static bool decode(const Node& node, giskard_core::DoubleAdditionSpecPtr& rhs) 
     {
       if(!is_double_addition(node))
         return false;
 
-      rhs = giskard::core::DoubleAdditionSpecPtr(new giskard::core::DoubleAdditionSpec()); 
-      rhs->set_inputs(node["double-add"].as< std::vector<giskard::core::DoubleSpecPtr> >());
+      rhs = giskard_core::DoubleAdditionSpecPtr(new giskard_core::DoubleAdditionSpec()); 
+      rhs->set_inputs(node["double-add"].as< std::vector<giskard_core::DoubleSpecPtr> >());
 
       return true;
     }
@@ -173,22 +173,22 @@ namespace YAML {
   }
 
   template<>
-  struct convert<giskard::core::DoubleSubtractionSpecPtr> 
+  struct convert<giskard_core::DoubleSubtractionSpecPtr> 
   {
-    static Node encode(const giskard::core::DoubleSubtractionSpecPtr& rhs) 
+    static Node encode(const giskard_core::DoubleSubtractionSpecPtr& rhs) 
     {
       Node node;
       node["double-sub"] = rhs->get_inputs();
       return node;
     }
   
-    static bool decode(const Node& node, giskard::core::DoubleSubtractionSpecPtr& rhs) 
+    static bool decode(const Node& node, giskard_core::DoubleSubtractionSpecPtr& rhs) 
     {
       if(!is_double_subtraction(node))
         return false;
 
-      rhs = giskard::core::DoubleSubtractionSpecPtr(new giskard::core::DoubleSubtractionSpec()); 
-      rhs->set_inputs(node["double-sub"].as< std::vector<giskard::core::DoubleSpecPtr> >());
+      rhs = giskard_core::DoubleSubtractionSpecPtr(new giskard_core::DoubleSubtractionSpec()); 
+      rhs->set_inputs(node["double-sub"].as< std::vector<giskard_core::DoubleSpecPtr> >());
 
       return true;
     }
@@ -200,23 +200,23 @@ namespace YAML {
   }
 
   template<>
-  struct convert<giskard::core::DoubleNormOfSpecPtr> 
+  struct convert<giskard_core::DoubleNormOfSpecPtr> 
   {
     
-    static Node encode(const giskard::core::DoubleNormOfSpecPtr& rhs) 
+    static Node encode(const giskard_core::DoubleNormOfSpecPtr& rhs) 
     {
       Node node;
       node["vector-norm"] = rhs->get_vector();
       return node;
     }
   
-    static bool decode(const Node& node, giskard::core::DoubleNormOfSpecPtr& rhs) 
+    static bool decode(const Node& node, giskard_core::DoubleNormOfSpecPtr& rhs) 
     {
       if(!is_double_norm_of(node))
         return false;
   
-      rhs = giskard::core::DoubleNormOfSpecPtr(new giskard::core::DoubleNormOfSpec());
-      rhs->set_vector(node["vector-norm"].as<giskard::core::VectorSpecPtr>());
+      rhs = giskard_core::DoubleNormOfSpecPtr(new giskard_core::DoubleNormOfSpec());
+      rhs->set_vector(node["vector-norm"].as<giskard_core::VectorSpecPtr>());
 
       return true;
     }
@@ -229,22 +229,22 @@ namespace YAML {
   }
 
   template<>
-  struct convert<giskard::core::DoubleMultiplicationSpecPtr> 
+  struct convert<giskard_core::DoubleMultiplicationSpecPtr> 
   {
-    static Node encode(const giskard::core::DoubleMultiplicationSpecPtr& rhs) 
+    static Node encode(const giskard_core::DoubleMultiplicationSpecPtr& rhs) 
     {
       Node node;
       node["double-mul"] = rhs->get_inputs();
       return node;
     }
   
-    static bool decode(const Node& node, giskard::core::DoubleMultiplicationSpecPtr& rhs) 
+    static bool decode(const Node& node, giskard_core::DoubleMultiplicationSpecPtr& rhs) 
     {
       if(!is_double_multiplication(node))
         return false;
 
-      rhs = giskard::core::DoubleMultiplicationSpecPtr(new giskard::core::DoubleMultiplicationSpec()); 
-      rhs->set_inputs(node["double-mul"].as< std::vector<giskard::core::DoubleSpecPtr> >());
+      rhs = giskard_core::DoubleMultiplicationSpecPtr(new giskard_core::DoubleMultiplicationSpec()); 
+      rhs->set_inputs(node["double-mul"].as< std::vector<giskard_core::DoubleSpecPtr> >());
 
       return true;
     }
@@ -257,22 +257,22 @@ namespace YAML {
   }
 
   template<>
-  struct convert<giskard::core::DoubleDivisionSpecPtr> 
+  struct convert<giskard_core::DoubleDivisionSpecPtr> 
   {
-    static Node encode(const giskard::core::DoubleDivisionSpecPtr& rhs) 
+    static Node encode(const giskard_core::DoubleDivisionSpecPtr& rhs) 
     {
       Node node;
       node["double-div"] = rhs->get_inputs();
       return node;
     }
   
-    static bool decode(const Node& node, giskard::core::DoubleDivisionSpecPtr& rhs) 
+    static bool decode(const Node& node, giskard_core::DoubleDivisionSpecPtr& rhs) 
     {
       if(!is_double_division(node))
         return false;
 
-      rhs = giskard::core::DoubleDivisionSpecPtr(new giskard::core::DoubleDivisionSpec()); 
-      rhs->set_inputs(node["double-div"].as< std::vector<giskard::core::DoubleSpecPtr> >());
+      rhs = giskard_core::DoubleDivisionSpecPtr(new giskard_core::DoubleDivisionSpec()); 
+      rhs->set_inputs(node["double-div"].as< std::vector<giskard_core::DoubleSpecPtr> >());
 
       return true;
     }
@@ -284,22 +284,22 @@ namespace YAML {
   }
 
   template<>
-  struct convert<giskard::core::DoubleXCoordOfSpecPtr> 
+  struct convert<giskard_core::DoubleXCoordOfSpecPtr> 
   {
-    static Node encode(const giskard::core::DoubleXCoordOfSpecPtr& rhs) 
+    static Node encode(const giskard_core::DoubleXCoordOfSpecPtr& rhs) 
     {
       Node node;
       node["x-coord"] = rhs->get_vector();
       return node;
     }
   
-    static bool decode(const Node& node, giskard::core::DoubleXCoordOfSpecPtr& rhs) 
+    static bool decode(const Node& node, giskard_core::DoubleXCoordOfSpecPtr& rhs) 
     {
       if(!is_x_coord_of(node))
         return false;
 
-      rhs = giskard::core::DoubleXCoordOfSpecPtr(new giskard::core::DoubleXCoordOfSpec()); 
-      rhs->set_vector(node["x-coord"].as< giskard::core::VectorSpecPtr >());
+      rhs = giskard_core::DoubleXCoordOfSpecPtr(new giskard_core::DoubleXCoordOfSpec()); 
+      rhs->set_vector(node["x-coord"].as< giskard_core::VectorSpecPtr >());
 
       return true;
     }
@@ -311,22 +311,22 @@ namespace YAML {
   }
 
   template<>
-  struct convert<giskard::core::DoubleYCoordOfSpecPtr> 
+  struct convert<giskard_core::DoubleYCoordOfSpecPtr> 
   {
-    static Node encode(const giskard::core::DoubleYCoordOfSpecPtr& rhs) 
+    static Node encode(const giskard_core::DoubleYCoordOfSpecPtr& rhs) 
     {
       Node node;
       node["y-coord"] = rhs->get_vector();
       return node;
     }
   
-    static bool decode(const Node& node, giskard::core::DoubleYCoordOfSpecPtr& rhs) 
+    static bool decode(const Node& node, giskard_core::DoubleYCoordOfSpecPtr& rhs) 
     {
       if(!is_y_coord_of(node))
         return false;
 
-      rhs = giskard::core::DoubleYCoordOfSpecPtr(new giskard::core::DoubleYCoordOfSpec()); 
-      rhs->set_vector(node["y-coord"].as< giskard::core::VectorSpecPtr >());
+      rhs = giskard_core::DoubleYCoordOfSpecPtr(new giskard_core::DoubleYCoordOfSpec()); 
+      rhs->set_vector(node["y-coord"].as< giskard_core::VectorSpecPtr >());
 
       return true;
     }
@@ -338,22 +338,22 @@ namespace YAML {
   }
 
   template<>
-  struct convert<giskard::core::DoubleZCoordOfSpecPtr> 
+  struct convert<giskard_core::DoubleZCoordOfSpecPtr> 
   {
-    static Node encode(const giskard::core::DoubleZCoordOfSpecPtr& rhs) 
+    static Node encode(const giskard_core::DoubleZCoordOfSpecPtr& rhs) 
     {
       Node node;
       node["z-coord"] = rhs->get_vector();
       return node;
     }
   
-    static bool decode(const Node& node, giskard::core::DoubleZCoordOfSpecPtr& rhs) 
+    static bool decode(const Node& node, giskard_core::DoubleZCoordOfSpecPtr& rhs) 
     {
       if(!is_z_coord_of(node))
         return false;
 
-      rhs = giskard::core::DoubleZCoordOfSpecPtr(new giskard::core::DoubleZCoordOfSpec()); 
-      rhs->set_vector(node["z-coord"].as< giskard::core::VectorSpecPtr >());
+      rhs = giskard_core::DoubleZCoordOfSpecPtr(new giskard_core::DoubleZCoordOfSpec()); 
+      rhs->set_vector(node["z-coord"].as< giskard_core::VectorSpecPtr >());
 
       return true;
     }
@@ -366,9 +366,9 @@ namespace YAML {
   }
 
   template<>
-  struct convert<giskard::core::VectorDotSpecPtr>
+  struct convert<giskard_core::VectorDotSpecPtr>
   {
-    static Node encode(const giskard::core::VectorDotSpecPtr& rhs) 
+    static Node encode(const giskard_core::VectorDotSpecPtr& rhs) 
     {
       Node node;
       node["vector-dot"][0] = rhs->get_lhs();
@@ -376,14 +376,14 @@ namespace YAML {
       return node;
     }
   
-    static bool decode(const Node& node, giskard::core::VectorDotSpecPtr& rhs) 
+    static bool decode(const Node& node, giskard_core::VectorDotSpecPtr& rhs) 
     {
       if(!is_vector_dot(node))
         return false;
 
-      rhs = giskard::core::VectorDotSpecPtr(new giskard::core::VectorDotSpec()); 
-      rhs->set_lhs(node["vector-dot"][0].as< giskard::core::VectorSpecPtr >());
-      rhs->set_rhs(node["vector-dot"][1].as< giskard::core::VectorSpecPtr >());
+      rhs = giskard_core::VectorDotSpecPtr(new giskard_core::VectorDotSpec()); 
+      rhs->set_lhs(node["vector-dot"][0].as< giskard_core::VectorSpecPtr >());
+      rhs->set_rhs(node["vector-dot"][1].as< giskard_core::VectorSpecPtr >());
 
       return true;
     }
@@ -395,22 +395,22 @@ namespace YAML {
   }
 
   template<>
-  struct convert<giskard::core::AbsSpecPtr>
+  struct convert<giskard_core::AbsSpecPtr>
   {
-    static Node encode(const giskard::core::AbsSpecPtr& rhs) 
+    static Node encode(const giskard_core::AbsSpecPtr& rhs) 
     {
       Node node;
       node["abs"] = rhs->get_value();
       return node;
     }
   
-    static bool decode(const Node& node, giskard::core::AbsSpecPtr& rhs) 
+    static bool decode(const Node& node, giskard_core::AbsSpecPtr& rhs) 
     {
       if(!is_abs(node))
         return false;
 
-      rhs = giskard::core::AbsSpecPtr(new giskard::core::AbsSpec()); 
-      rhs->set_value(node["abs"].as< giskard::core::DoubleSpecPtr >());
+      rhs = giskard_core::AbsSpecPtr(new giskard_core::AbsSpec()); 
+      rhs->set_value(node["abs"].as< giskard_core::DoubleSpecPtr >());
 
       return true;
     }
@@ -423,9 +423,9 @@ namespace YAML {
   }
 
   template<>
-  struct convert<giskard::core::FmodSpecPtr>
+  struct convert<giskard_core::FmodSpecPtr>
   {
-    static Node encode(const giskard::core::FmodSpecPtr& rhs) 
+    static Node encode(const giskard_core::FmodSpecPtr& rhs) 
     {
       Node node;
       node["fmod"][0] = rhs->get_nominator();
@@ -433,14 +433,14 @@ namespace YAML {
       return node;
     }
   
-    static bool decode(const Node& node, giskard::core::FmodSpecPtr& rhs) 
+    static bool decode(const Node& node, giskard_core::FmodSpecPtr& rhs) 
     {
       if(!is_fmod(node))
         return false;
 
-      rhs = giskard::core::FmodSpecPtr(new giskard::core::FmodSpec()); 
-      rhs->set_nominator(node["fmod"][0].as< giskard::core::DoubleSpecPtr >());
-      rhs->set_denominator(node["fmod"][1].as< giskard::core::DoubleSpecPtr >());
+      rhs = giskard_core::FmodSpecPtr(new giskard_core::FmodSpec()); 
+      rhs->set_nominator(node["fmod"][0].as< giskard_core::DoubleSpecPtr >());
+      rhs->set_denominator(node["fmod"][1].as< giskard_core::DoubleSpecPtr >());
 
       return true;
     }
@@ -453,9 +453,9 @@ namespace YAML {
   }
 
   template<>
-  struct convert<giskard::core::MinSpecPtr>
+  struct convert<giskard_core::MinSpecPtr>
   {
-    static Node encode(const giskard::core::MinSpecPtr& rhs) 
+    static Node encode(const giskard_core::MinSpecPtr& rhs) 
     {
       Node node;
       node["min"][0] = rhs->get_lhs();
@@ -463,14 +463,14 @@ namespace YAML {
       return node;
     }
   
-    static bool decode(const Node& node, giskard::core::MinSpecPtr& rhs) 
+    static bool decode(const Node& node, giskard_core::MinSpecPtr& rhs) 
     {
       if(!is_min(node))
         return false;
 
-      rhs = giskard::core::MinSpecPtr(new giskard::core::MinSpec()); 
-      rhs->set_lhs(node["min"][0].as< giskard::core::DoubleSpecPtr >());
-      rhs->set_rhs(node["min"][1].as< giskard::core::DoubleSpecPtr >());
+      rhs = giskard_core::MinSpecPtr(new giskard_core::MinSpec()); 
+      rhs->set_lhs(node["min"][0].as< giskard_core::DoubleSpecPtr >());
+      rhs->set_rhs(node["min"][1].as< giskard_core::DoubleSpecPtr >());
 
       return true;
     }
@@ -483,9 +483,9 @@ namespace YAML {
   }
 
   template<>
-  struct convert<giskard::core::DoubleIfSpecPtr>
+  struct convert<giskard_core::DoubleIfSpecPtr>
   {
-    static Node encode(const giskard::core::DoubleIfSpecPtr& rhs) 
+    static Node encode(const giskard_core::DoubleIfSpecPtr& rhs) 
     {
       Node node;
       node["double-if"][0] = rhs->get_condition();
@@ -494,209 +494,209 @@ namespace YAML {
       return node;
     }
   
-    static bool decode(const Node& node, giskard::core::DoubleIfSpecPtr& rhs) 
+    static bool decode(const Node& node, giskard_core::DoubleIfSpecPtr& rhs) 
     {
       if(!is_double_if(node))
         return false;
 
-      rhs = giskard::core::DoubleIfSpecPtr(new giskard::core::DoubleIfSpec()); 
-      rhs->set_condition(node["double-if"][0].as< giskard::core::DoubleSpecPtr >());
-      rhs->set_if(node["double-if"][1].as< giskard::core::DoubleSpecPtr >());
-      rhs->set_else(node["double-if"][2].as< giskard::core::DoubleSpecPtr >());
+      rhs = giskard_core::DoubleIfSpecPtr(new giskard_core::DoubleIfSpec()); 
+      rhs->set_condition(node["double-if"][0].as< giskard_core::DoubleSpecPtr >());
+      rhs->set_if(node["double-if"][1].as< giskard_core::DoubleSpecPtr >());
+      rhs->set_else(node["double-if"][2].as< giskard_core::DoubleSpecPtr >());
 
       return true;
     }
   };
 
   template<>
-  struct convert<giskard::core::DoubleSpecPtr> 
+  struct convert<giskard_core::DoubleSpecPtr> 
   {
     
-    static Node encode(const giskard::core::DoubleSpecPtr& rhs) 
+    static Node encode(const giskard_core::DoubleSpecPtr& rhs) 
     {
       Node node;
 
-      if(boost::dynamic_pointer_cast<giskard::core::DoubleConstSpec>(rhs).get())
+      if(boost::dynamic_pointer_cast<giskard_core::DoubleConstSpec>(rhs).get())
       {
-        giskard::core::DoubleConstSpecPtr p = 
-            boost::dynamic_pointer_cast<giskard::core::DoubleConstSpec>(rhs);
+        giskard_core::DoubleConstSpecPtr p = 
+            boost::dynamic_pointer_cast<giskard_core::DoubleConstSpec>(rhs);
         node = p;
       }
-      else if(boost::dynamic_pointer_cast<giskard::core::DoubleInputSpec>(rhs).get())
+      else if(boost::dynamic_pointer_cast<giskard_core::DoubleInputSpec>(rhs).get())
       {
-        giskard::core::DoubleInputSpecPtr p = 
-            boost::dynamic_pointer_cast<giskard::core::DoubleInputSpec>(rhs);
+        giskard_core::DoubleInputSpecPtr p = 
+            boost::dynamic_pointer_cast<giskard_core::DoubleInputSpec>(rhs);
         node = p;
       }
-      else if(boost::dynamic_pointer_cast<giskard::core::DoubleReferenceSpec>(rhs).get())
+      else if(boost::dynamic_pointer_cast<giskard_core::DoubleReferenceSpec>(rhs).get())
       {
-        giskard::core::DoubleReferenceSpecPtr p = 
-            boost::dynamic_pointer_cast<giskard::core::DoubleReferenceSpec>(rhs);
+        giskard_core::DoubleReferenceSpecPtr p = 
+            boost::dynamic_pointer_cast<giskard_core::DoubleReferenceSpec>(rhs);
         node = p;
       }
-      else if(boost::dynamic_pointer_cast<giskard::core::DoubleAdditionSpec>(rhs).get())
+      else if(boost::dynamic_pointer_cast<giskard_core::DoubleAdditionSpec>(rhs).get())
       {
-        giskard::core::DoubleAdditionSpecPtr p = 
-            boost::dynamic_pointer_cast<giskard::core::DoubleAdditionSpec>(rhs);
+        giskard_core::DoubleAdditionSpecPtr p = 
+            boost::dynamic_pointer_cast<giskard_core::DoubleAdditionSpec>(rhs);
         node = p;
       }
-      else if(boost::dynamic_pointer_cast<giskard::core::DoubleSubtractionSpec>(rhs).get())
+      else if(boost::dynamic_pointer_cast<giskard_core::DoubleSubtractionSpec>(rhs).get())
       {
-        giskard::core::DoubleSubtractionSpecPtr p = 
-            boost::dynamic_pointer_cast<giskard::core::DoubleSubtractionSpec>(rhs);
+        giskard_core::DoubleSubtractionSpecPtr p = 
+            boost::dynamic_pointer_cast<giskard_core::DoubleSubtractionSpec>(rhs);
         node = p;
       }
-      else if(boost::dynamic_pointer_cast<giskard::core::DoubleNormOfSpec>(rhs).get())
+      else if(boost::dynamic_pointer_cast<giskard_core::DoubleNormOfSpec>(rhs).get())
       {
-        giskard::core::DoubleNormOfSpecPtr p = 
-            boost::dynamic_pointer_cast<giskard::core::DoubleNormOfSpec>(rhs);
+        giskard_core::DoubleNormOfSpecPtr p = 
+            boost::dynamic_pointer_cast<giskard_core::DoubleNormOfSpec>(rhs);
         node = p;
       }
-      else if(boost::dynamic_pointer_cast<giskard::core::DoubleMultiplicationSpec>(rhs).get())
+      else if(boost::dynamic_pointer_cast<giskard_core::DoubleMultiplicationSpec>(rhs).get())
       {
-        giskard::core::DoubleMultiplicationSpecPtr p = 
-            boost::dynamic_pointer_cast<giskard::core::DoubleMultiplicationSpec>(rhs);
+        giskard_core::DoubleMultiplicationSpecPtr p = 
+            boost::dynamic_pointer_cast<giskard_core::DoubleMultiplicationSpec>(rhs);
         node = p;
       }
-      else if(boost::dynamic_pointer_cast<giskard::core::DoubleDivisionSpec>(rhs).get())
+      else if(boost::dynamic_pointer_cast<giskard_core::DoubleDivisionSpec>(rhs).get())
       {
-        giskard::core::DoubleDivisionSpecPtr p = 
-            boost::dynamic_pointer_cast<giskard::core::DoubleDivisionSpec>(rhs);
+        giskard_core::DoubleDivisionSpecPtr p = 
+            boost::dynamic_pointer_cast<giskard_core::DoubleDivisionSpec>(rhs);
         node = p;
       }
-      else if(boost::dynamic_pointer_cast<giskard::core::DoubleXCoordOfSpec>(rhs).get())
+      else if(boost::dynamic_pointer_cast<giskard_core::DoubleXCoordOfSpec>(rhs).get())
       {
-        giskard::core::DoubleXCoordOfSpecPtr p = 
-            boost::dynamic_pointer_cast<giskard::core::DoubleXCoordOfSpec>(rhs);
+        giskard_core::DoubleXCoordOfSpecPtr p = 
+            boost::dynamic_pointer_cast<giskard_core::DoubleXCoordOfSpec>(rhs);
         node = p;
       }
-      else if(boost::dynamic_pointer_cast<giskard::core::DoubleYCoordOfSpec>(rhs).get())
+      else if(boost::dynamic_pointer_cast<giskard_core::DoubleYCoordOfSpec>(rhs).get())
       {
-        giskard::core::DoubleYCoordOfSpecPtr p = 
-            boost::dynamic_pointer_cast<giskard::core::DoubleYCoordOfSpec>(rhs);
+        giskard_core::DoubleYCoordOfSpecPtr p = 
+            boost::dynamic_pointer_cast<giskard_core::DoubleYCoordOfSpec>(rhs);
         node = p;
       }
-      else if(boost::dynamic_pointer_cast<giskard::core::DoubleZCoordOfSpec>(rhs).get())
+      else if(boost::dynamic_pointer_cast<giskard_core::DoubleZCoordOfSpec>(rhs).get())
       {
-        giskard::core::DoubleZCoordOfSpecPtr p = 
-            boost::dynamic_pointer_cast<giskard::core::DoubleZCoordOfSpec>(rhs);
+        giskard_core::DoubleZCoordOfSpecPtr p = 
+            boost::dynamic_pointer_cast<giskard_core::DoubleZCoordOfSpec>(rhs);
         node = p;
       }
-      else if(boost::dynamic_pointer_cast<giskard::core::VectorDotSpec>(rhs).get())
+      else if(boost::dynamic_pointer_cast<giskard_core::VectorDotSpec>(rhs).get())
       {
-        giskard::core::VectorDotSpecPtr p = 
-            boost::dynamic_pointer_cast<giskard::core::VectorDotSpec>(rhs);
+        giskard_core::VectorDotSpecPtr p = 
+            boost::dynamic_pointer_cast<giskard_core::VectorDotSpec>(rhs);
         node = p;
       }
-      else if(boost::dynamic_pointer_cast<giskard::core::MinSpec>(rhs).get())
+      else if(boost::dynamic_pointer_cast<giskard_core::MinSpec>(rhs).get())
       {
-        giskard::core::MinSpecPtr p = 
-            boost::dynamic_pointer_cast<giskard::core::MinSpec>(rhs);
+        giskard_core::MinSpecPtr p = 
+            boost::dynamic_pointer_cast<giskard_core::MinSpec>(rhs);
         node = p;
       }
-      else if(boost::dynamic_pointer_cast<giskard::core::AbsSpec>(rhs).get())
+      else if(boost::dynamic_pointer_cast<giskard_core::AbsSpec>(rhs).get())
       {
-        giskard::core::AbsSpecPtr p = 
-            boost::dynamic_pointer_cast<giskard::core::AbsSpec>(rhs);
+        giskard_core::AbsSpecPtr p = 
+            boost::dynamic_pointer_cast<giskard_core::AbsSpec>(rhs);
         node = p;
       }
-      else if(boost::dynamic_pointer_cast<giskard::core::FmodSpec>(rhs).get())
+      else if(boost::dynamic_pointer_cast<giskard_core::FmodSpec>(rhs).get())
       {
-        giskard::core::FmodSpecPtr p = 
-            boost::dynamic_pointer_cast<giskard::core::FmodSpec>(rhs);
+        giskard_core::FmodSpecPtr p = 
+            boost::dynamic_pointer_cast<giskard_core::FmodSpec>(rhs);
         node = p;
       }
-      else if(boost::dynamic_pointer_cast<giskard::core::DoubleIfSpec>(rhs).get())
+      else if(boost::dynamic_pointer_cast<giskard_core::DoubleIfSpec>(rhs).get())
       {
-        giskard::core::DoubleIfSpecPtr p = 
-            boost::dynamic_pointer_cast<giskard::core::DoubleIfSpec>(rhs);
+        giskard_core::DoubleIfSpecPtr p = 
+            boost::dynamic_pointer_cast<giskard_core::DoubleIfSpec>(rhs);
         node = p;
       }
 
       return node;
     }
   
-    static bool decode(const Node& node, giskard::core::DoubleSpecPtr& rhs) 
+    static bool decode(const Node& node, giskard_core::DoubleSpecPtr& rhs) 
     {
 
       if(is_const_double(node))
       {
-        rhs = node.as<giskard::core::DoubleConstSpecPtr>();
+        rhs = node.as<giskard_core::DoubleConstSpecPtr>();
         return true;
       }
       else if(is_input(node))
       {
-        rhs = node.as<giskard::core::DoubleInputSpecPtr>();
+        rhs = node.as<giskard_core::DoubleInputSpecPtr>();
         return true;
       }
       else if(is_double_addition(node))
       {
-        rhs = node.as<giskard::core::DoubleAdditionSpecPtr>();
+        rhs = node.as<giskard_core::DoubleAdditionSpecPtr>();
         return true;
       }
       else if(is_double_subtraction(node))
       {
-        rhs = node.as<giskard::core::DoubleSubtractionSpecPtr>();
+        rhs = node.as<giskard_core::DoubleSubtractionSpecPtr>();
         return true;
       }
       else if(is_double_multiplication(node))
       {
-        rhs = node.as<giskard::core::DoubleMultiplicationSpecPtr>();
+        rhs = node.as<giskard_core::DoubleMultiplicationSpecPtr>();
         return true;
       }
       else if(is_double_division(node))
       {
-        rhs = node.as<giskard::core::DoubleDivisionSpecPtr>();
+        rhs = node.as<giskard_core::DoubleDivisionSpecPtr>();
         return true;
       }
       else if(is_double_norm_of(node))
       {
-        rhs = node.as<giskard::core::DoubleNormOfSpecPtr>();
+        rhs = node.as<giskard_core::DoubleNormOfSpecPtr>();
         return true;
       }
       else if(is_x_coord_of(node))
       {
-        rhs = node.as<giskard::core::DoubleXCoordOfSpecPtr>();
+        rhs = node.as<giskard_core::DoubleXCoordOfSpecPtr>();
         return true;
       }
       else if(is_y_coord_of(node))
       {
-        rhs = node.as<giskard::core::DoubleYCoordOfSpecPtr>();
+        rhs = node.as<giskard_core::DoubleYCoordOfSpecPtr>();
         return true;
       }
       else if(is_z_coord_of(node))
       {
-        rhs = node.as<giskard::core::DoubleZCoordOfSpecPtr>();
+        rhs = node.as<giskard_core::DoubleZCoordOfSpecPtr>();
         return true;
       }
       else if(is_double_reference(node))
       {
-        rhs = node.as<giskard::core::DoubleReferenceSpecPtr>();
+        rhs = node.as<giskard_core::DoubleReferenceSpecPtr>();
         return true;
       }
       else if(is_vector_dot(node))
       {
-        rhs = node.as<giskard::core::VectorDotSpecPtr>();
+        rhs = node.as<giskard_core::VectorDotSpecPtr>();
         return true;
       }
       else if(is_min(node))
       {
-        rhs = node.as<giskard::core::MinSpecPtr>();
+        rhs = node.as<giskard_core::MinSpecPtr>();
         return true;
       }
       else if(is_abs(node))
       {
-        rhs = node.as<giskard::core::AbsSpecPtr>();
+        rhs = node.as<giskard_core::AbsSpecPtr>();
         return true;
       }
       else if(is_fmod(node))
       {
-        rhs = node.as<giskard::core::FmodSpecPtr>();
+        rhs = node.as<giskard_core::FmodSpecPtr>();
         return true;
       }
       else if(is_double_if(node))
       {
-        rhs = node.as<giskard::core::DoubleIfSpecPtr>();
+        rhs = node.as<giskard_core::DoubleIfSpecPtr>();
         return true;
       }
       else
@@ -714,22 +714,22 @@ namespace YAML {
   }
 
   template<>
-  struct convert<giskard::core::VectorCachedSpecPtr> 
+  struct convert<giskard_core::VectorCachedSpecPtr> 
   {
-    static Node encode(const giskard::core::VectorCachedSpecPtr& rhs) 
+    static Node encode(const giskard_core::VectorCachedSpecPtr& rhs) 
     {
       Node node;
       node["cached-vector"] = rhs->get_vector();
       return node;
     }
   
-    static bool decode(const Node& node, giskard::core::VectorCachedSpecPtr& rhs) 
+    static bool decode(const Node& node, giskard_core::VectorCachedSpecPtr& rhs) 
     {
       if(!is_cached_vector(node))
         return false;
 
-      rhs = giskard::core::VectorCachedSpecPtr(new giskard::core::VectorCachedSpec()); 
-      rhs->set_vector(node["cached-vector"].as<giskard::core::VectorSpecPtr>());
+      rhs = giskard_core::VectorCachedSpecPtr(new giskard_core::VectorCachedSpec()); 
+      rhs->set_vector(node["cached-vector"].as<giskard_core::VectorSpecPtr>());
 
       return true;
     }
@@ -742,9 +742,9 @@ namespace YAML {
   }
 
   template<>
-  struct convert<giskard::core::VectorConstructorSpecPtr> 
+  struct convert<giskard_core::VectorConstructorSpecPtr> 
   {
-    static Node encode(const giskard::core::VectorConstructorSpecPtr& rhs) 
+    static Node encode(const giskard_core::VectorConstructorSpecPtr& rhs) 
     {
       Node node;
       node["vector3"].push_back(rhs->get_x());
@@ -753,15 +753,15 @@ namespace YAML {
       return node;
     }
   
-    static bool decode(const Node& node, giskard::core::VectorConstructorSpecPtr& rhs) 
+    static bool decode(const Node& node, giskard_core::VectorConstructorSpecPtr& rhs) 
     {
       if(!is_constructor_vector(node))
         return false;
 
-      rhs = giskard::core::VectorConstructorSpecPtr(new giskard::core::VectorConstructorSpec()); 
-      rhs->set_x(node["vector3"][0].as<giskard::core::DoubleSpecPtr>());
-      rhs->set_y(node["vector3"][1].as<giskard::core::DoubleSpecPtr>());
-      rhs->set_z(node["vector3"][2].as<giskard::core::DoubleSpecPtr>());
+      rhs = giskard_core::VectorConstructorSpecPtr(new giskard_core::VectorConstructorSpec()); 
+      rhs->set_x(node["vector3"][0].as<giskard_core::DoubleSpecPtr>());
+      rhs->set_y(node["vector3"][1].as<giskard_core::DoubleSpecPtr>());
+      rhs->set_z(node["vector3"][2].as<giskard_core::DoubleSpecPtr>());
 
       return true;
     }
@@ -784,22 +784,22 @@ namespace YAML {
   }
 
   template<>
-  struct convert<giskard::core::VectorReferenceSpecPtr> 
+  struct convert<giskard_core::VectorReferenceSpecPtr> 
   {
     
-    static Node encode(const giskard::core::VectorReferenceSpecPtr& rhs) 
+    static Node encode(const giskard_core::VectorReferenceSpecPtr& rhs) 
     {
       Node node;
       node = rhs->get_reference_name();
       return node;
     }
   
-    static bool decode(const Node& node, giskard::core::VectorReferenceSpecPtr& rhs) 
+    static bool decode(const Node& node, giskard_core::VectorReferenceSpecPtr& rhs) 
     {
       if(!is_vector_reference(node))
         return false;
   
-      rhs = giskard::core::VectorReferenceSpecPtr(new giskard::core::VectorReferenceSpec());
+      rhs = giskard_core::VectorReferenceSpecPtr(new giskard_core::VectorReferenceSpec());
       rhs->set_reference_name(node.as<std::string>());
 
       return true;
@@ -812,23 +812,23 @@ namespace YAML {
   }
 
   template<>
-  struct convert<giskard::core::VectorOriginOfSpecPtr> 
+  struct convert<giskard_core::VectorOriginOfSpecPtr> 
   {
     
-    static Node encode(const giskard::core::VectorOriginOfSpecPtr& rhs) 
+    static Node encode(const giskard_core::VectorOriginOfSpecPtr& rhs) 
     {
       Node node;
       node["origin-of"] = rhs->get_frame();
       return node;
     }
   
-    static bool decode(const Node& node, giskard::core::VectorOriginOfSpecPtr& rhs) 
+    static bool decode(const Node& node, giskard_core::VectorOriginOfSpecPtr& rhs) 
     {
       if(!is_vector_origin_of(node))
         return false;
   
-      rhs = giskard::core::VectorOriginOfSpecPtr(new giskard::core::VectorOriginOfSpec());
-      rhs->set_frame(node["origin-of"].as<giskard::core::FrameSpecPtr>());
+      rhs = giskard_core::VectorOriginOfSpecPtr(new giskard_core::VectorOriginOfSpec());
+      rhs->set_frame(node["origin-of"].as<giskard_core::FrameSpecPtr>());
 
       return true;
     }
@@ -841,22 +841,22 @@ namespace YAML {
   }
 
   template<>
-  struct convert<giskard::core::VectorAdditionSpecPtr> 
+  struct convert<giskard_core::VectorAdditionSpecPtr> 
   {
-    static Node encode(const giskard::core::VectorAdditionSpecPtr& rhs) 
+    static Node encode(const giskard_core::VectorAdditionSpecPtr& rhs) 
     {
       Node node;
       node["vector-add"] = rhs->get_inputs();
       return node;
     }
   
-    static bool decode(const Node& node, giskard::core::VectorAdditionSpecPtr& rhs) 
+    static bool decode(const Node& node, giskard_core::VectorAdditionSpecPtr& rhs) 
     {
       if(!is_vector_addition(node))
         return false;
 
-      rhs = giskard::core::VectorAdditionSpecPtr(new giskard::core::VectorAdditionSpec()); 
-      rhs->set_inputs(node["vector-add"].as< std::vector<giskard::core::VectorSpecPtr> >());
+      rhs = giskard_core::VectorAdditionSpecPtr(new giskard_core::VectorAdditionSpec()); 
+      rhs->set_inputs(node["vector-add"].as< std::vector<giskard_core::VectorSpecPtr> >());
 
       return true;
     }
@@ -869,22 +869,22 @@ namespace YAML {
   }
 
   template<>
-  struct convert<giskard::core::VectorSubtractionSpecPtr> 
+  struct convert<giskard_core::VectorSubtractionSpecPtr> 
   {
-    static Node encode(const giskard::core::VectorSubtractionSpecPtr& rhs) 
+    static Node encode(const giskard_core::VectorSubtractionSpecPtr& rhs) 
     {
       Node node;
       node["vector-sub"] = rhs->get_inputs();
       return node;
     }
   
-    static bool decode(const Node& node, giskard::core::VectorSubtractionSpecPtr& rhs) 
+    static bool decode(const Node& node, giskard_core::VectorSubtractionSpecPtr& rhs) 
     {
       if(!is_vector_subtraction(node))
         return false;
 
-      rhs = giskard::core::VectorSubtractionSpecPtr(new giskard::core::VectorSubtractionSpec()); 
-      rhs->set_inputs(node["vector-sub"].as< std::vector<giskard::core::VectorSpecPtr> >());
+      rhs = giskard_core::VectorSubtractionSpecPtr(new giskard_core::VectorSubtractionSpec()); 
+      rhs->set_inputs(node["vector-sub"].as< std::vector<giskard_core::VectorSpecPtr> >());
 
       return true;
     }
@@ -897,9 +897,9 @@ namespace YAML {
   }
 
   template<>
-  struct convert<giskard::core::VectorRotationMultiplicationSpecPtr> 
+  struct convert<giskard_core::VectorRotationMultiplicationSpecPtr> 
   {
-    static Node encode(const giskard::core::VectorRotationMultiplicationSpecPtr& rhs) 
+    static Node encode(const giskard_core::VectorRotationMultiplicationSpecPtr& rhs) 
     {
       Node node;
       node["rotate-vector"][0] = rhs->get_rotation();
@@ -907,14 +907,14 @@ namespace YAML {
       return node;
     }
   
-    static bool decode(const Node& node, giskard::core::VectorRotationMultiplicationSpecPtr& rhs) 
+    static bool decode(const Node& node, giskard_core::VectorRotationMultiplicationSpecPtr& rhs) 
     {
       if(!is_vector_rotation_multiplication(node))
         return false;
 
-      rhs = giskard::core::VectorRotationMultiplicationSpecPtr(new giskard::core::VectorRotationMultiplicationSpec()); 
-      rhs->set_rotation(node["rotate-vector"][0].as< giskard::core::RotationSpecPtr >());
-      rhs->set_vector(node["rotate-vector"][1].as< giskard::core::VectorSpecPtr >());
+      rhs = giskard_core::VectorRotationMultiplicationSpecPtr(new giskard_core::VectorRotationMultiplicationSpec()); 
+      rhs->set_rotation(node["rotate-vector"][0].as< giskard_core::RotationSpecPtr >());
+      rhs->set_vector(node["rotate-vector"][1].as< giskard_core::VectorSpecPtr >());
 
       return true;
     }
@@ -927,9 +927,9 @@ namespace YAML {
   }
 
   template<>
-  struct convert<giskard::core::VectorFrameMultiplicationSpecPtr> 
+  struct convert<giskard_core::VectorFrameMultiplicationSpecPtr> 
   {
-    static Node encode(const giskard::core::VectorFrameMultiplicationSpecPtr& rhs) 
+    static Node encode(const giskard_core::VectorFrameMultiplicationSpecPtr& rhs) 
     {
       Node node;
       node["transform-vector"][0] = rhs->get_frame();
@@ -937,14 +937,14 @@ namespace YAML {
       return node;
     }
   
-    static bool decode(const Node& node, giskard::core::VectorFrameMultiplicationSpecPtr& rhs) 
+    static bool decode(const Node& node, giskard_core::VectorFrameMultiplicationSpecPtr& rhs) 
     {
       if(!is_vector_frame_multiplication(node))
         return false;
 
-      rhs = giskard::core::VectorFrameMultiplicationSpecPtr(new giskard::core::VectorFrameMultiplicationSpec()); 
-      rhs->set_frame(node["transform-vector"][0].as< giskard::core::FrameSpecPtr >());
-      rhs->set_vector(node["transform-vector"][1].as< giskard::core::VectorSpecPtr >());
+      rhs = giskard_core::VectorFrameMultiplicationSpecPtr(new giskard_core::VectorFrameMultiplicationSpec()); 
+      rhs->set_frame(node["transform-vector"][0].as< giskard_core::FrameSpecPtr >());
+      rhs->set_vector(node["transform-vector"][1].as< giskard_core::VectorSpecPtr >());
 
       return true;
     }
@@ -957,9 +957,9 @@ namespace YAML {
   }
 
   template<>
-  struct convert<giskard::core::VectorDoubleMultiplicationSpecPtr> 
+  struct convert<giskard_core::VectorDoubleMultiplicationSpecPtr> 
   {
-    static Node encode(const giskard::core::VectorDoubleMultiplicationSpecPtr& rhs) 
+    static Node encode(const giskard_core::VectorDoubleMultiplicationSpecPtr& rhs) 
     {
       Node node;
       node["scale-vector"][0] = rhs->get_double();
@@ -967,14 +967,14 @@ namespace YAML {
       return node;
     }
   
-    static bool decode(const Node& node, giskard::core::VectorDoubleMultiplicationSpecPtr& rhs) 
+    static bool decode(const Node& node, giskard_core::VectorDoubleMultiplicationSpecPtr& rhs) 
     {
       if(!is_vector_double_multiplication(node))
         return false;
 
-      rhs = giskard::core::VectorDoubleMultiplicationSpecPtr(new giskard::core::VectorDoubleMultiplicationSpec()); 
-      rhs->set_double(node["scale-vector"][0].as< giskard::core::DoubleSpecPtr >());
-      rhs->set_vector(node["scale-vector"][1].as< giskard::core::VectorSpecPtr >());
+      rhs = giskard_core::VectorDoubleMultiplicationSpecPtr(new giskard_core::VectorDoubleMultiplicationSpec()); 
+      rhs->set_double(node["scale-vector"][0].as< giskard_core::DoubleSpecPtr >());
+      rhs->set_vector(node["scale-vector"][1].as< giskard_core::VectorSpecPtr >());
 
       return true;
     }
@@ -986,109 +986,109 @@ namespace YAML {
   }
 
   template<>
-  struct convert<giskard::core::VectorRotationVectorSpecPtr> 
+  struct convert<giskard_core::VectorRotationVectorSpecPtr> 
   {
     
-    static Node encode(const giskard::core::VectorRotationVectorSpecPtr& rhs) 
+    static Node encode(const giskard_core::VectorRotationVectorSpecPtr& rhs) 
     {
       Node node;
       node["rot-vector"] = rhs->get_rotation();
       return node;
     }
   
-    static bool decode(const Node& node, giskard::core::VectorRotationVectorSpecPtr& rhs) 
+    static bool decode(const Node& node, giskard_core::VectorRotationVectorSpecPtr& rhs) 
     {
       if(!is_vector_rotation_vector(node))
         return false;
   
-      rhs = giskard::core::VectorRotationVectorSpecPtr(new giskard::core::VectorRotationVectorSpec());
-      rhs->set_rotation(node["rot-vector"].as<giskard::core::RotationSpecPtr>());
+      rhs = giskard_core::VectorRotationVectorSpecPtr(new giskard_core::VectorRotationVectorSpec());
+      rhs->set_rotation(node["rot-vector"].as<giskard_core::RotationSpecPtr>());
 
       return true;
     }
   };
 
   template<>
-  struct convert<giskard::core::VectorSpecPtr> 
+  struct convert<giskard_core::VectorSpecPtr> 
   {
-    static Node encode(const giskard::core::VectorSpecPtr& rhs) 
+    static Node encode(const giskard_core::VectorSpecPtr& rhs) 
     {
       Node node;
 
-      if(boost::dynamic_pointer_cast<giskard::core::VectorCachedSpec>(rhs).get())
-        node = boost::dynamic_pointer_cast<giskard::core::VectorCachedSpec>(rhs);
-      else if(boost::dynamic_pointer_cast<giskard::core::VectorConstructorSpec>(rhs).get())
-        node = boost::dynamic_pointer_cast<giskard::core::VectorConstructorSpec>(rhs);
-      else if(boost::dynamic_pointer_cast<giskard::core::VectorReferenceSpec>(rhs).get())
-        node = boost::dynamic_pointer_cast<giskard::core::VectorReferenceSpec>(rhs);
-      else if(boost::dynamic_pointer_cast<giskard::core::VectorOriginOfSpec>(rhs).get())
-        node = boost::dynamic_pointer_cast<giskard::core::VectorOriginOfSpec>(rhs);
-      else if(boost::dynamic_pointer_cast<giskard::core::VectorAdditionSpec>(rhs).get())
-        node = boost::dynamic_pointer_cast<giskard::core::VectorAdditionSpec>(rhs);
-      else if(boost::dynamic_pointer_cast<giskard::core::VectorSubtractionSpec>(rhs).get())
-        node = boost::dynamic_pointer_cast<giskard::core::VectorSubtractionSpec>(rhs);
-      else if(boost::dynamic_pointer_cast<giskard::core::VectorFrameMultiplicationSpec>(rhs).get())
-        node = boost::dynamic_pointer_cast<giskard::core::VectorFrameMultiplicationSpec>(rhs);
-      else if(boost::dynamic_pointer_cast<giskard::core::VectorRotationMultiplicationSpec>(rhs).get())
-        node = boost::dynamic_pointer_cast<giskard::core::VectorRotationMultiplicationSpec>(rhs);
-      else if(boost::dynamic_pointer_cast<giskard::core::VectorDoubleMultiplicationSpec>(rhs).get())
-        node = boost::dynamic_pointer_cast<giskard::core::VectorDoubleMultiplicationSpec>(rhs);
-      else if(boost::dynamic_pointer_cast<giskard::core::VectorRotationVectorSpec>(rhs).get())
-        node = boost::dynamic_pointer_cast<giskard::core::VectorRotationVectorSpec>(rhs);
+      if(boost::dynamic_pointer_cast<giskard_core::VectorCachedSpec>(rhs).get())
+        node = boost::dynamic_pointer_cast<giskard_core::VectorCachedSpec>(rhs);
+      else if(boost::dynamic_pointer_cast<giskard_core::VectorConstructorSpec>(rhs).get())
+        node = boost::dynamic_pointer_cast<giskard_core::VectorConstructorSpec>(rhs);
+      else if(boost::dynamic_pointer_cast<giskard_core::VectorReferenceSpec>(rhs).get())
+        node = boost::dynamic_pointer_cast<giskard_core::VectorReferenceSpec>(rhs);
+      else if(boost::dynamic_pointer_cast<giskard_core::VectorOriginOfSpec>(rhs).get())
+        node = boost::dynamic_pointer_cast<giskard_core::VectorOriginOfSpec>(rhs);
+      else if(boost::dynamic_pointer_cast<giskard_core::VectorAdditionSpec>(rhs).get())
+        node = boost::dynamic_pointer_cast<giskard_core::VectorAdditionSpec>(rhs);
+      else if(boost::dynamic_pointer_cast<giskard_core::VectorSubtractionSpec>(rhs).get())
+        node = boost::dynamic_pointer_cast<giskard_core::VectorSubtractionSpec>(rhs);
+      else if(boost::dynamic_pointer_cast<giskard_core::VectorFrameMultiplicationSpec>(rhs).get())
+        node = boost::dynamic_pointer_cast<giskard_core::VectorFrameMultiplicationSpec>(rhs);
+      else if(boost::dynamic_pointer_cast<giskard_core::VectorRotationMultiplicationSpec>(rhs).get())
+        node = boost::dynamic_pointer_cast<giskard_core::VectorRotationMultiplicationSpec>(rhs);
+      else if(boost::dynamic_pointer_cast<giskard_core::VectorDoubleMultiplicationSpec>(rhs).get())
+        node = boost::dynamic_pointer_cast<giskard_core::VectorDoubleMultiplicationSpec>(rhs);
+      else if(boost::dynamic_pointer_cast<giskard_core::VectorRotationVectorSpec>(rhs).get())
+        node = boost::dynamic_pointer_cast<giskard_core::VectorRotationVectorSpec>(rhs);
 
       return node;
     }
   
-    static bool decode(const Node& node, giskard::core::VectorSpecPtr& rhs) 
+    static bool decode(const Node& node, giskard_core::VectorSpecPtr& rhs) 
     {
       if(is_cached_vector(node))
       {
-        rhs = node.as<giskard::core::VectorCachedSpecPtr>();
+        rhs = node.as<giskard_core::VectorCachedSpecPtr>();
         return true;
       }
       else if(is_constructor_vector(node))
       {
-        rhs = node.as<giskard::core::VectorConstructorSpecPtr>();
+        rhs = node.as<giskard_core::VectorConstructorSpecPtr>();
         return true;
       }
       else if(is_vector_reference(node))
       {
-        rhs = node.as<giskard::core::VectorReferenceSpecPtr>();
+        rhs = node.as<giskard_core::VectorReferenceSpecPtr>();
         return true;
       }
       else if(is_vector_origin_of(node))
       {
-        rhs = node.as<giskard::core::VectorOriginOfSpecPtr>();
+        rhs = node.as<giskard_core::VectorOriginOfSpecPtr>();
         return true;
       }
       else if(is_vector_addition(node))
       {
-        rhs = node.as<giskard::core::VectorAdditionSpecPtr>();
+        rhs = node.as<giskard_core::VectorAdditionSpecPtr>();
         return true;
       }
       else if(is_vector_subtraction(node))
       {
-        rhs = node.as<giskard::core::VectorSubtractionSpecPtr>();
+        rhs = node.as<giskard_core::VectorSubtractionSpecPtr>();
         return true;
       }
       else if(is_vector_frame_multiplication(node))
       {
-        rhs = node.as<giskard::core::VectorFrameMultiplicationSpecPtr>();
+        rhs = node.as<giskard_core::VectorFrameMultiplicationSpecPtr>();
         return true;
       }
       else if(is_vector_rotation_multiplication(node))
       {
-        rhs = node.as<giskard::core::VectorRotationMultiplicationSpecPtr>();
+        rhs = node.as<giskard_core::VectorRotationMultiplicationSpecPtr>();
         return true;
       }
       else if(is_vector_double_multiplication(node))
       {
-        rhs = node.as<giskard::core::VectorDoubleMultiplicationSpecPtr>();
+        rhs = node.as<giskard_core::VectorDoubleMultiplicationSpecPtr>();
         return true;
       }
       else if(is_vector_rotation_vector(node))
       {
-        rhs = node.as<giskard::core::VectorRotationVectorSpecPtr>();
+        rhs = node.as<giskard_core::VectorRotationVectorSpecPtr>();
         return true;
       }
       else
@@ -1107,9 +1107,9 @@ namespace YAML {
   }
 
   template<>
-  struct convert<giskard::core::RotationQuaternionConstructorSpecPtr> 
+  struct convert<giskard_core::RotationQuaternionConstructorSpecPtr> 
   {
-    static Node encode(const giskard::core::RotationQuaternionConstructorSpecPtr& rhs) 
+    static Node encode(const giskard_core::RotationQuaternionConstructorSpecPtr& rhs) 
     {
       Node node;
       node["quaternion"][0] = rhs->get_x();
@@ -1120,12 +1120,12 @@ namespace YAML {
       return node;
     }
   
-    static bool decode(const Node& node, giskard::core::RotationQuaternionConstructorSpecPtr& rhs) 
+    static bool decode(const Node& node, giskard_core::RotationQuaternionConstructorSpecPtr& rhs) 
     {
       if(!is_quaternion_constructor(node))
         return false;
 
-      rhs = giskard::core::RotationQuaternionConstructorSpecPtr(new giskard::core::RotationQuaternionConstructorSpec());
+      rhs = giskard_core::RotationQuaternionConstructorSpecPtr(new giskard_core::RotationQuaternionConstructorSpec());
       rhs->set_x(node["quaternion"][0].as<double>());
       rhs->set_y(node["quaternion"][1].as<double>());
       rhs->set_z(node["quaternion"][2].as<double>());
@@ -1142,9 +1142,9 @@ namespace YAML {
   }
 
   template<>
-  struct convert<giskard::core::SlerpSpecPtr> 
+  struct convert<giskard_core::SlerpSpecPtr> 
   {
-    static Node encode(const giskard::core::SlerpSpecPtr& rhs) 
+    static Node encode(const giskard_core::SlerpSpecPtr& rhs) 
     {
       Node node;
       node["slerp"][0] = rhs->get_from();
@@ -1153,15 +1153,15 @@ namespace YAML {
       return node;
     }
   
-    static bool decode(const Node& node, giskard::core::SlerpSpecPtr& rhs) 
+    static bool decode(const Node& node, giskard_core::SlerpSpecPtr& rhs) 
     {
       if(!is_slerp(node))
         return false;
 
-      rhs = giskard::core::SlerpSpecPtr(new giskard::core::SlerpSpec()); 
-      rhs->set_from(node["slerp"][0].as<giskard::core::RotationSpecPtr>());
-      rhs->set_to(node["slerp"][1].as<giskard::core::RotationSpecPtr>());
-      rhs->set_param(node["slerp"][2].as<giskard::core::DoubleSpecPtr>());
+      rhs = giskard_core::SlerpSpecPtr(new giskard_core::SlerpSpec()); 
+      rhs->set_from(node["slerp"][0].as<giskard_core::RotationSpecPtr>());
+      rhs->set_to(node["slerp"][1].as<giskard_core::RotationSpecPtr>());
+      rhs->set_param(node["slerp"][2].as<giskard_core::DoubleSpecPtr>());
 
       return true;
     }
@@ -1174,9 +1174,9 @@ namespace YAML {
   }
 
   template<>
-  struct convert<giskard::core::AxisAngleSpecPtr> 
+  struct convert<giskard_core::AxisAngleSpecPtr> 
   {
-    static Node encode(const giskard::core::AxisAngleSpecPtr& rhs) 
+    static Node encode(const giskard_core::AxisAngleSpecPtr& rhs) 
     {
       Node node;
       node["axis-angle"][0] = rhs->get_axis();
@@ -1184,14 +1184,14 @@ namespace YAML {
       return node;
     }
   
-    static bool decode(const Node& node, giskard::core::AxisAngleSpecPtr& rhs) 
+    static bool decode(const Node& node, giskard_core::AxisAngleSpecPtr& rhs) 
     {
       if(!is_axis_angle(node))
         return false;
 
-      rhs = giskard::core::AxisAngleSpecPtr(new giskard::core::AxisAngleSpec()); 
-      rhs->set_axis(node["axis-angle"][0].as<giskard::core::VectorSpecPtr>());
-      rhs->set_angle(node["axis-angle"][1].as<giskard::core::DoubleSpecPtr>());
+      rhs = giskard_core::AxisAngleSpecPtr(new giskard_core::AxisAngleSpec()); 
+      rhs->set_axis(node["axis-angle"][0].as<giskard_core::VectorSpecPtr>());
+      rhs->set_angle(node["axis-angle"][1].as<giskard_core::DoubleSpecPtr>());
 
       return true;
     }
@@ -1203,23 +1203,23 @@ namespace YAML {
   }
 
   template<>
-  struct convert<giskard::core::OrientationOfSpecPtr> 
+  struct convert<giskard_core::OrientationOfSpecPtr> 
   {
     
-    static Node encode(const giskard::core::OrientationOfSpecPtr& rhs) 
+    static Node encode(const giskard_core::OrientationOfSpecPtr& rhs) 
     {
       Node node;
       node["orientation-of"] = rhs->get_frame();
       return node;
     }
   
-    static bool decode(const Node& node, giskard::core::OrientationOfSpecPtr& rhs) 
+    static bool decode(const Node& node, giskard_core::OrientationOfSpecPtr& rhs) 
     {
       if(!is_orientation_of(node))
         return false;
   
-      rhs = giskard::core::OrientationOfSpecPtr(new giskard::core::OrientationOfSpec());
-      rhs->set_frame(node["orientation-of"].as<giskard::core::FrameSpecPtr>());
+      rhs = giskard_core::OrientationOfSpecPtr(new giskard_core::OrientationOfSpec());
+      rhs->set_frame(node["orientation-of"].as<giskard_core::FrameSpecPtr>());
 
       return true;
     }
@@ -1242,22 +1242,22 @@ namespace YAML {
   }
 
   template<>
-  struct convert<giskard::core::RotationReferenceSpecPtr> 
+  struct convert<giskard_core::RotationReferenceSpecPtr> 
   {
     
-    static Node encode(const giskard::core::RotationReferenceSpecPtr& rhs) 
+    static Node encode(const giskard_core::RotationReferenceSpecPtr& rhs) 
     {
       Node node;
       node = rhs->get_reference_name();
       return node;
     }
   
-    static bool decode(const Node& node, giskard::core::RotationReferenceSpecPtr& rhs) 
+    static bool decode(const Node& node, giskard_core::RotationReferenceSpecPtr& rhs) 
     {
       if(!is_rotation_reference(node))
         return false;
  
-      rhs = giskard::core::RotationReferenceSpecPtr(new giskard::core::RotationReferenceSpec());
+      rhs = giskard_core::RotationReferenceSpecPtr(new giskard_core::RotationReferenceSpec());
       rhs->set_reference_name(node.as<std::string>());
 
       return true;
@@ -1270,23 +1270,23 @@ namespace YAML {
   }
 
   template<>
-  struct convert<giskard::core::InverseRotationSpecPtr> 
+  struct convert<giskard_core::InverseRotationSpecPtr> 
   {
     
-    static Node encode(const giskard::core::InverseRotationSpecPtr& rhs) 
+    static Node encode(const giskard_core::InverseRotationSpecPtr& rhs) 
     {
       Node node;
       node["inverse-rotation"] = rhs->get_rotation();
       return node;
     }
   
-    static bool decode(const Node& node, giskard::core::InverseRotationSpecPtr& rhs) 
+    static bool decode(const Node& node, giskard_core::InverseRotationSpecPtr& rhs) 
     {
       if(!is_inverse_rotation(node))
         return false;
 
-      rhs = giskard::core::InverseRotationSpecPtr(new giskard::core::InverseRotationSpec());
-      rhs->set_rotation(node["inverse-rotation"].as<giskard::core::RotationSpecPtr>());
+      rhs = giskard_core::InverseRotationSpecPtr(new giskard_core::InverseRotationSpec());
+      rhs->set_rotation(node["inverse-rotation"].as<giskard_core::RotationSpecPtr>());
 
       return true;
     }
@@ -1299,87 +1299,87 @@ namespace YAML {
   }
 
   template<>
-  struct convert<giskard::core::RotationMultiplicationSpecPtr> 
+  struct convert<giskard_core::RotationMultiplicationSpecPtr> 
   {
-    static Node encode(const giskard::core::RotationMultiplicationSpecPtr& rhs) 
+    static Node encode(const giskard_core::RotationMultiplicationSpecPtr& rhs) 
     {
       Node node;
       node["rotation-mul"] = rhs->get_inputs();
       return node;
     }
   
-    static bool decode(const Node& node, giskard::core::RotationMultiplicationSpecPtr& rhs) 
+    static bool decode(const Node& node, giskard_core::RotationMultiplicationSpecPtr& rhs) 
     {
       if(!is_rotation_multiplication(node))
         return false;
 
-      rhs = giskard::core::RotationMultiplicationSpecPtr(new giskard::core::RotationMultiplicationSpec()); 
-      rhs->set_inputs(node["rotation-mul"].as< std::vector<giskard::core::RotationSpecPtr> >());
+      rhs = giskard_core::RotationMultiplicationSpecPtr(new giskard_core::RotationMultiplicationSpec()); 
+      rhs->set_inputs(node["rotation-mul"].as< std::vector<giskard_core::RotationSpecPtr> >());
 
       return true;
     }
   };
 
   template<>
-  struct convert<giskard::core::RotationSpecPtr> 
+  struct convert<giskard_core::RotationSpecPtr> 
   {
-    static Node encode(const giskard::core::RotationSpecPtr& rhs) 
+    static Node encode(const giskard_core::RotationSpecPtr& rhs) 
     {
       Node node;
 
-      if(boost::dynamic_pointer_cast<giskard::core::AxisAngleSpec>(rhs).get())
-        node = boost::dynamic_pointer_cast<giskard::core::AxisAngleSpec>(rhs);
-      else if(boost::dynamic_pointer_cast<giskard::core::RotationQuaternionConstructorSpec>(rhs).get())
-        node = boost::dynamic_pointer_cast<giskard::core::RotationQuaternionConstructorSpec>(rhs);
-      else if(boost::dynamic_pointer_cast<giskard::core::OrientationOfSpec>(rhs).get())
-        node = boost::dynamic_pointer_cast<giskard::core::OrientationOfSpec>(rhs);
-      else if(boost::dynamic_pointer_cast<giskard::core::RotationReferenceSpec>(rhs).get())
-        node = boost::dynamic_pointer_cast<giskard::core::RotationReferenceSpec>(rhs);
-      else if(boost::dynamic_pointer_cast<giskard::core::InverseRotationSpec>(rhs).get())
-        node = boost::dynamic_pointer_cast<giskard::core::InverseRotationSpec>(rhs);
-      else if(boost::dynamic_pointer_cast<giskard::core::RotationMultiplicationSpec>(rhs).get())
-        node = boost::dynamic_pointer_cast<giskard::core::RotationMultiplicationSpec>(rhs);
-      else if(boost::dynamic_pointer_cast<giskard::core::SlerpSpec>(rhs).get())
-        node = boost::dynamic_pointer_cast<giskard::core::SlerpSpec>(rhs);
+      if(boost::dynamic_pointer_cast<giskard_core::AxisAngleSpec>(rhs).get())
+        node = boost::dynamic_pointer_cast<giskard_core::AxisAngleSpec>(rhs);
+      else if(boost::dynamic_pointer_cast<giskard_core::RotationQuaternionConstructorSpec>(rhs).get())
+        node = boost::dynamic_pointer_cast<giskard_core::RotationQuaternionConstructorSpec>(rhs);
+      else if(boost::dynamic_pointer_cast<giskard_core::OrientationOfSpec>(rhs).get())
+        node = boost::dynamic_pointer_cast<giskard_core::OrientationOfSpec>(rhs);
+      else if(boost::dynamic_pointer_cast<giskard_core::RotationReferenceSpec>(rhs).get())
+        node = boost::dynamic_pointer_cast<giskard_core::RotationReferenceSpec>(rhs);
+      else if(boost::dynamic_pointer_cast<giskard_core::InverseRotationSpec>(rhs).get())
+        node = boost::dynamic_pointer_cast<giskard_core::InverseRotationSpec>(rhs);
+      else if(boost::dynamic_pointer_cast<giskard_core::RotationMultiplicationSpec>(rhs).get())
+        node = boost::dynamic_pointer_cast<giskard_core::RotationMultiplicationSpec>(rhs);
+      else if(boost::dynamic_pointer_cast<giskard_core::SlerpSpec>(rhs).get())
+        node = boost::dynamic_pointer_cast<giskard_core::SlerpSpec>(rhs);
 
       return node;
     }
   
-    static bool decode(const Node& node, giskard::core::RotationSpecPtr& rhs) 
+    static bool decode(const Node& node, giskard_core::RotationSpecPtr& rhs) 
     {
       if(is_axis_angle(node))
       {
-        rhs = node.as<giskard::core::AxisAngleSpecPtr>();
+        rhs = node.as<giskard_core::AxisAngleSpecPtr>();
         return true;
       } 
       else if(is_slerp(node))
       {
-        rhs = node.as<giskard::core::SlerpSpecPtr>();
+        rhs = node.as<giskard_core::SlerpSpecPtr>();
         return true;
       } 
       else if(is_quaternion_constructor(node))
       {
-        rhs = node.as<giskard::core::RotationQuaternionConstructorSpecPtr>();
+        rhs = node.as<giskard_core::RotationQuaternionConstructorSpecPtr>();
         return true;
       }
       else if(is_rotation_reference(node))
       {
-        rhs = node.as<giskard::core::RotationReferenceSpecPtr>();
+        rhs = node.as<giskard_core::RotationReferenceSpecPtr>();
         return true;
       }
       else if(is_orientation_of(node))
       {
-        rhs = node.as<giskard::core::OrientationOfSpecPtr>();
+        rhs = node.as<giskard_core::OrientationOfSpecPtr>();
         return true;
       }
       else if(is_inverse_rotation(node))
       {
-        rhs = node.as<giskard::core::InverseRotationSpecPtr>();
+        rhs = node.as<giskard_core::InverseRotationSpecPtr>();
         return true;
       }
       else if(is_rotation_multiplication(node))
       {
-        rhs = node.as<giskard::core::RotationMultiplicationSpecPtr>();
+        rhs = node.as<giskard_core::RotationMultiplicationSpecPtr>();
         return true;
       }
       else
@@ -1397,22 +1397,22 @@ namespace YAML {
   }
 
   template<>
-  struct convert<giskard::core::FrameCachedSpecPtr> 
+  struct convert<giskard_core::FrameCachedSpecPtr> 
   {
-    static Node encode(const giskard::core::FrameCachedSpecPtr& rhs) 
+    static Node encode(const giskard_core::FrameCachedSpecPtr& rhs) 
     {
       Node node;
       node["cached-frame"] = rhs->get_frame();
       return node;
     }
   
-    static bool decode(const Node& node, giskard::core::FrameCachedSpecPtr& rhs) 
+    static bool decode(const Node& node, giskard_core::FrameCachedSpecPtr& rhs) 
     {
       if(!is_cached_frame(node))
         return false;
 
-      rhs = giskard::core::FrameCachedSpecPtr(new giskard::core::FrameCachedSpec()); 
-      rhs->set_frame(node["cached-frame"].as<giskard::core::FrameSpecPtr>());
+      rhs = giskard_core::FrameCachedSpecPtr(new giskard_core::FrameCachedSpec()); 
+      rhs->set_frame(node["cached-frame"].as<giskard_core::FrameSpecPtr>());
 
       return true;
     }
@@ -1425,9 +1425,9 @@ namespace YAML {
   }
 
   template<>
-  struct convert<giskard::core::FrameConstructorSpecPtr> 
+  struct convert<giskard_core::FrameConstructorSpecPtr> 
   {
-    static Node encode(const giskard::core::FrameConstructorSpecPtr& rhs) 
+    static Node encode(const giskard_core::FrameConstructorSpecPtr& rhs) 
     {
       Node node;
       node["frame"][0] = rhs->get_rotation();
@@ -1435,14 +1435,14 @@ namespace YAML {
       return node;
     }
   
-    static bool decode(const Node& node, giskard::core::FrameConstructorSpecPtr& rhs) 
+    static bool decode(const Node& node, giskard_core::FrameConstructorSpecPtr& rhs) 
     {
       if(!is_constructor_frame(node))
         return false;
 
-      rhs = giskard::core::FrameConstructorSpecPtr(new giskard::core::FrameConstructorSpec()); 
-      rhs->set_rotation(node["frame"][0].as<giskard::core::RotationSpecPtr>());
-      rhs->set_translation(node["frame"][1].as<giskard::core::VectorSpecPtr>());
+      rhs = giskard_core::FrameConstructorSpecPtr(new giskard_core::FrameConstructorSpec()); 
+      rhs->set_rotation(node["frame"][0].as<giskard_core::RotationSpecPtr>());
+      rhs->set_translation(node["frame"][1].as<giskard_core::VectorSpecPtr>());
 
       return true;
     }
@@ -1455,22 +1455,22 @@ namespace YAML {
   }
 
   template<>
-  struct convert<giskard::core::FrameMultiplicationSpecPtr> 
+  struct convert<giskard_core::FrameMultiplicationSpecPtr> 
   {
-    static Node encode(const giskard::core::FrameMultiplicationSpecPtr& rhs) 
+    static Node encode(const giskard_core::FrameMultiplicationSpecPtr& rhs) 
     {
       Node node;
       node["frame-mul"] = rhs->get_inputs();
       return node;
     }
   
-    static bool decode(const Node& node, giskard::core::FrameMultiplicationSpecPtr& rhs) 
+    static bool decode(const Node& node, giskard_core::FrameMultiplicationSpecPtr& rhs) 
     {
       if(!is_frame_multiplication(node))
         return false;
 
-      rhs = giskard::core::FrameMultiplicationSpecPtr(new giskard::core::FrameMultiplicationSpec()); 
-      rhs->set_inputs(node["frame-mul"].as< std::vector<giskard::core::FrameSpecPtr> >());
+      rhs = giskard_core::FrameMultiplicationSpecPtr(new giskard_core::FrameMultiplicationSpec()); 
+      rhs->set_inputs(node["frame-mul"].as< std::vector<giskard_core::FrameSpecPtr> >());
 
       return true;
     }
@@ -1493,22 +1493,22 @@ namespace YAML {
   }
 
   template<>
-  struct convert<giskard::core::FrameReferenceSpecPtr> 
+  struct convert<giskard_core::FrameReferenceSpecPtr> 
   {
     
-    static Node encode(const giskard::core::FrameReferenceSpecPtr& rhs) 
+    static Node encode(const giskard_core::FrameReferenceSpecPtr& rhs) 
     {
       Node node;
       node = rhs->get_reference_name();
       return node;
     }
   
-    static bool decode(const Node& node, giskard::core::FrameReferenceSpecPtr& rhs) 
+    static bool decode(const Node& node, giskard_core::FrameReferenceSpecPtr& rhs) 
     {
       if(!is_frame_reference(node))
         return false;
   
-      rhs = giskard::core::FrameReferenceSpecPtr(new giskard::core::FrameReferenceSpec());
+      rhs = giskard_core::FrameReferenceSpecPtr(new giskard_core::FrameReferenceSpec());
       rhs->set_reference_name(node.as<std::string>());
 
       return true;
@@ -1516,44 +1516,44 @@ namespace YAML {
   };
 
   template<>
-  struct convert<giskard::core::FrameSpecPtr> 
+  struct convert<giskard_core::FrameSpecPtr> 
   {
-    static Node encode(const giskard::core::FrameSpecPtr& rhs) 
+    static Node encode(const giskard_core::FrameSpecPtr& rhs) 
     {
       Node node;
 
-      if(boost::dynamic_pointer_cast<giskard::core::FrameCachedSpec>(rhs).get())
-        node = boost::dynamic_pointer_cast<giskard::core::FrameCachedSpec>(rhs);
-      else if(boost::dynamic_pointer_cast<giskard::core::FrameConstructorSpec>(rhs).get())
-        node = boost::dynamic_pointer_cast<giskard::core::FrameConstructorSpec>(rhs);
-      else if (boost::dynamic_pointer_cast<giskard::core::FrameMultiplicationSpec>(rhs).get())
-        node = boost::dynamic_pointer_cast<giskard::core::FrameMultiplicationSpec>(rhs);
-      else if (boost::dynamic_pointer_cast<giskard::core::FrameReferenceSpec>(rhs).get())
-        node = boost::dynamic_pointer_cast<giskard::core::FrameReferenceSpec>(rhs);
+      if(boost::dynamic_pointer_cast<giskard_core::FrameCachedSpec>(rhs).get())
+        node = boost::dynamic_pointer_cast<giskard_core::FrameCachedSpec>(rhs);
+      else if(boost::dynamic_pointer_cast<giskard_core::FrameConstructorSpec>(rhs).get())
+        node = boost::dynamic_pointer_cast<giskard_core::FrameConstructorSpec>(rhs);
+      else if (boost::dynamic_pointer_cast<giskard_core::FrameMultiplicationSpec>(rhs).get())
+        node = boost::dynamic_pointer_cast<giskard_core::FrameMultiplicationSpec>(rhs);
+      else if (boost::dynamic_pointer_cast<giskard_core::FrameReferenceSpec>(rhs).get())
+        node = boost::dynamic_pointer_cast<giskard_core::FrameReferenceSpec>(rhs);
 
       return node;
     }
   
-    static bool decode(const Node& node, giskard::core::FrameSpecPtr& rhs) 
+    static bool decode(const Node& node, giskard_core::FrameSpecPtr& rhs) 
     {
       if(is_cached_frame(node))
       {
-        rhs = node.as<giskard::core::FrameCachedSpecPtr>();
+        rhs = node.as<giskard_core::FrameCachedSpecPtr>();
         return true;
       }
       else if(is_constructor_frame(node))
       {
-        rhs = node.as<giskard::core::FrameConstructorSpecPtr>();
+        rhs = node.as<giskard_core::FrameConstructorSpecPtr>();
         return true;
       }
       else if(is_frame_multiplication(node))
       {
-        rhs = node.as<giskard::core::FrameMultiplicationSpecPtr>();
+        rhs = node.as<giskard_core::FrameMultiplicationSpecPtr>();
         return true;
       }
       else if(is_frame_reference(node))
       {
-        rhs = node.as<giskard::core::FrameReferenceSpecPtr>();
+        rhs = node.as<giskard_core::FrameReferenceSpecPtr>();
         return true;
       }
       else
@@ -1599,44 +1599,44 @@ namespace YAML {
   }
 
   template<>
-  struct convert<giskard::core::SpecPtr> 
+  struct convert<giskard_core::SpecPtr> 
   {
-    static Node encode(const giskard::core::SpecPtr& rhs) 
+    static Node encode(const giskard_core::SpecPtr& rhs) 
     {
       Node node;
 
-      if(boost::dynamic_pointer_cast<giskard::core::FrameSpec>(rhs).get())
-        node = boost::dynamic_pointer_cast<giskard::core::FrameSpec>(rhs);
-      else if (boost::dynamic_pointer_cast<giskard::core::VectorSpec>(rhs).get())
-        node = boost::dynamic_pointer_cast<giskard::core::VectorSpec>(rhs);
-      else if (boost::dynamic_pointer_cast<giskard::core::RotationSpec>(rhs).get())
-        node = boost::dynamic_pointer_cast<giskard::core::RotationSpec>(rhs);
-      else if (boost::dynamic_pointer_cast<giskard::core::DoubleSpec>(rhs).get())
-        node = boost::dynamic_pointer_cast<giskard::core::DoubleSpec>(rhs);
+      if(boost::dynamic_pointer_cast<giskard_core::FrameSpec>(rhs).get())
+        node = boost::dynamic_pointer_cast<giskard_core::FrameSpec>(rhs);
+      else if (boost::dynamic_pointer_cast<giskard_core::VectorSpec>(rhs).get())
+        node = boost::dynamic_pointer_cast<giskard_core::VectorSpec>(rhs);
+      else if (boost::dynamic_pointer_cast<giskard_core::RotationSpec>(rhs).get())
+        node = boost::dynamic_pointer_cast<giskard_core::RotationSpec>(rhs);
+      else if (boost::dynamic_pointer_cast<giskard_core::DoubleSpec>(rhs).get())
+        node = boost::dynamic_pointer_cast<giskard_core::DoubleSpec>(rhs);
 
       return node;
     }
   
-    static bool decode(const Node& node, giskard::core::SpecPtr& rhs) 
+    static bool decode(const Node& node, giskard_core::SpecPtr& rhs) 
     {
       if(is_double_spec(node))
       {
-        rhs = node.as<giskard::core::DoubleSpecPtr>();
+        rhs = node.as<giskard_core::DoubleSpecPtr>();
         return true;
       }
       else if(is_vector_spec(node))
       {
-        rhs = node.as<giskard::core::VectorSpecPtr>();
+        rhs = node.as<giskard_core::VectorSpecPtr>();
         return true;
       }
       else if(is_rotation_spec(node))
       {
-        rhs = node.as<giskard::core::RotationSpecPtr>();
+        rhs = node.as<giskard_core::RotationSpecPtr>();
         return true;
       }
       else if(is_frame_spec(node))
       {
-        rhs = node.as<giskard::core::FrameSpecPtr>();
+        rhs = node.as<giskard_core::FrameSpecPtr>();
         return true;
       }
       else
@@ -1654,9 +1654,9 @@ namespace YAML {
   }
 
   template<>
-  struct convert<giskard::core::ScopeEntry> 
+  struct convert<giskard_core::ScopeEntry> 
   {
-    static Node encode(const giskard::core::ScopeEntry& rhs) 
+    static Node encode(const giskard_core::ScopeEntry& rhs) 
     {
       YAML::Node node;
 
@@ -1665,13 +1665,13 @@ namespace YAML {
       return node;
     }
   
-    static bool decode(const Node& node, giskard::core::ScopeEntry& rhs) 
+    static bool decode(const Node& node, giskard_core::ScopeEntry& rhs) 
     {
       if(!is_scope_entry(node))
         return false;
 
       rhs.name = node.begin()->first.as<std::string>();
-      rhs.spec = node.begin()->second.as<giskard::core::SpecPtr>(); 
+      rhs.spec = node.begin()->second.as<giskard_core::SpecPtr>(); 
 
       return true;
     }
@@ -1684,9 +1684,9 @@ namespace YAML {
   }
 
   template<>
-  struct convert<giskard::core::ControllableConstraintSpec> 
+  struct convert<giskard_core::ControllableConstraintSpec> 
   {
-    static Node encode(const giskard::core::ControllableConstraintSpec& rhs) 
+    static Node encode(const giskard_core::ControllableConstraintSpec& rhs) 
     {
       YAML::Node node;
 
@@ -1699,14 +1699,14 @@ namespace YAML {
       return node;
     }
   
-    static bool decode(const Node& node, giskard::core::ControllableConstraintSpec& rhs) 
+    static bool decode(const Node& node, giskard_core::ControllableConstraintSpec& rhs) 
     {
       if(!is_controllable_spec(node))
         return false;
 
-      rhs.lower_ = node["controllable-constraint"][0].as<giskard::core::DoubleSpecPtr>();
-      rhs.upper_ = node["controllable-constraint"][1].as<giskard::core::DoubleSpecPtr>();
-      rhs.weight_ = node["controllable-constraint"][2].as<giskard::core::DoubleSpecPtr>();
+      rhs.lower_ = node["controllable-constraint"][0].as<giskard_core::DoubleSpecPtr>();
+      rhs.upper_ = node["controllable-constraint"][1].as<giskard_core::DoubleSpecPtr>();
+      rhs.weight_ = node["controllable-constraint"][2].as<giskard_core::DoubleSpecPtr>();
       rhs.input_number_ = node["controllable-constraint"][3].as<size_t>();
       rhs.name_ = node["controllable-constraint"][4].as<std::string>();
 
@@ -1721,9 +1721,9 @@ namespace YAML {
   }
 
   template<>
-  struct convert<giskard::core::SoftConstraintSpec> 
+  struct convert<giskard_core::SoftConstraintSpec> 
   {
-    static Node encode(const giskard::core::SoftConstraintSpec& rhs) 
+    static Node encode(const giskard_core::SoftConstraintSpec& rhs) 
     {
       YAML::Node node;
 
@@ -1736,15 +1736,15 @@ namespace YAML {
       return node;
     }
   
-    static bool decode(const Node& node, giskard::core::SoftConstraintSpec& rhs) 
+    static bool decode(const Node& node, giskard_core::SoftConstraintSpec& rhs) 
     {
       if(!is_soft_constraint_spec(node))
         return false;
 
-      rhs.lower_ = node["soft-constraint"][0].as<giskard::core::DoubleSpecPtr>();
-      rhs.upper_ = node["soft-constraint"][1].as<giskard::core::DoubleSpecPtr>();
-      rhs.weight_ = node["soft-constraint"][2].as<giskard::core::DoubleSpecPtr>();
-      rhs.expression_ = node["soft-constraint"][3].as<giskard::core::DoubleSpecPtr>();
+      rhs.lower_ = node["soft-constraint"][0].as<giskard_core::DoubleSpecPtr>();
+      rhs.upper_ = node["soft-constraint"][1].as<giskard_core::DoubleSpecPtr>();
+      rhs.weight_ = node["soft-constraint"][2].as<giskard_core::DoubleSpecPtr>();
+      rhs.expression_ = node["soft-constraint"][3].as<giskard_core::DoubleSpecPtr>();
       rhs.name_ = node["soft-constraint"][4].as<std::string>();
 
       return true;
@@ -1758,9 +1758,9 @@ namespace YAML {
   }
 
   template<>
-  struct convert<giskard::core::HardConstraintSpec> 
+  struct convert<giskard_core::HardConstraintSpec> 
   {
-    static Node encode(const giskard::core::HardConstraintSpec& rhs) 
+    static Node encode(const giskard_core::HardConstraintSpec& rhs) 
     {
       YAML::Node node;
 
@@ -1771,14 +1771,14 @@ namespace YAML {
       return node;
     }
   
-    static bool decode(const Node& node, giskard::core::HardConstraintSpec& rhs) 
+    static bool decode(const Node& node, giskard_core::HardConstraintSpec& rhs) 
     {
       if(!is_hard_constraint_spec(node))
         return false;
 
-      rhs.lower_ = node["hard-constraint"][0].as<giskard::core::DoubleSpecPtr>();
-      rhs.upper_ = node["hard-constraint"][1].as<giskard::core::DoubleSpecPtr>();
-      rhs.expression_ = node["hard-constraint"][2].as<giskard::core::DoubleSpecPtr>();
+      rhs.lower_ = node["hard-constraint"][0].as<giskard_core::DoubleSpecPtr>();
+      rhs.upper_ = node["hard-constraint"][1].as<giskard_core::DoubleSpecPtr>();
+      rhs.expression_ = node["hard-constraint"][2].as<giskard_core::DoubleSpecPtr>();
 
       return true;
     }
@@ -1794,9 +1794,9 @@ namespace YAML {
   }
 
   template<>
-  struct convert<giskard::core::QPControllerSpec> 
+  struct convert<giskard_core::QPControllerSpec> 
   {
-    static Node encode(const giskard::core::QPControllerSpec& rhs) 
+    static Node encode(const giskard_core::QPControllerSpec& rhs) 
     {
       YAML::Node node;
 
@@ -1808,18 +1808,18 @@ namespace YAML {
       return node;
     }
   
-    static bool decode(const Node& node, giskard::core::QPControllerSpec& rhs) 
+    static bool decode(const Node& node, giskard_core::QPControllerSpec& rhs) 
     {
       if(!is_qp_controller_spec(node))
         return false;
 
-      rhs.scope_ = node["scope"].as< std::vector<giskard::core::ScopeEntry> >();
+      rhs.scope_ = node["scope"].as< std::vector<giskard_core::ScopeEntry> >();
       rhs.controllable_constraints_ = 
-          node["controllable-constraints"].as< std::vector<giskard::core::ControllableConstraintSpec> >();
+          node["controllable-constraints"].as< std::vector<giskard_core::ControllableConstraintSpec> >();
       rhs.soft_constraints_ = 
-          node["soft-constraints"].as< std::vector<giskard::core::SoftConstraintSpec> >();
+          node["soft-constraints"].as< std::vector<giskard_core::SoftConstraintSpec> >();
       rhs.hard_constraints_ = 
-          node["hard-constraints"].as< std::vector<giskard::core::HardConstraintSpec> >();
+          node["hard-constraints"].as< std::vector<giskard_core::HardConstraintSpec> >();
 
       return true;
     }

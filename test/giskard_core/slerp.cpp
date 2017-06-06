@@ -38,25 +38,25 @@ class SlerpTest : public ::testing::Test
 TEST_F(SlerpTest, Interpolation)
 {
   using namespace KDL;
-  EXPECT_TRUE(Equal(giskard::core::slerp(from, to, 0.1),
+  EXPECT_TRUE(Equal(giskard_core::slerp(from, to, 0.1),
         Rotation::Quaternion(0.448726, -0.462604, 0.639831, -0.419085),
         0.001));
-  EXPECT_TRUE(Equal(giskard::core::slerp(from, to, 0.5),
+  EXPECT_TRUE(Equal(giskard_core::slerp(from, to, 0.5),
         Rotation::Quaternion(0.757226, -0.163759, 0.621395, -0.118059),
         0.001));
-  EXPECT_TRUE(Equal(giskard::core::slerp(from, to, 0.8),
+  EXPECT_TRUE(Equal(giskard_core::slerp(from, to, 0.8),
         Rotation::Quaternion(0.854405, 0.095176, 0.493150, 0.134153),
         0.001));
-  EXPECT_TRUE(Equal(giskard::core::slerp(from, to, 1.0),
+  EXPECT_TRUE(Equal(giskard_core::slerp(from, to, 1.0),
         Rotation::Quaternion(0.845000, 0.262000, 0.363000, 0.293000),
         0.001));
-  EXPECT_TRUE(Equal(giskard::core::slerp(to, from, 0.2),
+  EXPECT_TRUE(Equal(giskard_core::slerp(to, from, 0.2),
         Rotation::Quaternion(0.854405, 0.095176, 0.493150, 0.134153),
         0.001));
-  EXPECT_TRUE(Equal(giskard::core::slerp(to, from, 0.4),
+  EXPECT_TRUE(Equal(giskard_core::slerp(to, from, 0.4),
         Rotation::Quaternion(0.803953, -0.078316, 0.588752, -0.034092),
         0.001));
-  EXPECT_TRUE(Equal(giskard::core::slerp(to, from, 1.0),
+  EXPECT_TRUE(Equal(giskard_core::slerp(to, from, 1.0),
         Rotation::Quaternion(0.348000, -0.520000, 0.616000, -0.479000),
         0.001));
 }

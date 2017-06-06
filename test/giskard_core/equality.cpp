@@ -42,14 +42,14 @@ TEST_F(EqualityTest, SlerpControl)
   names.push_back("r_rot_control");
 
   YAML::Node node = YAML::LoadFile("pr2_cart_cart_control.yaml");
-  ASSERT_NO_THROW(node.as<giskard::core::QPControllerSpec>());
+  ASSERT_NO_THROW(node.as<giskard_core::QPControllerSpec>());
 
-  giskard::core::QPControllerSpec spec = node.as<giskard::core::QPControllerSpec>();
+  giskard_core::QPControllerSpec spec = node.as<giskard_core::QPControllerSpec>();
 
   for (size_t i=0; i<names.size(); ++i)
     for (size_t j=0; j<names.size(); ++j)
     {
-      giskard::core::SpecPtr spec1, spec2;
+      giskard_core::SpecPtr spec1, spec2;
       for (size_t k=0; k<spec.scope_.size(); ++k)
       {
         if (spec.scope_[k].name.find(names[i]) == 0)

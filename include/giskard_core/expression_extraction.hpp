@@ -27,7 +27,7 @@
 #include <kdl_parser/kdl_parser.hpp>
 #include <boost/shared_ptr.hpp>
 
-namespace giskard { namespace core
+namespace giskard_core
 {
   class ExpressionExtractor
   {
@@ -206,6 +206,6 @@ namespace giskard { namespace core
   {
     return ExpressionExtractor::extract(start_link, end_link, urdf_path);
   }
-}}
+}
 
 #endif // GISKARD_CORE_EXPRESSION_EXTRACTION_HPP

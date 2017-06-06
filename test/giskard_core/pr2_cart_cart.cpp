@@ -95,18 +95,18 @@ class PR2CartCartControlTest : public ::testing::Test
     int nWSR;
 };
 
-void print_double(const giskard::core::QPController& controller, const std::string& name)
+void print_double(const giskard_core::QPController& controller, const std::string& name)
 {
   std::cout << name << ": " << controller.get_scope().find_double_expression(name)->value() << std::endl;
 }
 
-void print_vector(const giskard::core::QPController& controller, const std::string& name)
+void print_vector(const giskard_core::QPController& controller, const std::string& name)
 {
   using namespace KDL;
   std::cout << name << ": " << controller.get_scope().find_vector_expression(name)->value() << std::endl;
 }
 
-void print_rotation(const giskard::core::QPController& controller, const std::string& name)
+void print_rotation(const giskard_core::QPController& controller, const std::string& name)
 {
   double x, y, z, w;
   controller.get_scope().find_rotation_expression(name)->value().GetQuaternion(x, y, z, w);
@@ -117,12 +117,12 @@ void print_rotation(const giskard::core::QPController& controller, const std::st
 TEST_F(PR2CartCartControlTest, SlerpControl)
 {
   YAML::Node node = YAML::LoadFile("pr2_cart_cart_control.yaml");
-  ASSERT_NO_THROW(node.as<giskard::core::QPControllerSpec>());
+  ASSERT_NO_THROW(node.as<giskard_core::QPControllerSpec>());
 
-  giskard::core::QPControllerSpec spec = node.as<giskard::core::QPControllerSpec>();
-  ASSERT_NO_THROW(giskard::core::generate(spec));
+  giskard_core::QPControllerSpec spec = node.as<giskard_core::QPControllerSpec>();
+  ASSERT_NO_THROW(giskard_core::generate(spec));
 
-  giskard::core::QPController controller = giskard::core::generate(spec);
+  giskard_core::QPController controller = giskard_core::generate(spec);
 
   ASSERT_NO_THROW(controller.start(q, nWSR));
 

@@ -104,7 +104,7 @@ class QPProblemBuilderTest : public ::testing::Test
 
 TEST_F(QPProblemBuilderTest, Constructor)
 {
-  giskard::core::QPProblemBuilder b;
+  giskard_core::QPProblemBuilder b;
   EXPECT_EQ(0, b.num_weights());
   EXPECT_EQ(0, b.num_constraints());
   EXPECT_EQ(0, b.num_soft_constraints());
@@ -137,7 +137,7 @@ TEST_F(QPProblemBuilderTest, Constructor)
 
 TEST_F(QPProblemBuilderTest, Init)
 {
-  giskard::core::QPProblemBuilder b;
+  giskard_core::QPProblemBuilder b;
   b.init(controllable_lower, controllable_upper, controllable_weights, soft_expressions,
       soft_lower, soft_upper, soft_weights, hard_expressions, hard_lower, hard_upper);
 
@@ -173,7 +173,7 @@ TEST_F(QPProblemBuilderTest, Init)
 
 TEST_F(QPProblemBuilderTest, Update)
 {
-  giskard::core::QPProblemBuilder b;
+  giskard_core::QPProblemBuilder b;
   b.init(controllable_lower, controllable_upper, controllable_weights, soft_expressions,
       soft_lower, soft_upper, soft_weights, hard_expressions, hard_lower, hard_upper);
   b.update(initial_state);

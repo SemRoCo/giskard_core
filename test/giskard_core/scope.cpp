@@ -44,7 +44,7 @@ class ScopeTest : public ::testing::Test
 
 TEST_F(ScopeTest, HasDouble)
 {
-  giskard::core::Scope scope;
+  giskard_core::Scope scope;
 
   EXPECT_FALSE(scope.has_double_expression("a"));
   EXPECT_FALSE(scope.has_double_expression("b"));
@@ -71,7 +71,7 @@ TEST_F(ScopeTest, HasDouble)
 
 TEST_F(ScopeTest, HasFrame)
 {
-  giskard::core::Scope scope;
+  giskard_core::Scope scope;
 
   EXPECT_FALSE(scope.has_frame_expression("1"));
   EXPECT_FALSE(scope.has_frame_expression("2"));
@@ -98,7 +98,7 @@ TEST_F(ScopeTest, HasFrame)
 
 TEST_F(ScopeTest, HasRotation)
 {
-  giskard::core::Scope scope;
+  giskard_core::Scope scope;
 
   EXPECT_FALSE(scope.has_rotation_expression("1"));
   EXPECT_FALSE(scope.has_rotation_expression("2"));
@@ -125,7 +125,7 @@ TEST_F(ScopeTest, HasRotation)
 
 TEST_F(ScopeTest, FindDouble)
 {
-  giskard::core::Scope scope;
+  giskard_core::Scope scope;
 
   scope.add_double_expression("a", double_a);
   EXPECT_EQ(double_a, scope.find_double_expression("a"));
@@ -137,7 +137,7 @@ TEST_F(ScopeTest, FindDouble)
 
 TEST_F(ScopeTest, FindFrame)
 {
-  giskard::core::Scope scope;
+  giskard_core::Scope scope;
 
   scope.add_frame_expression("1", frame_1);
   EXPECT_EQ(frame_1, scope.find_frame_expression("1"));
@@ -149,7 +149,7 @@ TEST_F(ScopeTest, FindFrame)
 
 TEST_F(ScopeTest, FindRotation)
 {
-  giskard::core::Scope scope;
+  giskard_core::Scope scope;
 
   scope.add_rotation_expression("rot_1", rot_1);
   EXPECT_EQ(rot_1, scope.find_rotation_expression("rot_1"));

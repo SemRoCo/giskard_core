@@ -42,12 +42,12 @@ class PR2IKTest : public ::testing::Test
 TEST_F(PR2IKTest, SingleExpression)
 {
   YAML::Node node = YAML::LoadFile("pr2_left_arm_single_expression.yaml");
-  ASSERT_NO_THROW(node.as<giskard::core::FrameSpecPtr>());
+  ASSERT_NO_THROW(node.as<giskard_core::FrameSpecPtr>());
 
-  giskard::core::FrameSpecPtr spec = node.as<giskard::core::FrameSpecPtr>();
-  ASSERT_NO_THROW(spec->get_expression(giskard::core::Scope()));
+  giskard_core::FrameSpecPtr spec = node.as<giskard_core::FrameSpecPtr>();
+  ASSERT_NO_THROW(spec->get_expression(giskard_core::Scope()));
   
-  KDL::Expression<KDL::Frame>::Ptr exp = spec->get_expression(giskard::core::Scope());
+  KDL::Expression<KDL::Frame>::Ptr exp = spec->get_expression(giskard_core::Scope());
   ASSERT_TRUE(exp.get()); 
 
   std::string base = "torso_lift_link";
@@ -88,11 +88,11 @@ TEST_F(PR2IKTest, SingleRowRotation)
 {
   YAML::Node node = YAML::LoadFile("pr2_left_arm_scope.yaml");
 
-  ASSERT_NO_THROW(node.as< giskard::core::ScopeSpec >());
-  giskard::core::ScopeSpec scope_spec = node.as<giskard::core::ScopeSpec>();
+  ASSERT_NO_THROW(node.as< giskard_core::ScopeSpec >());
+  giskard_core::ScopeSpec scope_spec = node.as<giskard_core::ScopeSpec>();
 
-  ASSERT_NO_THROW(giskard::core::generate(scope_spec));
-  giskard::core::Scope scope = giskard::core::generate(scope_spec);
+  ASSERT_NO_THROW(giskard_core::generate(scope_spec));
+  giskard_core::Scope scope = giskard_core::generate(scope_spec);
 
   ASSERT_TRUE(scope.has_double_expression("pr2_rot_x"));
 

@@ -76,12 +76,12 @@ class PR2FKTest : public ::testing::Test
 TEST_F(PR2FKTest, SingleExpression)
 {
   YAML::Node node = YAML::LoadFile("pr2_left_arm_single_expression.yaml");
-  ASSERT_NO_THROW(node.as<giskard::core::FrameSpecPtr>());
+  ASSERT_NO_THROW(node.as<giskard_core::FrameSpecPtr>());
 
-  giskard::core::FrameSpecPtr spec = node.as<giskard::core::FrameSpecPtr>();
-  ASSERT_NO_THROW(spec->get_expression(giskard::core::Scope()));
+  giskard_core::FrameSpecPtr spec = node.as<giskard_core::FrameSpecPtr>();
+  ASSERT_NO_THROW(spec->get_expression(giskard_core::Scope()));
 
-  KDL::Expression<KDL::Frame>::Ptr exp = spec->get_expression(giskard::core::Scope());
+  KDL::Expression<KDL::Frame>::Ptr exp = spec->get_expression(giskard_core::Scope());
   std::string base = "torso_lift_link";
   std::string tip = "l_wrist_roll_link";
   TestFrameExpression(exp, base, tip);
@@ -91,11 +91,11 @@ TEST_F(PR2FKTest, Scope)
 {
   YAML::Node node = YAML::LoadFile("pr2_left_arm_scope.yaml");
 
-  ASSERT_NO_THROW(node.as< giskard::core::ScopeSpec >());
-  giskard::core::ScopeSpec scope_spec = node.as<giskard::core::ScopeSpec>();
+  ASSERT_NO_THROW(node.as< giskard_core::ScopeSpec >());
+  giskard_core::ScopeSpec scope_spec = node.as<giskard_core::ScopeSpec>();
 
-  ASSERT_NO_THROW(giskard::core::generate(scope_spec));
-  giskard::core::Scope scope = giskard::core::generate(scope_spec);
+  ASSERT_NO_THROW(giskard_core::generate(scope_spec));
+  giskard_core::Scope scope = giskard_core::generate(scope_spec);
 
   ASSERT_TRUE(scope.has_frame_expression("pr2_fk"));
 
@@ -109,13 +109,13 @@ TEST_F(PR2FKTest, GeneratedFromUrdf)
 {
   std::string base = "base_link";
   std::string tip = "l_wrist_roll_link";
-  YAML::Node node = giskard::core::extract_expression(base, tip, "pr2.urdf");
+  YAML::Node node = giskard_core::extract_expression(base, tip, "pr2.urdf");
 
-  ASSERT_NO_THROW(node.as< giskard::core::ScopeSpec >());
-  giskard::core::ScopeSpec scope_spec = node.as<giskard::core::ScopeSpec>();
+  ASSERT_NO_THROW(node.as< giskard_core::ScopeSpec >());
+  giskard_core::ScopeSpec scope_spec = node.as<giskard_core::ScopeSpec>();
 
-  ASSERT_NO_THROW(giskard::core::generate(scope_spec));
-  giskard::core::Scope scope = giskard::core::generate(scope_spec);
+  ASSERT_NO_THROW(giskard_core::generate(scope_spec));
+  giskard_core::Scope scope = giskard_core::generate(scope_spec);
 
   ASSERT_TRUE(scope.has_frame_expression("fk"));
 
@@ -127,13 +127,13 @@ TEST_F(PR2FKTest, GeneratedFromTree)
 {
   std::string base = "base_link";
   std::string tip = "l_wrist_roll_link";
-  YAML::Node node = giskard::core::extract_expression(base, tip, tree);
+  YAML::Node node = giskard_core::extract_expression(base, tip, tree);
 
-  ASSERT_NO_THROW(node.as< giskard::core::ScopeSpec >());
-  giskard::core::ScopeSpec scope_spec = node.as<giskard::core::ScopeSpec>();
+  ASSERT_NO_THROW(node.as< giskard_core::ScopeSpec >());
+  giskard_core::ScopeSpec scope_spec = node.as<giskard_core::ScopeSpec>();
 
-  ASSERT_NO_THROW(giskard::core::generate(scope_spec));
-  giskard::core::Scope scope = giskard::core::generate(scope_spec);
+  ASSERT_NO_THROW(giskard_core::generate(scope_spec));
+  giskard_core::Scope scope = giskard_core::generate(scope_spec);
 
   ASSERT_TRUE(scope.has_frame_expression("fk"));
 
@@ -145,13 +145,13 @@ TEST_F(PR2FKTest, TipToForearm)
 {
   std::string base = "l_forearm_link";
   std::string tip = "l_wrist_flex_link";
-  YAML::Node node = giskard::core::extract_expression(tip, base, tree);
+  YAML::Node node = giskard_core::extract_expression(tip, base, tree);
 
-  ASSERT_NO_THROW(node.as< giskard::core::ScopeSpec >());
-  giskard::core::ScopeSpec scope_spec = node.as<giskard::core::ScopeSpec>();
+  ASSERT_NO_THROW(node.as< giskard_core::ScopeSpec >());
+  giskard_core::ScopeSpec scope_spec = node.as<giskard_core::ScopeSpec>();
 
-  ASSERT_NO_THROW(giskard::core::generate(scope_spec));
-  giskard::core::Scope scope = giskard::core::generate(scope_spec);
+  ASSERT_NO_THROW(giskard_core::generate(scope_spec));
+  giskard_core::Scope scope = giskard_core::generate(scope_spec);
 
   ASSERT_TRUE(scope.has_frame_expression("fk"));
 
@@ -163,13 +163,13 @@ TEST_F(PR2FKTest, TipToBase)
 {
   std::string base = "base_link";
   std::string tip = "l_wrist_flex_link";
-  YAML::Node node = giskard::core::extract_expression(tip, base, tree);
+  YAML::Node node = giskard_core::extract_expression(tip, base, tree);
 
-  ASSERT_NO_THROW(node.as< giskard::core::ScopeSpec >());
-  giskard::core::ScopeSpec scope_spec = node.as<giskard::core::ScopeSpec>();
+  ASSERT_NO_THROW(node.as< giskard_core::ScopeSpec >());
+  giskard_core::ScopeSpec scope_spec = node.as<giskard_core::ScopeSpec>();
 
-  ASSERT_NO_THROW(giskard::core::generate(scope_spec));
-  giskard::core::Scope scope = giskard::core::generate(scope_spec);
+  ASSERT_NO_THROW(giskard_core::generate(scope_spec));
+  giskard_core::Scope scope = giskard_core::generate(scope_spec);
 
   ASSERT_TRUE(scope.has_frame_expression("fk"));
 
@@ -181,13 +181,13 @@ TEST_F(PR2FKTest, TipToTip)
 {
   std::string base = "r_wrist_flex_link";
   std::string tip = "l_wrist_flex_link";
-  YAML::Node node = giskard::core::extract_expression(tip, base, tree);
+  YAML::Node node = giskard_core::extract_expression(tip, base, tree);
 
-  ASSERT_NO_THROW(node.as< giskard::core::ScopeSpec >());
-  giskard::core::ScopeSpec scope_spec = node.as<giskard::core::ScopeSpec>();
+  ASSERT_NO_THROW(node.as< giskard_core::ScopeSpec >());
+  giskard_core::ScopeSpec scope_spec = node.as<giskard_core::ScopeSpec>();
 
-  ASSERT_NO_THROW(giskard::core::generate(scope_spec));
-  giskard::core::Scope scope = giskard::core::generate(scope_spec);
+  ASSERT_NO_THROW(giskard_core::generate(scope_spec));
+  giskard_core::Scope scope = giskard_core::generate(scope_spec);
 
   ASSERT_TRUE(scope.has_frame_expression("fk"));
 
@@ -199,13 +199,13 @@ TEST_F(PR2FKTest, BaseToCam)
 {
   std::string base = "base_link";
   std::string tip = "l_forearm_cam_frame";
-  YAML::Node node = giskard::core::extract_expression(tip, base, tree);
+  YAML::Node node = giskard_core::extract_expression(tip, base, tree);
 
-  ASSERT_NO_THROW(node.as< giskard::core::ScopeSpec >());
-  giskard::core::ScopeSpec scope_spec = node.as<giskard::core::ScopeSpec>();
+  ASSERT_NO_THROW(node.as< giskard_core::ScopeSpec >());
+  giskard_core::ScopeSpec scope_spec = node.as<giskard_core::ScopeSpec>();
 
-  ASSERT_NO_THROW(giskard::core::generate(scope_spec));
-  giskard::core::Scope scope = giskard::core::generate(scope_spec);
+  ASSERT_NO_THROW(giskard_core::generate(scope_spec));
+  giskard_core::Scope scope = giskard_core::generate(scope_spec);
 
   ASSERT_TRUE(scope.has_frame_expression("fk"));
 
@@ -217,13 +217,13 @@ TEST_F(PR2FKTest, CamToBase)
 {
   std::string base = "l_forearm_cam_frame";
   std::string tip = "base_link";
-  YAML::Node node = giskard::core::extract_expression(tip, base, tree);
+  YAML::Node node = giskard_core::extract_expression(tip, base, tree);
 
-  ASSERT_NO_THROW(node.as< giskard::core::ScopeSpec >());
-  giskard::core::ScopeSpec scope_spec = node.as<giskard::core::ScopeSpec>();
+  ASSERT_NO_THROW(node.as< giskard_core::ScopeSpec >());
+  giskard_core::ScopeSpec scope_spec = node.as<giskard_core::ScopeSpec>();
 
-  ASSERT_NO_THROW(giskard::core::generate(scope_spec));
-  giskard::core::Scope scope = giskard::core::generate(scope_spec);
+  ASSERT_NO_THROW(giskard_core::generate(scope_spec));
+  giskard_core::Scope scope = giskard_core::generate(scope_spec);
 
   ASSERT_TRUE(scope.has_frame_expression("fk"));
 
@@ -237,17 +237,17 @@ TEST_F(PR2FKTest, QPPositionControl)
 
   ASSERT_TRUE(node.IsMap());
 
-  ASSERT_NO_THROW(node.as< giskard::core::QPControllerSpec >());
-  giskard::core::QPControllerSpec spec = node.as< giskard::core::QPControllerSpec >();
-  giskard::core::Scope scope = giskard::core::generate(spec.scope_);
+  ASSERT_NO_THROW(node.as< giskard_core::QPControllerSpec >());
+  giskard_core::QPControllerSpec spec = node.as< giskard_core::QPControllerSpec >();
+  giskard_core::Scope scope = giskard_core::generate(spec.scope_);
   KDL::Expression<double>::Ptr error = scope.find_double_expression("pr2_fk_error");
 
   Eigen::VectorXd state(8);
   using Eigen::operator<<;
   state << 0.02, 0.0, 0.0, 0.0, -0.16, 0.0, -0.11, 0.0;
   int nWSR = 100;
-  ASSERT_NO_THROW(giskard::core::generate(spec));
-  giskard::core::QPController controller = giskard::core::generate(spec);
+  ASSERT_NO_THROW(giskard_core::generate(spec));
+  giskard_core::QPController controller = giskard_core::generate(spec);
 
   // setup
   size_t iterations = 400;
@@ -287,18 +287,18 @@ TEST_F(PR2FKTest, QPPositionControlWithDeactivatedControllables)
 
   ASSERT_TRUE(node.IsMap());
 
-  ASSERT_NO_THROW(node.as< giskard::core::QPControllerSpec >());
-  giskard::core::QPControllerSpec spec = node.as< giskard::core::QPControllerSpec >();
+  ASSERT_NO_THROW(node.as< giskard_core::QPControllerSpec >());
+  giskard_core::QPControllerSpec spec = node.as< giskard_core::QPControllerSpec >();
 
-  giskard::core::Scope scope = giskard::core::generate(spec.scope_);
+  giskard_core::Scope scope = giskard_core::generate(spec.scope_);
   KDL::Expression<double>::Ptr error = scope.find_double_expression("pr2_fk_error");
 
   Eigen::VectorXd state(8);
   using Eigen::operator<<;
   state << 0.02, 0.0, 0.0, 0.0, -0.16, 0.0, -0.11, 0.0;
   int nWSR = 100;
-  ASSERT_NO_THROW(giskard::core::generate(spec));
-  giskard::core::QPController controller = giskard::core::generate(spec);
+  ASSERT_NO_THROW(giskard_core::generate(spec));
+  giskard_core::QPController controller = giskard_core::generate(spec);
 
   // setup
   size_t iterations = 500;
@@ -341,18 +341,18 @@ TEST_F(PR2FKTest, QPPositionControlWithExcessObservables)
 
   ASSERT_TRUE(node.IsMap());
 
-  ASSERT_NO_THROW(node.as< giskard::core::QPControllerSpec >());
-  giskard::core::QPControllerSpec spec = node.as< giskard::core::QPControllerSpec >();
+  ASSERT_NO_THROW(node.as< giskard_core::QPControllerSpec >());
+  giskard_core::QPControllerSpec spec = node.as< giskard_core::QPControllerSpec >();
 
-  giskard::core::Scope scope = giskard::core::generate(spec.scope_);
+  giskard_core::Scope scope = giskard_core::generate(spec.scope_);
   KDL::Expression<double>::Ptr error = scope.find_double_expression("pr2_fk_error");
 
   Eigen::VectorXd state(8);
   using Eigen::operator<<;
   state << 0.02, 0.0, 0.0, 0.0, -0.16, 0.0, -0.11, 0.0;
   int nWSR = 100;
-  ASSERT_NO_THROW(giskard::core::generate(spec));
-  giskard::core::QPController controller = giskard::core::generate(spec);
+  ASSERT_NO_THROW(giskard_core::generate(spec));
+  giskard_core::QPController controller = giskard_core::generate(spec);
 
   // setup
   size_t iterations = 300;
