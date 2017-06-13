@@ -49,7 +49,17 @@ namespace giskard_core
 
         qp_problem_ = qpOASES::SQProblem(qp_builder_.num_weights(), qp_builder_.num_constraints());
         qpOASES::Options options;
-        options.setToReliable();
+        // NOTE: In the past, I was using setting "reliable", and found a curious
+        //       bug: One trying to solve an already solved problem, the solver
+        //       would never finish and run out of working set iterations. The
+        //       corresponding test-case is broken flying cup. Switching to
+        //       "default" solved this on qpOASES 3.1.
+        // NOTE: Even earlier, I was using setting "MPC" that left to weird behavior
+        //       for orientation control. It seemed as if the solver returned 
+        //       inaccurate solutions. We (Alexis and Georg) decided to swith
+        //       away from "MPC" to improve this behavior. That was also for
+        //       qpOASES 3.1. However, now I cannot reproduce that problem.
+        options.setToDefault();
         options.printLevel = qpOASES::PL_NONE;
         qp_problem_.setOptions(options);
 
