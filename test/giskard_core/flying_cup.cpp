@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2015-2017 Georg Bartels <georg.bartels@cs.uni-bremen.de>
- * 
+ *
  * This file is part of giskard.
  * 
  * giskard is free software; you can redistribute it and/or
@@ -128,4 +128,46 @@ TEST_F(FlyingCupTest, ApproachMotion)
   EXPECT_LE(0.29, mug_above->value());
   EXPECT_LE(mug_above->value(), 0.36);
 
+}
+
+TEST_F(FlyingCupTest, IssueBrokenFlyingCup)
+{
+  YAML::Node node = YAML::LoadFile("broken_flying_cup.yaml");
+  ASSERT_NO_THROW(node.as<giskard_core::QPControllerSpec>());
+  giskard_core::QPControllerSpec spec = node.as<giskard_core::QPControllerSpec>();
+  ASSERT_NO_THROW(giskard_core::generate(spec));
+  giskard_core::QPController controller = giskard_core::generate(spec);
+
+  // setup
+  size_t nWSR = 100;
+  KDL::Frame maker_frame =
+    KDL::Frame(
+      KDL::Rotation::Quaternion(
+          0.706475862557,
+          0.705969763725,
+          -0.0347925064966,
+          0.0358891323504),
+      KDL::Vector(-0.131965, 0.924513, 1.05));
+
+  KDL::Frame mug_frame =
+    KDL::Frame(KDL::Rotation::Quaternion(0,0,0,1),   
+        KDL::Vector(-0.459675, 0.976666, 1.36252));
+
+  Eigen::VectorXd state(12);
+  state(0) = mug_frame.p.x();
+  state(1) = mug_frame.p.y();
+  state(2) = mug_frame.p.z();
+  mug_frame.M.GetEulerZYX(state(3), state(4), state(5));
+  state(6) = maker_frame.p.x();
+  state(7) = maker_frame.p.y();
+  state(8) = maker_frame.p.z();
+  maker_frame.M.GetEulerZYX(state(9), state(10), state(11));
+
+  using namespace Eigen;
+  std::cout << state << std::endl;
+
+  ASSERT_TRUE(controller.start(state, nWSR));
+  ASSERT_TRUE(controller.update(state, nWSR));
+
+  std::cout << std::endl << controller.get_command() << std::endl;
 }
