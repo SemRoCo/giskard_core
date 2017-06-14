@@ -1,5 +1,5 @@
 # giskard_core 
-[![Build Status](https://travis-ci.org/SemRoCo/giskard.svg?branch=master)](https://travis-ci.org/SemRoCo/giskard)
+[![Build Status](https://travis-ci.org/SemRoCo/giskard_core.svg?branch=master)](https://travis-ci.org/SemRoCo/giskard_core)
 [![Coverage Status](https://coveralls.io/repos/github/SemRoCo/giskard/badge.svg?branch=master)](https://coveralls.io/github/SemRoCo/giskard?branch=master)
 
 The core C++ library of giskard, a constraint- and optimization-based framework for robot motion control.
