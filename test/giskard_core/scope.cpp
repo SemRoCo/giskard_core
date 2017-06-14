@@ -33,6 +33,8 @@ class ScopeTest : public ::testing::Test
       frame_2 = KDL::frame(KDL::vector(KDL::Constant(1.0), KDL::Constant(2.0), KDL::Constant(3.0)));
       rot_1 = KDL::rot_x(KDL::Constant(M_PI/2.0));
       rot_2 = KDL::rot_x(KDL::Constant(-M_PI/2.0));
+      vec_I = KDL::vector(KDL::Constant(1.0), KDL::Constant(0.0), KDL::Constant(0.0));
+      vec_II = KDL::vector(KDL::Constant(2.0), KDL::Constant(0.0), KDL::Constant(0.0));
     }
 
     virtual void TearDown(){}
@@ -40,7 +42,28 @@ class ScopeTest : public ::testing::Test
     KDL::Expression<double>::Ptr double_a, double_b;
     KDL::Expression<KDL::Frame>::Ptr frame_1, frame_2;
     KDL::Expression<KDL::Rotation>::Ptr rot_1, rot_2;
+    KDL::Expression<KDL::Vector>::Ptr vec_I, vec_II;
 };
+
+TEST_F(ScopeTest, GetVectorNames)
+{
+  giskard_core::Scope scope;
+
+  ASSERT_EQ(scope.get_vector_names().size(), 0);
+
+  scope.add_vector_expression("I", vec_I);
+  ASSERT_EQ(scope.get_vector_names().size(), 1);
+  EXPECT_STREQ(scope.get_vector_names()[0].c_str(), "I");
+ 
+  scope.add_vector_expression("II", vec_II);
+  ASSERT_EQ(scope.get_vector_names().size(), 2);
+  EXPECT_STREQ(scope.get_vector_names()[0].c_str(), "I");
+  EXPECT_STREQ(scope.get_vector_names()[1].c_str(), "II");
+
+  EXPECT_EQ(scope.get_double_names().size(), 0);
+  EXPECT_EQ(scope.get_rotation_names().size(), 0);
+  EXPECT_EQ(scope.get_frame_names().size(), 0);
+}
 
 TEST_F(ScopeTest, HasDouble)
 {
@@ -67,6 +90,26 @@ TEST_F(ScopeTest, HasDouble)
   EXPECT_FALSE(scope.has_rotation_expression("1"));
   EXPECT_FALSE(scope.has_rotation_expression("2"));
   EXPECT_FALSE(scope.has_rotation_expression("3"));
+}
+
+TEST_F(ScopeTest, GetDoubleNames)
+{
+  giskard_core::Scope scope;
+
+  ASSERT_EQ(scope.get_double_names().size(), 0);
+
+  scope.add_double_expression("a", double_a);
+  ASSERT_EQ(scope.get_double_names().size(), 1);
+  EXPECT_STREQ(scope.get_double_names()[0].c_str(), "a");
+ 
+  scope.add_double_expression("b", double_b);
+  ASSERT_EQ(scope.get_double_names().size(), 2);
+  EXPECT_STREQ(scope.get_double_names()[0].c_str(), "a");
+  EXPECT_STREQ(scope.get_double_names()[1].c_str(), "b");
+
+  EXPECT_EQ(scope.get_vector_names().size(), 0);
+  EXPECT_EQ(scope.get_rotation_names().size(), 0);
+  EXPECT_EQ(scope.get_frame_names().size(), 0);
 }
 
 TEST_F(ScopeTest, HasFrame)
@@ -96,6 +139,26 @@ TEST_F(ScopeTest, HasFrame)
   EXPECT_FALSE(scope.has_rotation_expression("3"));
 }
 
+TEST_F(ScopeTest, GetFrameNames)
+{
+  giskard_core::Scope scope;
+
+  ASSERT_EQ(scope.get_frame_names().size(), 0);
+
+  scope.add_frame_expression("1", frame_1);
+  ASSERT_EQ(scope.get_frame_names().size(), 1);
+  EXPECT_STREQ(scope.get_frame_names()[0].c_str(), "1");
+ 
+  scope.add_frame_expression("2", frame_2);
+  ASSERT_EQ(scope.get_frame_names().size(), 2);
+  EXPECT_STREQ(scope.get_frame_names()[0].c_str(), "1");
+  EXPECT_STREQ(scope.get_frame_names()[1].c_str(), "2");
+
+  EXPECT_EQ(scope.get_vector_names().size(), 0);
+  EXPECT_EQ(scope.get_rotation_names().size(), 0);
+  EXPECT_EQ(scope.get_double_names().size(), 0);
+}
+
 TEST_F(ScopeTest, HasRotation)
 {
   giskard_core::Scope scope;
@@ -121,6 +184,26 @@ TEST_F(ScopeTest, HasRotation)
   EXPECT_FALSE(scope.has_frame_expression("1"));
   EXPECT_FALSE(scope.has_frame_expression("2"));
   EXPECT_FALSE(scope.has_frame_expression("3"));
+}
+
+TEST_F(ScopeTest, GetRotationNames)
+{
+  giskard_core::Scope scope;
+
+  ASSERT_EQ(scope.get_rotation_names().size(), 0);
+
+  scope.add_rotation_expression("1", rot_1);
+  ASSERT_EQ(scope.get_rotation_names().size(), 1);
+  EXPECT_STREQ(scope.get_rotation_names()[0].c_str(), "1");
+ 
+  scope.add_rotation_expression("2", rot_2);
+  ASSERT_EQ(scope.get_rotation_names().size(), 2);
+  EXPECT_STREQ(scope.get_rotation_names()[0].c_str(), "1");
+  EXPECT_STREQ(scope.get_rotation_names()[1].c_str(), "2");
+
+  EXPECT_EQ(scope.get_vector_names().size(), 0);
+  EXPECT_EQ(scope.get_frame_names().size(), 0);
+  EXPECT_EQ(scope.get_double_names().size(), 0);
 }
 
 TEST_F(ScopeTest, FindDouble)

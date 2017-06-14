@@ -132,6 +132,38 @@ namespace giskard_core
         frame_references_[reference_name] = expression;
       }
 
+      std::vector<std::string> get_double_names() const
+      {
+        std::vector<std::string> result;
+        for (auto it=double_references_.begin(); it!=double_references_.end(); it++)
+          result.push_back(it->first);
+        return result;
+      }
+
+      std::vector<std::string> get_vector_names() const
+      {
+        std::vector<std::string> result;
+        for (auto it=vector_references_.begin(); it!=vector_references_.end(); it++)
+          result.push_back(it->first);
+        return result;
+      }
+
+      std::vector<std::string> get_rotation_names() const
+      {
+        std::vector<std::string> result;
+        for (auto it=rotation_references_.begin(); it!=rotation_references_.end(); it++)
+          result.push_back(it->first);
+        return result;
+      }
+
+      std::vector<std::string> get_frame_names() const
+      {
+        std::vector<std::string> result;
+        for (auto it=frame_references_.begin(); it!=frame_references_.end(); it++)
+          result.push_back(it->first);
+        return result;
+      }
+
     private:
       std::map< std::string, KDL::Expression<double>::Ptr > double_references_;
       std::map< std::string, KDL::Expression<KDL::Vector>::Ptr > vector_references_;

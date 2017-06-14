@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(giskard_core)
 
+add_compile_options(-std=c++11)
+
 find_package(catkin REQUIRED COMPONENTS expressiongraph qpoases kdl_parser)
 
 # setting additional cmake flags, used for integration with Coveralls.io
