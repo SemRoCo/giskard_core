@@ -32,6 +32,14 @@ class FrameGenerationTest : public ::testing::Test
     virtual void TearDown(){}
 };
 
+void test_frame_generation(const giskard_core::FrameSpecPtr& spec, const KDL::Frame& frame) 
+{
+  ASSERT_TRUE(spec.get() != NULL);
+  ASSERT_NO_THROW(spec->get_expression(giskard_core::Scope()));
+  KDL::Expression<KDL::Frame>::Ptr exp = spec->get_expression(giskard_core::Scope());
+  EXPECT_TRUE(KDL::Equal(frame, exp->value()));
+}
+
 TEST_F(FrameGenerationTest, ConstructorFrame)
 {
   giskard_core::DoubleConstSpecPtr rot_axis_x(new giskard_core::DoubleConstSpec());
@@ -273,4 +281,27 @@ TEST_F(FrameGenerationTest, Cached)
   KDL::Frame frame(KDL::Rotation::RotX(0.5), KDL::Vector(0.1, 0.2, 0.3));
 
   EXPECT_TRUE(KDL::Equal(frame, exp->value()));
+}
+
+TEST_F(FrameGenerationTest, InverseFrame)
+{
+  using namespace giskard_core;
+  using namespace KDL;
+
+  test_frame_generation(inverse_frame_spec(), Frame());
+  test_frame_generation(inverse_frame_spec(frame_constructor_spec(
+          vector_constructor_spec(
+            double_const_spec(0.1), double_const_spec(-0.2), double_const_spec(0.3)),
+          quaternion_spec(0, 0, 0, 1))), 
+      Frame(Rotation::Quaternion(0, 0, 0, 1), Vector(0.1, -0.2, 0.3)).Inverse());
+  test_frame_generation(inverse_frame_spec(frame_constructor_spec(
+          vector_constructor_spec(
+            double_const_spec(1), double_const_spec(-2), double_const_spec(3)),
+          quaternion_spec(0, 0, 0, 1))), 
+      Frame(Rotation::Quaternion(0, 0, 0, 1), Vector(1, -2, 3)).Inverse());
+  test_frame_generation(inverse_frame_spec(frame_constructor_spec(
+          vector_constructor_spec(
+            double_const_spec(0.1), double_const_spec(-0.2), double_const_spec(0.3)),
+          quaternion_spec(1, 0, 0, 0))), 
+      Frame(Rotation::Quaternion(1, 0, 0, 0), Vector(0.1, -0.2, 0.3)).Inverse());
 }

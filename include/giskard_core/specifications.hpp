@@ -1415,7 +1415,7 @@ namespace giskard_core
 
   typedef typename boost::shared_ptr<RotationQuaternionConstructorSpec> RotationQuaternionConstructorSpecPtr;
 
-  inline RotationQuaternionConstructorSpecPtr quaternion_spec(double x, double y, double z, double w)
+  inline RotationQuaternionConstructorSpecPtr quaternion_spec(double x=0, double y=0, double z=0, double w=1)
   {
     return RotationQuaternionConstructorSpecPtr(new RotationQuaternionConstructorSpec(x, y, z, w));
   }
@@ -1802,8 +1802,8 @@ namespace giskard_core
 
   typedef typename boost::shared_ptr<FrameConstructorSpec> FrameConstructorSpecPtr;
 
-  inline FrameConstructorSpecPtr frame_constructor_spec(const VectorSpecPtr& translation, 
-      const RotationSpecPtr& rotation)
+  inline FrameConstructorSpecPtr frame_constructor_spec(const VectorSpecPtr& translation =
+      vector_constructor_spec(), const RotationSpecPtr& rotation = quaternion_spec())
   {
     return FrameConstructorSpecPtr(new FrameConstructorSpec(translation, rotation));
   }
@@ -1943,6 +1943,52 @@ namespace giskard_core
   };
 
   typedef typename boost::shared_ptr<FrameReferenceSpec> FrameReferenceSpecPtr;
+
+  class InverseFrameSpec : public FrameSpec
+  {
+    public:
+      InverseFrameSpec() :
+        frame_( frame_constructor_spec() ) {}
+      InverseFrameSpec(const InverseFrameSpec& other) :
+        frame_( other.get_frame() ) {}
+      InverseFrameSpec(const FrameSpecPtr& frame) :
+        frame_( frame ) {}
+      ~InverseFrameSpec() {}
+
+      const FrameSpecPtr& get_frame() const
+      {
+        return frame_;
+      }
+
+      void set_frame(const FrameSpecPtr& frame)
+      {
+        frame_ = frame;
+      }
+
+      virtual bool equals(const Spec& other) const
+      {
+        if(!dynamic_cast<const InverseFrameSpec*>(&other))
+          return false;
+
+        return dynamic_cast<const InverseFrameSpec*>(&other)->get_frame()->equals(*(this->get_frame()));
+      }
+
+      virtual KDL::Expression<KDL::Frame>::Ptr get_expression(const giskard_core::Scope& scope)
+      {
+        return KDL::inv(get_frame()->get_expression(scope));
+      }
+
+    private:
+      FrameSpecPtr frame_;
+  };
+
+  typedef typename boost::shared_ptr<InverseFrameSpec> InverseFrameSpecPtr;
+  
+  inline InverseFrameSpecPtr inverse_frame_spec(const FrameSpecPtr& frame =
+      frame_constructor_spec())
+  {
+    return InverseFrameSpecPtr(new InverseFrameSpec(frame));
+  }
 
   ///
   /// Specification of a Scope
