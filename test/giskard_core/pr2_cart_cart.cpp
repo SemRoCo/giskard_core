@@ -84,8 +84,6 @@ class PR2CartCartControlTest : public ::testing::Test
       q.block<6,1>(q_name_list.size(), 0) = to_eigen(l_arm_goal);
       q.block<6,1>(q_name_list.size() + 6, 0) = to_eigen(r_arm_goal);
 
-//      using namespace Eigen;
-//      std::cout << q << std::endl;
       nWSR = 1000;
     }
 
@@ -145,5 +143,5 @@ TEST_F(PR2CartCartControlTest, SlerpControl)
 //    print_vector(controller, vectors[i]);
 //  std::cout << "a\n";
 
-  // TODO: finish test-case
+  // FIXME: finish test-case
 }

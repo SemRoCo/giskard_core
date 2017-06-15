@@ -163,11 +163,6 @@ TEST_F(FlyingCupTest, IssueBrokenFlyingCup)
   state(8) = maker_frame.p.z();
   maker_frame.M.GetEulerZYX(state(9), state(10), state(11));
 
-  using namespace Eigen;
-  std::cout << state << std::endl;
-
   ASSERT_TRUE(controller.start(state, nWSR));
   ASSERT_TRUE(controller.update(state, nWSR));
-
-  std::cout << std::endl << controller.get_command() << std::endl;
 }
