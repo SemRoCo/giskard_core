@@ -38,17 +38,33 @@ namespace giskard_core
       giskard_core::SpecPtr spec = scope_spec[i].spec;
 
       if(boost::dynamic_pointer_cast<giskard_core::DoubleSpec>(spec).get())
-        scope.add_double_expression(name,
-            boost::dynamic_pointer_cast<giskard_core::DoubleSpec>(spec)->get_expression(scope));
+        // Reassign aliases which yaml parsed with the wrong type
+        try {
+          scope.add_double_expression(name, boost::dynamic_pointer_cast<giskard_core::DoubleSpec>(spec)->get_expression(scope));
+        } catch (const std::exception& e) {
+          giskard_core::DoubleReferenceSpecPtr refSpec = boost::dynamic_pointer_cast<giskard_core::DoubleReferenceSpec>(spec);
+          if (refSpec) {
+            if (scope.has_vector_expression(refSpec->get_reference_name()))
+              scope.add_vector_expression(name, scope.find_vector_expression(refSpec->get_reference_name()));
+            else if (scope.has_rotation_expression(refSpec->get_reference_name()))
+              scope.add_rotation_expression(name, scope.find_rotation_expression(refSpec->get_reference_name()));
+            else if (scope.has_frame_expression(refSpec->get_reference_name()))
+              scope.add_frame_expression(name, scope.find_frame_expression(refSpec->get_reference_name()));
+            else
+              scope.add_double_expression(name, boost::dynamic_pointer_cast<giskard_core::DoubleSpec>(spec)->get_expression(scope));
+          } else {
+            scope.add_double_expression(name, boost::dynamic_pointer_cast<giskard_core::DoubleSpec>(spec)->get_expression(scope));
+          }
+        }
       else if(boost::dynamic_pointer_cast<giskard_core::VectorSpec>(spec).get())
-        scope.add_vector_expression(name,
-            boost::dynamic_pointer_cast<giskard_core::VectorSpec>(spec)->get_expression(scope));
+        scope.add_vector_expression(name, boost::dynamic_pointer_cast<giskard_core::VectorSpec>(spec)->get_expression(scope));
+
       else if(boost::dynamic_pointer_cast<giskard_core::FrameSpec>(spec).get())
-        scope.add_frame_expression(name,
-            boost::dynamic_pointer_cast<giskard_core::FrameSpec>(spec)->get_expression(scope));
+        scope.add_frame_expression(name, boost::dynamic_pointer_cast<giskard_core::FrameSpec>(spec)->get_expression(scope));
+
       else if(boost::dynamic_pointer_cast<giskard_core::RotationSpec>(spec).get())
-        scope.add_rotation_expression(name,
-            boost::dynamic_pointer_cast<giskard_core::RotationSpec>(spec)->get_expression(scope));
+        scope.add_rotation_expression(name, boost::dynamic_pointer_cast<giskard_core::RotationSpec>(spec)->get_expression(scope));
+
       else
         throw std::domain_error("Scope generation: found entry of non-supported type.");
     }
