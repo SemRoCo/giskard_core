@@ -30,6 +30,31 @@
 
 namespace giskard_core
 {
+
+  ///
+  /// Super class for all input specifications
+  ///
+
+  class InputSpec {
+  public:
+    InputSpec(std::string name, InputType type) : name_(name), type_(type) {}
+
+    inline InputType get_type() const { return type_; }
+    inline const std::string& get_name() const { return name_; }
+
+    inline bool input_equals(const InputSpec& other) const {
+      return type_ == other.type_ && name_ == other.name_;
+    }
+
+    inline bool input_equals(const InputSpec* other) const {
+      return type_ == other->type_ && name_ == other->name_;
+    }
+
+  private:
+    std::string name_;
+    InputType type_;
+  };
+
   ///
   /// base of all specifications of expressions
   ///
@@ -100,6 +125,38 @@ namespace giskard_core
   /// specifications of double expressions
   ///
 
+  class DoubleInputSpec : public DoubleSpec, public InputSpec {
+  public:
+    DoubleInputSpec(std::string name) : InputSpec(name, Scalar) {}
+    
+    virtual bool equals(const Spec& other) const {
+      return dynamic_cast<const DoubleInputSpec*>(&other) && dynamic_cast<const DoubleInputSpec*>(&other)->input_equals(this);
+    }
+
+    virtual KDL::Expression<double>::Ptr get_expression(const giskard_core::Scope& scope) {
+        return scope.find_input<Scope::ScalarInput>(get_name())->expr_;
+    }
+  };
+  
+  typedef typename boost::shared_ptr<DoubleInputSpec> DoubleInputSpecPtr;
+
+
+  class JointInputSpec : public DoubleSpec, public InputSpec {
+  public:
+    JointInputSpec(std::string name) : InputSpec(name, Joint) {}
+    
+    virtual bool equals(const Spec& other) const {
+      return dynamic_cast<const JointInputSpec*>(&other) && dynamic_cast<const JointInputSpec*>(&other)->input_equals(this);
+    }
+
+    virtual KDL::Expression<double>::Ptr get_expression(const giskard_core::Scope& scope) {
+        return scope.find_input<Scope::JointInput>(get_name())->expr_;
+    }
+  };
+  
+  typedef typename boost::shared_ptr<JointInputSpec> JointInputSpecPtr;
+
+
   class DoubleConstSpec : public DoubleSpec
   {
     public:
@@ -143,37 +200,6 @@ namespace giskard_core
     return DoubleConstSpecPtr(new DoubleConstSpec(value));
   }
 
-  class DoubleInputSpec : public DoubleSpec
-  {
-    public:
-      size_t get_input_num() const
-      {
-        return input_num_;
-      }
-
-      void set_input_num(size_t input_num)
-      {
-        input_num_ = input_num;
-      }
-
-      virtual bool equals(const Spec& other) const
-      {
-        if(!dynamic_cast<const DoubleInputSpec*>(&other))
-          return false;
-
-        return dynamic_cast<const DoubleInputSpec*>(&other)->get_input_num() == this->get_input_num();
-      }
-
-      virtual KDL::Expression<double>::Ptr get_expression(const giskard_core::Scope& scope)
-      {
-        return KDL::input(get_input_num());
-      }
-
-    private:
-      size_t input_num_;
-  };
-
-  typedef typename boost::shared_ptr<DoubleInputSpec> DoubleInputSpecPtr;
 
   class DoubleReferenceSpec : public DoubleSpec
   {
@@ -843,6 +869,21 @@ namespace giskard_core
   /// specifications of vector expressions
   ///
 
+  class VectorInputSpec : public VectorSpec, public InputSpec {
+  public:
+    VectorInputSpec(std::string name) : InputSpec(name, Vector3) {}
+    
+    virtual bool equals(const Spec& other) const {
+      return dynamic_cast<const VectorInputSpec*>(&other) && dynamic_cast<const VectorInputSpec*>(&other)->input_equals(this);
+    }
+
+    virtual KDL::Expression<KDL::Vector>::Ptr get_expression(const giskard_core::Scope& scope) {
+        return scope.find_input<Scope::Vec3Input>(get_name())->expr_;
+    }
+  };
+
+  typedef typename boost::shared_ptr<VectorInputSpec> VectorInputSpecPtr;
+
   class VectorCachedSpec: public VectorSpec
   {
     public:
@@ -1344,6 +1385,21 @@ namespace giskard_core
   /// specifications for rotation expresssions
   ///
 
+  class RotationInputSpec : public RotationSpec, public InputSpec {
+  public:
+    RotationInputSpec(std::string name) : InputSpec(name, Rotation) {}
+    
+    virtual bool equals(const Spec& other) const {
+      return dynamic_cast<const RotationInputSpec*>(&other) && dynamic_cast<const RotationInputSpec*>(&other)->input_equals(this);
+    }
+
+    virtual KDL::Expression<KDL::Rotation>::Ptr get_expression(const giskard_core::Scope& scope) {
+        return scope.find_input<Scope::RotationInput>(get_name())->expr_;
+    }
+  };
+
+  typedef typename boost::shared_ptr<RotationInputSpec> RotationInputSpecPtr;
+
   class RotationQuaternionConstructorSpec : public RotationSpec
   {
     public:
@@ -1702,6 +1758,21 @@ namespace giskard_core
   /// specifications for frame expresssions
   ///
 
+  class FrameInputSpec : public FrameSpec, public InputSpec {
+  public:
+    FrameInputSpec(std::string name) : InputSpec(name, Frame) {}
+    
+    virtual bool equals(const Spec& other) const {
+      return dynamic_cast<const FrameInputSpec*>(&other) && dynamic_cast<const FrameInputSpec*>(&other)->input_equals(this);
+    }
+
+    virtual KDL::Expression<KDL::Frame>::Ptr get_expression(const giskard_core::Scope& scope) {
+        return scope.find_input<Scope::FrameInput>(get_name())->expr_;
+    }
+  };
+
+  typedef typename boost::shared_ptr<FrameInputSpec> FrameInputSpecPtr;
+
   class FrameCachedSpec: public FrameSpec
   {
     public:
@@ -2003,28 +2074,62 @@ namespace giskard_core
 
   typedef std::vector<ScopeEntry> ScopeSpec;
 
-  class ControllableConstraintSpec
+  class ControllableConstraintSpec : public Spec
   {
     public:
+      virtual bool equals(const Spec& other) const {
+        if (!dynamic_cast<const ControllableConstraintSpec*>(&other))
+          return false;
+
+        const ControllableConstraintSpec* b = dynamic_cast<const ControllableConstraintSpec*>(&other);
+
+        return b->lower_ && lower_ && lower_->equals(*b->lower_)
+               && b->upper_ && upper_ && upper_->equals(*b->upper_)
+               && b->weight_ && weight_ && weight_->equals(*b->weight_)
+               && b->input_.compare(input_);
+      }
+
       giskard_core::DoubleSpecPtr lower_, upper_, weight_;
-      size_t input_number_;
-      std::string name_;
+      std::string input_;
   };
 
   typedef typename boost::shared_ptr<ControllableConstraintSpec> ControllableConstraintSpecPtr;
   
-  class SoftConstraintSpec
+  class SoftConstraintSpec : public Spec
   {
     public:
+      virtual bool equals(const Spec& other) const {
+        if (!dynamic_cast<const SoftConstraintSpec*>(&other))
+          return false;
+
+        const SoftConstraintSpec* b = dynamic_cast<const SoftConstraintSpec*>(&other);
+
+        return b->expression_ && expression_ && expression_->equals(*b->expression_)
+               && b->lower_ && lower_ && lower_->equals(*b->lower_)
+               && b->upper_ && upper_ && upper_->equals(*b->upper_)
+               && b->weight_ && weight_ && weight_->equals(*b->weight_)
+               && name_.compare(b->name_) == 0;
+      }
+
       giskard_core::DoubleSpecPtr expression_, lower_, upper_, weight_;
       std::string name_;
   };
 
   typedef typename boost::shared_ptr<SoftConstraintSpec> SoftConstraintSpecPtr;
 
-  class HardConstraintSpec
+  class HardConstraintSpec : public Spec
   {
     public:
+      virtual bool equals(const Spec& other) const {
+        if (!dynamic_cast<const HardConstraintSpec*>(&other))
+          return false;
+
+        const HardConstraintSpec* b = dynamic_cast<const HardConstraintSpec*>(&other);
+
+        return b->expression_ && expression_ && expression_->equals(*b->expression_)
+               && b->lower_ && lower_ && lower_->equals(*b->lower_)
+               && b->upper_ && upper_ && upper_->equals(*b->upper_);
+      }
       giskard_core::DoubleSpecPtr expression_, lower_, upper_;
   };
 
