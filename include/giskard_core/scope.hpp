@@ -29,11 +29,11 @@
 namespace giskard_core
 {
   enum InputType {
-    Scalar,
-    Joint,
-    Vector3,
-    Rotation,
-    Frame
+    tScalar,
+    tJoint,
+    tVector3,
+    tRotation,
+    tFrame
   };
 
   class Scope
@@ -50,43 +50,49 @@ namespace giskard_core
         JointInput(std::string name, size_t idx, KDL::Expression<double>::Ptr expr) 
           : AInput(name, idx), expr_(expr) {}
         
-        InputType get_type() const { return Joint; };
-        KDL::Expression<double>::Ptr expr_;
+        static std::string type_string() { return "joint"; }
+        InputType get_type() const { return tJoint; };
+        const KDL::Expression<double>::Ptr expr_;
       };
 
       struct ScalarInput : public AInput {
         ScalarInput(std::string name, size_t idx, KDL::Expression<double>::Ptr expr) 
           : AInput(name, idx), expr_(expr) {}
 
-        InputType get_type() const { return Scalar; };
-        KDL::Expression<double>::Ptr expr_;
+        static std::string type_string() { return "scalar"; }
+        InputType get_type() const { return tScalar; };
+        const KDL::Expression<double>::Ptr expr_;
       };
 
       struct Vec3Input : public AInput {
         Vec3Input(std::string name, size_t idx, KDL::Expression<KDL::Vector>::Ptr expr) 
           : AInput(name, idx), expr_(expr) {}
         
-        InputType get_type() const { return Vector3; };
-        KDL::Expression<KDL::Vector>::Ptr expr_;
+        static std::string type_string() { return "vec3"; }
+        InputType get_type() const { return tVector3; };
+        const KDL::Expression<KDL::Vector>::Ptr expr_;
       };
 
       struct RotationInput : public AInput {
         RotationInput(std::string name, size_t idx, KDL::Expression<KDL::Rotation>::Ptr expr) 
           : AInput(name, idx), expr_(expr) {}
         
-        InputType get_type() const { return Rotation; };
-        KDL::Expression<KDL::Rotation>::Ptr expr_;
+        static std::string type_string() { return "rotation"; }
+        InputType get_type() const { return tRotation; };
+        const KDL::Expression<KDL::Rotation>::Ptr expr_;
       };
 
       struct FrameInput : public AInput {
         FrameInput(std::string name, size_t idx, KDL::Expression<KDL::Frame>::Ptr expr) 
           : AInput(name, idx), expr_(expr) {}
         
-        InputType get_type() const { return Frame; };
-        KDL::Expression<KDL::Frame>::Ptr expr_;
+        static std::string type_string() { return "frame"; }
+        InputType get_type() const { return tFrame; };
+        const KDL::Expression<KDL::Frame>::Ptr expr_;
       };
       
       typedef typename boost::shared_ptr<AInput> InputPtr;
+      typedef typename boost::shared_ptr<const AInput> ConstInputPtr;
       typedef typename boost::shared_ptr<JointInput> JointInputPtr;
       typedef typename boost::shared_ptr<ScalarInput> ScalarInputPtr;
       typedef typename boost::shared_ptr<Vec3Input> Vec3InputPtr;
@@ -138,7 +144,7 @@ namespace giskard_core
       template<typename T>
       const boost::shared_ptr<T> find_input(const std::string& input_name) const {
         if (!has_input<T>(input_name))
-          throw std::invalid_argument("Could not find input with name: " + input_name);
+          throw std::invalid_argument("Could not find input with name: " + input_name + " of type '" + T::type_string() + "'");
         return boost::dynamic_pointer_cast<T>(inputs_.find(input_name)->second);
       }
 
@@ -214,7 +220,7 @@ namespace giskard_core
       void add_joint_input(const std::string& name) {
         auto it = inputs_.find(name);
         if (it != inputs_.end()) {
-          if (it->second->get_type() != Joint)
+          if (it->second->get_type() != tJoint)
             throw std::invalid_argument("Can't add joint input with name '" + name + "'. The name is already taken.");
         } else {
           if (bJointvectorCompleted)
@@ -230,7 +236,7 @@ namespace giskard_core
       void add_scalar_input(const std::string& name) {
         auto it = inputs_.find(name);
         if (it != inputs_.end()) {
-          if (it->second->get_type() != Scalar)
+          if (it->second->get_type() != tScalar)
             throw std::invalid_argument("Can't add scalar input with name '" + name + "'. The name is already taken.");
         } else {
           bJointvectorCompleted = true;
@@ -244,7 +250,7 @@ namespace giskard_core
       void add_vector_input(const std::string& name) {
         auto it = inputs_.find(name);
         if (it != inputs_.end()) {
-          if (it->second->get_type() != Vector3)
+          if (it->second->get_type() != tVector3)
             throw std::invalid_argument("Can't add vector input with name '" + name + "'. The name is already taken.");
         } else {
           bJointvectorCompleted = true;
@@ -259,7 +265,7 @@ namespace giskard_core
       void add_rotation_input(const std::string& name) {
         auto it = inputs_.find(name);
         if (it != inputs_.end()) {
-          if (it->second->get_type() != Rotation)
+          if (it->second->get_type() != tRotation)
             throw std::invalid_argument("Can't add rotation input with name '" + name + "'. The name is already taken.");
         } else {
           bJointvectorCompleted = true;
@@ -275,7 +281,7 @@ namespace giskard_core
       void add_frame_input(const std::string& name) {
         auto it = inputs_.find(name);
         if (it != inputs_.end()) {
-          if (it->second->get_type() != Frame)
+          if (it->second->get_type() != tFrame)
             throw std::invalid_argument("Can't add frame input with name '" + name + "'. The name is already taken.");
         } else {
           bJointvectorCompleted = true;
@@ -289,6 +295,11 @@ namespace giskard_core
           inputs_[name] = FrameInputPtr(new FrameInput(name, nextInputIndex, expr));
           nextInputIndex += 7;
         }
+      }
+
+      // Get the size of the observable vector
+      size_t get_input_size() const {
+        return nextInputIndex;
       }
 
       std::vector<std::string> get_double_names() const
@@ -323,6 +334,7 @@ namespace giskard_core
         return result;
       }
 
+      // Get the names of all inputs
       std::vector<std::string> get_input_names() const {
         std::vector<std::string> result;
         for (auto it = inputs_.begin(); it != inputs_.end(); it++)
@@ -330,7 +342,49 @@ namespace giskard_core
         return result;
       }
 
-    private:
+      // Get all input structures
+      std::vector<InputPtr> get_inputs() const {
+        std::vector<InputPtr> out;
+        for (auto it = inputs_.begin(); it != inputs_.end(); it++) {
+          out.push_back(it->second);
+        }
+        return out;
+      }
+
+      // Get input structures filtered by type
+      template<typename T>
+      std::vector<boost::shared_ptr<T>> get_inputs() const {
+        std::vector<boost::shared_ptr<T>> out;
+        for (auto it = inputs_.begin(); it != inputs_.end(); it++) {
+          boost::shared_ptr<T> temp = boost::dynamic_pointer_cast<T>(it->second);
+          if (temp)
+            out.push_back(temp);
+        }
+        return out;
+      }
+
+      // Get input structures mapped by their names
+      std::map<std::string, const InputPtr&> get_input_map() const {
+        std::map<std::string, const InputPtr&> out;
+        for (auto it = inputs_.begin(); it != inputs_.end(); it++)
+          out.insert(std::pair<std::string, const InputPtr&>(it->first, it->second));
+
+        return out;
+      }
+
+      // Get input structures mapped by their names and filtered by their types
+      template<typename T>
+      std::map<std::string, boost::shared_ptr<T>> get_input_map() const {
+        std::map<std::string, boost::shared_ptr<T>> out;
+        for (auto it = inputs_.begin(); it != inputs_.end(); it++) {
+          boost::shared_ptr<T> temp = boost::dynamic_pointer_cast<T>(it->second);
+          if (temp)
+            out[it->first] = temp;
+        }
+        return out;
+      }
+
+private:
       bool bJointvectorCompleted;
       size_t nextInputIndex;
       std::map<std::string, InputPtr> inputs_;

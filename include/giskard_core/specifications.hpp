@@ -63,6 +63,7 @@ namespace giskard_core
   { 
     public:
       virtual bool equals(const Spec& other) const = 0;
+      virtual void get_input_specs(std::vector<const InputSpec*>& inputs) const = 0;
   };
 
   inline bool operator==(const Spec& lhs, const Spec& rhs)
@@ -127,8 +128,12 @@ namespace giskard_core
 
   class DoubleInputSpec : public DoubleSpec, public InputSpec {
   public:
-    DoubleInputSpec(std::string name) : InputSpec(name, Scalar) {}
+    DoubleInputSpec(std::string name) : InputSpec(name, tScalar) {}
     
+    void get_input_specs(std::vector<const InputSpec*>& inputs) const {
+      inputs.push_back(this);
+    }
+
     virtual bool equals(const Spec& other) const {
       return dynamic_cast<const DoubleInputSpec*>(&other) && dynamic_cast<const DoubleInputSpec*>(&other)->input_equals(this);
     }
@@ -143,7 +148,11 @@ namespace giskard_core
 
   class JointInputSpec : public DoubleSpec, public InputSpec {
   public:
-    JointInputSpec(std::string name) : InputSpec(name, Joint) {}
+    JointInputSpec(std::string name) : InputSpec(name, tJoint) {}
+
+    void get_input_specs(std::vector<const InputSpec*>& inputs) const {
+      inputs.push_back(this);
+    }
     
     virtual bool equals(const Spec& other) const {
       return dynamic_cast<const JointInputSpec*>(&other) && dynamic_cast<const JointInputSpec*>(&other)->input_equals(this);
@@ -174,6 +183,8 @@ namespace giskard_core
       {
         value_ = value;
       } 
+
+      void get_input_specs(std::vector<const InputSpec*>& inputs) const { }
 
       virtual bool equals(const Spec& other) const
       {
@@ -214,6 +225,8 @@ namespace giskard_core
         reference_name_ = reference_name;
       }
 
+      void get_input_specs(std::vector<const InputSpec*>& inputs) const { }
+
       virtual bool equals(const Spec& other) const
       {
         if(!dynamic_cast<const DoubleReferenceSpec*>(&other))
@@ -244,6 +257,11 @@ namespace giskard_core
       void set_inputs(const std::vector<DoubleSpecPtr>& inputs)
       {
         inputs_ = inputs;
+      }
+
+      void get_input_specs(std::vector<const InputSpec*>& inputs) const { 
+        for (auto i: inputs_)
+          i->get_input_specs(inputs);
       }
 
       virtual bool equals(const Spec& other) const
@@ -302,6 +320,11 @@ namespace giskard_core
       void set_inputs(const std::vector<DoubleSpecPtr>& inputs)
       {
         inputs_ = inputs;
+      }
+
+      void get_input_specs(std::vector<const InputSpec*>& inputs) const { 
+        for (auto i: inputs_)
+          i->get_input_specs(inputs);
       }
 
       virtual bool equals(const Spec& other) const
@@ -375,6 +398,10 @@ namespace giskard_core
         vector_ = vector;
       }
 
+      void get_input_specs(std::vector<const InputSpec*>& inputs) const {
+          vector_->get_input_specs(inputs);
+      }
+
       virtual bool equals(const Spec& other) const
       {
         if(!dynamic_cast<const DoubleNormOfSpec*>(&other))
@@ -405,6 +432,11 @@ namespace giskard_core
       void set_inputs(const std::vector<DoubleSpecPtr>& inputs)
       {
         inputs_ = inputs;
+      }
+
+      void get_input_specs(std::vector<const InputSpec*>& inputs) const { 
+        for (auto i: inputs_)
+          i->get_input_specs(inputs);
       }
 
       virtual bool equals(const Spec& other) const
@@ -464,6 +496,11 @@ namespace giskard_core
       void set_inputs(const std::vector<DoubleSpecPtr>& inputs)
       {
         inputs_ = inputs;
+      }
+
+      void get_input_specs(std::vector<const InputSpec*>& inputs) const { 
+        for (auto i: inputs_)
+          i->get_input_specs(inputs);
       }
 
       virtual bool equals(const Spec& other) const
@@ -537,6 +574,10 @@ namespace giskard_core
         vector_ = vector;
       }
 
+      void get_input_specs(std::vector<const InputSpec*>& inputs) const { 
+          vector_->get_input_specs(inputs);
+      }
+
       virtual bool equals(const Spec& other) const
       {
         if(!dynamic_cast<const DoubleXCoordOfSpec*>(&other))
@@ -569,6 +610,10 @@ namespace giskard_core
         vector_ = vector;
       }
 
+      void get_input_specs(std::vector<const InputSpec*>& inputs) const { 
+          vector_->get_input_specs(inputs);
+      }
+
       virtual bool equals(const Spec& other) const
       {
         if(!dynamic_cast<const DoubleYCoordOfSpec*>(&other))
@@ -599,6 +644,10 @@ namespace giskard_core
       void set_vector(const giskard_core::VectorSpecPtr& vector)
       {
         vector_ = vector;
+      }
+
+      void get_input_specs(std::vector<const InputSpec*>& inputs) const { 
+          vector_->get_input_specs(inputs);
       }
 
       virtual bool equals(const Spec& other) const
@@ -641,6 +690,11 @@ namespace giskard_core
       void set_rhs(const VectorSpecPtr& rhs)
       {
         rhs_ = rhs;
+      }
+
+      void get_input_specs(std::vector<const InputSpec*>& inputs) const { 
+        lhs_->get_input_specs(inputs);
+        rhs_->get_input_specs(inputs);
       }
 
       virtual bool equals(const Spec& other) const
@@ -690,6 +744,11 @@ namespace giskard_core
         rhs_ = rhs;
       }
 
+      void get_input_specs(std::vector<const InputSpec*>& inputs) const { 
+        lhs_->get_input_specs(inputs);
+        rhs_->get_input_specs(inputs);
+      }
+
       virtual bool equals(const Spec& other) const
       {
         if(!dynamic_cast<const MinSpec*>(&other))
@@ -725,6 +784,10 @@ namespace giskard_core
       void set_value(const DoubleSpecPtr& value)
       {
         value_ = value;
+      }
+
+      void get_input_specs(std::vector<const InputSpec*>& inputs) const { 
+        value_->get_input_specs(inputs);
       }
 
       virtual bool equals(const Spec& other) const
@@ -765,6 +828,12 @@ namespace giskard_core
       const DoubleSpecPtr& get_else() const
       {
         return else_;
+      }
+
+      void get_input_specs(std::vector<const InputSpec*>& inputs) const { 
+        condition_->get_input_specs(inputs);
+        if_->get_input_specs(inputs);
+        else_->get_input_specs(inputs);
       }
 
       void set_condition(const DoubleSpecPtr& condition)
@@ -835,6 +904,11 @@ namespace giskard_core
         return get_nominator().get() && get_denominator().get();
       }
 
+      void get_input_specs(std::vector<const InputSpec*>& inputs) const { 
+        nominator_->get_input_specs(inputs);
+        denominator_->get_input_specs(inputs);
+      }
+
       virtual bool equals(const Spec& other) const
       {
         if(!dynamic_cast<const FmodSpec*>(&other))
@@ -871,8 +945,12 @@ namespace giskard_core
 
   class VectorInputSpec : public VectorSpec, public InputSpec {
   public:
-    VectorInputSpec(std::string name) : InputSpec(name, Vector3) {}
+    VectorInputSpec(std::string name) : InputSpec(name, tVector3) {}
     
+    void get_input_specs(std::vector<const InputSpec*>& inputs) const {
+      inputs.push_back(this);
+    }
+
     virtual bool equals(const Spec& other) const {
       return dynamic_cast<const VectorInputSpec*>(&other) && dynamic_cast<const VectorInputSpec*>(&other)->input_equals(this);
     }
@@ -895,6 +973,10 @@ namespace giskard_core
       void set_vector(const giskard_core::VectorSpecPtr& vector)
       {
         vector_ = vector;
+      }
+
+      void get_input_specs(std::vector<const InputSpec*>& inputs) const { 
+        vector_->get_input_specs(inputs);
       }
 
       virtual bool equals(const Spec& other) const
@@ -968,6 +1050,12 @@ namespace giskard_core
         set_z(z);
       }
 
+      void get_input_specs(std::vector<const InputSpec*>& inputs) const { 
+        x_->get_input_specs(inputs);
+        y_->get_input_specs(inputs);
+        z_->get_input_specs(inputs);
+      }
+
       virtual bool equals(const Spec& other) const
       {
         if(!dynamic_cast<const VectorConstructorSpec*>(&other))
@@ -1016,6 +1104,11 @@ namespace giskard_core
       void set_inputs(const std::vector<VectorSpecPtr>& inputs)
       {
         inputs_ = inputs;
+      }
+
+      void get_input_specs(std::vector<const InputSpec*>& inputs) const { 
+        for (auto i: inputs_)
+          i->get_input_specs(inputs);
       }
 
       virtual bool equals(const Spec& other) const
@@ -1076,6 +1169,11 @@ namespace giskard_core
       void set_inputs(const std::vector<VectorSpecPtr>& inputs)
       {
         inputs_ = inputs;
+      }
+
+      void get_input_specs(std::vector<const InputSpec*>& inputs) const { 
+        for (auto i: inputs_)
+          i->get_input_specs(inputs);
       }
 
       virtual bool equals(const Spec& other) const
@@ -1149,6 +1247,8 @@ namespace giskard_core
         reference_name_ = reference_name;
       }
 
+      void get_input_specs(std::vector<const InputSpec*>& inputs) const { }
+
       virtual bool equals(const Spec& other) const
       {
         if(!dynamic_cast<const VectorReferenceSpec*>(&other))
@@ -1179,6 +1279,10 @@ namespace giskard_core
       void set_frame(const giskard_core::FrameSpecPtr& frame)
       {
         frame_ = frame;
+      }
+
+      void get_input_specs(std::vector<const InputSpec*>& inputs) const { 
+          frame_->get_input_specs(inputs);
       }
 
       virtual bool equals(const Spec& other) const
@@ -1221,6 +1325,11 @@ namespace giskard_core
       void set_frame(const FrameSpecPtr& frame)
       {
         frame_ = frame;
+      }
+
+      void get_input_specs(std::vector<const InputSpec*>& inputs) const { 
+        frame_->get_input_specs(inputs);
+        vector_->get_input_specs(inputs);
       }
 
       virtual bool equals(const Spec& other) const
@@ -1270,6 +1379,11 @@ namespace giskard_core
       void set_rotation(const RotationSpecPtr& rotation)
       {
         rotation_ = rotation;
+      }
+
+      void get_input_specs(std::vector<const InputSpec*>& inputs) const { 
+        rotation_->get_input_specs(inputs);
+        vector_->get_input_specs(inputs);
       }
 
       virtual bool equals(const Spec& other) const
@@ -1322,6 +1436,11 @@ namespace giskard_core
         double_ = new_double;
       }
 
+      void get_input_specs(std::vector<const InputSpec*>& inputs) const { 
+        vector_->get_input_specs(inputs);
+        double_->get_input_specs(inputs);
+      }
+
       virtual bool equals(const Spec& other) const
       {
         if(!dynamic_cast<const VectorDoubleMultiplicationSpec*>(&other))
@@ -1362,6 +1481,10 @@ namespace giskard_core
         rotation_ = rotation;
       }
 
+      void get_input_specs(std::vector<const InputSpec*>& inputs) const { 
+        rotation_->get_input_specs(inputs);
+      }
+
       virtual bool equals(const Spec& other) const
       {
         if(!dynamic_cast<const VectorRotationVectorSpec*>(&other))
@@ -1387,8 +1510,12 @@ namespace giskard_core
 
   class RotationInputSpec : public RotationSpec, public InputSpec {
   public:
-    RotationInputSpec(std::string name) : InputSpec(name, Rotation) {}
+    RotationInputSpec(std::string name) : InputSpec(name, tRotation) {}
     
+    void get_input_specs(std::vector<const InputSpec*>& inputs) const {
+      inputs.push_back(this);
+    }
+
     virtual bool equals(const Spec& other) const {
       return dynamic_cast<const RotationInputSpec*>(&other) && dynamic_cast<const RotationInputSpec*>(&other)->input_equals(this);
     }
@@ -1451,6 +1578,8 @@ namespace giskard_core
         w_ = w;
       }
 
+      void get_input_specs(std::vector<const InputSpec*>& inputs) const { }
+
       virtual bool equals(const Spec& other) const
       {
         if(!dynamic_cast<const RotationQuaternionConstructorSpec*>(&other))
@@ -1503,6 +1632,11 @@ namespace giskard_core
       {
         return get_axis().get() && get_angle().get();
       }
+
+      void get_input_specs(std::vector<const InputSpec*>& inputs) const { 
+        axis_->get_input_specs(inputs);
+        angle_->get_input_specs(inputs);
+      }      
 
       virtual bool equals(const Spec& other) const
       {
@@ -1573,6 +1707,12 @@ namespace giskard_core
         return get_from().get() && get_to().get() && get_param().get();
       }
 
+      void get_input_specs(std::vector<const InputSpec*>& inputs) const { 
+        from_->get_input_specs(inputs);
+        to_->get_input_specs(inputs);
+        param_->get_input_specs(inputs);
+      }
+
       virtual bool equals(const Spec& other) const
       {
         if(!dynamic_cast<const SlerpSpec*>(&other))
@@ -1617,6 +1757,8 @@ namespace giskard_core
         reference_name_ = reference_name;
       }
 
+      void get_input_specs(std::vector<const InputSpec*>& inputs) const { }      
+
       virtual bool equals(const Spec& other) const
       {
         if(!dynamic_cast<const RotationReferenceSpec*>(&other))
@@ -1655,6 +1797,10 @@ namespace giskard_core
       void set_rotation(const RotationSpecPtr& rotation)
       {
         rotation_ = rotation;
+      }
+
+      void get_input_specs(std::vector<const InputSpec*>& inputs) const { 
+        rotation_->get_input_specs(inputs);
       }
 
       virtual bool equals(const Spec& other) const
@@ -1700,6 +1846,11 @@ namespace giskard_core
       void set_inputs(const std::vector<RotationSpecPtr>& inputs)
       {
         inputs_ = inputs;
+      }
+
+      void get_input_specs(std::vector<const InputSpec*>& inputs) const { 
+        for(auto i: inputs_)
+          i->get_input_specs(inputs);
       }
 
       virtual bool equals(const Spec& other) const
@@ -1760,8 +1911,12 @@ namespace giskard_core
 
   class FrameInputSpec : public FrameSpec, public InputSpec {
   public:
-    FrameInputSpec(std::string name) : InputSpec(name, Frame) {}
+    FrameInputSpec(std::string name) : InputSpec(name, tFrame) {}
     
+    void get_input_specs(std::vector<const InputSpec*>& inputs) const {
+      inputs.push_back(this);
+    }
+
     virtual bool equals(const Spec& other) const {
       return dynamic_cast<const FrameInputSpec*>(&other) && dynamic_cast<const FrameInputSpec*>(&other)->input_equals(this);
     }
@@ -1784,6 +1939,10 @@ namespace giskard_core
       void set_frame(const giskard_core::FrameSpecPtr& frame)
       {
         frame_ = frame;
+      }
+
+      void get_input_specs(std::vector<const InputSpec*>& inputs) const { 
+        frame_->get_input_specs(inputs);
       }
 
       virtual bool equals(const Spec& other) const
@@ -1837,6 +1996,11 @@ namespace giskard_core
       void set_rotation(const giskard_core::RotationSpecPtr& rotation)
       {
         rotation_ = rotation;
+      }
+
+      void get_input_specs(std::vector<const InputSpec*>& inputs) const { 
+        rotation_->get_input_specs(inputs);
+        translation_->get_input_specs(inputs);
       }
 
       virtual bool equals(const Spec& other) const
@@ -1900,6 +2064,10 @@ namespace giskard_core
         frame_ = frame;
       }
 
+      void get_input_specs(std::vector<const InputSpec*>& inputs) const { 
+        frame_->get_input_specs(inputs);
+      }
+
       virtual bool equals(const Spec& other) const
       {
         if(!dynamic_cast<const OrientationOfSpec*>(&other))
@@ -1935,6 +2103,11 @@ namespace giskard_core
       void set_inputs(const std::vector<FrameSpecPtr>& inputs)
       {
         inputs_ = inputs;
+      }
+
+      void get_input_specs(std::vector<const InputSpec*>& inputs) const { 
+        for (auto i: inputs_)
+          i->get_input_specs(inputs);
       }
 
       virtual bool equals(const Spec& other) const
@@ -1996,6 +2169,8 @@ namespace giskard_core
         reference_name_ = reference_name;
       }
 
+      void get_input_specs(std::vector<const InputSpec*>& inputs) const { }
+
       virtual bool equals(const Spec& other) const
       {
         if(!dynamic_cast<const FrameReferenceSpec*>(&other))
@@ -2034,6 +2209,10 @@ namespace giskard_core
       void set_frame(const FrameSpecPtr& frame)
       {
         frame_ = frame;
+      }
+
+      void get_input_specs(std::vector<const InputSpec*>& inputs) const { 
+        frame_->get_input_specs(inputs);
       }
 
       virtual bool equals(const Spec& other) const
@@ -2077,6 +2256,12 @@ namespace giskard_core
   class ControllableConstraintSpec : public Spec
   {
     public:
+      void get_input_specs(std::vector<const InputSpec*>& inputs) const { 
+        lower_->get_input_specs(inputs);
+        upper_->get_input_specs(inputs);
+        weight_->get_input_specs(inputs);
+      }
+
       virtual bool equals(const Spec& other) const {
         if (!dynamic_cast<const ControllableConstraintSpec*>(&other))
           return false;
@@ -2098,6 +2283,13 @@ namespace giskard_core
   class SoftConstraintSpec : public Spec
   {
     public:
+      void get_input_specs(std::vector<const InputSpec*>& inputs) const { 
+        lower_->get_input_specs(inputs);
+        upper_->get_input_specs(inputs);
+        weight_->get_input_specs(inputs);
+        expression_->get_input_specs(inputs);
+      }
+
       virtual bool equals(const Spec& other) const {
         if (!dynamic_cast<const SoftConstraintSpec*>(&other))
           return false;
@@ -2120,6 +2312,12 @@ namespace giskard_core
   class HardConstraintSpec : public Spec
   {
     public:
+      void get_input_specs(std::vector<const InputSpec*>& inputs) const { 
+        lower_->get_input_specs(inputs);
+        upper_->get_input_specs(inputs);
+        expression_->get_input_specs(inputs);
+      }
+
       virtual bool equals(const Spec& other) const {
         if (!dynamic_cast<const HardConstraintSpec*>(&other))
           return false;
