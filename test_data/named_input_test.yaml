@@ -1,0 +1,26 @@
+scope:
+  - ingnore1:    {input-scalar: ignore-me}
+  - joint1:       {input-joint: joint_input}
+  - scalar1:     {input-scalar: scalar_input}
+  - vector1:       {input-vec3: vector_input}
+  - rotation1: {input-rotation: rotation_input}
+  - rotation2: {input-rotation: rotation_input2}
+  - frame1:       {input-frame: frame_input}
+  - frame2:       {input-frame: frame_input2}
+
+  # These expressions only exist so update() refreshes the controller inputs
+  - just_for_refresh1: {vector-norm: {transform-vector: [frame1, {rotate-vector: [rotation1, {scale-vector: [scalar1, vector1]}]}]}}
+  - just_for_refresh2: {vector-norm: {transform-vector: [frame2, {rotate-vector: [rotation2, {scale-vector: [scalar1, vector1]}]}]}}
+  - just_for_refresh: {double-mul: [just_for_refresh1, just_for_refresh2]}
+
+controllable-constraints:
+  - controllable-constraint: [-0.1, 0.1, 10.0, joint_input]
+
+soft-constraints:
+  - soft-constraint: [-100, 100, just_for_refresh, joint1, useless soft constraint]
+
+hard-constraints:
+  - hard-constraint: 
+      - {double-sub: [-100, joint1]}
+      - {double-sub: [ 100, joint1]}
+      - joint1

@@ -68,16 +68,16 @@ TEST_F(YamlParserTest, ConstDoubleExpression)
   EXPECT_DOUBLE_EQ(1.1, s6->get_value());
 };
 
-TEST_F(YamlParserTest, InputExpression)
+TEST_F(YamlParserTest, ScalarInputExpression)
 {
-  std::string i = "{input-var: 2}";
+  std::string i = "{input-scalar: someinput}";
 
   // parsing input double
   YAML::Node node = YAML::Load(i);
   ASSERT_NO_THROW(node.as<giskard_core::DoubleInputSpecPtr>());
   giskard_core::DoubleInputSpecPtr s1 = node.as<giskard_core::DoubleInputSpecPtr>();
 
-  EXPECT_EQ(2, s1->get_input_num());
+  EXPECT_EQ("someinput", s1->get_name());
 
   // roundtrip with generation
   YAML::Node node2;
@@ -85,7 +85,7 @@ TEST_F(YamlParserTest, InputExpression)
   ASSERT_NO_THROW(node2.as<giskard_core::DoubleInputSpecPtr>());
   giskard_core::DoubleInputSpecPtr s2 = node2.as<giskard_core::DoubleInputSpecPtr>();
 
-  EXPECT_EQ(s1->get_input_num(), s2->get_input_num());
+  EXPECT_EQ(s1->get_name(), s2->get_name());
 
   // parsing to double spec
   ASSERT_NO_THROW(node.as<giskard_core::DoubleSpecPtr>());
@@ -93,7 +93,7 @@ TEST_F(YamlParserTest, InputExpression)
   ASSERT_TRUE(boost::dynamic_pointer_cast<giskard_core::DoubleInputSpec>(s3).get());
   giskard_core::DoubleInputSpecPtr s4 = boost::dynamic_pointer_cast<giskard_core::DoubleInputSpec>(s3);
 
-  EXPECT_EQ(2, s4->get_input_num());
+  EXPECT_EQ("someinput", s4->get_name());
 
   // roundtrip with generation to double spec
   YAML::Node node3;
@@ -103,7 +103,159 @@ TEST_F(YamlParserTest, InputExpression)
   ASSERT_TRUE(boost::dynamic_pointer_cast<giskard_core::DoubleInputSpec>(s5).get());
   giskard_core::DoubleInputSpecPtr s6 = boost::dynamic_pointer_cast<giskard_core::DoubleInputSpec>(s5);
 
-  EXPECT_EQ(2, s6->get_input_num());
+  EXPECT_EQ("someinput", s6->get_name());
+};
+
+TEST_F(YamlParserTest, JointInputExpression)
+{
+  std::string i = "{input-joint: someinput}";
+
+  // parsing input double
+  YAML::Node node = YAML::Load(i);
+  ASSERT_NO_THROW(node.as<giskard_core::JointInputSpecPtr>());
+  giskard_core::JointInputSpecPtr s1 = node.as<giskard_core::JointInputSpecPtr>();
+
+  EXPECT_EQ("someinput", s1->get_name());
+
+  // roundtrip with generation
+  YAML::Node node2;
+  node2 = s1;
+  ASSERT_NO_THROW(node2.as<giskard_core::JointInputSpecPtr>());
+  giskard_core::JointInputSpecPtr s2 = node2.as<giskard_core::JointInputSpecPtr>();
+
+  EXPECT_EQ(s1->get_name(), s2->get_name());
+
+  // parsing to double spec
+  ASSERT_NO_THROW(node.as<giskard_core::DoubleSpecPtr>());
+  giskard_core::DoubleSpecPtr s3 = node.as<giskard_core::DoubleSpecPtr>();
+  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard_core::JointInputSpec>(s3).get());
+  giskard_core::JointInputSpecPtr s4 = boost::dynamic_pointer_cast<giskard_core::JointInputSpec>(s3);
+
+  EXPECT_EQ("someinput", s4->get_name());
+
+  // roundtrip with generation to double spec
+  YAML::Node node3;
+  node3 = s3;
+  ASSERT_NO_THROW(node3.as<giskard_core::DoubleSpecPtr>());
+  giskard_core::DoubleSpecPtr s5 = node3.as<giskard_core::DoubleSpecPtr>();
+  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard_core::JointInputSpec>(s5).get());
+  giskard_core::JointInputSpecPtr s6 = boost::dynamic_pointer_cast<giskard_core::JointInputSpec>(s5);
+
+  EXPECT_EQ("someinput", s6->get_name());
+};
+
+TEST_F(YamlParserTest, VectorInputExpression)
+{
+  std::string i = "{input-vec3: someinput}";
+
+  // parsing input double
+  YAML::Node node = YAML::Load(i);
+  ASSERT_NO_THROW(node.as<giskard_core::VectorInputSpecPtr>());
+  giskard_core::VectorInputSpecPtr s1 = node.as<giskard_core::VectorInputSpecPtr>();
+
+  EXPECT_EQ("someinput", s1->get_name());
+
+  // roundtrip with generation
+  YAML::Node node2;
+  node2 = s1;
+  ASSERT_NO_THROW(node2.as<giskard_core::VectorInputSpecPtr>());
+  giskard_core::VectorInputSpecPtr s2 = node2.as<giskard_core::VectorInputSpecPtr>();
+
+  EXPECT_EQ(s1->get_name(), s2->get_name());
+
+  // parsing to double spec
+  ASSERT_NO_THROW(node.as<giskard_core::VectorSpecPtr>());
+  giskard_core::VectorSpecPtr s3 = node.as<giskard_core::VectorSpecPtr>();
+  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard_core::VectorInputSpec>(s3).get());
+  giskard_core::VectorInputSpecPtr s4 = boost::dynamic_pointer_cast<giskard_core::VectorInputSpec>(s3);
+
+  EXPECT_EQ("someinput", s4->get_name());
+
+  // roundtrip with generation to double spec
+  YAML::Node node3;
+  node3 = s3;
+  ASSERT_NO_THROW(node3.as<giskard_core::VectorSpecPtr>());
+  giskard_core::VectorSpecPtr s5 = node3.as<giskard_core::VectorSpecPtr>();
+  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard_core::VectorInputSpec>(s5).get());
+  giskard_core::VectorInputSpecPtr s6 = boost::dynamic_pointer_cast<giskard_core::VectorInputSpec>(s5);
+
+  EXPECT_EQ("someinput", s6->get_name());
+};
+
+TEST_F(YamlParserTest, RotationInputExpression)
+{
+  std::string i = "{input-rotation: someinput}";
+
+  // parsing input double
+  YAML::Node node = YAML::Load(i);
+  ASSERT_NO_THROW(node.as<giskard_core::RotationInputSpecPtr>());
+  giskard_core::RotationInputSpecPtr s1 = node.as<giskard_core::RotationInputSpecPtr>();
+
+  EXPECT_EQ("someinput", s1->get_name());
+
+  // roundtrip with generation
+  YAML::Node node2;
+  node2 = s1;
+  ASSERT_NO_THROW(node2.as<giskard_core::RotationInputSpecPtr>());
+  giskard_core::RotationInputSpecPtr s2 = node2.as<giskard_core::RotationInputSpecPtr>();
+
+  EXPECT_EQ(s1->get_name(), s2->get_name());
+
+  // parsing to double spec
+  ASSERT_NO_THROW(node.as<giskard_core::RotationSpecPtr>());
+  giskard_core::RotationSpecPtr s3 = node.as<giskard_core::RotationSpecPtr>();
+  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard_core::RotationInputSpec>(s3).get());
+  giskard_core::RotationInputSpecPtr s4 = boost::dynamic_pointer_cast<giskard_core::RotationInputSpec>(s3);
+
+  EXPECT_EQ("someinput", s4->get_name());
+
+  // roundtrip with generation to double spec
+  YAML::Node node3;
+  node3 = s3;
+  ASSERT_NO_THROW(node3.as<giskard_core::RotationSpecPtr>());
+  giskard_core::RotationSpecPtr s5 = node3.as<giskard_core::RotationSpecPtr>();
+  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard_core::RotationInputSpec>(s5).get());
+  giskard_core::RotationInputSpecPtr s6 = boost::dynamic_pointer_cast<giskard_core::RotationInputSpec>(s5);
+
+  EXPECT_EQ("someinput", s6->get_name());
+};
+
+TEST_F(YamlParserTest, FrameInputExpression)
+{
+  std::string i = "{input-frame: someinput}";
+
+  // parsing input double
+  YAML::Node node = YAML::Load(i);
+  ASSERT_NO_THROW(node.as<giskard_core::FrameInputSpecPtr>());
+  giskard_core::FrameInputSpecPtr s1 = node.as<giskard_core::FrameInputSpecPtr>();
+
+  EXPECT_EQ("someinput", s1->get_name());
+
+  // roundtrip with generation
+  YAML::Node node2;
+  node2 = s1;
+  ASSERT_NO_THROW(node2.as<giskard_core::FrameInputSpecPtr>());
+  giskard_core::FrameInputSpecPtr s2 = node2.as<giskard_core::FrameInputSpecPtr>();
+
+  EXPECT_EQ(s1->get_name(), s2->get_name());
+
+  // parsing to double spec
+  ASSERT_NO_THROW(node.as<giskard_core::FrameSpecPtr>());
+  giskard_core::FrameSpecPtr s3 = node.as<giskard_core::FrameSpecPtr>();
+  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard_core::FrameInputSpec>(s3).get());
+  giskard_core::FrameInputSpecPtr s4 = boost::dynamic_pointer_cast<giskard_core::FrameInputSpec>(s3);
+
+  EXPECT_EQ("someinput", s4->get_name());
+
+  // roundtrip with generation to double spec
+  YAML::Node node3;
+  node3 = s3;
+  ASSERT_NO_THROW(node3.as<giskard_core::FrameSpecPtr>());
+  giskard_core::FrameSpecPtr s5 = node3.as<giskard_core::FrameSpecPtr>();
+  ASSERT_TRUE(boost::dynamic_pointer_cast<giskard_core::FrameInputSpec>(s5).get());
+  giskard_core::FrameInputSpecPtr s6 = boost::dynamic_pointer_cast<giskard_core::FrameInputSpec>(s5);
+
+  EXPECT_EQ("someinput", s6->get_name());
 };
 
 TEST_F(YamlParserTest, RotationVectorSpec)
@@ -256,7 +408,7 @@ TEST_F(YamlParserTest, VectorConstructorSpec)
 
 TEST_F(YamlParserTest, AxisAngleSpec)
 {
-  std::string r = "{axis-angle: [{vector3: [1.0, 0.0, 0.0]}, {input-var: 3}]}"; 
+  std::string r = "{axis-angle: [{vector3: [1.0, 0.0, 0.0]}, {input-scalar: angle}]}"; 
 
   // parsing into axis angle specification
   YAML::Node node = YAML::Load(r);
@@ -272,7 +424,7 @@ TEST_F(YamlParserTest, AxisAngleSpec)
   giskard_core::VectorConstructorSpecPtr axis = 
       boost::dynamic_pointer_cast<giskard_core::VectorConstructorSpec>(s1->get_axis());
 
-  EXPECT_EQ(angle->get_input_num(), 3);
+  EXPECT_EQ(angle->get_name(), "angle");
 
   ASSERT_TRUE(axis->get_x().get());
   ASSERT_TRUE(axis->get_y().get());
@@ -298,7 +450,7 @@ TEST_F(YamlParserTest, AxisAngleSpec)
   angle = boost::dynamic_pointer_cast<giskard_core::DoubleInputSpec>(s2->get_angle());
   axis = boost::dynamic_pointer_cast<giskard_core::VectorConstructorSpec>(s2->get_axis());
 
-  EXPECT_EQ(angle->get_input_num(), 3);
+  EXPECT_EQ(angle->get_name(), "angle");
 
   ASSERT_TRUE(axis->get_x().get());
   ASSERT_TRUE(axis->get_y().get());
@@ -324,7 +476,7 @@ TEST_F(YamlParserTest, AxisAngleSpec)
   angle = boost::dynamic_pointer_cast<giskard_core::DoubleInputSpec>(s4->get_angle());
   axis = boost::dynamic_pointer_cast<giskard_core::VectorConstructorSpec>(s4->get_axis());
 
-  EXPECT_EQ(angle->get_input_num(), 3);
+  EXPECT_EQ(angle->get_name(), "angle");
 
   ASSERT_TRUE(axis->get_x().get());
   ASSERT_TRUE(axis->get_y().get());
@@ -353,7 +505,7 @@ TEST_F(YamlParserTest, AxisAngleSpec)
   angle = boost::dynamic_pointer_cast<giskard_core::DoubleInputSpec>(s6->get_angle());
   axis = boost::dynamic_pointer_cast<giskard_core::VectorConstructorSpec>(s6->get_axis());
 
-  EXPECT_EQ(angle->get_input_num(), 3);
+  EXPECT_EQ(angle->get_name(), "angle");
 
   ASSERT_TRUE(axis->get_x().get());
   ASSERT_TRUE(axis->get_y().get());
@@ -837,7 +989,7 @@ TEST_F(YamlParserTest, GithubIssueNo1)
 
 TEST_F(YamlParserTest, ControllableConstraintSpec)
 {
-  std::string s = "controllable-constraint: [-0.1, 0.2, 5.0, 2, my name]";
+  std::string s = "controllable-constraint: [-0.1, 0.2, 5.0, my input]";
 
   YAML::Node node = YAML::Load(s);
 
@@ -847,8 +999,7 @@ TEST_F(YamlParserTest, ControllableConstraintSpec)
   EXPECT_DOUBLE_EQ(spec.lower_->get_expression(giskard_core::Scope())->value(), -0.1);
   EXPECT_DOUBLE_EQ(spec.upper_->get_expression(giskard_core::Scope())->value(), 0.2);
   EXPECT_DOUBLE_EQ(spec.weight_->get_expression(giskard_core::Scope())->value(), 5.0);
-  EXPECT_EQ(spec.input_number_, 2);
-  EXPECT_STREQ(spec.name_.c_str(), "my name");
+  EXPECT_STREQ(spec.input_.c_str(), "my input");
 }
 
 TEST_F(YamlParserTest, SoftConstraintSpec)
@@ -884,7 +1035,7 @@ TEST_F(YamlParserTest, HardConstraintSpec)
 TEST_F(YamlParserTest, QPControllerSpec)
 {
   std::string sc = "scope: []";
-  std::string co = "controllable-constraints: [{controllable-constraint: [-0.1, 0.2, 5.0, 2, controllable1]}]";
+  std::string co = "controllable-constraints: [{controllable-constraint: [-0.1, 0.2, 5.0, controllable1]}]";
   std::string so = "soft-constraints: [{soft-constraint: [-10.1, 120.2, 5.0, 1.1, goal1]}]";
   std::string ha = "hard-constraints: [{hard-constraint: [-33.1, 110.3, 17.1]}]";
 
@@ -903,8 +1054,7 @@ TEST_F(YamlParserTest, QPControllerSpec)
   EXPECT_DOUBLE_EQ(spec.controllable_constraints_[0].lower_->get_expression(giskard_core::Scope())->value(), -0.1);
   EXPECT_DOUBLE_EQ(spec.controllable_constraints_[0].upper_->get_expression(giskard_core::Scope())->value(), 0.2);
   EXPECT_DOUBLE_EQ(spec.controllable_constraints_[0].weight_->get_expression(giskard_core::Scope())->value(), 5.0);
-  EXPECT_EQ(spec.controllable_constraints_[0].input_number_, 2);
-  EXPECT_STREQ(spec.controllable_constraints_[0].name_.c_str(), "controllable1");
+  EXPECT_STREQ(spec.controllable_constraints_[0].input_.c_str(), "controllable1");
 
   EXPECT_DOUBLE_EQ(spec.soft_constraints_[0].lower_->get_expression(giskard_core::Scope())->value(), -10.1);
   EXPECT_DOUBLE_EQ(spec.soft_constraints_[0].upper_->get_expression(giskard_core::Scope())->value(), 120.2);

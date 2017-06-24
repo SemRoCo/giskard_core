@@ -241,3 +241,281 @@ TEST_F(ScopeTest, FindRotation)
   EXPECT_EQ(rot_1, scope.find_rotation_expression("rot_1"));
   EXPECT_EQ(rot_2, scope.find_rotation_expression("rot_2"));
 }
+
+
+TEST_F(ScopeTest, ScalarInputs) {
+  giskard_core::Scope scope;
+
+  // Add a scalar input with name 'input1'
+  EXPECT_NO_THROW(scope.add_scalar_input("input1"));
+
+  // Check that the input size is correct
+  ASSERT_EQ(scope.get_input_size(), 1);
+  
+  // Has input by name
+  EXPECT_TRUE(scope.has_input("input1"));
+  
+  // Has input of matching type with name
+  EXPECT_TRUE(scope.has_input<giskard_core::Scope::ScalarInput>("input1"));
+
+  // Does not have input of matching type with mismatched name
+  EXPECT_FALSE(scope.has_input<giskard_core::Scope::ScalarInput>("bla"));
+
+  // Does not have input of mismatching type with name
+  EXPECT_FALSE(scope.has_input<giskard_core::Scope::Vec3Input>("input1"));
+  
+  // Find general input with name
+  EXPECT_NO_THROW(scope.find_input("input1"));
+
+  // Find typed input with matching name
+  EXPECT_NO_THROW(scope.find_input<giskard_core::Scope::ScalarInput>("input1"));
+
+  // Don't find typed input with mismatched name
+  EXPECT_ANY_THROW(scope.find_input<giskard_core::Scope::ScalarInput>("bla"));
+  
+  // Don't find input with mismatched type and matching name
+  EXPECT_ANY_THROW(scope.find_input<giskard_core::Scope::Vec3Input>("input1"));
+
+  // Allow adding the input a second time with matching type
+  EXPECT_NO_THROW(scope.add_scalar_input("input1"));
+
+  // Don't allow adding the input a second time with different type
+  EXPECT_ANY_THROW(scope.add_vector_input("input1"));
+}
+
+TEST_F(ScopeTest, JointInputs) {
+  giskard_core::Scope scope;
+
+  // Add a scalar input with name 'input1'
+  EXPECT_NO_THROW(scope.add_joint_input("joint1"));
+  
+  // Has input by name
+  EXPECT_TRUE(scope.has_input("joint1"));
+  
+  // Has input of matching type with name
+  EXPECT_TRUE(scope.has_input<giskard_core::Scope::JointInput>("joint1"));
+
+  // Does not have input of matching type with mismatched name
+  EXPECT_FALSE(scope.has_input<giskard_core::Scope::JointInput>("bla"));
+
+  // Does not have input of mismatching type with name
+  EXPECT_FALSE(scope.has_input<giskard_core::Scope::Vec3Input>("joint1"));
+  
+  // Find general input with name
+  EXPECT_NO_THROW(scope.find_input("joint1"));
+
+  // Find typed input with matching name
+  EXPECT_NO_THROW(scope.find_input<giskard_core::Scope::JointInput>("joint1"));
+
+  // Don't find typed input with mismatched name
+  EXPECT_ANY_THROW(scope.find_input<giskard_core::Scope::JointInput>("bla"));
+  
+  // Don't find input with mismatched type and matching name
+  EXPECT_ANY_THROW(scope.find_input<giskard_core::Scope::Vec3Input>("joint1"));
+
+  // Allow adding the input a second time with matching type
+  EXPECT_NO_THROW(scope.add_joint_input("joint1"));
+
+  // Don't allow adding the input a second time with different type
+  EXPECT_ANY_THROW(scope.add_vector_input("joint1"));
+
+  // Don't allow adding a joint after an input of another type
+  EXPECT_NO_THROW(scope.add_vector_input("someVec"));
+  EXPECT_ANY_THROW(scope.add_joint_input("joint2"));
+}
+
+TEST_F(ScopeTest, VectorInputs) {
+  giskard_core::Scope scope;
+
+  // Add a scalar input with name 'input1'
+  EXPECT_NO_THROW(scope.add_vector_input("vector1"));
+  
+  // Has input by name
+  EXPECT_TRUE(scope.has_input("vector1"));
+  
+  // Has input of matching type with name
+  EXPECT_TRUE(scope.has_input<giskard_core::Scope::Vec3Input>("vector1"));
+
+  // Does not have input of matching type with mismatched name
+  EXPECT_FALSE(scope.has_input<giskard_core::Scope::Vec3Input>("bla"));
+
+  // Does not have input of mismatching type with name
+  EXPECT_FALSE(scope.has_input<giskard_core::Scope::ScalarInput>("vector1"));
+  
+  // Find general input with name
+  EXPECT_NO_THROW(scope.find_input("vector1"));
+
+  // Find typed input with matching name
+  EXPECT_NO_THROW(scope.find_input<giskard_core::Scope::Vec3Input>("vector1"));
+
+  // Don't find typed input with mismatched name
+  EXPECT_ANY_THROW(scope.find_input<giskard_core::Scope::Vec3Input>("bla"));
+  
+  // Don't find input with mismatched type and matching name
+  EXPECT_ANY_THROW(scope.find_input<giskard_core::Scope::ScalarInput>("vector1"));
+
+  // Allow adding the input a second time with matching type
+  EXPECT_NO_THROW(scope.add_vector_input("vector1"));
+
+  // Don't allow adding the input a second time with different type
+  EXPECT_ANY_THROW(scope.add_scalar_input("vector1"));
+}
+
+TEST_F(ScopeTest, RotationInputs) {
+  giskard_core::Scope scope;
+
+  // Add a scalar input with name 'input1'
+  EXPECT_NO_THROW(scope.add_rotation_input("rotation1"));
+  
+  // Has input by name
+  EXPECT_TRUE(scope.has_input("rotation1"));
+  
+  // Has input of matching type with name
+  EXPECT_TRUE(scope.has_input<giskard_core::Scope::RotationInput>("rotation1"));
+
+  // Does not have input of matching type with mismatched name
+  EXPECT_FALSE(scope.has_input<giskard_core::Scope::RotationInput>("bla"));
+
+  // Does not have input of mismatching type with name
+  EXPECT_FALSE(scope.has_input<giskard_core::Scope::Vec3Input>("rotation1"));
+  
+  // Find general input with name
+  EXPECT_NO_THROW(scope.find_input("rotation1"));
+
+  // Find typed input with matching name
+  EXPECT_NO_THROW(scope.find_input<giskard_core::Scope::RotationInput>("rotation1"));
+
+  // Don't find typed input with mismatched name
+  EXPECT_ANY_THROW(scope.find_input<giskard_core::Scope::RotationInput>("bla"));
+  
+  // Don't find input with mismatched type and matching name
+  EXPECT_ANY_THROW(scope.find_input<giskard_core::Scope::Vec3Input>("rotation1"));
+
+  // Allow adding the input a second time with matching type
+  EXPECT_NO_THROW(scope.add_rotation_input("rotation1"));
+
+  // Don't allow adding the input a second time with different type
+  EXPECT_ANY_THROW(scope.add_vector_input("rotation1"));
+}
+
+TEST_F(ScopeTest, FrameInputs) {
+  giskard_core::Scope scope;
+
+  // Add a scalar input with name 'input1'
+  EXPECT_NO_THROW(scope.add_frame_input("frame1"));
+  
+  // Has input by name
+  EXPECT_TRUE(scope.has_input("frame1"));
+  
+  // Has input of matching type with name
+  EXPECT_TRUE(scope.has_input<giskard_core::Scope::FrameInput>("frame1"));
+
+  // Does not have input of matching type with mismatched name
+  EXPECT_FALSE(scope.has_input<giskard_core::Scope::FrameInput>("bla"));
+
+  // Does not have input of mismatching type with name
+  EXPECT_FALSE(scope.has_input<giskard_core::Scope::Vec3Input>("frame1"));
+  
+  // Find general input with name
+  EXPECT_NO_THROW(scope.find_input("frame1"));
+
+  // Find typed input with matching name
+  EXPECT_NO_THROW(scope.find_input<giskard_core::Scope::FrameInput>("frame1"));
+
+  // Don't find typed input with mismatched name
+  EXPECT_ANY_THROW(scope.find_input<giskard_core::Scope::FrameInput>("bla"));
+  
+  // Don't find input with mismatched type and matching name
+  EXPECT_ANY_THROW(scope.find_input<giskard_core::Scope::Vec3Input>("frame1"));
+
+  // Allow adding the input a second time with matching type
+  EXPECT_NO_THROW(scope.add_frame_input("frame1"));
+
+  // Don't allow adding the input a second time with different type
+  EXPECT_ANY_THROW(scope.add_vector_input("frame1"));
+}
+
+// This is not the best test
+TEST_F(ScopeTest, GetInputs) {
+  giskard_core::Scope scope;
+  auto names  = scope.get_input_names();
+  auto inputs = scope.get_inputs();
+  auto inpMao = scope.get_input_map();
+  
+  auto inJ = scope.get_inputs<giskard_core::Scope::JointInput>();
+  auto inS = scope.get_inputs<giskard_core::Scope::ScalarInput>();
+  auto inV = scope.get_inputs<giskard_core::Scope::Vec3Input>();
+  auto inR = scope.get_inputs<giskard_core::Scope::RotationInput>();
+  auto inF = scope.get_inputs<giskard_core::Scope::FrameInput>();
+
+  auto inJMap = scope.get_input_map<giskard_core::Scope::JointInput>();
+  auto inSMap = scope.get_input_map<giskard_core::Scope::ScalarInput>();
+  auto inVMap = scope.get_input_map<giskard_core::Scope::Vec3Input>();
+  auto inRMap = scope.get_input_map<giskard_core::Scope::RotationInput>();
+  auto inFMap = scope.get_input_map<giskard_core::Scope::FrameInput>();
+
+  EXPECT_EQ(0, names.size());
+  EXPECT_EQ(0, inputs.size());
+  EXPECT_EQ(0, inpMao.size());
+
+  EXPECT_EQ(0, inJ.size());
+  EXPECT_EQ(0, inS.size());
+  EXPECT_EQ(0, inV.size());
+  EXPECT_EQ(0, inR.size());
+  EXPECT_EQ(0, inF.size());
+
+  EXPECT_EQ(0, inJMap.size());
+  EXPECT_EQ(0, inSMap.size());
+  EXPECT_EQ(0, inVMap.size());
+  EXPECT_EQ(0, inRMap.size());
+  EXPECT_EQ(0, inFMap.size());
+
+  ASSERT_NO_THROW(scope.add_joint_input("joint1"));
+  ASSERT_NO_THROW(scope.add_joint_input("joint2"));
+  ASSERT_NO_THROW(scope.add_joint_input("joint3"));
+  ASSERT_NO_THROW(scope.add_scalar_input("scalar1"));
+  ASSERT_NO_THROW(scope.add_scalar_input("scalar2"));
+  ASSERT_NO_THROW(scope.add_scalar_input("scalar3"));
+  ASSERT_NO_THROW(scope.add_vector_input("vector1"));
+  ASSERT_NO_THROW(scope.add_vector_input("vector2"));
+  ASSERT_NO_THROW(scope.add_vector_input("vector3"));
+  ASSERT_NO_THROW(scope.add_rotation_input("rotation1"));
+  ASSERT_NO_THROW(scope.add_rotation_input("rotation2"));
+  ASSERT_NO_THROW(scope.add_rotation_input("rotation3"));
+  ASSERT_NO_THROW(scope.add_frame_input("frame1"));
+  ASSERT_NO_THROW(scope.add_frame_input("frame2"));
+  ASSERT_NO_THROW(scope.add_frame_input("frame3"));
+
+  names  = scope.get_input_names();
+  inputs = scope.get_inputs();
+  inpMao = scope.get_input_map();
+  
+  inJ = scope.get_inputs<giskard_core::Scope::JointInput>();
+  inS = scope.get_inputs<giskard_core::Scope::ScalarInput>();
+  inV = scope.get_inputs<giskard_core::Scope::Vec3Input>();
+  inR = scope.get_inputs<giskard_core::Scope::RotationInput>();
+  inF = scope.get_inputs<giskard_core::Scope::FrameInput>();
+
+  inJMap = scope.get_input_map<giskard_core::Scope::JointInput>();
+  inSMap = scope.get_input_map<giskard_core::Scope::ScalarInput>();
+  inVMap = scope.get_input_map<giskard_core::Scope::Vec3Input>();
+  inRMap = scope.get_input_map<giskard_core::Scope::RotationInput>();
+  inFMap = scope.get_input_map<giskard_core::Scope::FrameInput>();
+
+  EXPECT_EQ(15, names.size());
+  EXPECT_EQ(15, inputs.size());
+  EXPECT_EQ(15, inpMao.size());
+
+  EXPECT_EQ(3, inJ.size());
+  EXPECT_EQ(3, inS.size());
+  EXPECT_EQ(3, inV.size());
+  EXPECT_EQ(3, inR.size());
+  EXPECT_EQ(3, inF.size());
+
+  EXPECT_EQ(3, inJMap.size());
+  EXPECT_EQ(3, inSMap.size());
+  EXPECT_EQ(3, inVMap.size());
+  EXPECT_EQ(3, inRMap.size());
+  EXPECT_EQ(3, inFMap.size());
+
+}
