@@ -342,11 +342,40 @@ namespace giskard_core
         return result;
       }
 
+      // Get the names of all inputs of a specific enum type
+      std::vector<std::string> get_input_names(const InputType type) const {
+        std::vector<std::string> result;
+        for (auto it = inputs_.begin(); it != inputs_.end(); it++)
+          if (it->second->get_type() == type)
+            result.push_back(it->first);
+        return result;
+      }
+
+      // Get the names of all inputs of a specific type
+      template<typename T>
+      std::vector<std::string> get_input_names() const {
+        std::vector<std::string> result;
+        for (auto it = inputs_.begin(); it != inputs_.end(); it++)
+          if (!!boost::dynamic_pointer_cast<T>(it->second))
+            result.push_back(it->first);
+        return result;
+      }
+
       // Get all input structures
       std::vector<InputPtr> get_inputs() const {
         std::vector<InputPtr> out;
         for (auto it = inputs_.begin(); it != inputs_.end(); it++) {
           out.push_back(it->second);
+        }
+        return out;
+      }
+
+      // Get input structures filtered by enum type
+      std::vector<InputPtr> get_inputs(const InputType type) const {
+        std::vector<InputPtr> out;
+        for (auto it = inputs_.begin(); it != inputs_.end(); it++) {
+          if (it->second->get_type() == type)
+            out.push_back(it->second);
         }
         return out;
       }
@@ -368,6 +397,16 @@ namespace giskard_core
         std::map<std::string, const InputPtr&> out;
         for (auto it = inputs_.begin(); it != inputs_.end(); it++)
           out.insert(std::pair<std::string, const InputPtr&>(it->first, it->second));
+
+        return out;
+      }
+
+      // Get input structures mapped by their names and filtered by their enum types
+      std::map<std::string, const InputPtr&> get_input_map(const InputType type) const {
+        std::map<std::string, const InputPtr&> out;
+        for (auto it = inputs_.begin(); it != inputs_.end(); it++)
+          if (it->second->get_type() == type)
+            out.insert(std::pair<std::string, const InputPtr&>(it->first, it->second));
 
         return out;
       }

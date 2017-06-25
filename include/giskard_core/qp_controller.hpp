@@ -323,9 +323,25 @@ namespace giskard_core
         return scope_.get_input_names();
       }
 
+      // Shorthand for getting names of inputs in scope filtered by enum type
+      std::vector<std::string> get_input_names(const InputType type) const {
+        return scope_.get_input_names(type);
+      }
+
+      // Shorthand for getting names of inputs in scope filtered by type
+      template<typename T>
+      std::vector<std::string> get_input_names() const {
+        return scope_.get_input_names<T>();
+      }
+
       // Shorthand for getting all input structures in scope
       std::vector<Scope::InputPtr> get_inputs() const {
         return scope_.get_inputs();
+      }
+
+      // Shorthand for getting input structures in scope filtered by enum type
+      std::vector<Scope::InputPtr> get_inputs(const InputType type) const {
+        return scope_.get_inputs(type);
       }
 
       // Shorthand for getting input structures filtered by type in scope
@@ -334,12 +350,17 @@ namespace giskard_core
         return scope_.get_inputs<T>();
       }
 
-      // Shorthand for getting input structures mapped by their names in scope
+      // Shorthand for getting input structures mapped to their names in scope
       std::map<std::string, const Scope::InputPtr&> get_input_map() const {
         return scope_.get_input_map();
       }
 
-      // Shorthand for getting input structures mapped by their names and filtered by their types in scope
+      // Shorthand for getting input structures mapped to their names in scope and filtered by their enum type
+      std::map<std::string, const Scope::InputPtr&> get_input_map(const InputType type) const {
+        return scope_.get_input_map(type);
+      }
+
+      // Shorthand for getting input structures mapped to their names and filtered by their types in scope
       template<typename T>
       std::map<std::string, boost::shared_ptr<T>> get_input_map() const {
         return scope_.get_input_map<T>();
