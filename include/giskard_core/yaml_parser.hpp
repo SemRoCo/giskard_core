@@ -1596,6 +1596,49 @@ namespace YAML {
     }
   };
 
+  //
+  // parsing of alias reference specs
+  //
+
+  inline bool is_alias_reference(const Node& node)
+  {
+    if(!node.IsScalar() || is_const_double(node))
+      return false;
+
+    try
+    {
+      node.as<std::string>();
+      return true;
+    }
+    catch (const YAML::Exception& e)
+    {
+      return false;
+    }
+  }
+
+  template<>
+  struct convert<giskard_core::AliasReferenceSpecPtr> 
+  {
+    
+    static Node encode(const giskard_core::AliasReferenceSpecPtr& rhs) 
+    {
+      Node node;
+      node = rhs->get_reference_name();
+      return node;
+    }
+  
+    static bool decode(const Node& node, giskard_core::AliasReferenceSpecPtr& rhs) 
+    {
+      if(!is_alias_reference(node))
+        return false;
+ 
+      rhs = giskard_core::AliasReferenceSpecPtr(new giskard_core::AliasReferenceSpec(node.as<std::string>()));
+
+      return true;
+    }
+  };
+
+
   ///
   /// parsing of general specifications
   ///
@@ -1640,8 +1683,9 @@ namespace YAML {
     static Node encode(const giskard_core::SpecPtr& rhs) 
     {
       Node node;
-
-      if(boost::dynamic_pointer_cast<giskard_core::FrameSpec>(rhs).get())
+      if(boost::dynamic_pointer_cast<giskard_core::AliasReferenceSpec>(rhs).get())
+        node = boost::dynamic_pointer_cast<giskard_core::AliasReferenceSpec>(rhs);
+      else if(boost::dynamic_pointer_cast<giskard_core::FrameSpec>(rhs).get())
         node = boost::dynamic_pointer_cast<giskard_core::FrameSpec>(rhs);
       else if (boost::dynamic_pointer_cast<giskard_core::VectorSpec>(rhs).get())
         node = boost::dynamic_pointer_cast<giskard_core::VectorSpec>(rhs);
@@ -1655,7 +1699,12 @@ namespace YAML {
   
     static bool decode(const Node& node, giskard_core::SpecPtr& rhs) 
     {
-      if(is_double_spec(node))
+      if(is_alias_reference(node))
+      {
+        rhs = node.as<giskard_core::AliasReferenceSpecPtr>();
+        return true;
+      }
+      else if(is_double_spec(node))
       {
         rhs = node.as<giskard_core::DoubleSpecPtr>();
         return true;

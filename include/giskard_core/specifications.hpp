@@ -56,6 +56,48 @@ namespace giskard_core
   /// next level of expression specifications
   ///
 
+  class AliasReferenceSpec: public Spec
+  {
+    public:
+      AliasReferenceSpec() : reference_name_( "" ) {}
+      AliasReferenceSpec(const std::string& reference_name) : 
+        reference_name_( reference_name ) {}
+      AliasReferenceSpec(const AliasReferenceSpec& other) : 
+        reference_name_ ( other.get_reference_name() ) {}
+
+      const std::string& get_reference_name() const
+      {
+        return reference_name_;
+      }
+
+      void set_reference_name(const std::string& reference_name)
+      {
+        reference_name_ = reference_name;
+      }
+
+      bool equals(const Spec& other) const
+      {
+        if(!dynamic_cast<const AliasReferenceSpec*>(&other))
+          return false;
+  
+        return (dynamic_cast<const AliasReferenceSpec*>(&other)->get_reference_name().compare(this->get_reference_name()) == 0);
+      }
+  
+      KDL::ExpressionBase::Ptr get_expression(const giskard_core::Scope& scope)
+      {
+        return scope.find_expression(get_reference_name());
+      }
+    private:
+      std::string reference_name_;
+  };
+
+  typedef typename boost::shared_ptr<AliasReferenceSpec> AliasReferenceSpecPtr;
+
+  inline AliasReferenceSpecPtr alias_reference_spec(const std::string& reference_name = "")
+  {
+    return AliasReferenceSpecPtr(new AliasReferenceSpec(reference_name));
+  }
+
   class DoubleSpec : public Spec
   {
     public:
