@@ -76,6 +76,21 @@ namespace giskard_core
         return it->second;
       }
 
+      const KDL::ExpressionBase::Ptr find_expression(const std::string& reference_name) const
+      {
+        if(!has_expression(reference_name))
+          throw std::invalid_argument("Could not find expression with name: "+ reference_name);
+
+        if (has_double_expression(reference_name))
+          return find_double_expression(reference_name);
+        else if (has_vector_expression(reference_name))
+          return find_vector_expression(reference_name);
+        else if (has_rotation_expression(reference_name))
+          return find_rotation_expression(reference_name);
+        else if (has_frame_expression(reference_name))
+          return find_frame_expression(reference_name);
+      }
+
       bool has_double_expression(const std::string& expression_name) const
       {
         return (double_references_.count(expression_name) == 1);
@@ -94,6 +109,14 @@ namespace giskard_core
       bool has_frame_expression(const std::string& expression_name) const
       {
         return (frame_references_.count(expression_name) == 1);
+      }
+
+      bool has_expression (const std::string& expression_name) const
+      {
+        return has_double_expression(expression_name) ||
+          has_vector_expression(expression_name) || 
+          has_rotation_expression(expression_name) ||
+          has_frame_expression(expression_name);
       }
 
       void add_double_expression(const std::string& reference_name, const KDL::Expression<double>::Ptr& expression)
