@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2015-2017 Georg Bartels <georg.bartels@cs.uni-bremen.de>
+ *                         Adrian Röfer <aroefer@uni-bremen.de>
  * 
  * This file is part of giskard.
  * 
@@ -49,6 +50,23 @@ namespace giskard_core
       else if(boost::dynamic_pointer_cast<giskard_core::RotationSpec>(spec).get())
         scope.add_rotation_expression(name,
             boost::dynamic_pointer_cast<giskard_core::RotationSpec>(spec)->get_expression(scope));
+      else if(boost::dynamic_pointer_cast<giskard_core::AliasReferenceSpec>(spec).get())
+      {
+        // generation of alias references is extraordinarily convoluted;
+        // it is a feature that was added relatively late... sorry!
+        KDL::ExpressionBase::Ptr exp =
+          boost::dynamic_pointer_cast<giskard_core::AliasReferenceSpec>(spec)->get_expression(scope);
+        if (boost::dynamic_pointer_cast<KDL::Expression<double>>(exp).get())
+          scope.add_double_expression(name, boost::dynamic_pointer_cast<KDL::Expression<double>>(exp));
+        else if (boost::dynamic_pointer_cast<KDL::Expression<KDL::Vector>>(exp).get())
+          scope.add_vector_expression(name, boost::dynamic_pointer_cast<KDL::Expression<KDL::Vector>>(exp));
+        else if (boost::dynamic_pointer_cast<KDL::Expression<KDL::Rotation>>(exp).get())
+          scope.add_rotation_expression(name, boost::dynamic_pointer_cast<KDL::Expression<KDL::Rotation>>(exp));
+        else if (boost::dynamic_pointer_cast<KDL::Expression<KDL::Frame>>(exp).get())
+          scope.add_frame_expression(name, boost::dynamic_pointer_cast<KDL::Expression<KDL::Frame>>(exp));
+        else
+          throw std::domain_error("Error during generation of alias reference! Could not cast into any existing expression type. This is an giskard-internal error that should not happen.");
+      }
       else
         throw std::domain_error("Scope generation: found entry of non-supported type.");
     }
