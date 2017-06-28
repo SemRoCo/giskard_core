@@ -102,15 +102,12 @@ TEST_F(DoubleExpressionGenerationTest, Inputs)
   EXPECT_LE(abs(exprJ->value()- 0.1), 0.00000001);
   EXPECT_LE(abs(exprS->value()- 0.1), 0.00000001);
 
-  // ASSERT_EQ(exprJ->number_of_derivatives(), 3);
-  // EXPECT_DOUBLE_EQ(exprJ->derivative(0), 0.0); 
-  // EXPECT_DOUBLE_EQ(exprJ->derivative(1), 0.0); 
-  // EXPECT_DOUBLE_EQ(exprJ->derivative(2), 1.0);
+  ASSERT_EQ(exprJ->number_of_derivatives(), 1);
+  EXPECT_DOUBLE_EQ(exprJ->derivative(0), 1.0); 
 
-  // ASSERT_EQ(exprS->number_of_derivatives(), 3);
-  // EXPECT_DOUBLE_EQ(exprS->derivative(0), 0.0); 
-  // EXPECT_DOUBLE_EQ(exprS->derivative(1), 0.0); 
-  // EXPECT_DOUBLE_EQ(exprS->derivative(2), 1.0); 
+  ASSERT_EQ(exprS->number_of_derivatives(), 2);
+  EXPECT_DOUBLE_EQ(exprS->derivative(0), 0.0); 
+  EXPECT_DOUBLE_EQ(exprS->derivative(1), 1.0); 
 }
 
 TEST_F(DoubleExpressionGenerationTest, InputEquality)
