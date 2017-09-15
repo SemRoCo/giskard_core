@@ -467,8 +467,7 @@ TEST_F(DoubleExpressionGenerationTest, Abs)
   // CASE 1
   YAML::Node node = YAML::Load(s1);
 
-  node.as<giskard_core::DoubleSpecPtr>();
-  // ASSERT_NO_THROW(node.as<giskard_core::DoubleSpecPtr>());
+  ASSERT_NO_THROW(node.as<giskard_core::DoubleSpecPtr>());
   giskard_core::DoubleSpecPtr spec = node.as<giskard_core::DoubleSpecPtr>();
 
   KDL::Expression<double>::Ptr exp = spec->get_expression(giskard_core::Scope());
@@ -582,8 +581,7 @@ TEST_F(DoubleExpressionGenerationTest, Sin)
   // CASE 1
   YAML::Node node = YAML::Load(s1);
 
-  // ASSERT_NO_THROW(node.as<giskard_core::DoubleSpecPtr>());
-  node.as<giskard_core::DoubleSpecPtr>();
+  ASSERT_NO_THROW(node.as<giskard_core::DoubleSpecPtr>());
   giskard_core::DoubleSpecPtr spec = node.as<giskard_core::DoubleSpecPtr>();
 
   KDL::Expression<double>::Ptr exp = spec->get_expression(giskard_core::Scope());
@@ -621,8 +619,7 @@ TEST_F(DoubleExpressionGenerationTest, Tan)
   // CASE 1
   YAML::Node node = YAML::Load(s1);
 
-  // ASSERT_NO_THROW(node.as<giskard_core::DoubleSpecPtr>());
-  node.as<giskard_core::DoubleSpecPtr>();
+  ASSERT_NO_THROW(node.as<giskard_core::DoubleSpecPtr>());
   giskard_core::DoubleSpecPtr spec = node.as<giskard_core::DoubleSpecPtr>();
 
   KDL::Expression<double>::Ptr exp = spec->get_expression(giskard_core::Scope());
@@ -660,8 +657,7 @@ TEST_F(DoubleExpressionGenerationTest, Sqrt)
   // CASE 1
   YAML::Node node = YAML::Load(s1);
 
-  // ASSERT_NO_THROW(node.as<giskard_core::DoubleSpecPtr>());
-  node.as<giskard_core::DoubleSpecPtr>();
+  ASSERT_NO_THROW(node.as<giskard_core::DoubleSpecPtr>());
   giskard_core::DoubleSpecPtr spec = node.as<giskard_core::DoubleSpecPtr>();
 
   KDL::Expression<double>::Ptr exp = spec->get_expression(giskard_core::Scope());
