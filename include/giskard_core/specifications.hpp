@@ -881,6 +881,300 @@ namespace giskard_core
 
   typedef typename boost::shared_ptr<FmodSpec> FmodSpecPtr;
 
+
+  class SinSpec: public DoubleSpec
+  {
+    public:
+      const DoubleSpecPtr& get_value() const
+      {
+        return value_;
+      }
+
+      void set_value(const DoubleSpecPtr& value)
+      {
+        value_ = value;
+      }
+
+      virtual bool equals(const Spec& other) const
+      {
+        if(!dynamic_cast<const SinSpec*>(&other))
+          return false;
+
+        const SinSpec* other_p = dynamic_cast<const SinSpec*>(&other);
+
+        return get_value().get() && other_p->get_value().get() &&
+            get_value()->equals(*(other_p->get_value()));
+      }
+
+      virtual KDL::Expression<double>::Ptr get_expression(const giskard_core::Scope& scope)
+      {
+        return KDL::sin(get_value()->get_expression(scope));
+      }
+
+    private:
+      giskard_core::DoubleSpecPtr value_;
+  };
+
+  typedef typename boost::shared_ptr<SinSpec> SinSpecPtr;
+
+  class CosSpec: public DoubleSpec
+  {
+    public:
+      const DoubleSpecPtr& get_value() const
+      {
+        return value_;
+      }
+
+      void set_value(const DoubleSpecPtr& value)
+      {
+        value_ = value;
+      }
+
+      virtual bool equals(const Spec& other) const
+      {
+        if(!dynamic_cast<const CosSpec*>(&other))
+          return false;
+
+        const CosSpec* other_p = dynamic_cast<const CosSpec*>(&other);
+
+        return get_value().get() && other_p->get_value().get() &&
+            get_value()->equals(*(other_p->get_value()));
+      }
+
+      virtual KDL::Expression<double>::Ptr get_expression(const giskard_core::Scope& scope)
+      {
+        return KDL::cos(get_value()->get_expression(scope));
+      }
+
+    private:
+      giskard_core::DoubleSpecPtr value_;
+  };
+
+  typedef typename boost::shared_ptr<CosSpec> CosSpecPtr;
+
+  class TanSpec: public DoubleSpec
+  {
+    public:
+      const DoubleSpecPtr& get_value() const
+      {
+        return value_;
+      }
+
+      void set_value(const DoubleSpecPtr& value)
+      {
+        value_ = value;
+      }
+
+      virtual bool equals(const Spec& other) const
+      {
+        if(!dynamic_cast<const TanSpec*>(&other))
+          return false;
+
+        const TanSpec* other_p = dynamic_cast<const TanSpec*>(&other);
+
+        return get_value().get() && other_p->get_value().get() &&
+            get_value()->equals(*(other_p->get_value()));
+      }
+
+      virtual KDL::Expression<double>::Ptr get_expression(const giskard_core::Scope& scope)
+      {
+        return KDL::tan(get_value()->get_expression(scope));
+      }
+
+    private:
+      giskard_core::DoubleSpecPtr value_;
+  };
+
+  typedef typename boost::shared_ptr<TanSpec> TanSpecPtr;
+
+
+  class ASinSpec: public DoubleSpec
+  {
+    public:
+      const DoubleSpecPtr& get_value() const
+      {
+        return value_;
+      }
+
+      void set_value(const DoubleSpecPtr& value)
+      {
+        value_ = value;
+      }
+
+      virtual bool equals(const Spec& other) const
+      {
+        if(!dynamic_cast<const ASinSpec*>(&other))
+          return false;
+
+        const ASinSpec* other_p = dynamic_cast<const ASinSpec*>(&other);
+
+        return get_value().get() && other_p->get_value().get() &&
+            get_value()->equals(*(other_p->get_value()));
+      }
+
+      virtual KDL::Expression<double>::Ptr get_expression(const giskard_core::Scope& scope)
+      {
+        return KDL::asin(get_value()->get_expression(scope));
+      }
+
+    private:
+      giskard_core::DoubleSpecPtr value_;
+  };
+
+  typedef typename boost::shared_ptr<ASinSpec> ASinSpecPtr;
+
+  class ACosSpec: public DoubleSpec
+  {
+    public:
+      const DoubleSpecPtr& get_value() const
+      {
+        return value_;
+      }
+
+      void set_value(const DoubleSpecPtr& value)
+      {
+        value_ = value;
+      }
+
+      virtual bool equals(const Spec& other) const
+      {
+        if(!dynamic_cast<const ACosSpec*>(&other))
+          return false;
+
+        const ACosSpec* other_p = dynamic_cast<const ACosSpec*>(&other);
+
+        return get_value().get() && other_p->get_value().get() &&
+            get_value()->equals(*(other_p->get_value()));
+      }
+
+      virtual KDL::Expression<double>::Ptr get_expression(const giskard_core::Scope& scope)
+      {
+        return KDL::acos(get_value()->get_expression(scope));
+      }
+
+    private:
+      giskard_core::DoubleSpecPtr value_;
+  };
+
+  typedef typename boost::shared_ptr<ACosSpec> ACosSpecPtr;
+
+  class ATanSpec: public DoubleSpec
+  {
+    public:
+      const DoubleSpecPtr& get_value() const
+      {
+        return value_;
+      }
+
+      void set_value(const DoubleSpecPtr& value)
+      {
+        value_ = value;
+      }
+
+      virtual bool equals(const Spec& other) const
+      {
+        if(!dynamic_cast<const ATanSpec*>(&other))
+          return false;
+
+        const ATanSpec* other_p = dynamic_cast<const ATanSpec*>(&other);
+
+        return get_value().get() && other_p->get_value().get() &&
+            get_value()->equals(*(other_p->get_value()));
+      }
+
+      virtual KDL::Expression<double>::Ptr get_expression(const giskard_core::Scope& scope)
+      {
+        return KDL::atan(get_value()->get_expression(scope));
+      }
+
+    private:
+      giskard_core::DoubleSpecPtr value_;
+  };
+
+  typedef typename boost::shared_ptr<ATanSpec> ATanSpecPtr;
+
+  class SqrtSpec: public DoubleSpec
+  {
+    public:
+      const DoubleSpecPtr& get_value() const
+      {
+        return value_;
+      }
+
+      void set_value(const DoubleSpecPtr& value)
+      {
+        value_ = value;
+      }
+
+      virtual bool equals(const Spec& other) const
+      {
+        if(!dynamic_cast<const SqrtSpec*>(&other))
+          return false;
+
+        const SqrtSpec* other_p = dynamic_cast<const SqrtSpec*>(&other);
+
+        return get_value().get() && other_p->get_value().get() &&
+            get_value()->equals(*(other_p->get_value()));
+      }
+
+      virtual KDL::Expression<double>::Ptr get_expression(const giskard_core::Scope& scope)
+      {
+        return KDL::sqrt(get_value()->get_expression(scope));
+      }
+
+    private:
+      giskard_core::DoubleSpecPtr value_;
+  };
+
+  typedef typename boost::shared_ptr<SqrtSpec> SqrtSpecPtr;
+
+  class MaxSpec: public DoubleSpec
+  {
+    public:
+      const DoubleSpecPtr& get_lhs() const
+      {
+        return lhs_;
+      }
+
+      const DoubleSpecPtr& get_rhs() const
+      {
+        return rhs_;
+      }
+
+      void set_lhs(const DoubleSpecPtr& lhs)
+      {
+        lhs_ = lhs;
+      }
+
+      void set_rhs(const DoubleSpecPtr& rhs)
+      {
+        rhs_ = rhs;
+      }
+
+      virtual bool equals(const Spec& other) const
+      {
+        if(!dynamic_cast<const MaxSpec*>(&other))
+          return false;
+
+        const MaxSpec* other_p = dynamic_cast<const MaxSpec*>(&other);
+
+        return get_lhs().get() && get_rhs().get() &&
+            other_p->get_lhs().get() && other_p->get_rhs().get() &&
+            get_lhs()->equals(*(other_p->get_lhs())) &&
+            get_rhs()->equals(*(other_p->get_rhs()));
+      }
+
+      virtual KDL::Expression<double>::Ptr get_expression(const giskard_core::Scope& scope)
+      {
+        return KDL::maximum(get_lhs()->get_expression(scope), get_rhs()->get_expression(scope));
+      }
+
+    private:
+      giskard_core::DoubleSpecPtr lhs_, rhs_;
+  };
+
+  typedef typename boost::shared_ptr<MaxSpec> MaxSpecPtr;
+
   ///
   /// specifications of vector expressions
   ///
@@ -1381,6 +1675,53 @@ namespace giskard_core
   };
 
   typedef typename boost::shared_ptr<VectorRotationVectorSpec> VectorRotationVectorSpecPtr;
+
+  class VectorCrossSpec: public VectorSpec
+  {
+    public:
+      const VectorSpecPtr& get_lhs() const
+      {
+        return lhs_;
+      }
+
+      const VectorSpecPtr& get_rhs() const
+      {
+        return rhs_;
+      }
+
+      void set_lhs(const VectorSpecPtr& lhs)
+      {
+        lhs_ = lhs;
+      }
+
+      void set_rhs(const VectorSpecPtr& rhs)
+      {
+        rhs_ = rhs;
+      }
+
+      virtual bool equals(const Spec& other) const
+      {
+        if(!dynamic_cast<const VectorCrossSpec*>(&other))
+          return false;
+
+        const VectorCrossSpec* other_p = dynamic_cast<const VectorCrossSpec*>(&other);
+
+        return get_lhs().get() && get_rhs().get() &&
+            other_p->get_lhs().get() && other_p->get_rhs().get() &&
+            get_lhs()->equals(*(other_p->get_lhs())) &&
+            get_rhs()->equals(*(other_p->get_rhs()));
+      }
+
+      virtual KDL::Expression<KDL::Vector>::Ptr get_expression(const giskard_core::Scope& scope)
+      {
+        return KDL::cross(get_lhs()->get_expression(scope), get_rhs()->get_expression(scope));
+      }
+
+    private:
+      giskard_core::VectorSpecPtr lhs_, rhs_;
+  };
+
+  typedef typename boost::shared_ptr<VectorCrossSpec> VectorCrossSpecPtr;
 
   ///
   /// specifications for rotation expresssions

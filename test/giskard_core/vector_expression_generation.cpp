@@ -132,6 +132,26 @@ TEST_F(VectorExpressionGenerationTest, VectorAddition)
   EXPECT_TRUE(KDL::Equal(val1, val2));
 }
 
+TEST_F(VectorExpressionGenerationTest, VectorCross)
+{
+  std::string s1 = "{vector-cross: [{vector3: [1, 0, 0]}, {vector3: [0, 1, 0]}]}";
+
+  // test 1
+  YAML::Node node = YAML::Load(s1);
+
+  ASSERT_NO_THROW(node.as<giskard_core::VectorSpecPtr>());
+  giskard_core::VectorSpecPtr spec = node.as<giskard_core::VectorSpecPtr>();
+  
+  giskard_core::Scope scope;
+  ASSERT_NO_THROW(spec->get_expression(scope));
+  KDL::Expression<KDL::Vector>::Ptr exp = spec->get_expression(scope);
+  
+  ASSERT_TRUE(exp.get());
+  KDL::Vector val1 = exp->value();
+  KDL::Vector val2 = KDL::Vector(0,0,1);
+  EXPECT_TRUE(KDL::Equal(val1, val2));
+}
+
 TEST_F(VectorExpressionGenerationTest, VectorSubtraction)
 {
   std::string v1 = "{vector3: [1.1, 2.2, 3.3]}";

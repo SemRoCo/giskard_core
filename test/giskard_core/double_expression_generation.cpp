@@ -405,6 +405,21 @@ TEST_F(DoubleExpressionGenerationTest, Minimum)
   EXPECT_NEAR(exp->value(), -2.1, 1e-10);
 }
 
+TEST_F(DoubleExpressionGenerationTest, Maximum)
+{
+  std::string s1 = "{max: [1.2, -2.1]}";
+
+  YAML::Node node = YAML::Load(s1);
+
+  ASSERT_NO_THROW(node.as<giskard_core::DoubleSpecPtr>());
+  giskard_core::DoubleSpecPtr spec = node.as<giskard_core::DoubleSpecPtr>();
+
+  KDL::Expression<double>::Ptr exp = spec->get_expression(giskard_core::Scope());
+  ASSERT_TRUE(exp.get());
+
+  EXPECT_NEAR(exp->value(), 1.2, 1e-10);
+}
+
 TEST_F(DoubleExpressionGenerationTest, DoubleIf)
 {
   std::string s1 = "{double-if: [0.1, 1.1, 2.2]}";
@@ -479,6 +494,196 @@ TEST_F(DoubleExpressionGenerationTest, Abs)
   ASSERT_TRUE(exp.get());
 
   EXPECT_NEAR(exp->value(), 0.0, 1e-10);
+}
+
+TEST_F(DoubleExpressionGenerationTest, Cos)
+{
+  std::string s1 = "{cos: 0.0}";
+  std::string s2 = "{cos: 3.14159265359}";
+  std::string s3 = "{cos: 1.57079632679}";
+
+  // CASE 1
+  YAML::Node node = YAML::Load(s1);
+
+  ASSERT_NO_THROW(node.as<giskard_core::DoubleSpecPtr>());
+  giskard_core::DoubleSpecPtr spec = node.as<giskard_core::DoubleSpecPtr>();
+
+  KDL::Expression<double>::Ptr exp = spec->get_expression(giskard_core::Scope());
+  ASSERT_TRUE(exp.get());
+
+  EXPECT_NEAR(exp->value(), 1.0, 1e-10);
+
+  // CASE 2
+  node = YAML::Load(s2);
+  ASSERT_NO_THROW(node.as<giskard_core::DoubleSpecPtr>());
+  spec = node.as<giskard_core::DoubleSpecPtr>();
+
+  exp = spec->get_expression(giskard_core::Scope());
+  ASSERT_TRUE(exp.get());
+
+  EXPECT_NEAR(exp->value(), -1.0, 1e-10);
+
+  // CASE 3
+  node = YAML::Load(s3);
+  ASSERT_NO_THROW(node.as<giskard_core::DoubleSpecPtr>());
+  spec = node.as<giskard_core::DoubleSpecPtr>();
+
+  exp = spec->get_expression(giskard_core::Scope());
+  ASSERT_TRUE(exp.get());
+
+  EXPECT_NEAR(exp->value(), 0.0, 1e-10);
+}
+
+TEST_F(DoubleExpressionGenerationTest, ACos)
+{
+  std::string s1 = "{acos: 1.0}";
+  std::string s2 = "{acos: -1.0}";
+  std::string s3 = "{acos: 0.0}";
+
+  // CASE 1
+  YAML::Node node = YAML::Load(s1);
+
+  ASSERT_NO_THROW(node.as<giskard_core::DoubleSpecPtr>());
+  giskard_core::DoubleSpecPtr spec = node.as<giskard_core::DoubleSpecPtr>();
+
+  KDL::Expression<double>::Ptr exp = spec->get_expression(giskard_core::Scope());
+  ASSERT_TRUE(exp.get());
+
+  EXPECT_NEAR(exp->value(), 0.0, 1e-10);
+
+  // CASE 2
+  node = YAML::Load(s2);
+  ASSERT_NO_THROW(node.as<giskard_core::DoubleSpecPtr>());
+  spec = node.as<giskard_core::DoubleSpecPtr>();
+
+  exp = spec->get_expression(giskard_core::Scope());
+  ASSERT_TRUE(exp.get());
+
+  EXPECT_NEAR(exp->value(), 3.14159265359, 1e-10);
+
+  // CASE 3
+  node = YAML::Load(s3);
+  ASSERT_NO_THROW(node.as<giskard_core::DoubleSpecPtr>());
+  spec = node.as<giskard_core::DoubleSpecPtr>();
+
+  exp = spec->get_expression(giskard_core::Scope());
+  ASSERT_TRUE(exp.get());
+
+  EXPECT_NEAR(exp->value(), 1.57079632679, 1e-10);
+}
+
+TEST_F(DoubleExpressionGenerationTest, Sin)
+{
+  std::string s1 = "{sin: {asin: 1.0}}";
+  std::string s2 = "{sin: {asin: -1.0}}";
+  std::string s3 = "{sin: {asin: 0.0}}";
+
+  // CASE 1
+  YAML::Node node = YAML::Load(s1);
+
+  ASSERT_NO_THROW(node.as<giskard_core::DoubleSpecPtr>());
+  giskard_core::DoubleSpecPtr spec = node.as<giskard_core::DoubleSpecPtr>();
+
+  KDL::Expression<double>::Ptr exp = spec->get_expression(giskard_core::Scope());
+  ASSERT_TRUE(exp.get());
+
+  EXPECT_NEAR(exp->value(), 1.0, 1e-10);
+
+  // CASE 2
+  node = YAML::Load(s2);
+  ASSERT_NO_THROW(node.as<giskard_core::DoubleSpecPtr>());
+  spec = node.as<giskard_core::DoubleSpecPtr>();
+
+  exp = spec->get_expression(giskard_core::Scope());
+  ASSERT_TRUE(exp.get());
+
+  EXPECT_NEAR(exp->value(), -1.0, 1e-10);
+
+  // CASE 3
+  node = YAML::Load(s3);
+  ASSERT_NO_THROW(node.as<giskard_core::DoubleSpecPtr>());
+  spec = node.as<giskard_core::DoubleSpecPtr>();
+
+  exp = spec->get_expression(giskard_core::Scope());
+  ASSERT_TRUE(exp.get());
+
+  EXPECT_NEAR(exp->value(), 0.0, 1e-10);
+}
+
+TEST_F(DoubleExpressionGenerationTest, Tan)
+{
+  std::string s1 = "{tan: {atan: 1.0}}";
+  std::string s2 = "{tan: {atan: -1.0}}";
+  std::string s3 = "{tan: {atan: 0.0}}";
+
+  // CASE 1
+  YAML::Node node = YAML::Load(s1);
+
+  ASSERT_NO_THROW(node.as<giskard_core::DoubleSpecPtr>());
+  giskard_core::DoubleSpecPtr spec = node.as<giskard_core::DoubleSpecPtr>();
+
+  KDL::Expression<double>::Ptr exp = spec->get_expression(giskard_core::Scope());
+  ASSERT_TRUE(exp.get());
+
+  EXPECT_NEAR(exp->value(), 1.0, 1e-10);
+
+  // CASE 2
+  node = YAML::Load(s2);
+  ASSERT_NO_THROW(node.as<giskard_core::DoubleSpecPtr>());
+  spec = node.as<giskard_core::DoubleSpecPtr>();
+
+  exp = spec->get_expression(giskard_core::Scope());
+  ASSERT_TRUE(exp.get());
+
+  EXPECT_NEAR(exp->value(), -1.0, 1e-10);
+
+  // CASE 3
+  node = YAML::Load(s3);
+  ASSERT_NO_THROW(node.as<giskard_core::DoubleSpecPtr>());
+  spec = node.as<giskard_core::DoubleSpecPtr>();
+
+  exp = spec->get_expression(giskard_core::Scope());
+  ASSERT_TRUE(exp.get());
+
+  EXPECT_NEAR(exp->value(), 0.0, 1e-10);
+}
+
+TEST_F(DoubleExpressionGenerationTest, Sqrt)
+{
+  std::string s1 = "{sqrt: 4.0}";
+  std::string s2 = "{sqrt: 9.0}";
+  std::string s3 = "{sqrt: 2.0}";
+
+  // CASE 1
+  YAML::Node node = YAML::Load(s1);
+
+  ASSERT_NO_THROW(node.as<giskard_core::DoubleSpecPtr>());
+  giskard_core::DoubleSpecPtr spec = node.as<giskard_core::DoubleSpecPtr>();
+
+  KDL::Expression<double>::Ptr exp = spec->get_expression(giskard_core::Scope());
+  ASSERT_TRUE(exp.get());
+
+  EXPECT_NEAR(exp->value(), std::sqrt(4.0), 1e-10);
+
+  // CASE 2
+  node = YAML::Load(s2);
+  ASSERT_NO_THROW(node.as<giskard_core::DoubleSpecPtr>());
+  spec = node.as<giskard_core::DoubleSpecPtr>();
+
+  exp = spec->get_expression(giskard_core::Scope());
+  ASSERT_TRUE(exp.get());
+
+  EXPECT_NEAR(exp->value(), std::sqrt(9.0), 1e-10);
+
+  // CASE 3
+  node = YAML::Load(s3);
+  ASSERT_NO_THROW(node.as<giskard_core::DoubleSpecPtr>());
+  spec = node.as<giskard_core::DoubleSpecPtr>();
+
+  exp = spec->get_expression(giskard_core::Scope());
+  ASSERT_TRUE(exp.get());
+
+  EXPECT_NEAR(exp->value(), std::sqrt(2.0), 1e-10);
 }
 
 TEST_F(DoubleExpressionGenerationTest, Fmod)
