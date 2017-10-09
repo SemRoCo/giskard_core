@@ -27,20 +27,20 @@ scope:
   # definition of input transforms 
   - mug-frame:
       frame-mul:
-        - frame: [identity-rot, {vector3: [{input-var: 0}, 0, 0]}]
-        - frame: [identity-rot, {vector3: [0, {input-var: 1}, 0]}]
-        - frame: [identity-rot, {vector3: [0, 0, {input-var: 2}]}]
-        - frame: [{axis-angle: [unit-x, {input-var: 3}]}, zero-vec]
-        - frame: [{axis-angle: [unit-y, {input-var: 4}]}, zero-vec]
-        - frame: [{axis-angle: [unit-z, {input-var: 5}]}, zero-vec]
+        - frame: [identity-rot, {vector3: [{input-joint: mug_pos_x}, 0, 0]}]
+        - frame: [identity-rot, {vector3: [0, {input-joint: mug_pos_y}, 0]}]
+        - frame: [identity-rot, {vector3: [0, 0, {input-joint: mug_pos_z}]}]
+        - frame: [{axis-angle: [unit-x, {input-joint: mug_rot_x}]}, zero-vec]
+        - frame: [{axis-angle: [unit-y, {input-joint: mug_rot_y}]}, zero-vec]
+        - frame: [{axis-angle: [unit-z, {input-joint: mug_rot_z}]}, zero-vec]
   - maker-frame:
       frame-mul:
-        - frame: [identity-rot, {vector3: [{input-var: 6}, 0, 0]}]
-        - frame: [identity-rot, {vector3: [0, {input-var: 7}, 0]}]
-        - frame: [identity-rot, {vector3: [0, 0, {input-var: 8}]}]
-        - frame: [{axis-angle: [unit-x, {input-var: 9}]}, zero-vec]
-        - frame: [{axis-angle: [unit-y, {input-var: 10}]}, zero-vec]
-        - frame: [{axis-angle: [unit-z, {input-var: 11}]}, zero-vec]
+        - frame: [identity-rot, {vector3: [{input-scalar: maker_pos_x}, 0, 0]}]
+        - frame: [identity-rot, {vector3: [0, {input-scalar: maker_pos_y}, 0]}]
+        - frame: [identity-rot, {vector3: [0, 0, {input-scalar: maker_pos_z}]}]
+        - frame: [{axis-angle: [unit-x, {input-scalar: maker_rot_x}]}, zero-vec]
+        - frame: [{axis-angle: [unit-y, {input-scalar: maker_rot_y}]}, zero-vec]
+        - frame: [{axis-angle: [unit-z, {input-scalar: maker_rot_z}]}, zero-vec]
 
   # definition of features
   - mug-bottom: {origin-of: mug-frame}
@@ -56,12 +56,12 @@ scope:
   - constraint-weight: 10.001 # mu + 10
 
 controllable-constraints:
-  - controllable-constraint: [-0.3, 0.3, controllable-weight, 0, mug_pos_x]
-  - controllable-constraint: [-0.3, 0.3, controllable-weight, 1, mug_pos_y]
-  - controllable-constraint: [-0.3, 0.3, controllable-weight, 2, mug_pos_z]
-  - controllable-constraint: [-0.5, 0.5, controllable-weight, 3, mug_rot_x]
-  - controllable-constraint: [-0.5, 0.5, controllable-weight, 4, mug_rot_y]
-  - controllable-constraint: [-0.5, 0.5, controllable-weight, 5, mug_rot_z]
+  - controllable-constraint: [-0.3, 0.3, controllable-weight, mug_pos_x]
+  - controllable-constraint: [-0.3, 0.3, controllable-weight, mug_pos_y]
+  - controllable-constraint: [-0.3, 0.3, controllable-weight, mug_pos_z]
+  - controllable-constraint: [-0.5, 0.5, controllable-weight, mug_rot_x]
+  - controllable-constraint: [-0.5, 0.5, controllable-weight, mug_rot_y]
+  - controllable-constraint: [-0.5, 0.5, controllable-weight, mug_rot_z]
 
 soft-constraints: 
   - soft-constraint: 

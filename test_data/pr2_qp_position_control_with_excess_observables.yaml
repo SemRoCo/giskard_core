@@ -26,14 +26,14 @@ scope:
   
   
   # definition of joint input variables
-  - torso_lift_joint: {input-var: 0}
-  - l_shoulder_pan_joint: {input-var: 1}
-  - l_shoulder_lift_joint: {input-var: 2}
-  - l_upper_arm_roll_joint: {input-var: 3}
-  - l_elbow_flex_joint: {input-var: 4}
-  - l_forearm_roll_joint: {input-var: 5}
-  - l_wrist_flex_joint: {input-var: 6}
-  - l_wrist_roll_joint: {input-var: 7}
+  - torso_lift_joint: {input-joint: torso_lift_joint}
+  - l_shoulder_pan_joint: {input-joint: l_shoulder_pan_joint}
+  - l_shoulder_lift_joint: {input-joint: l_shoulder_lift_joint}
+  - l_upper_arm_roll_joint: {input-joint: l_upper_arm_roll_joint}
+  - l_elbow_flex_joint: {input-joint: l_elbow_flex_joint}
+  - l_forearm_roll_joint: {input-joint: l_forearm_roll_joint}
+  - l_wrist_flex_joint: {input-joint: l_wrist_flex_joint}
+  - l_wrist_roll_joint: {input-joint: l_wrist_roll_joint}
   
   
   # definition of joint transforms
@@ -74,12 +74,12 @@ scope:
 
 
 controllable-constraints:
-  - controllable-constraint: [-0.1, 0.1, 10.0, 0, torso_lift_joint]
-  - controllable-constraint: [-0.3, 0.3, 1.0, 1, l_shoulder_pan_joint]
-  - controllable-constraint: [-0.3, 0.3, 1.0, 2, l_shoulder_lift_joint]
-  - controllable-constraint: [-0.3, 0.3, 1.0, 3, l_upper_arm_roll_joint]
-  - controllable-constraint: [-0.3, 0.3, 1.0, 4, l_elbow_flex_joint]
-  - controllable-constraint: [-0.3, 0.3, 1.0, 5, l_forearm_roll_joint]
+  - controllable-constraint: [-0.1, 0.1, 10.0, torso_lift_joint]
+  - controllable-constraint: [-0.3, 0.3, 1.0, l_shoulder_pan_joint]
+  - controllable-constraint: [-0.3, 0.3, 1.0, l_shoulder_lift_joint]
+  - controllable-constraint: [-0.3, 0.3, 1.0, l_upper_arm_roll_joint]
+  - controllable-constraint: [-0.3, 0.3, 1.0, l_elbow_flex_joint]
+  - controllable-constraint: [-0.3, 0.3, 1.0, l_forearm_roll_joint]
 
 
 soft-constraints:

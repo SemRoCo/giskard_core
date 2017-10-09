@@ -29,9 +29,50 @@
 namespace giskard_core
 {
 
-  inline giskard_core::Scope generate(const giskard_core::ScopeSpec& scope_spec)
+
+  inline giskard_core::Scope generate(const giskard_core::ScopeSpec& scope_spec, const std::vector<std::string>& controllables)
   {
     giskard_core::Scope scope;
+
+    std::vector<const InputSpec*> temp;
+    for(size_t i=0; i<scope_spec.size(); ++i) {
+      scope_spec[i].spec->get_input_specs(temp);
+    }    
+
+    for(size_t i = 0; i < controllables.size(); i++) {
+      bool found = false;
+      for (size_t n = 0; n < temp.size(); n++) {
+        if (controllables[i] == temp[n]->get_name() && temp[n]->get_type() == giskard_core::tJoint) {
+          scope.add_joint_input(temp[n]->get_name());
+          found = true;
+          break;
+        }
+      }
+      if (!found)
+        throw std::domain_error("Scope generation: Could not find joint input with name '" + controllables[i] + "' as required by controllables.");
+    }
+
+    for (size_t i = 0; i < temp.size(); i++) {
+      switch (temp[i]->get_type()) {
+        case giskard_core::tScalar:
+          scope.add_scalar_input(temp[i]->get_name());
+          break;
+        case giskard_core::tJoint:
+          scope.add_joint_input(temp[i]->get_name());
+          break;
+        case giskard_core::tVector3:
+          scope.add_vector_input(temp[i]->get_name());
+          break;
+        case giskard_core::tRotation:
+          scope.add_rotation_input(temp[i]->get_name());
+          break;
+        case giskard_core::tFrame:
+          scope.add_frame_input(temp[i]->get_name());
+          break;
+        default:
+          throw std::domain_error("Scope generation: found input of non-supported type.");
+      }
+    }
 
     for(size_t i=0; i<scope_spec.size(); ++i)
     {
@@ -74,26 +115,27 @@ namespace giskard_core
     return scope;
   }
 
+  inline giskard_core::Scope generate(const giskard_core::ScopeSpec& scope_spec) {
+    std::vector<std::string> empty;
+    return generate(scope_spec, empty);
+  }
+
   inline giskard_core::QPController generate(const giskard_core::QPControllerSpec& spec)
   {
-    giskard_core::Scope scope = generate(spec.scope_);
+    std::vector<std::string> controllable_name;
+    for(size_t i=0; i<spec.controllable_constraints_.size(); ++i) {
+      controllable_name.push_back(spec.controllable_constraints_[i].input_);
+    }
+
+    giskard_core::Scope scope = generate(spec.scope_, controllable_name);
 
     // generate controllable constraints
-    std::vector< KDL::Expression<double>::Ptr > controllable_lower, controllable_upper,
-        controllable_weight;
-    std::vector<std::string> controllable_name;
+    std::vector< KDL::Expression<double>::Ptr > controllable_lower, controllable_upper, controllable_weight;
     for(size_t i=0; i<spec.controllable_constraints_.size(); ++i)
     {
-      if(spec.controllable_constraints_[i].input_number_ != i)
-        throw std::invalid_argument("QPController generation: controllable constraint at position " + 
-            boost::lexical_cast<std::string>(i) + " has not input number " + 
-            boost::lexical_cast<std::string>(i) + ". Instead it has incorrect input number: " +
-            boost::lexical_cast<std::string>(spec.controllable_constraints_[i].input_number_));
-
       controllable_lower.push_back(spec.controllable_constraints_[i].lower_->get_expression(scope));
       controllable_upper.push_back(spec.controllable_constraints_[i].upper_->get_expression(scope));
       controllable_weight.push_back(spec.controllable_constraints_[i].weight_->get_expression(scope));
-      controllable_name.push_back(spec.controllable_constraints_[i].name_);
     }
 
     // generate soft constraints

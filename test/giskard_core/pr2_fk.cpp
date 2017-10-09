@@ -79,9 +79,15 @@ TEST_F(PR2FKTest, SingleExpression)
   ASSERT_NO_THROW(node.as<giskard_core::FrameSpecPtr>());
 
   giskard_core::FrameSpecPtr spec = node.as<giskard_core::FrameSpecPtr>();
-  ASSERT_NO_THROW(spec->get_expression(giskard_core::Scope()));
+  
+  giskard_core::ScopeSpec scopeSpec;
+  scopeSpec.push_back({"foo", spec});
 
-  KDL::Expression<KDL::Frame>::Ptr exp = spec->get_expression(giskard_core::Scope());
+  giskard_core::Scope scope; 
+  ASSERT_NO_THROW(scope = giskard_core::generate(scopeSpec));
+  ASSERT_NO_THROW(spec->get_expression(scope));
+
+  KDL::Expression<KDL::Frame>::Ptr exp = spec->get_expression(scope);
   std::string base = "torso_lift_link";
   std::string tip = "l_wrist_roll_link";
   TestFrameExpression(exp, base, tip);

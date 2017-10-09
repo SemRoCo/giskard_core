@@ -173,6 +173,199 @@ namespace giskard_core
         return qp_builder_.num_observables();
       }
 
+      // Returns the commands associated with the names of their corresponding controllables aka joints
+      std::map<std::string, double> get_command_map() const
+      {
+        std::map<std::string, double> out;
+        if (xdot_control_.size() != controllable_names_.size())
+          throw std::domain_error("QP-Controller: There are unequal amounts of controllables and commands! This is severly wrong and should never happen!");
+        for (size_t i = 0; i < controllable_names_.size(); i++)
+          out[controllable_names_[i]] = xdot_control_[i];
+        
+        return out;
+      }
+
+      // Set scalar input
+      void set_input(Eigen::VectorXd& inputVector, const std::string& name, double value) const {
+        giskard_core::Scope::InputPtr ptr = scope_.find_input(name);
+        if (ptr->get_type() == tScalar || ptr->get_type() == tJoint){
+            if(ptr->idx_ < inputVector.size()) {
+              inputVector[ptr->idx_] = value;
+              return;
+            }
+            throw std::invalid_argument("Can't set scalar or joint input with name '" + name + 
+                  "' because the input vector is too small. Needed size: " + 
+                  std::to_string(ptr->idx_ + 1) + " Actual size: " + std::to_string(inputVector.size()));
+        }
+        throw std::invalid_argument("Can't set scalar or joint input with name '" + name + "' as it does not exist.");
+      }
+
+      // Set vector input using Eigen::Vector3d
+      void set_input(Eigen::VectorXd& inputVector, const std::string& name, Eigen::Vector3d value) const {        
+            set_input(inputVector, name, value[0], value[1], value[2]);
+      }
+
+      // Set vector input using KDL::Vector
+      void set_input(Eigen::VectorXd& inputVector, const std::string& name, KDL::Vector value) const {        
+            set_input(inputVector, name, value[0], value[1], value[2]);
+      }
+
+      void set_input(Eigen::VectorXd& inputVector, const std::string& name, double x, double y, double z) const {
+        giskard_core::Scope::Vec3InputPtr ptr = scope_.find_input<giskard_core::Scope::Vec3Input>(name);
+          if(ptr->idx_ + 2 < inputVector.size()) {         
+            inputVector[ptr->idx_] = x;
+            inputVector[ptr->idx_ + 1] = y;
+            inputVector[ptr->idx_ + 2] = z;
+            return;
+         }
+         throw std::invalid_argument("Can't set vec3 input with name '" + name + 
+                  "' because the input vector is too small. Needed size: " + 
+                  std::to_string(ptr->idx_ + 3) + " Actual size: " + std::to_string(inputVector.size()));
+      }
+
+      // Set rotation input using a KDL::Rotation
+      void set_input(Eigen::VectorXd& inputVector, const std::string& name, KDL::Rotation value) const {
+        KDL::Vector axis;
+        double angle = value.GetRotAngle(axis, KDL::epsilon);
+        set_input(inputVector, name, axis[0], axis[1], axis[2], angle);
+      }
+
+      // Set rotation input using an Eigen::Quaterniond
+      void set_input(Eigen::VectorXd& inputVector, const std::string& name, Eigen::Quaterniond value) const {
+        Eigen::AngleAxisd aa(value);
+        Eigen::Vector3d ax = aa.axis();
+        set_input(inputVector, name, ax[0], ax[1], ax[2], aa.angle());
+      }
+
+      // Set rotation input using an Eigen::Vector3d as axis and an angle
+      void set_input(Eigen::VectorXd& inputVector, const std::string& name, Eigen::Vector3d axis, double angle) const {
+        set_input(inputVector, name, axis[0], axis[1], axis[2], angle);
+      }
+
+      // Set rotation input using axis and angle as individual scalars
+      void set_input(Eigen::VectorXd& inputVector, const std::string& name, double x, double y, double z, double angle) const {
+        giskard_core::Scope::RotationInputPtr ptr = scope_.find_input<giskard_core::Scope::RotationInput>(name);
+        if (ptr->idx_ + 3 < inputVector.size()) {
+          inputVector[ptr->idx_] = x;
+          inputVector[ptr->idx_ + 1] = y;
+          inputVector[ptr->idx_ + 2] = z;
+          inputVector[ptr->idx_ + 3] = angle;
+
+          return;
+        }
+        throw std::invalid_argument("Can't set rotation input with name '" + name + 
+                "' because the input vector is too small. Needed size: " + 
+                std::to_string(ptr->idx_ + 4) + " Actual size: " + std::to_string(inputVector.size()));
+      }
+
+      // Set frame input using a KDL::Frame
+      void set_input(Eigen::VectorXd& inputVector, const std::string& name, KDL::Frame value) const {  
+        KDL::Vector translation = value.p;
+        KDL::Rotation rotation  = value.M;
+        KDL::Vector axis;
+        double angle = rotation.GetRotAngle(axis, KDL::epsilon);
+        set_input(inputVector, name, axis[0], axis[1], axis[2], angle, translation[0], translation[1], translation[2]);
+      }
+
+      // Set frame input using a KDL::Rotation and KDL::Vector
+      void set_input(Eigen::VectorXd& inputVector, const std::string& name, KDL::Rotation rotation, KDL::Vector translation) const {
+        KDL::Vector axis;
+        double angle = rotation.GetRotAngle(axis, KDL::epsilon);
+        set_input(inputVector, name, axis[0], axis[1], axis[2], angle, translation[0], translation[1], translation[2]);
+      }
+
+      // Set frame input using an Eigen::Affine3d
+      void set_input(Eigen::VectorXd& inputVector, const std::string& name, Eigen::Affine3d value) const {  
+        Eigen::AngleAxisd aa(value.rotation());
+        Eigen::Vector3d axis = aa.axis();
+        Eigen::Vector3d translation = value.translation();
+        set_input(inputVector, name, axis[0], axis[1], axis[2], aa.angle(), translation[0], translation[1], translation[2]);
+      }
+
+      // Set frame input using an Eigen::Quaterniond and Eigen::Vector3d
+      void set_input(Eigen::VectorXd& inputVector, const std::string& name, Eigen::Quaterniond rotation, Eigen::Vector3d translation) const {
+        Eigen::AngleAxisd aa(rotation);
+        Eigen::Vector3d axis = aa.axis();
+        set_input(inputVector, name, axis[0], axis[1], axis[2], aa.angle(), translation[0], translation[1], translation[2]);
+      }
+
+      // Set frame input using an Eigen::Vector3d axis, an angle and an Eigen::Vector3d translation
+      void set_input(Eigen::VectorXd& inputVector, const std::string& name, Eigen::Vector3d axis, double angle, Eigen::Vector3d translation) const {
+        set_input(inputVector, name, axis[0], axis[1], axis[2], angle, translation[0], translation[1], translation[2]);
+      }
+
+      // Set frame input using an axis, angle and translation, encoded as seven scalars
+      void set_input(Eigen::VectorXd& inputVector, const std::string& name, double rx, double ry, double rz, double angle, double x, double y, double z) const {
+        giskard_core::Scope::FrameInputPtr ptr = scope_.find_input<giskard_core::Scope::FrameInput>(name);
+        if (ptr->idx_ + 6 < inputVector.size()) {
+
+          inputVector[ptr->idx_] = rx;
+          inputVector[ptr->idx_ + 1] = ry;
+          inputVector[ptr->idx_ + 2] = rz;
+          inputVector[ptr->idx_ + 3] = angle;
+          inputVector[ptr->idx_ + 4] = x;
+          inputVector[ptr->idx_ + 5] = y;
+          inputVector[ptr->idx_ + 6] = z;
+          return;
+        }
+        throw std::invalid_argument("Can't set frame input with name '" + name + 
+                "' because the input vector is too small. Needed size: " + 
+                std::to_string(ptr->idx_ + 7) + " Actual size: " + std::to_string(inputVector.size()));
+      }
+
+      // Shorthand for getting input size of scope
+      size_t get_input_size() const {
+        return scope_.get_input_size();
+      }
+
+      // Shorthand for getting names of all inputs in scope
+      std::vector<std::string> get_input_names() const {
+        return scope_.get_input_names();
+      }
+
+      // Shorthand for getting names of inputs in scope filtered by enum type
+      std::vector<std::string> get_input_names(const InputType type) const {
+        return scope_.get_input_names(type);
+      }
+
+      // Shorthand for getting names of inputs in scope filtered by type
+      template<typename T>
+      std::vector<std::string> get_input_names() const {
+        return scope_.get_input_names<T>();
+      }
+
+      // Shorthand for getting all input structures in scope
+      std::vector<Scope::InputPtr> get_inputs() const {
+        return scope_.get_inputs();
+      }
+
+      // Shorthand for getting input structures in scope filtered by enum type
+      std::vector<Scope::InputPtr> get_inputs(const InputType type) const {
+        return scope_.get_inputs(type);
+      }
+
+      // Shorthand for getting input structures filtered by type in scope
+      template<typename T>
+      std::vector<boost::shared_ptr<T>> get_inputs() const {
+        return scope_.get_inputs<T>();
+      }
+
+      // Shorthand for getting input structures mapped to their names in scope
+      std::map<std::string, const Scope::InputPtr&> get_input_map() const {
+        return scope_.get_input_map();
+      }
+
+      // Shorthand for getting input structures mapped to their names in scope and filtered by their enum type
+      std::map<std::string, const Scope::InputPtr&> get_input_map(const InputType type) const {
+        return scope_.get_input_map(type);
+      }
+
+      // Shorthand for getting input structures mapped to their names and filtered by their types in scope
+      template<typename T>
+      std::map<std::string, boost::shared_ptr<T>> get_input_map() const {
+        return scope_.get_input_map<T>();
+      }
+
     private:
       giskard_core::QPProblemBuilder qp_builder_;
       qpOASES::SQProblem qp_problem_;

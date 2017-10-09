@@ -58,8 +58,7 @@ namespace giskard_core
           {
             // Set input variable definition
             YAML::Node input_var;
-            input_var[joint.getName() + var_suffix]["input-var"] = input_var_index;
-            input_var_index++;
+            input_var[joint.getName() + var_suffix]["input-joint"] = joint.getName();
             input_vars.push_back(input_var);
 
             // Set joint transform

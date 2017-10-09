@@ -144,3 +144,191 @@ TEST_F(QPControllerTest, Update)
    for(size_t i=0; i<hard_upper.size(); ++i)
      EXPECT_LE(0.0, hard_upper[i]->value());
 }
+
+TEST_F(QPControllerTest, CommandMap)
+{
+  // setup controller
+  giskard_core::QPController c;
+  ASSERT_TRUE(c.init(controllable_lower, controllable_upper, controllable_weights, 
+       controllable_names, soft_expressions, soft_lower, soft_upper, soft_weights, 
+       soft_names, hard_expressions, hard_lower, hard_upper));
+  ASSERT_TRUE(c.start(initial_state, nWSR));
+
+  auto cmd_map = c.get_command_map();
+  for(size_t i = 0; i < controllable_names.size(); i++) {
+    if (cmd_map.find(controllable_names[i]) == cmd_map.end())
+      FAIL();   
+  }
+}
+
+
+// Tests for all 'set_input' functions
+TEST_F(QPControllerTest, SetInputs) {
+  YAML::Node node = YAML::LoadFile("named_input_test.yaml");
+
+
+  giskard_core::QPControllerSpec qp_spec;
+  ASSERT_NO_THROW(qp_spec = node.as< giskard_core::QPControllerSpec >());
+
+  // Build a controller
+  giskard_core::QPController c = giskard_core::generate(qp_spec);
+
+  const giskard_core::Scope& scope = c.get_scope();
+  giskard_core::Scope::ScalarInputPtr   sIn;
+  giskard_core::Scope::JointInputPtr    jIn;
+  giskard_core::Scope::Vec3InputPtr     vIn;
+  giskard_core::Scope::RotationInputPtr rIn;
+  giskard_core::Scope::FrameInputPtr    fIn;
+  giskard_core::Scope::RotationInputPtr rIn2;
+  giskard_core::Scope::FrameInputPtr    fIn2;
+
+  ASSERT_NO_THROW(jIn = scope.find_input<giskard_core::Scope::JointInput>("joint_input"));
+  ASSERT_TRUE(!!jIn);
+
+  ASSERT_NO_THROW(sIn = scope.find_input<giskard_core::Scope::ScalarInput>("scalar_input"));
+  ASSERT_TRUE(!!sIn);
+
+  ASSERT_NO_THROW(vIn = scope.find_input<giskard_core::Scope::Vec3Input>("vector_input"));
+  ASSERT_TRUE(!!vIn);
+
+  ASSERT_NO_THROW(rIn = scope.find_input<giskard_core::Scope::RotationInput>("rotation_input"));
+  ASSERT_TRUE(!!rIn);
+
+  ASSERT_NO_THROW(fIn = scope.find_input<giskard_core::Scope::FrameInput>("frame_input"));
+  ASSERT_TRUE(!!fIn);
+
+  ASSERT_NO_THROW(rIn2 = scope.find_input<giskard_core::Scope::RotationInput>("rotation_input2"));
+  ASSERT_TRUE(!!rIn2);
+
+  ASSERT_NO_THROW(fIn2 = scope.find_input<giskard_core::Scope::FrameInput>("frame_input2"));
+  ASSERT_TRUE(!!fIn2);
+
+  // Check that the input size is correct
+  ASSERT_EQ(c.get_input_size(), 28);
+
+  // Initialize input vector as too small
+  Eigen::VectorXd inputs = Eigen::VectorXd::Zero(1);
+
+  // Set non-existing variables
+  EXPECT_THROW(c.set_input(inputs, "bla", 1.0), std::invalid_argument); 
+  EXPECT_THROW(c.set_input(inputs, "foo", 1.0, 2, 3), std::invalid_argument); 
+  EXPECT_THROW(c.set_input(inputs, "bar", 1.0, 2, 3, 7), std::invalid_argument); 
+  EXPECT_THROW(c.set_input(inputs, "meh", 1.0, 2, 3, 7, 5, 7, 9), std::invalid_argument); 
+  
+  // Set variable on too small vector
+  EXPECT_THROW(c.set_input(inputs, "scalar_input", 1.0), std::invalid_argument); 
+  EXPECT_THROW(c.set_input(inputs, "vector_input", 1.0, 2, 3), std::invalid_argument); 
+  EXPECT_THROW(c.set_input(inputs, "rotation_input", 1.0, 2, 3, 7), std::invalid_argument); 
+  EXPECT_THROW(c.set_input(inputs, "frame_input", 1.0, 2, 3, 7, 5, 7, 9), std::invalid_argument); 
+
+  // Resize input vector correctly
+  inputs = Eigen::VectorXd::Zero(c.get_input_size());
+
+  // Set variable on correct vector but wrong types
+  EXPECT_THROW(c.set_input(inputs, "joint_input", 1.2, 1, 2), std::invalid_argument);
+  EXPECT_THROW(c.set_input(inputs, "scalar_input", 3.5, 5, 1, 6), std::invalid_argument);
+  EXPECT_THROW(c.set_input(inputs, "vector_input", 3.5), std::invalid_argument);
+  EXPECT_THROW(c.set_input(inputs, "rotation_input", 1, 2, 3, 4, 5, 6, 7), std::invalid_argument);
+
+  EXPECT_TRUE(inputs == Eigen::VectorXd::Zero(c.get_input_size()));
+
+  // Test primitive set operations
+  EXPECT_NO_THROW(c.set_input(inputs, "joint_input", 1.2));
+  EXPECT_NO_THROW(c.set_input(inputs, "scalar_input", 3.5));
+  EXPECT_NO_THROW(c.set_input(inputs, "vector_input", 1, 2, 3));
+  EXPECT_NO_THROW(c.set_input(inputs, "rotation_input", 1, 0, 0, 1.56));
+  EXPECT_NO_THROW(c.set_input(inputs, "frame_input", 1, 0, 0, 1.56, 1, 2, 3));
+
+  ASSERT_TRUE(c.start(inputs, nWSR));
+
+  KDL::Vector kdlVec(1,2,3);
+  KDL::Rotation kdlRot = KDL::Rotation::Rot(KDL::Vector(1,0,0), 1.56);
+  KDL::Rotation kdlRot2 = KDL::Rotation::Rot(KDL::Vector(0,1,0), -0.56);
+  KDL::Frame kdlFrame(kdlRot, kdlVec);
+  KDL::Frame kdlFrame2(kdlRot2, kdlVec);
+
+  // Evaluate input
+  EXPECT_DOUBLE_EQ(1.2, jIn->expr_->value());  
+  EXPECT_DOUBLE_EQ(3.5, sIn->expr_->value());
+  EXPECT_TRUE(KDL::Equal(kdlVec, vIn->expr_->value(), KDL::epsilon));
+  EXPECT_TRUE(KDL::Equal(kdlRot, rIn->expr_->value(), KDL::epsilon));
+  EXPECT_TRUE(KDL::Equal(kdlFrame, fIn->expr_->value(), KDL::epsilon));
+
+  // Reset the inputs
+  inputs = Eigen::VectorXd::Zero(c.get_input_size());
+
+  // Test KDL operations
+  EXPECT_NO_THROW(c.set_input(inputs, "vector_input", kdlVec));
+  EXPECT_NO_THROW(c.set_input(inputs, "rotation_input", kdlRot));
+  EXPECT_NO_THROW(c.set_input(inputs, "frame_input", kdlFrame));
+  EXPECT_NO_THROW(c.set_input(inputs, "frame_input2", kdlRot2, kdlVec));
+  
+  ASSERT_TRUE(c.update(inputs, nWSR));
+
+  EXPECT_TRUE(KDL::Equal(kdlVec, vIn->expr_->value(), KDL::epsilon));
+  EXPECT_TRUE(KDL::Equal(kdlRot, rIn->expr_->value(), KDL::epsilon));
+  EXPECT_TRUE(KDL::Equal(kdlFrame, fIn->expr_->value(), KDL::epsilon));
+  EXPECT_TRUE(KDL::Equal(kdlFrame2, fIn2->expr_->value(), KDL::epsilon));
+
+  // Reset the inputs
+  inputs = Eigen::VectorXd::Zero(c.get_input_size());
+
+  // Test eigen operations
+  Eigen::Vector3d eigVec(1,2,3);
+  Eigen::Quaterniond eigRot(Eigen::AngleAxisd( 1.56, Eigen::Vector3d(1,0,0)));
+  Eigen::Quaterniond eigRot2(Eigen::AngleAxisd(-0.56, Eigen::Vector3d(0,1,0)));
+  Eigen::Affine3d eigFrame = Eigen::Translation3d(eigVec) * eigRot;
+  Eigen::Affine3d eigFrame2 = Eigen::Translation3d(eigVec) * eigRot2;
+
+  EXPECT_NO_THROW(c.set_input(inputs, "vector_input", eigVec));
+  EXPECT_NO_THROW(c.set_input(inputs, "rotation_input", eigRot));
+  EXPECT_NO_THROW(c.set_input(inputs, "rotation_input2", Eigen::Vector3d(0,1,0), -0.56));
+  EXPECT_NO_THROW(c.set_input(inputs, "frame_input", eigFrame));
+  EXPECT_NO_THROW(c.set_input(inputs, "frame_input2", eigRot2, eigVec));
+
+  ASSERT_TRUE(c.update(inputs, nWSR));
+
+  EXPECT_TRUE(KDL::Equal(kdlVec, vIn->expr_->value(), KDL::epsilon));
+  EXPECT_TRUE(KDL::Equal(kdlRot, rIn->expr_->value(), KDL::epsilon));
+  EXPECT_TRUE(KDL::Equal(kdlFrame, fIn->expr_->value(), KDL::epsilon));
+  EXPECT_TRUE(KDL::Equal(kdlFrame2, fIn2->expr_->value(), KDL::epsilon));
+
+  inputs = Eigen::VectorXd::Zero(c.get_input_size());
+
+  EXPECT_NO_THROW(c.set_input(inputs, "frame_input", Eigen::Vector3d(1,0,0), 1.56, eigVec));  
+
+  ASSERT_TRUE(c.update(inputs, nWSR));
+
+  EXPECT_TRUE(KDL::Equal(kdlFrame, fIn->expr_->value(), KDL::epsilon));
+}
+
+TEST_F(QPControllerTest, InputGetters) {
+  YAML::Node node = YAML::LoadFile("named_input_test.yaml");
+
+  giskard_core::QPControllerSpec qp_spec;
+  ASSERT_NO_THROW(qp_spec = node.as< giskard_core::QPControllerSpec >());
+
+  // Build a controller
+  giskard_core::QPController c = giskard_core::generate(qp_spec);
+
+  const giskard_core::Scope& scope = c.get_scope();
+
+  EXPECT_EQ(scope.get_input_names(), c.get_input_names());
+  EXPECT_EQ(scope.get_inputs(), c.get_inputs());
+  EXPECT_EQ(scope.get_input_map(), c.get_input_map());
+
+  EXPECT_EQ(scope.get_inputs<giskard_core::Scope::JointInput>(), c.get_inputs<giskard_core::Scope::JointInput>());
+  EXPECT_EQ(scope.get_input_map<giskard_core::Scope::JointInput>(), c.get_input_map<giskard_core::Scope::JointInput>());
+
+  EXPECT_EQ(scope.get_inputs<giskard_core::Scope::ScalarInput>(), c.get_inputs<giskard_core::Scope::ScalarInput>());
+  EXPECT_EQ(scope.get_input_map<giskard_core::Scope::ScalarInput>(), c.get_input_map<giskard_core::Scope::ScalarInput>());
+
+  EXPECT_EQ(scope.get_inputs<giskard_core::Scope::Vec3Input>(), c.get_inputs<giskard_core::Scope::Vec3Input>());
+  EXPECT_EQ(scope.get_input_map<giskard_core::Scope::Vec3Input>(), c.get_input_map<giskard_core::Scope::Vec3Input>());
+  
+  EXPECT_EQ(scope.get_inputs<giskard_core::Scope::RotationInput>(), c.get_inputs<giskard_core::Scope::RotationInput>());
+  EXPECT_EQ(scope.get_input_map<giskard_core::Scope::RotationInput>(), c.get_input_map<giskard_core::Scope::RotationInput>());
+  
+  EXPECT_EQ(scope.get_inputs<giskard_core::Scope::FrameInput>(), c.get_inputs<giskard_core::Scope::FrameInput>());
+  EXPECT_EQ(scope.get_input_map<giskard_core::Scope::FrameInput>(), c.get_input_map<giskard_core::Scope::FrameInput>());
+}
