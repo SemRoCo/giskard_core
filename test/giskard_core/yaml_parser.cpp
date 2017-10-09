@@ -1066,3 +1066,41 @@ TEST_F(YamlParserTest, QPControllerSpec)
   EXPECT_DOUBLE_EQ(spec.hard_constraints_[0].upper_->get_expression(giskard_core::Scope())->value(), 110.3);
   EXPECT_DOUBLE_EQ(spec.hard_constraints_[0].expression_->get_expression(giskard_core::Scope())->value(), 17.1);
 }
+
+TEST_F(YamlParserTest, AliasTest)
+{
+  std::string sc = "scope: [a: 10, b: {vector3: [1,0,0]}, c: {quaternion: [0,0,0,1]}, d: {frame: [c, b]}, \
+                                                  aliasA: a, aliasB: b, aliasC: c, aliasD: d, \
+                                                  aliasAA: aliasA, aliasBB: aliasB, aliasCC: aliasC, aliasDD: aliasD]";
+  std::string co = "controllable-constraints: [{controllable-constraint: [-0.1, 0.2, 5.0, 2, controllable1]}]";
+  std::string so = "soft-constraints: [{soft-constraint: [-10.1, 120.2, 5.0, 1.1, goal1]}]";
+  std::string ha = "hard-constraints: [{hard-constraint: [-33.1, 110.3, 17.1]}]";
+
+  std::string s = sc + "\n" + co + "\n" + so + "\n" + ha;
+
+  ASSERT_NO_THROW(YAML::Load(s));
+  YAML::Node node = YAML::Load(s);
+
+  giskard_core::Scope scope; 
+  ASSERT_NO_THROW(scope = giskard_core::generate(node.as<giskard_core::QPControllerSpec>().scope_));
+
+  ASSERT_TRUE(scope.has_double_expression("a"));
+  ASSERT_TRUE(scope.has_vector_expression("b"));
+  ASSERT_TRUE(scope.has_rotation_expression("c"));
+  ASSERT_TRUE(scope.has_frame_expression("d"));
+
+  ASSERT_TRUE(scope.has_double_expression("aliasA"));
+  ASSERT_TRUE(scope.has_vector_expression("aliasB"));
+  ASSERT_TRUE(scope.has_rotation_expression("aliasC"));
+  ASSERT_TRUE(scope.has_frame_expression("aliasD"));
+
+  ASSERT_TRUE(scope.has_double_expression("aliasAA"));
+  ASSERT_TRUE(scope.has_vector_expression("aliasBB"));
+  ASSERT_TRUE(scope.has_rotation_expression("aliasCC"));
+  ASSERT_TRUE(scope.has_frame_expression("aliasDD"));
+
+  EXPECT_EQ(scope.find_double_expression("a").get(), scope.find_double_expression("aliasAA").get());
+  EXPECT_EQ(scope.find_vector_expression("b").get(), scope.find_vector_expression("aliasBB").get());
+  EXPECT_EQ(scope.find_rotation_expression("c").get(), scope.find_rotation_expression("aliasCC").get());
+  EXPECT_EQ(scope.find_frame_expression("d").get(), scope.find_frame_expression("aliasDD").get());
+}
