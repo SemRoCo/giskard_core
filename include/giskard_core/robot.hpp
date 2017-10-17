@@ -31,7 +31,7 @@ namespace giskard_core
   class Robot
   {
     public:
-      Robot(urdf::ModelInterfaceConstSharedPtr robot_model, const std::string& root,
+      Robot(const urdf::Model& robot_model, const std::string& root,
           const std::vector<std::string>& tip_links)
       {
         // TODO: implement me
@@ -41,21 +41,25 @@ namespace giskard_core
       FrameSpecPtr get_kinematic_chain(const std::string& root, const std::string& tip) const
       {
         // TODO: implement me
+        return frame_constructor_spec();
       }
 
       std::vector<ControllableConstraintSpecPtr> get_controllable_constraints() const
       {
         // TODO: implement me
+        return std::vector<ControllableConstraintSpecPtr>();
       }
 
       std::vector<HardConstraintSpecPtr> get_hard_constraints() const
       {
         // TODO: implement me
+        return std::vector<HardConstraintSpecPtr>();
       }
 
       std::vector<ScopeEntry> get_scope() const
       {
         // TODO: implement me
+        return std::vector<ScopeEntry>();
       }
 
     protected:
