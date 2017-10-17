@@ -24,6 +24,7 @@
 #include <urdf_model/model.h>
 #include <giskard_core/specifications.hpp>
 #include <set>
+#include <algorithm>
 
 
 namespace giskard_core
@@ -31,11 +32,14 @@ namespace giskard_core
   class Robot
   {
     public:
-      Robot(const urdf::Model& robot_model, const std::string& root,
-          const std::vector<std::string>& tip_links)
+      Robot(const urdf::Model& robot_model, const std::string& root_link,
+          const std::vector<std::string>& tip_links) :
+        robot_model_( robot_model )
       {
-        // TODO: implement me
+        robot_model_.initTree(parent_link_tree_);
 
+        for (size_t i=0; i<tip_links.size(); ++i)
+          init_kinematic_chain(root_link, tip_links[i]);
       }
 
       FrameSpecPtr get_kinematic_chain(const std::string& root, const std::string& tip) const
@@ -58,18 +62,60 @@ namespace giskard_core
 
       std::vector<ScopeEntry> get_scope() const
       {
-        // TODO: implement me
-        return std::vector<ScopeEntry>();
+        return scope_;
       }
 
     protected:
       // TODO: add some useful members
+      urdf::Model robot_model_;
+      std::map<std::string, std::string> parent_link_tree_;
+      std::vector<ScopeEntry> scope_;
 
       void init_kinematic_chain(const std::string& root, const std::string& tip)
       {
-        // TODO: implement me
+        std::vector<std::string> joint_names = chain_joint_names(root, tip);
+
+        ScopeEntry new_entry;
+        new_entry.name = tip;
+        // TODO: replace me with actual FK expression
+        new_entry.spec = frame_constructor_spec();
+        scope_.push_back(new_entry);
+
+        // TODO: fill controllable constraints
+        // TODO: fill hard constraints
       }
 
+      std::vector<std::string> chain_joint_names(const std::string& root, const std::string& tip, bool add_fixed_joints=true)
+      {
+        std::vector<std::string> chain_joints;
+
+        std::string current_link_name = tip;
+        while (current_link_name.compare(root) != 0)
+        {
+          if (robot_model_.links_.find(current_link_name) == robot_model_.links_.end() )
+            throw std::runtime_error("Could not find link with name '" + current_link_name + "'.");
+
+          if (!robot_model_.links_.find(current_link_name)->second)
+            throw std::runtime_error("Link associated with name '" + current_link_name + "' is an empty shared_ptr.");
+
+          urdf::JointSharedPtr parent_joint =
+            robot_model_.links_.find(current_link_name)->second->parent_joint;
+
+          if (!parent_joint)
+            throw std::runtime_error("Parent joint of link with name '" + current_link_name + "' is an empty shared_ptr.");
+
+          if (add_fixed_joints || (parent_joint->type != urdf::Joint::FIXED))
+            chain_joints.push_back(parent_joint->name);
+
+          if (parent_link_tree_.find(current_link_name) == parent_link_tree_.end())
+            throw std::runtime_error("Could not find parent link of link with name '" + current_link_name + "'.");
+
+          current_link_name = parent_link_tree_.find(current_link_name)->second;
+        }
+
+        std::reverse(chain_joints.begin(), chain_joints.end());
+        return chain_joints;
+      }
   };
 }
 
