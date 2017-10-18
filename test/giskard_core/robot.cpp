@@ -21,6 +21,19 @@
 #include <gtest/gtest.h>
 #include <giskard_core/giskard_core.hpp>
 
+class TestRobot : public giskard_core::Robot
+{
+  public:
+     TestRobot(const urdf::Model& robot_model, const std::string& root_link,
+          const std::vector<std::string>& tip_links) :
+       giskard_core::Robot(robot_model, root_link, tip_links) {}
+
+     std::vector<std::string> test_chain_joint_names(const std::string& root, 
+        const std::string& tip, bool add_fixed_joints=true)
+    {
+      return chain_joint_names(root, tip, add_fixed_joints);
+    }
+};
 
 class RobotTest : public ::testing::Test
 {
@@ -29,19 +42,29 @@ class RobotTest : public ::testing::Test
     {
       ASSERT_TRUE(urdf.initFile("pr2.urdf"));
       root_link = "base_link";
+      tip_link = "l_gripper_tool_frame";
       wrong_root_link = "foo";
       tip_links = {"torso_lift_link", "l_wrist_roll_link"};
       empty_tip_links = {};
       wrong_tip_links = {"bar"};
       root_as_only_tip_link = { root_link };
+      moveable_joints_names = {
+        "torso_lift_joint", "l_shoulder_pan_joint", "l_shoulder_lift_joint",
+        "l_upper_arm_roll_joint", "l_elbow_flex_joint", "l_forearm_roll_joint",
+        "l_wrist_flex_joint", "l_wrist_roll_joint"};
+      all_joint_names = {
+        "torso_lift_joint", "l_shoulder_pan_joint", "l_shoulder_lift_joint", 
+        "l_upper_arm_roll_joint", "l_upper_arm_joint", "l_elbow_flex_joint", 
+        "l_forearm_roll_joint", "l_forearm_joint", "l_wrist_flex_joint", 
+        "l_wrist_roll_joint", "l_gripper_palm_joint", "l_gripper_tool_joint"};
     }
 
     virtual void TearDown(){}
 
     urdf::Model urdf;
-    std::string root_link, wrong_root_link;
+    std::string root_link, tip_link, wrong_root_link;
     std::vector<std::string> tip_links, empty_tip_links, wrong_tip_links,
-      root_as_only_tip_link;
+      root_as_only_tip_link, moveable_joints_names, all_joint_names;
 };
 
 TEST_F(RobotTest, SaneConstructor)
@@ -63,7 +86,19 @@ TEST_F(RobotTest, GetEmptyScope)
 
 TEST_F(RobotTest, ChainJointNames)
 {
-  // TODO: find a way to directly unit test protected method Robot::chain_joint_names
+  ASSERT_NO_THROW(TestRobot(urdf, root_link, empty_tip_links));
+  TestRobot robot(urdf, root_link, empty_tip_links);
+  ASSERT_NO_THROW(robot.test_chain_joint_names(root_link, tip_link, false));
+  std::vector<std::string> joint_names = 
+    robot.test_chain_joint_names(root_link, tip_link, false);
+  EXPECT_EQ(moveable_joints_names.size(), joint_names.size());
+  for (size_t i=0; i<joint_names.size(); ++i)
+    EXPECT_STREQ(moveable_joints_names[i].c_str(), joint_names[i].c_str());
+  ASSERT_NO_THROW(robot.test_chain_joint_names(root_link, tip_link, true));
+  joint_names = robot.test_chain_joint_names(root_link, tip_link, true);
+  EXPECT_EQ(all_joint_names.size(), joint_names.size());
+  for (size_t i=0; i<joint_names.size(); ++i)
+    EXPECT_STREQ(all_joint_names[i].c_str(), joint_names[i].c_str());
 }
 
 TEST_F(RobotTest, GetScope)
