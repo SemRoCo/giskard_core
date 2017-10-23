@@ -49,8 +49,9 @@ namespace giskard_core
   {
     public:
       Robot(const urdf::Model& robot_model, const std::string& root_link,
-          const std::vector<std::string>& tip_links) :
-        robot_model_( robot_model ), root_link_( root_link )
+          const std::vector<std::string>& tip_links, 
+          const std::map<std::string, double> weights ) :
+        robot_model_( robot_model ), weights_( weights ), root_link_( root_link )
       {
         robot_model_.initTree(parent_link_tree_);
 
@@ -125,6 +126,7 @@ namespace giskard_core
       std::map<std::string, ControllableConstraintSpecPtr> controllable_map_; 
       std::map<std::string, HardConstraintSpecPtr> hard_map_; 
       std::map<std::string, giskard_core::DoubleInputSpecPtr> joint_map_;
+      std::map<std::string, double> weights_;
       std::string root_link_;
 
       void init_kinematic_chain(const std::string& root, const std::string& tip)
@@ -152,7 +154,25 @@ namespace giskard_core
 
         fk_map_.insert(std::pair<std::string, FrameSpecPtr>(tip, frame_multiplication_spec(joint_transforms)));
 
-        // TODO: fill controllable constraints
+        // create and add new controllable constraints
+        for (size_t i=0; i<moveable_joints_names.size(); ++i)
+          if (controllable_map_.find(moveable_joints_names[i]) == controllable_map_.end())
+          {
+            ControllableConstraintSpec spec;
+            spec.name_ = moveable_joints_names[i];
+            spec.input_number_ = get_joint(spec.name_)->get_input_num();
+            if (weights_.find(spec.name_) != weights_.end())
+              spec.weight_ = double_const_spec(weights_.find(spec.name_)->second);
+            else if (weights_.find("default-joint-weight") != weights_.end()) // get that string from somewhere
+              spec.weight_ = double_const_spec(weights_.find("default-joint-weight")->second);
+            else
+              throw std::runtime_error("Could not find weight for joint '" + spec.name_ + "'.");
+
+            //TODO: complete me
+
+          }
+
+
         // TODO: fill hard constraints
       }
 

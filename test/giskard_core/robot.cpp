@@ -27,8 +27,8 @@ class TestRobot : public giskard_core::Robot
 {
   public:
      TestRobot(const urdf::Model& robot_model, const std::string& root_link,
-          const std::vector<std::string>& tip_links) :
-       giskard_core::Robot(robot_model, root_link, tip_links) {}
+          const std::vector<std::string>& tip_links, const std::map<std::string, double> weights) :
+       giskard_core::Robot(robot_model, root_link, tip_links, weights) {}
 
      std::vector<std::string> test_chain_joint_names(const std::string& root, 
         const std::string& tip, bool add_fixed_joints=true)
@@ -60,6 +60,7 @@ class RobotTest : public ::testing::Test
         "l_upper_arm_roll_joint", "l_upper_arm_joint", "l_elbow_flex_joint", 
         "l_forearm_roll_joint", "l_forearm_joint", "l_wrist_flex_joint", 
         "l_wrist_roll_joint", "l_gripper_palm_joint", "l_gripper_tool_joint"};
+      weights = {{"default-joint-weight", 0.001}, {"torso_lift_joint", 0.01}};
     }
 
     virtual void TearDown(){}
@@ -103,29 +104,31 @@ class RobotTest : public ::testing::Test
     std::string root_link, tip_link, wrong_root_link;
     std::vector<std::string> tip_links, empty_tip_links, wrong_tip_links,
       root_as_only_tip_link, moveable_joints_names, all_joint_names;
+    std::map<std::string, double> weights;
 };
 
 TEST_F(RobotTest, SaneConstructor)
 {
-  EXPECT_NO_THROW(giskard_core::Robot(urdf, root_link, tip_links));
-  EXPECT_NO_THROW(giskard_core::Robot(urdf, root_link, root_as_only_tip_link));
-  EXPECT_ANY_THROW(giskard_core::Robot(urdf, wrong_root_link, tip_links));
-  EXPECT_NO_THROW(giskard_core::Robot(urdf, root_link, empty_tip_links));
-  EXPECT_ANY_THROW(giskard_core::Robot(urdf, root_link, wrong_tip_links));
+  EXPECT_NO_THROW(giskard_core::Robot(urdf, root_link, tip_links, weights));
+  EXPECT_NO_THROW(giskard_core::Robot(urdf, root_link, root_as_only_tip_link, weights));
+  EXPECT_ANY_THROW(giskard_core::Robot(urdf, wrong_root_link, tip_links, weights));
+  EXPECT_NO_THROW(giskard_core::Robot(urdf, root_link, empty_tip_links, weights));
+  EXPECT_ANY_THROW(giskard_core::Robot(urdf, root_link, wrong_tip_links, weights));
+  // TODO: test for empty weights
 }
 
 TEST_F(RobotTest, GetEmptyScope)
 {
-  ASSERT_NO_THROW(giskard_core::Robot(urdf, root_link, empty_tip_links));
-  giskard_core::Robot my_robot(urdf, root_link, empty_tip_links);
+  ASSERT_NO_THROW(giskard_core::Robot(urdf, root_link, empty_tip_links, weights));
+  giskard_core::Robot my_robot(urdf, root_link, empty_tip_links, weights);
   ASSERT_NO_THROW(my_robot.get_scope());
   EXPECT_EQ(my_robot.get_scope().size(), 0);
 }
 
 TEST_F(RobotTest, GetJointEmpty)
 {
-  ASSERT_NO_THROW(giskard_core::Robot(urdf, root_link, empty_tip_links));
-  giskard_core::Robot my_robot(urdf, root_link, empty_tip_links);
+  ASSERT_NO_THROW(giskard_core::Robot(urdf, root_link, empty_tip_links, weights));
+  giskard_core::Robot my_robot(urdf, root_link, empty_tip_links, weights);
   EXPECT_EQ(0, my_robot.get_number_of_joints());
   for (size_t i=0; i<all_joint_names.size(); ++i)
     EXPECT_ANY_THROW(my_robot.get_joint(all_joint_names[i]));
@@ -133,8 +136,8 @@ TEST_F(RobotTest, GetJointEmpty)
 
 TEST_F(RobotTest, GetJointAll)
 {
-  ASSERT_NO_THROW(giskard_core::Robot(urdf, root_link, tip_links));
-  giskard_core::Robot my_robot(urdf, root_link, tip_links);
+  ASSERT_NO_THROW(giskard_core::Robot(urdf, root_link, tip_links, weights));
+  giskard_core::Robot my_robot(urdf, root_link, tip_links, weights);
   EXPECT_EQ(moveable_joints_names.size(), my_robot.get_number_of_joints());
   for (size_t i=0; i<moveable_joints_names.size(); ++i)
     ASSERT_NO_THROW(my_robot.get_joint(moveable_joints_names[i]));
@@ -142,8 +145,8 @@ TEST_F(RobotTest, GetJointAll)
 
 TEST_F(RobotTest, ChainJointNames)
 {
-  ASSERT_NO_THROW(TestRobot(urdf, root_link, empty_tip_links));
-  TestRobot robot(urdf, root_link, empty_tip_links);
+  ASSERT_NO_THROW(TestRobot(urdf, root_link, empty_tip_links, weights));
+  TestRobot robot(urdf, root_link, empty_tip_links, weights);
   ASSERT_NO_THROW(robot.test_chain_joint_names(root_link, tip_link, false));
   std::vector<std::string> joint_names = 
     robot.test_chain_joint_names(root_link, tip_link, false);
@@ -159,8 +162,8 @@ TEST_F(RobotTest, ChainJointNames)
 
 TEST_F(RobotTest, GetScope)
 {
-  ASSERT_NO_THROW(giskard_core::Robot(urdf, root_link, tip_links));
-  giskard_core::Robot my_robot(urdf, root_link, tip_links);
+  ASSERT_NO_THROW(giskard_core::Robot(urdf, root_link, tip_links, weights));
+  giskard_core::Robot my_robot(urdf, root_link, tip_links, weights);
   ASSERT_NO_THROW(my_robot.get_scope());
   ASSERT_NO_THROW(giskard_core::generate(my_robot.get_scope()));
     giskard_core::Scope my_scope = giskard_core::generate(my_robot.get_scope());
@@ -177,8 +180,8 @@ TEST_F(RobotTest, GetScope)
 
 TEST_F(RobotTest, GetFkExpression)
 {
-  ASSERT_NO_THROW(giskard_core::Robot(urdf, root_link, tip_links));
-  giskard_core::Robot my_robot(urdf, root_link, tip_links);
+  ASSERT_NO_THROW(giskard_core::Robot(urdf, root_link, tip_links, weights));
+  giskard_core::Robot my_robot(urdf, root_link, tip_links, weights);
   for (size_t i=0; i<tip_links.size(); ++i)
     EXPECT_ANY_THROW(my_robot.get_fk_spec(wrong_root_link, tip_links[i]));
 
@@ -196,15 +199,15 @@ TEST_F(RobotTest, GetFkExpression)
 
 TEST_F(RobotTest, GetRootLink)
 {
-  ASSERT_NO_THROW(giskard_core::Robot(urdf, root_link, tip_links));
-  giskard_core::Robot my_robot(urdf, root_link, tip_links);
+  ASSERT_NO_THROW(giskard_core::Robot(urdf, root_link, tip_links, weights));
+  giskard_core::Robot my_robot(urdf, root_link, tip_links, weights);
   EXPECT_STREQ(root_link.c_str(), my_robot.get_root_link().c_str());
 }
 
 TEST_F(RobotTest, GetHardConstraints)
 {
-  ASSERT_NO_THROW(giskard_core::Robot(urdf, root_link, tip_links));
-  giskard_core::Robot my_robot(urdf, root_link, tip_links);
+  ASSERT_NO_THROW(giskard_core::Robot(urdf, root_link, tip_links, weights));
+  giskard_core::Robot my_robot(urdf, root_link, tip_links, weights);
   ASSERT_NO_THROW(my_robot.get_hard_constraints());
   EXPECT_EQ(my_robot.get_hard_constraints().size(), 6);
   // TODO: complete me
@@ -212,8 +215,8 @@ TEST_F(RobotTest, GetHardConstraints)
 
 TEST_F(RobotTest, GetControllableConstraints)
 {
-  ASSERT_NO_THROW(giskard_core::Robot(urdf, root_link, tip_links));
-  giskard_core::Robot my_robot(urdf, root_link, tip_links);
+  ASSERT_NO_THROW(giskard_core::Robot(urdf, root_link, tip_links, weights));
+  giskard_core::Robot my_robot(urdf, root_link, tip_links, weights);
   ASSERT_NO_THROW(my_robot.get_controllable_constraints());
   EXPECT_EQ(my_robot.get_controllable_constraints().size(), 8);
   // TODO: complete me
