@@ -50,7 +50,7 @@ namespace giskard_core
     public:
       Robot(const urdf::Model& robot_model, const std::string& root_link,
           const std::vector<std::string>& tip_links) :
-        robot_model_( robot_model )
+        robot_model_( robot_model ), root_link_( root_link )
       {
         robot_model_.initTree(parent_link_tree_);
 
@@ -58,10 +58,20 @@ namespace giskard_core
           init_kinematic_chain(root_link, tip_links[i]);
       }
 
-      FrameSpecPtr get_kinematic_chain(const std::string& root, const std::string& tip) const
+      FrameSpecPtr get_fk_spec(const std::string& root_link, const std::string& tip_link) const
       {
-        // TODO: implement me
-        return frame_constructor_spec();
+        if (root_link_.compare(root_link) != 0)
+          throw std::runtime_error("Expected root link '" + root_link_ + "', instead got '" + root_link + "'.");
+
+        if (fk_map_.find(tip_link) == fk_map_.end())
+          throw std::runtime_error("Could not find fk specification for tip link '" + tip_link + "'.");
+
+        return fk_map_.find(tip_link)->second;
+      }
+
+      const std::string& get_root_link() const
+      {
+        return root_link_;
       }
 
       std::vector<ControllableConstraintSpecPtr> get_controllable_constraints() const
@@ -99,7 +109,9 @@ namespace giskard_core
       urdf::Model robot_model_;
       std::map<std::string, std::string> parent_link_tree_;
       std::vector<ScopeEntry> scope_;
+      std::map<std::string, FrameSpecPtr> fk_map_;
       std::map<std::string, giskard_core::DoubleInputSpecPtr> joint_map_;
+      std::string root_link_;
 
       void init_kinematic_chain(const std::string& root, const std::string& tip)
       {
@@ -124,10 +136,14 @@ namespace giskard_core
           joint_transforms.insert(joint_transforms.end(), new_transforms.begin(), new_transforms.end());
         }
 
+
+        FrameSpecPtr spec = frame_multiplication_spec(joint_transforms);
         ScopeEntry new_entry;
         new_entry.name = tip;
-        new_entry.spec = frame_multiplication_spec(joint_transforms);
+        new_entry.spec = spec;
         scope_.push_back(new_entry);
+
+        fk_map_.insert(std::pair<std::string, FrameSpecPtr>(tip, spec));
 
         // TODO: fill controllable constraints
         // TODO: fill hard constraints

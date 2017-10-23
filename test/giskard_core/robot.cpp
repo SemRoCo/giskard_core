@@ -174,3 +174,30 @@ TEST_F(RobotTest, GetScope)
     TestFrameExpression(my_scope.find_frame_expression(tip_links[i]), root_link, tip_links[i]);
   }
 }
+
+TEST_F(RobotTest, GetFkExpression)
+{
+  ASSERT_NO_THROW(giskard_core::Robot(urdf, root_link, tip_links));
+  giskard_core::Robot my_robot(urdf, root_link, tip_links);
+  for (size_t i=0; i<tip_links.size(); ++i)
+    EXPECT_ANY_THROW(my_robot.get_fk_spec(wrong_root_link, tip_links[i]));
+
+  for (size_t i=0; i<wrong_tip_links.size(); ++i)
+    EXPECT_ANY_THROW(my_robot.get_fk_spec(root_link, wrong_tip_links[i]));
+
+  for (size_t i=0; i<tip_links.size(); ++i)
+  {
+    ASSERT_NO_THROW(my_robot.get_fk_spec(root_link, tip_links[i]));
+    giskard_core::FrameSpecPtr spec = my_robot.get_fk_spec(root_link, tip_links[i]);
+    ASSERT_NO_THROW(spec->get_expression(giskard_core::Scope()));
+    TestFrameExpression(spec->get_expression(giskard_core::Scope()), root_link, tip_links[i]);
+  }
+}
+
+TEST_F(RobotTest, GetRootLink)
+{
+  ASSERT_NO_THROW(giskard_core::Robot(urdf, root_link, tip_links));
+  giskard_core::Robot my_robot(urdf, root_link, tip_links);
+  EXPECT_STREQ(root_link.c_str(), my_robot.get_root_link().c_str());
+}
+
