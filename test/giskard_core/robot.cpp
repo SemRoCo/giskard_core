@@ -20,6 +20,8 @@
 
 #include <gtest/gtest.h>
 #include <giskard_core/giskard_core.hpp>
+#include <kdl_parser/kdl_parser.hpp>
+#include <kdl/chainfksolverpos_recursive.hpp>
 
 class TestRobot : public giskard_core::Robot
 {
@@ -41,10 +43,11 @@ class RobotTest : public ::testing::Test
     virtual void SetUp()
     {
       ASSERT_TRUE(urdf.initFile("pr2.urdf"));
+      ASSERT_TRUE(kdl_parser::treeFromUrdfModel(urdf, tree));
       root_link = "base_link";
       tip_link = "l_gripper_tool_frame";
       wrong_root_link = "foo";
-      tip_links = {"torso_lift_link", "l_wrist_roll_link"};
+      tip_links = {"torso_lift_link", "l_gripper_tool_frame"};
       empty_tip_links = {};
       wrong_tip_links = {"bar"};
       root_as_only_tip_link = { root_link };
@@ -61,7 +64,42 @@ class RobotTest : public ::testing::Test
 
     virtual void TearDown(){}
 
+    virtual void TestFrameExpression(const KDL::Expression<KDL::Frame>::Ptr& exp, 
+        const std::string& start_link, const std::string& end_link)
+    {
+      ASSERT_TRUE(exp.get());
+
+      KDL::Chain chain;
+      ASSERT_TRUE(tree.getChain(start_link, end_link, chain));
+      ASSERT_EQ(chain.getNrOfJoints(), exp->number_of_derivatives());
+
+      boost::shared_ptr<KDL::ChainFkSolverPos_recursive> fk_solver;
+      fk_solver = boost::shared_ptr<KDL::ChainFkSolverPos_recursive>(
+          new KDL::ChainFkSolverPos_recursive(chain));
+
+      for(int i=0; i<12; ++i)
+      {
+        std::vector<double> exp_in;
+        KDL::JntArray solver_in(exp->number_of_derivatives());
+        for(size_t j=0; j<exp->number_of_derivatives(); ++j)
+        {
+          double value = 0.1*i;
+          exp_in.push_back(value);
+          solver_in(j) = value;
+        }
+
+        exp->setInputValues(exp_in);
+        KDL::Frame exp_frame = exp->value();
+
+        KDL::Frame solver_frame;
+        ASSERT_GE(fk_solver->JntToCart(solver_in, solver_frame), 0);
+
+        EXPECT_TRUE(KDL::Equal(exp_frame, solver_frame));
+      }
+    }
+
     urdf::Model urdf;
+    KDL::Tree tree;
     std::string root_link, tip_link, wrong_root_link;
     std::vector<std::string> tip_links, empty_tip_links, wrong_tip_links,
       root_as_only_tip_link, moveable_joints_names, all_joint_names;
@@ -124,6 +162,15 @@ TEST_F(RobotTest, GetScope)
   ASSERT_NO_THROW(giskard_core::Robot(urdf, root_link, tip_links));
   giskard_core::Robot my_robot(urdf, root_link, tip_links);
   ASSERT_NO_THROW(my_robot.get_scope());
-  EXPECT_EQ(my_robot.get_scope().size(), 2);
-  // TODO: complete me
+  ASSERT_NO_THROW(giskard_core::generate(my_robot.get_scope()));
+    giskard_core::Scope my_scope = giskard_core::generate(my_robot.get_scope());
+  EXPECT_EQ(0, my_scope.get_double_names().size());
+  EXPECT_EQ(0, my_scope.get_vector_names().size());
+  EXPECT_EQ(0, my_scope.get_rotation_names().size());
+  ASSERT_EQ(tip_links.size(), my_scope.get_frame_names().size());
+  for (size_t i=0; i<tip_links.size(); ++i)
+  {
+    ASSERT_NO_THROW(my_scope.find_frame_expression(tip_links[i]));
+    TestFrameExpression(my_scope.find_frame_expression(tip_links[i]), root_link, tip_links[i]);
+  }
 }
