@@ -2433,8 +2433,15 @@ namespace giskard_core
   class ScopeEntry 
   {
     public:
+      ScopeEntry() {}
+      ScopeEntry(const ScopeEntry& other):
+        name(other.name), spec(other.spec) {}
+      ScopeEntry(const std::string& new_name, const SpecPtr& new_spec) :
+        name(new_name), spec(new_spec) {}
+      ~ScopeEntry() {}
+
       std::string name;
-      giskard_core::SpecPtr spec;
+      SpecPtr spec;
   };
 
   typedef std::vector<ScopeEntry> ScopeSpec;
