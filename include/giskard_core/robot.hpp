@@ -88,7 +88,12 @@ namespace giskard_core
 
       std::vector<ScopeEntry> get_scope() const
       {
-        return scope_;
+        std::vector<ScopeEntry> scope;
+        
+        for (std::map<std::string, FrameSpecPtr>::const_iterator it=fk_map_.begin(); it!=fk_map_.end(); ++it)
+          scope.push_back(ScopeEntry(it->first, it->second));
+
+        return scope;
       }
 
       DoubleInputSpecPtr get_joint(const std::string& joint_name) const
@@ -105,10 +110,8 @@ namespace giskard_core
       }
 
     protected:
-      // TODO: add some useful members
       urdf::Model robot_model_;
       std::map<std::string, std::string> parent_link_tree_;
-      std::vector<ScopeEntry> scope_;
       std::map<std::string, FrameSpecPtr> fk_map_;
       std::map<std::string, giskard_core::DoubleInputSpecPtr> joint_map_;
       std::string root_link_;
@@ -136,14 +139,7 @@ namespace giskard_core
           joint_transforms.insert(joint_transforms.end(), new_transforms.begin(), new_transforms.end());
         }
 
-
-        FrameSpecPtr spec = frame_multiplication_spec(joint_transforms);
-        ScopeEntry new_entry;
-        new_entry.name = tip;
-        new_entry.spec = spec;
-        scope_.push_back(new_entry);
-
-        fk_map_.insert(std::pair<std::string, FrameSpecPtr>(tip, spec));
+        fk_map_.insert(std::pair<std::string, FrameSpecPtr>(tip, frame_multiplication_spec(joint_transforms)));
 
         // TODO: fill controllable constraints
         // TODO: fill hard constraints
