@@ -50,8 +50,10 @@ namespace giskard_core
     public:
       Robot(const urdf::Model& robot_model, const std::string& root_link,
           const std::vector<std::string>& tip_links, 
-          const std::map<std::string, double> weights ) :
-        robot_model_( robot_model ), weights_( weights ), root_link_( root_link )
+          const std::map<std::string, double> weights,
+          const std::map<std::string, double> thresholds) :
+        robot_model_( robot_model ), weights_( weights ), thresholds_( thresholds ),
+        root_link_( root_link )
       {
         robot_model_.initTree(parent_link_tree_);
 
@@ -127,6 +129,7 @@ namespace giskard_core
       std::map<std::string, HardConstraintSpecPtr> hard_map_; 
       std::map<std::string, giskard_core::DoubleInputSpecPtr> joint_map_;
       std::map<std::string, double> weights_;
+      std::map<std::string, double> thresholds_;
       std::string root_link_;
 
       void init_kinematic_chain(const std::string& root, const std::string& tip)
@@ -158,22 +161,46 @@ namespace giskard_core
         for (size_t i=0; i<moveable_joints_names.size(); ++i)
           if (controllable_map_.find(moveable_joints_names[i]) == controllable_map_.end())
           {
-            ControllableConstraintSpec spec;
-            spec.name_ = moveable_joints_names[i];
-            spec.input_number_ = get_joint(spec.name_)->get_input_num();
-            if (weights_.find(spec.name_) != weights_.end())
-              spec.weight_ = double_const_spec(weights_.find(spec.name_)->second);
-            else if (weights_.find("default-joint-weight") != weights_.end()) // get that string from somewhere
-              spec.weight_ = double_const_spec(weights_.find("default-joint-weight")->second);
+            ControllableConstraintSpecPtr spec(new ControllableConstraintSpec);
+            spec->name_ = moveable_joints_names[i];
+            spec->input_number_ = get_joint(spec->name_)->get_input_num();
+            if (weights_.find(spec->name_) != weights_.end())
+              spec->weight_ = double_const_spec(weights_.find(spec->name_)->second);
+            else if (weights_.find("default-joint-weight") != weights_.end()) // TODO: get that string from somewhere
+              spec->weight_ = double_const_spec(weights_.find("default-joint-weight")->second);
             else
-              throw std::runtime_error("Could not find weight for joint '" + spec.name_ + "'.");
+              throw std::runtime_error("Could not find weight for joint '" + spec->name_ + "'.");
+            if (thresholds_.find(spec->name_) != thresholds_.end())
+            {
+              spec->lower_ = double_const_spec(thresholds_.find(spec->name_)->second);
+              spec->upper_ = double_const_spec(thresholds_.find(spec->name_)->second);
+            }
+            else if (thresholds_.find("default-joint-velocity") != thresholds_.end()) // TODO: get that string from somewhere
+            {
+              spec->lower_ = double_const_spec(thresholds_.find("default-joint-velocity")->second);
+              spec->upper_ = double_const_spec(thresholds_.find("default-joint-velocity")->second);
+            }
+            else
+              throw std::runtime_error("Could not find velocity threshodl for joint '" + spec->name_ + "'.");
 
-            //TODO: complete me
-
+            controllable_map_.insert(std::pair<std::string, ControllableConstraintSpecPtr>(spec->name_, spec));
           }
 
-
-        // TODO: fill hard constraints
+        for (size_t i=0; i<moveable_joints_names.size(); ++i)
+          if (hard_map_.find(moveable_joints_names[i]) == hard_map_.end())
+          {
+            if ( robot_model_.joints_.find(moveable_joints_names[i]) == robot_model_.joints_.end() )
+              throw std::runtime_error("Could not find joint with name '" + moveable_joints_names[i] + "'.");
+            urdf::JointConstSharedPtr joint = robot_model_.joints_.find(moveable_joints_names[i])->second;
+            if ( joint->type == urdf::Joint::REVOLUTE || joint->type == urdf::Joint::PRISMATIC )
+            {
+              HardConstraintSpecPtr spec(new HardConstraintSpec);
+              spec->expression_ = get_joint(moveable_joints_names[i]);
+              spec->lower_ = double_sub_spec({double_const_spec(joint->limits->lower), spec->expression_});
+              spec->upper_ = double_sub_spec({double_const_spec(joint->limits->upper), spec->expression_});
+              hard_map_.insert(std::make_pair(moveable_joints_names[i], spec));
+            }
+          }
       }
 
       std::vector<std::string> chain_joint_names(const std::string& root, const std::string& tip, bool add_fixed_joints=true)
