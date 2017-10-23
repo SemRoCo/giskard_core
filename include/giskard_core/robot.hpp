@@ -65,15 +65,43 @@ namespace giskard_core
         return scope_;
       }
 
+      DoubleInputSpecPtr get_joint(const std::string& joint_name) const
+      {
+        if (joint_map_.find(joint_name) == joint_map_.end())
+          throw std::runtime_error("Could not find joint with name '" + joint_name + "'.");
+
+        return joint_map_.find(joint_name)->second;
+      }
+
+      size_t get_number_of_joints() const
+      {
+        return joint_map_.size();
+      }
+
     protected:
       // TODO: add some useful members
       urdf::Model robot_model_;
       std::map<std::string, std::string> parent_link_tree_;
       std::vector<ScopeEntry> scope_;
+      std::map<std::string, giskard_core::DoubleInputSpecPtr> joint_map_;
 
       void init_kinematic_chain(const std::string& root, const std::string& tip)
       {
         std::vector<std::string> joint_names = chain_joint_names(root, tip);
+
+        // create and add input expressions for new moveable joints
+        for (size_t i=0; i<joint_names.size(); ++i)
+          if (joint_map_.find(joint_names[i]) == joint_map_.end())
+          {
+            if (robot_model_.joints_.find(joint_names[i]) == robot_model_.joints_.end())
+              throw std::runtime_error("Could not find joint with name '" + joint_names[i] + "'.");
+
+            if (!robot_model_.joints_.find(joint_names[i])->second)
+              throw std::runtime_error("Joint with name '" + joint_names[i] + "' is an empty shared_ptr.");
+
+            if (robot_model_.joints_.find(joint_names[i])->second->type != urdf::Joint::FIXED)
+              joint_map_.insert(std::pair<std::string, DoubleInputSpecPtr>(joint_names[i], input(joint_map_.size())));
+          }
 
         ScopeEntry new_entry;
         new_entry.name = tip;

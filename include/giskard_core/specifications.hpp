@@ -188,6 +188,14 @@ namespace giskard_core
   class DoubleInputSpec : public DoubleSpec
   {
     public:
+      DoubleInputSpec() :
+        input_num_( 0 ) {}
+      DoubleInputSpec(const DoubleInputSpec& other) :
+        input_num_( other.get_input_num() ) {}
+      DoubleInputSpec(size_t input_num) :
+        input_num_( input_num ) {}
+      ~DoubleInputSpec() {}
+
       size_t get_input_num() const
       {
         return input_num_;
@@ -216,6 +224,11 @@ namespace giskard_core
   };
 
   typedef typename boost::shared_ptr<DoubleInputSpec> DoubleInputSpecPtr;
+
+  inline DoubleInputSpecPtr input(size_t input_num = 0)
+  {
+    return DoubleInputSpecPtr(new DoubleInputSpec(input_num));
+  }
 
   class DoubleReferenceSpec : public DoubleSpec
   {

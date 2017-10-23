@@ -84,6 +84,24 @@ TEST_F(RobotTest, GetEmptyScope)
   EXPECT_EQ(my_robot.get_scope().size(), 0);
 }
 
+TEST_F(RobotTest, GetJointEmpty)
+{
+  ASSERT_NO_THROW(giskard_core::Robot(urdf, root_link, empty_tip_links));
+  giskard_core::Robot my_robot(urdf, root_link, empty_tip_links);
+  EXPECT_EQ(0, my_robot.get_number_of_joints());
+  for (size_t i=0; i<all_joint_names.size(); ++i)
+    EXPECT_ANY_THROW(my_robot.get_joint(all_joint_names[i]));
+}
+
+TEST_F(RobotTest, GetJointAll)
+{
+  ASSERT_NO_THROW(giskard_core::Robot(urdf, root_link, tip_links));
+  giskard_core::Robot my_robot(urdf, root_link, tip_links);
+  EXPECT_EQ(moveable_joints_names.size(), my_robot.get_number_of_joints());
+  for (size_t i=0; i<moveable_joints_names.size(); ++i)
+    ASSERT_NO_THROW(my_robot.get_joint(moveable_joints_names[i]));
+}
+
 TEST_F(RobotTest, ChainJointNames)
 {
   ASSERT_NO_THROW(TestRobot(urdf, root_link, empty_tip_links));
