@@ -89,6 +89,8 @@ namespace giskard_core
           return find_rotation_expression(reference_name);
         else if (has_frame_expression(reference_name))
           return find_frame_expression(reference_name);
+        else 
+          throw std::runtime_error("Could not infer type of expression with name '" + reference_name + "'.");
       }
 
       bool has_double_expression(const std::string& expression_name) const
