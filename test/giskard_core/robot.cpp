@@ -201,3 +201,20 @@ TEST_F(RobotTest, GetRootLink)
   EXPECT_STREQ(root_link.c_str(), my_robot.get_root_link().c_str());
 }
 
+TEST_F(RobotTest, GetHardConstraints)
+{
+  ASSERT_NO_THROW(giskard_core::Robot(urdf, root_link, tip_links));
+  giskard_core::Robot my_robot(urdf, root_link, tip_links);
+  ASSERT_NO_THROW(my_robot.get_hard_constraints());
+  EXPECT_EQ(my_robot.get_hard_constraints().size(), 6);
+  // TODO: complete me
+}
+
+TEST_F(RobotTest, GetControllableConstraints)
+{
+  ASSERT_NO_THROW(giskard_core::Robot(urdf, root_link, tip_links));
+  giskard_core::Robot my_robot(urdf, root_link, tip_links);
+  ASSERT_NO_THROW(my_robot.get_controllable_constraints());
+  EXPECT_EQ(my_robot.get_controllable_constraints().size(), 8);
+  // TODO: complete me
+}

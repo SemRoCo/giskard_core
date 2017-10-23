@@ -76,14 +76,23 @@ namespace giskard_core
 
       std::vector<ControllableConstraintSpecPtr> get_controllable_constraints() const
       {
-        // TODO: implement me
-        return std::vector<ControllableConstraintSpecPtr>();
+        std::vector<ControllableConstraintSpecPtr> specs;
+
+        for (std::map<std::string, ControllableConstraintSpecPtr>::const_iterator it=controllable_map_.begin();
+             it != controllable_map_.end(); ++it)
+          specs.push_back(it->second);
+
+        return specs;
       }
 
       std::vector<HardConstraintSpecPtr> get_hard_constraints() const
       {
-        // TODO: implement me
-        return std::vector<HardConstraintSpecPtr>();
+        std::vector<HardConstraintSpecPtr> specs;
+
+        for (std::map<std::string, HardConstraintSpecPtr>::const_iterator it=hard_map_.begin(); it != hard_map_.end(); ++it)
+          specs.push_back(it->second);
+
+        return specs;
       }
 
       std::vector<ScopeEntry> get_scope() const
@@ -113,6 +122,8 @@ namespace giskard_core
       urdf::Model robot_model_;
       std::map<std::string, std::string> parent_link_tree_;
       std::map<std::string, FrameSpecPtr> fk_map_;
+      std::map<std::string, ControllableConstraintSpecPtr> controllable_map_; 
+      std::map<std::string, HardConstraintSpecPtr> hard_map_; 
       std::map<std::string, giskard_core::DoubleInputSpecPtr> joint_map_;
       std::string root_link_;
 
