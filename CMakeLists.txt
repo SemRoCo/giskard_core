@@ -7,6 +7,8 @@ find_package(catkin REQUIRED COMPONENTS expressiongraph qpoases kdl_parser)
 
 # setting additional cmake flags, used for integration with Coveralls.io
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${MY_CMAKE_CXX_FLAGS}")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wuninitialized -Winit-self -Wunused-function -Wunused-label -Wunused-variable -Wunused-but-set-parameter")#-Wunused-but-set-variable 
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wreorder -Warray-bounds -Wtype-limits -Werror=return-type -Wsequence-point -Wparentheses -Wmissing-braces -Wchar-subscripts -Wswitch -Wwrite-strings -Wenum-compare -Wempty-body")# -Wlogical-op") 
 
 ## Finding system dependencies which come without cmake
 find_package(PkgConfig)
