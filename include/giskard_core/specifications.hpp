@@ -1610,6 +1610,14 @@ namespace giskard_core
   class VectorDoubleMultiplicationSpec: public VectorSpec
   {
     public:
+      VectorDoubleMultiplicationSpec() :
+        vector_( vector_constructor_spec() ), double_( double_const_spec() ) {}
+      VectorDoubleMultiplicationSpec(const VectorDoubleMultiplicationSpec& other) :
+        vector_( other.get_vector()), double_( other.get_double() ) {}
+      VectorDoubleMultiplicationSpec(const VectorSpecPtr& new_vector, const DoubleSpecPtr& new_double) :
+        vector_( new_vector ), double_( new_double ) {}
+      ~VectorDoubleMultiplicationSpec() {}
+
       const VectorSpecPtr& get_vector() const
       {
         return vector_;
@@ -1656,6 +1664,12 @@ namespace giskard_core
   };
 
   typedef typename boost::shared_ptr<VectorDoubleMultiplicationSpec> VectorDoubleMultiplicationSpecPtr;
+
+  inline VectorDoubleMultiplicationSpecPtr vector_double_mul(const VectorSpecPtr& new_vector =
+      vector_constructor_spec(), const DoubleSpecPtr& new_double = double_const_spec())
+  {
+    return VectorDoubleMultiplicationSpecPtr(new VectorDoubleMultiplicationSpec(new_vector, new_double));
+  }
 
   class VectorRotationVectorSpec : public VectorSpec
   {
@@ -1819,6 +1833,14 @@ namespace giskard_core
   class AxisAngleSpec: public RotationSpec
   {
     public:
+      AxisAngleSpec() :
+        axis_( vector_constructor_spec() ), angle_( double_const_spec() ) {}
+      AxisAngleSpec(const AxisAngleSpec& other) :
+        axis_( other.get_axis()), angle_( other.get_angle() ) {}
+      AxisAngleSpec(const VectorSpecPtr& new_axis, const DoubleSpecPtr& new_angle) :
+        axis_( new_axis ), angle_( new_angle ) {}
+      ~AxisAngleSpec() {}
+
       const VectorSpecPtr& get_axis() const
       {
         return axis_;
@@ -1874,6 +1896,12 @@ namespace giskard_core
   };
 
   typedef typename boost::shared_ptr<AxisAngleSpec> AxisAngleSpecPtr;
+
+  inline AxisAngleSpecPtr axis_angle_spec(const VectorSpecPtr& axis =
+      vector_constructor_spec(), const DoubleSpecPtr& angle = double_const_spec())
+  {
+    return AxisAngleSpecPtr(new AxisAngleSpec(axis, angle));
+  }
 
   class SlerpSpec: public RotationSpec
   {
@@ -2252,6 +2280,13 @@ namespace giskard_core
   class FrameMultiplicationSpec: public FrameSpec
   {
     public:
+      FrameMultiplicationSpec() {}
+      FrameMultiplicationSpec(const FrameMultiplicationSpec& other) :
+        inputs_( other.get_inputs()) {}
+      FrameMultiplicationSpec(const std::vector<FrameSpecPtr>& inputs) :
+        inputs_( inputs ) {}
+      ~FrameMultiplicationSpec() {}
+
       const std::vector<FrameSpecPtr>& get_inputs() const
       {
         return inputs_;
@@ -2307,6 +2342,11 @@ namespace giskard_core
   };
 
   typedef typename boost::shared_ptr<FrameMultiplicationSpec> FrameMultiplicationSpecPtr;
+
+  inline FrameMultiplicationSpecPtr frame_multiplication_spec(const std::vector<FrameSpecPtr>& inputs = {})
+  {
+    return FrameMultiplicationSpecPtr(new FrameMultiplicationSpec(inputs));
+  }
 
   class FrameReferenceSpec : public FrameSpec
   {
