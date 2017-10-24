@@ -127,7 +127,7 @@ namespace giskard_core
       std::map<std::string, FrameSpecPtr> fk_map_;
       std::map<std::string, ControllableConstraintSpecPtr> controllable_map_; 
       std::map<std::string, HardConstraintSpecPtr> hard_map_; 
-      std::map<std::string, giskard_core::DoubleInputSpecPtr> joint_map_;
+      std::map<std::string, DoubleInputSpecPtr> joint_map_;
       std::map<std::string, double> weights_;
       std::map<std::string, double> thresholds_;
       std::string root_link_;

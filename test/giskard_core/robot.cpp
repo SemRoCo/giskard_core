@@ -36,6 +36,21 @@ class TestRobot : public giskard_core::Robot
     {
       return chain_joint_names(root, tip, add_fixed_joints);
     }
+
+    const std::map<std::string, giskard_core::ControllableConstraintSpecPtr>& get_controllables_map() const
+    {
+      return controllable_map_;
+    }
+
+    const std::map<std::string, giskard_core::HardConstraintSpecPtr>& get_hard_constraints_map() const
+    {
+      return hard_map_;
+    }
+
+    const std::map<std::string, giskard_core::DoubleInputSpecPtr>& get_joints_map() const
+    {
+      return joint_map_;
+    }
 };
 
 class RobotTest : public ::testing::Test
