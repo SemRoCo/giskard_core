@@ -1,3 +1,7 @@
+//
+// Created by georg on 25.10.17.
+//
+
 /*
  * Copyright (C) 2017 Georg Bartels <georg.bartels@cs.uni-bremen.de>
  *
@@ -17,30 +21,36 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-#ifndef GISKARD_CORE_WHOLE_BODY_CONTROL_PARAMS_HPP
-#define GISKARD_CORE_WHOLE_BODY_CONTROL_PARAMS_HPP
 
-#include <giskard_core/robot.hpp>
+#include <gtest/gtest.h>
+#include <giskard_core/giskard_core.hpp>
 
-namespace giskard_core
+using namespace giskard_core;
+
+class WholeBodyControlParamsTest : public ::testing::Test
 {
-    class ControlParams
+protected:
+    virtual void SetUp()
     {
-      public:
-        double p_gain, threshold, weight;
-        bool threshold_error;
-        std::string root_link, tip_link;
-    };
-
-    class JointControlParams : public ControlParams {};
-    class CartPosControlParams : public ControlParams {};
-    class CartRotControlParams : public ControlParams {};
-
-    inline QPControllerSpec generate_spec(const Robot& robot, const std::map<std::string, ControlParams>& control_params)
-    {
-      // TODO: implement me
-      return QPControllerSpec();
+      ASSERT_TRUE(urdf.initFile("pr2.urdf"));
+      root_link = "base_link";
+      tip_links = {"torso_lift_link", "r_gripper_tool_frame"};
+      weights = {{"default-joint-weight", 0.001}, {"torso_lift_joint", 0.01}};
+      thresholds = {{"default-joint-velocity", 0.5}, {"torso_lift_joint", 0.01}};
     }
-}
 
-#endif //GISKARD_CORE_WHOLE_BODY_CONTROL_PARAMS_HPP
+    virtual void TearDown(){}
+
+
+    urdf::Model urdf;
+    std::map<std::string, double> weights, thresholds;
+    std::vector<std::string> tip_links;
+    std::string root_link;
+    Robot robot;
+
+};
+
+TEST_F(WholeBodyControlParams, NoControl)
+{
+  ASSERT_NO_THROW(generate_spec(robot, {}));
+}
