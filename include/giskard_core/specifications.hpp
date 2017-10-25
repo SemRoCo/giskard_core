@@ -2489,7 +2489,18 @@ namespace giskard_core
   class QPControllerSpec
   {
     public:
-      // TODO: turn this into a map
+      /* NOTE: The scope specification cannot be turned into a map even though it
+       *       suspicously looks like it could be turned into a map. The reason is
+       *       that the order in which the individual specification are evaluated matters.
+       *
+       *       Example: Our scope contains two simple expressions:
+       *         - b = 3
+       *         - a = 2 * b
+       *
+       *       If we read them into a map<string, SpecPtr> (that usually sorts by
+       *       string), then we will actually try to generate a before we have
+       *       evaluated b. And that will not work.
+       */
       std::vector< giskard_core::ScopeEntry > scope_;
       std::vector< giskard_core::ControllableConstraintSpec > controllable_constraints_;
       std::vector< giskard_core::SoftConstraintSpec > soft_constraints_;
