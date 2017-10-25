@@ -48,6 +48,7 @@ namespace giskard_core
   class Robot
   {
     public:
+      // TODO: move the beef of this constructor into an init function
       Robot(const urdf::Model& robot_model, const std::string& root_link,
           const std::vector<std::string>& tip_links, 
           const std::map<std::string, double> weights,
