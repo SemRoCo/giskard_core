@@ -23,13 +23,15 @@
 #include <kdl_parser/kdl_parser.hpp>
 #include <kdl/chainfksolverpos_recursive.hpp>
 
-class TestRobot : public giskard_core::Robot
+using namespace giskard_core;
+
+class TestRobot : public Robot
 {
   public:
      TestRobot(const urdf::Model& robot_model, const std::string& root_link,
           const std::vector<std::string>& tip_links, const std::map<std::string, double>& weights,
           const std::map<std::string, double>& thresholds) :
-       giskard_core::Robot(robot_model, root_link, tip_links, weights, thresholds) {}
+       Robot(robot_model, root_link, tip_links, weights, thresholds) {}
 
      std::vector<std::string> test_chain_joint_names(const std::string& root, 
         const std::string& tip, bool add_fixed_joints=true)
@@ -37,19 +39,29 @@ class TestRobot : public giskard_core::Robot
       return chain_joint_names(root, tip, add_fixed_joints);
     }
 
-    const std::map<std::string, giskard_core::ControllableConstraintSpecPtr>& get_controllables_map() const
+    const std::map<std::string, ControllableConstraintSpecPtr>& get_controllables_map() const
     {
       return controllable_map_;
     }
 
-    const std::map<std::string, giskard_core::HardConstraintSpecPtr>& get_hard_constraints_map() const
+    const std::map<std::string, HardConstraintSpecPtr>& get_hard_constraints_map() const
     {
       return hard_map_;
     }
 
-    const std::map<std::string, giskard_core::DoubleInputSpecPtr>& get_joints_map() const
+    const std::map<std::string, DoubleInputSpecPtr>& get_joints_map() const
     {
       return joint_map_;
+    }
+
+    double test_get_velocity_limit(const std::string& joint_name) const
+    {
+      return get_velocity_limit(joint_name);
+    }
+
+    double test_get_weight(const std::string& joint_name) const
+    {
+      return get_weight(joint_name);
     }
 };
 
@@ -76,8 +88,9 @@ class RobotTest : public ::testing::Test
         "l_upper_arm_roll_joint", "l_upper_arm_joint", "l_elbow_flex_joint", 
         "l_forearm_roll_joint", "l_forearm_joint", "l_wrist_flex_joint", 
         "l_wrist_roll_joint", "l_gripper_palm_joint", "l_gripper_tool_joint"};
+      limitless_joints = {"l_forearm_roll_joint", "l_wrist_roll_joint"};
       weights = {{"default-joint-weight", 0.001}, {"torso_lift_joint", 0.01}};
-      thresholds = {{"default-joint-velocity", 0.6}, {"torso_lift_joint", 0.02}};
+      thresholds = {{"default-joint-velocity", 0.6}, {"torso_lift_joint", 0.01}};
     }
 
     virtual void TearDown(){}
@@ -122,31 +135,32 @@ class RobotTest : public ::testing::Test
     std::vector<std::string> tip_links, empty_tip_links, wrong_tip_links,
       root_as_only_tip_link, moveable_joints_names, all_joint_names;
     std::map<std::string, double> weights, thresholds;
+    std::set<std::string> limitless_joints;
 };
 
 TEST_F(RobotTest, SaneConstructor)
 {
-  EXPECT_NO_THROW(giskard_core::Robot(urdf, root_link, tip_links, weights, thresholds));
-  EXPECT_NO_THROW(giskard_core::Robot(urdf, root_link, root_as_only_tip_link, weights, thresholds));
-  EXPECT_ANY_THROW(giskard_core::Robot(urdf, wrong_root_link, tip_links, weights, thresholds));
-  EXPECT_NO_THROW(giskard_core::Robot(urdf, root_link, empty_tip_links, weights, thresholds));
-  EXPECT_ANY_THROW(giskard_core::Robot(urdf, root_link, wrong_tip_links, weights, thresholds));
-  // TODO: test for empty weights
-  // TODO: test for empty thresholds
+  EXPECT_NO_THROW(Robot(urdf, root_link, tip_links, weights, thresholds));
+  EXPECT_NO_THROW(Robot(urdf, root_link, root_as_only_tip_link, weights, thresholds));
+  EXPECT_ANY_THROW(Robot(urdf, wrong_root_link, tip_links, weights, thresholds));
+  EXPECT_NO_THROW(Robot(urdf, root_link, empty_tip_links, weights, thresholds));
+  EXPECT_ANY_THROW(Robot(urdf, root_link, wrong_tip_links, weights, thresholds));
+  EXPECT_ANY_THROW(Robot(urdf, root_link, wrong_tip_links, {}, thresholds));
+  EXPECT_NO_THROW(Robot(urdf, root_link, tip_links, weights, {}));
 }
 
 TEST_F(RobotTest, GetEmptyScope)
 {
-  ASSERT_NO_THROW(giskard_core::Robot(urdf, root_link, empty_tip_links, weights, thresholds));
-  giskard_core::Robot my_robot(urdf, root_link, empty_tip_links, weights, thresholds);
+  ASSERT_NO_THROW(Robot(urdf, root_link, empty_tip_links, weights, thresholds));
+  Robot my_robot(urdf, root_link, empty_tip_links, weights, thresholds);
   ASSERT_NO_THROW(my_robot.get_scope());
   EXPECT_EQ(my_robot.get_scope().size(), 0);
 }
 
 TEST_F(RobotTest, GetJointEmpty)
 {
-  ASSERT_NO_THROW(giskard_core::Robot(urdf, root_link, empty_tip_links, weights, thresholds));
-  giskard_core::Robot my_robot(urdf, root_link, empty_tip_links, weights, thresholds);
+  ASSERT_NO_THROW(Robot(urdf, root_link, empty_tip_links, weights, thresholds));
+  Robot my_robot(urdf, root_link, empty_tip_links, weights, thresholds);
   EXPECT_EQ(0, my_robot.get_number_of_joints());
   for (size_t i=0; i<all_joint_names.size(); ++i)
     EXPECT_ANY_THROW(my_robot.get_joint(all_joint_names[i]));
@@ -154,8 +168,8 @@ TEST_F(RobotTest, GetJointEmpty)
 
 TEST_F(RobotTest, GetJointAll)
 {
-  ASSERT_NO_THROW(giskard_core::Robot(urdf, root_link, tip_links, weights, thresholds));
-  giskard_core::Robot my_robot(urdf, root_link, tip_links, weights, thresholds);
+  ASSERT_NO_THROW(Robot(urdf, root_link, tip_links, weights, thresholds));
+  Robot my_robot(urdf, root_link, tip_links, weights, thresholds);
   EXPECT_EQ(moveable_joints_names.size(), my_robot.get_number_of_joints());
   for (size_t i=0; i<moveable_joints_names.size(); ++i)
     ASSERT_NO_THROW(my_robot.get_joint(moveable_joints_names[i]));
@@ -180,11 +194,11 @@ TEST_F(RobotTest, ChainJointNames)
 
 TEST_F(RobotTest, GetScope)
 {
-  ASSERT_NO_THROW(giskard_core::Robot(urdf, root_link, tip_links, weights, thresholds));
-  giskard_core::Robot my_robot(urdf, root_link, tip_links, weights, thresholds);
+  ASSERT_NO_THROW(Robot(urdf, root_link, tip_links, weights, thresholds));
+  Robot my_robot(urdf, root_link, tip_links, weights, thresholds);
   ASSERT_NO_THROW(my_robot.get_scope());
-  ASSERT_NO_THROW(giskard_core::generate(my_robot.get_scope()));
-    giskard_core::Scope my_scope = giskard_core::generate(my_robot.get_scope());
+  ASSERT_NO_THROW(generate(my_robot.get_scope()));
+    Scope my_scope = generate(my_robot.get_scope());
   EXPECT_EQ(0, my_scope.get_double_names().size());
   EXPECT_EQ(0, my_scope.get_vector_names().size());
   EXPECT_EQ(0, my_scope.get_rotation_names().size());
@@ -198,8 +212,8 @@ TEST_F(RobotTest, GetScope)
 
 TEST_F(RobotTest, GetFkExpression)
 {
-  ASSERT_NO_THROW(giskard_core::Robot(urdf, root_link, tip_links, weights, thresholds));
-  giskard_core::Robot my_robot(urdf, root_link, tip_links, weights, thresholds);
+  ASSERT_NO_THROW(Robot(urdf, root_link, tip_links, weights, thresholds));
+  Robot my_robot(urdf, root_link, tip_links, weights, thresholds);
   for (size_t i=0; i<tip_links.size(); ++i)
     EXPECT_ANY_THROW(my_robot.get_fk_spec(wrong_root_link, tip_links[i]));
 
@@ -209,33 +223,105 @@ TEST_F(RobotTest, GetFkExpression)
   for (size_t i=0; i<tip_links.size(); ++i)
   {
     ASSERT_NO_THROW(my_robot.get_fk_spec(root_link, tip_links[i]));
-    giskard_core::FrameSpecPtr spec = my_robot.get_fk_spec(root_link, tip_links[i]);
-    ASSERT_NO_THROW(spec->get_expression(giskard_core::Scope()));
-    TestFrameExpression(spec->get_expression(giskard_core::Scope()), root_link, tip_links[i]);
+    FrameSpecPtr spec = my_robot.get_fk_spec(root_link, tip_links[i]);
+    ASSERT_NO_THROW(spec->get_expression(Scope()));
+    TestFrameExpression(spec->get_expression(Scope()), root_link, tip_links[i]);
   }
 }
 
 TEST_F(RobotTest, GetRootLink)
 {
-  ASSERT_NO_THROW(giskard_core::Robot(urdf, root_link, tip_links, weights, thresholds));
-  giskard_core::Robot my_robot(urdf, root_link, tip_links, weights, thresholds);
+  ASSERT_NO_THROW(Robot(urdf, root_link, tip_links, weights, thresholds));
+  Robot my_robot(urdf, root_link, tip_links, weights, thresholds);
   EXPECT_STREQ(root_link.c_str(), my_robot.get_root_link().c_str());
 }
 
 TEST_F(RobotTest, GetHardConstraints)
 {
-  ASSERT_NO_THROW(giskard_core::Robot(urdf, root_link, tip_links, weights, thresholds));
-  giskard_core::Robot my_robot(urdf, root_link, tip_links, weights, thresholds);
-  ASSERT_NO_THROW(my_robot.get_hard_constraints());
-  EXPECT_EQ(my_robot.get_hard_constraints().size(), 6);
-  // TODO: complete me
+  ASSERT_NO_THROW(TestRobot(urdf, root_link, tip_links, weights, thresholds));
+  TestRobot my_robot(urdf, root_link, tip_links, weights, thresholds);
+  EXPECT_NO_THROW(my_robot.get_hard_constraints());
+  EXPECT_EQ(my_robot.get_hard_constraints().size(), moveable_joints_names.size() - limitless_joints.size());
+  EXPECT_EQ(my_robot.get_hard_constraints().size(), my_robot.get_hard_constraints_map().size());
+  for (auto const & limitless_joint: limitless_joints)
+    EXPECT_TRUE(my_robot.get_hard_constraints_map().find(limitless_joint) == my_robot.get_hard_constraints_map().end());
+  for (auto const & joint_name: moveable_joints_names)
+    ASSERT_TRUE((limitless_joints.find(joint_name) != limitless_joints.end()) ||
+                        (my_robot.get_hard_constraints_map().find(joint_name) != my_robot.get_hard_constraints_map().end()));
+  for (auto const & pair: my_robot.get_hard_constraints_map())
+  {
+    ASSERT_NO_THROW(my_robot.get_joint(pair.first));
+    ASSERT_TRUE(my_robot.get_joint(pair.first)->equals(*(pair.second->expression_)));
+    EXPECT_TRUE(double_sub_spec({double_const_spec(urdf.getJoint(pair.first)->limits->lower),
+                                 my_robot.get_joint(pair.first)})->equals(*(pair.second->lower_)));
+    EXPECT_TRUE(double_sub_spec({double_const_spec(urdf.getJoint(pair.first)->limits->upper),
+                                 my_robot.get_joint(pair.first)})->equals(*(pair.second->upper_)));
+  }
 }
 
 TEST_F(RobotTest, GetControllableConstraints)
 {
-  ASSERT_NO_THROW(giskard_core::Robot(urdf, root_link, tip_links, weights, thresholds));
-  giskard_core::Robot my_robot(urdf, root_link, tip_links, weights, thresholds);
+  ASSERT_NO_THROW(TestRobot(urdf, root_link, tip_links, weights, thresholds));
+  TestRobot my_robot(urdf, root_link, tip_links, weights, thresholds);
   ASSERT_NO_THROW(my_robot.get_controllable_constraints());
-  EXPECT_EQ(my_robot.get_controllable_constraints().size(), 8);
-  // TODO: complete me
+  EXPECT_EQ(my_robot.get_controllable_constraints().size(), moveable_joints_names.size());
+  EXPECT_EQ(my_robot.get_controllable_constraints().size(), my_robot.get_controllables_map().size());
+  for (auto const & joint_name: moveable_joints_names)
+    ASSERT_TRUE(my_robot.get_controllables_map().find(joint_name) != my_robot.get_controllables_map().end());
+  for (auto const & pair: my_robot.get_controllables_map())
+  {
+    ASSERT_NO_THROW(my_robot.get_joint(pair.first));
+    EXPECT_STREQ(pair.first.c_str(), pair.second->name_.c_str());
+    EXPECT_EQ(my_robot.get_joint(pair.first)->get_input_num(), pair.second->input_number_);
+    ASSERT_NO_THROW(my_robot.test_get_velocity_limit(pair.first));
+    double vel_limit = my_robot.test_get_velocity_limit(pair.first);
+    EXPECT_TRUE(double_const_spec(-vel_limit)->equals(*(pair.second->lower_)));
+    EXPECT_TRUE(double_const_spec(vel_limit)->equals(*(pair.second->upper_)));
+    EXPECT_TRUE(double_const_spec(my_robot.test_get_weight(pair.first))->equals(*(pair.second->weight_)));
+  }
+}
+
+TEST_F(RobotTest, GetVelocityLimit) {
+  ASSERT_NO_THROW(TestRobot(urdf, root_link, tip_links, weights, thresholds));
+  TestRobot my_robot(urdf, root_link, tip_links, weights, thresholds);
+  ASSERT_NO_THROW(TestRobot(urdf, root_link, tip_links, weights, {}));
+  TestRobot no_thresholds_robot(urdf, root_link, tip_links, weights, {});
+  for (auto const & joint_name: moveable_joints_names)
+  {
+    ASSERT_NO_THROW(my_robot.test_get_velocity_limit(joint_name));
+    if (joint_name.compare("torso_lift_joint") == 0)
+      EXPECT_DOUBLE_EQ(thresholds.find(joint_name)->second, my_robot.test_get_velocity_limit(joint_name));
+    else
+      EXPECT_DOUBLE_EQ(thresholds.find(Robot::default_joint_velocity)->second, my_robot.test_get_velocity_limit(joint_name));
+
+    ASSERT_NO_THROW(no_thresholds_robot.test_get_velocity_limit(joint_name));
+    EXPECT_DOUBLE_EQ(no_thresholds_robot.test_get_velocity_limit(joint_name), urdf.getJoint(joint_name)->limits->velocity);
+  }
+}
+
+TEST_F(RobotTest, GetVelocityLimitNoDefaults) {
+  ASSERT_NO_THROW(TestRobot(urdf, root_link, tip_links, weights, {}));
+  TestRobot my_robot(urdf, root_link, tip_links, weights, {});
+  for (auto const & joint_name: moveable_joints_names)
+  {
+    ASSERT_NO_THROW(my_robot.test_get_velocity_limit(joint_name));
+    EXPECT_DOUBLE_EQ(my_robot.test_get_velocity_limit(joint_name), urdf.getJoint(joint_name)->limits->velocity);
+  }
+}
+
+TEST_F(RobotTest, GetWeight) {
+  ASSERT_NO_THROW(TestRobot(urdf, root_link, tip_links, weights, thresholds));
+  TestRobot my_robot(urdf, root_link, tip_links, weights, thresholds);
+  for (auto const &joint_name: moveable_joints_names)
+  {
+    ASSERT_NO_THROW(my_robot.test_get_weight(joint_name));
+    if (joint_name.compare("torso_lift_joint") == 0)
+      EXPECT_DOUBLE_EQ(weights.find(joint_name)->second, my_robot.test_get_weight(joint_name));
+    else
+      EXPECT_DOUBLE_EQ(weights.find(Robot::default_joint_weight)->second, my_robot.test_get_weight(joint_name));
+  }
+}
+
+TEST_F(RobotTest, GetWeightNoDefaults) {
+  EXPECT_ANY_THROW(TestRobot(urdf, root_link, tip_links, {}, thresholds));
 }

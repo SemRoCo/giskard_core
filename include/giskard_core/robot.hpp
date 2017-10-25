@@ -121,6 +121,7 @@ namespace giskard_core
         return joint_map_.size();
       }
 
+      static const std::string default_joint_weight, default_joint_velocity;
     protected:
       urdf::Model robot_model_;
       std::map<std::string, std::string> parent_link_tree_;
@@ -164,28 +165,15 @@ namespace giskard_core
             ControllableConstraintSpecPtr spec(new ControllableConstraintSpec);
             spec->name_ = moveable_joints_names[i];
             spec->input_number_ = get_joint(spec->name_)->get_input_num();
-            if (weights_.find(spec->name_) != weights_.end())
-              spec->weight_ = double_const_spec(weights_.find(spec->name_)->second);
-            else if (weights_.find("default-joint-weight") != weights_.end()) // TODO: get that string from somewhere
-              spec->weight_ = double_const_spec(weights_.find("default-joint-weight")->second);
-            else
-              throw std::runtime_error("Could not find weight for joint '" + spec->name_ + "'.");
-            if (thresholds_.find(spec->name_) != thresholds_.end())
-            {
-              spec->lower_ = double_const_spec(thresholds_.find(spec->name_)->second);
-              spec->upper_ = double_const_spec(thresholds_.find(spec->name_)->second);
-            }
-            else if (thresholds_.find("default-joint-velocity") != thresholds_.end()) // TODO: get that string from somewhere
-            {
-              spec->lower_ = double_const_spec(thresholds_.find("default-joint-velocity")->second);
-              spec->upper_ = double_const_spec(thresholds_.find("default-joint-velocity")->second);
-            }
-            else
-              throw std::runtime_error("Could not find velocity threshodl for joint '" + spec->name_ + "'.");
+            spec->weight_ = double_const_spec(get_weight(spec->name_));
+            double vel_limit = get_velocity_limit(spec->name_);
+            spec->lower_ = double_const_spec(-vel_limit);
+            spec->upper_ = double_const_spec(vel_limit);
 
             controllable_map_.insert(std::pair<std::string, ControllableConstraintSpecPtr>(spec->name_, spec));
           }
 
+        // create and new hard constraints
         for (size_t i=0; i<moveable_joints_names.size(); ++i)
           if (hard_map_.find(moveable_joints_names[i]) == hard_map_.end())
           {
@@ -270,7 +258,41 @@ namespace giskard_core
 
         return frame_specs;
       }
+
+      double get_velocity_limit(const std::string& joint_name) const
+      {
+        // TODO: guard against broken robot model; probably best to write some convenience getters for robot_model_
+        double urdf_limit = robot_model_.getJoint(joint_name)->limits->velocity;
+        double result = urdf_limit;
+        if (thresholds_.count(joint_name) != 0)
+          result = thresholds_.find(joint_name)->second;
+        else if (thresholds_.count(default_joint_velocity) != 0)
+          result = thresholds_.find(default_joint_velocity)->second;
+
+        if (result > urdf_limit)
+          throw std::runtime_error("Came up with velocity limit faster than limit from URDF for joint '" + joint_name + "'.");
+
+        return result;
+      }
+
+      double get_weight(const std::string& joint_name) const
+      {
+        double result = 0.0;
+        if (weights_.find(joint_name) != weights_.end())
+          result = weights_.find(joint_name)->second;
+        else if (weights_.find(default_joint_weight) != weights_.end())
+          result = weights_.find(default_joint_weight)->second;
+        else
+          throw std::runtime_error("Could not find weight for joint '" + joint_name + "'.");
+
+        if (result < 0)
+          throw std::runtime_error("Came up with a joint weight below zero for joint '" + joint_name + "'.");
+        return result;
+      }
   };
+
+  const std::string Robot::default_joint_velocity = "default-joint-velocity";
+  const std::string Robot::default_joint_weight = "default-joint-weight";
 }
 
 #endif // GISKARD_CORE_ROBOT_HPP
