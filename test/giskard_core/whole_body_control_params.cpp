@@ -46,11 +46,10 @@ protected:
     std::map<std::string, double> weights, thresholds;
     std::vector<std::string> tip_links;
     std::string root_link;
-    Robot robot;
 
 };
 
-TEST_F(WholeBodyControlParams, NoControl)
+TEST_F(WholeBodyControlParamsTest, NoControl)
 {
-  ASSERT_NO_THROW(generate_spec(robot, {}));
+  ASSERT_NO_THROW(Robot(urdf, root_link, tip_links, weights, thresholds));
 }

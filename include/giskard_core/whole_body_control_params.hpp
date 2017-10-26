@@ -36,11 +36,63 @@ namespace giskard_core
     class CartPosControlParams : public ControlParams {};
     class CartRotControlParams : public ControlParams {};
 
-    inline QPControllerSpec generate_spec(const Robot& robot, const std::map<std::string, ControlParams>& control_params)
+    class WholeBodyControlParams
     {
-      // TODO: implement me
-      return QPControllerSpec();
-    }
+    public:
+      urdf::Model& robot_model;
+      std::string root_link;
+      std::map<std::string, double> joint_weights;
+      std::map<std::string, double> joint_thresholds;
+      std::map<std::string, ControlParams>& control_params);
+
+      Robot create_robot() const
+      {
+        std::vector<std::string> tip_links;
+        for(auto const & pair: control_params)
+          tip_links.push_back(pair.second.tip_link);
+        return Robot(robot_model, root_link, tip_links, joint_weights, joint_thresholds);
+      }
+    };
+
+    class ControllerSpecGenerator
+    {
+      public:
+        ControllerSpecGenerator(const WholeBodyControlParams& params) :
+          robot_model_( params.create_robot() ), params_ (params)
+        {
+          init();
+        }
+
+        const std::vector<DoubleInputSpecPtr>& get_goal_inputs(const std::string& control_name) const
+        {
+          if (goal_inputs_.count(control_name) = 0)
+            throw std::runtime_error("Could not find goal inputs for control with name '" + control_name + "'.");
+
+          return goal_inputs_->find(control_name)->second;
+        }
+
+        const QPControllerSpecSpec& generate_spec() const
+        {
+          return qp_spec_;
+        }
+
+        const std::map<std::string, ControlParam>& get_control_params() const
+        {
+          return control_params_;
+        }
+
+      protected:
+        Robot robot_;
+        WholeBodyControlParams params_;
+        QPControllerSpec qp_spec_;
+        std::map<std::string, std::vector<DoubleInputSpecPtr> > goal_inputs_;
+
+        void init()
+        {
+            // TODO: implement me
+        }
+    };
+
 }
 
 #endif //GISKARD_CORE_WHOLE_BODY_CONTROL_PARAMS_HPP
