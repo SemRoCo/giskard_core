@@ -192,24 +192,6 @@ namespace giskard_core
         return vec3;
       }
   };
-
-  static YAML::Node extract_expression(const KDL::Chain& chain)
-  {
-    // TODO: remove me, because I'm deprecated
-    return ExpressionExtractor::extract(chain);
-  }
-
-  static YAML::Node extract_expression(const std::string& start_link, const std::string& end_link, const KDL::Tree& robot_tree)
-  {
-    // TODO: remove me, because I'm deprecated
-    return ExpressionExtractor::extract(start_link, end_link, robot_tree);
-  }
-
-  static YAML::Node extract_expression(const std::string& start_link, const std::string& end_link, const std::string& urdf_path)
-  {
-    // TODO: remove me, because I'm deprecated
-    return ExpressionExtractor::extract(start_link, end_link, urdf_path);
-  }
 }
 
 #endif // GISKARD_CORE_EXPRESSION_EXTRACTION_HPP
