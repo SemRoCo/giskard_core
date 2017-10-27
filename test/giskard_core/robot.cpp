@@ -33,18 +33,12 @@ class TestRobot : public Robot
           const std::map<std::string, double>& thresholds) :
        Robot(robot_model, root_link, tip_links, weights, thresholds) {}
 
-     std::vector<std::string> test_chain_joint_names(const std::string& root, 
-        const std::string& tip, bool add_fixed_joints=true)
-    {
-      return chain_joint_names(root, tip, add_fixed_joints);
-    }
-
-    const std::map<std::string, ControllableConstraintSpecPtr>& get_controllables_map() const
+    const std::map<std::string, ControllableConstraintSpec>& get_controllables_map() const
     {
       return controllable_map_;
     }
 
-    const std::map<std::string, HardConstraintSpecPtr>& get_hard_constraints_map() const
+    const std::map<std::string, HardConstraintSpec>& get_hard_constraints_map() const
     {
       return hard_map_;
     }
@@ -179,14 +173,14 @@ TEST_F(RobotTest, ChainJointNames)
 {
   ASSERT_NO_THROW(TestRobot(urdf, root_link, empty_tip_links, weights, thresholds));
   TestRobot robot(urdf, root_link, empty_tip_links, weights, thresholds);
-  ASSERT_NO_THROW(robot.test_chain_joint_names(root_link, tip_link, false));
+  ASSERT_NO_THROW(robot.chain_joint_names(root_link, tip_link, false));
   std::vector<std::string> joint_names = 
-    robot.test_chain_joint_names(root_link, tip_link, false);
+    robot.chain_joint_names(root_link, tip_link, false);
   EXPECT_EQ(moveable_joints_names.size(), joint_names.size());
   for (size_t i=0; i<joint_names.size(); ++i)
     EXPECT_STREQ(moveable_joints_names[i].c_str(), joint_names[i].c_str());
-  ASSERT_NO_THROW(robot.test_chain_joint_names(root_link, tip_link, true));
-  joint_names = robot.test_chain_joint_names(root_link, tip_link, true);
+  ASSERT_NO_THROW(robot.chain_joint_names(root_link, tip_link, true));
+  joint_names = robot.chain_joint_names(root_link, tip_link, true);
   EXPECT_EQ(all_joint_names.size(), joint_names.size());
   for (size_t i=0; i<joint_names.size(); ++i)
     EXPECT_STREQ(all_joint_names[i].c_str(), joint_names[i].c_str());
@@ -251,11 +245,12 @@ TEST_F(RobotTest, GetHardConstraints)
   for (auto const & pair: my_robot.get_hard_constraints_map())
   {
     ASSERT_NO_THROW(my_robot.get_joint(pair.first));
-    ASSERT_TRUE(my_robot.get_joint(pair.first)->equals(*(pair.second->expression_)));
+    // TODO: refactor this into HardConstraintSpec::equals(other)
+    ASSERT_TRUE(my_robot.get_joint(pair.first)->equals(*(pair.second.expression_)));
     EXPECT_TRUE(double_sub_spec({double_const_spec(urdf.getJoint(pair.first)->limits->lower),
-                                 my_robot.get_joint(pair.first)})->equals(*(pair.second->lower_)));
+                                 my_robot.get_joint(pair.first)})->equals(*(pair.second.lower_)));
     EXPECT_TRUE(double_sub_spec({double_const_spec(urdf.getJoint(pair.first)->limits->upper),
-                                 my_robot.get_joint(pair.first)})->equals(*(pair.second->upper_)));
+                                 my_robot.get_joint(pair.first)})->equals(*(pair.second.upper_)));
   }
 }
 
@@ -271,13 +266,14 @@ TEST_F(RobotTest, GetControllableConstraints)
   for (auto const & pair: my_robot.get_controllables_map())
   {
     ASSERT_NO_THROW(my_robot.get_joint(pair.first));
-    EXPECT_STREQ(pair.first.c_str(), pair.second->name_.c_str());
-    EXPECT_EQ(my_robot.get_joint(pair.first)->get_input_num(), pair.second->input_number_);
+    // TODO: refactor this into ControllableConstraintSpec::equals(other)
+    EXPECT_STREQ(pair.first.c_str(), pair.second.name_.c_str());
+    EXPECT_EQ(my_robot.get_joint(pair.first)->get_input_num(), pair.second.input_number_);
     ASSERT_NO_THROW(my_robot.test_get_velocity_limit(pair.first));
     double vel_limit = my_robot.test_get_velocity_limit(pair.first);
-    EXPECT_TRUE(double_const_spec(-vel_limit)->equals(*(pair.second->lower_)));
-    EXPECT_TRUE(double_const_spec(vel_limit)->equals(*(pair.second->upper_)));
-    EXPECT_TRUE(double_const_spec(my_robot.test_get_weight(pair.first))->equals(*(pair.second->weight_)));
+    EXPECT_TRUE(double_const_spec(-vel_limit)->equals(*(pair.second.lower_)));
+    EXPECT_TRUE(double_const_spec(vel_limit)->equals(*(pair.second.upper_)));
+    EXPECT_TRUE(double_const_spec(my_robot.test_get_weight(pair.first))->equals(*(pair.second.weight_)));
   }
 }
 
@@ -292,7 +288,7 @@ TEST_F(RobotTest, GetVelocityLimit) {
     if (joint_name.compare("torso_lift_joint") == 0)
       EXPECT_DOUBLE_EQ(thresholds.find(joint_name)->second, my_robot.test_get_velocity_limit(joint_name));
     else
-      EXPECT_DOUBLE_EQ(thresholds.find(Robot::default_joint_velocity)->second, my_robot.test_get_velocity_limit(joint_name));
+      EXPECT_DOUBLE_EQ(thresholds.find(Robot::default_joint_velocity_key())->second, my_robot.test_get_velocity_limit(joint_name));
 
     ASSERT_NO_THROW(no_thresholds_robot.test_get_velocity_limit(joint_name));
     EXPECT_DOUBLE_EQ(no_thresholds_robot.test_get_velocity_limit(joint_name), urdf.getJoint(joint_name)->limits->velocity);
@@ -318,7 +314,7 @@ TEST_F(RobotTest, GetWeight) {
     if (joint_name.compare("torso_lift_joint") == 0)
       EXPECT_DOUBLE_EQ(weights.find(joint_name)->second, my_robot.test_get_weight(joint_name));
     else
-      EXPECT_DOUBLE_EQ(weights.find(Robot::default_joint_weight)->second, my_robot.test_get_weight(joint_name));
+      EXPECT_DOUBLE_EQ(weights.find(Robot::default_joint_weight_key())->second, my_robot.test_get_weight(joint_name));
   }
 }
 

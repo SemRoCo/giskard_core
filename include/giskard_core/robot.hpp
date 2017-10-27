@@ -78,23 +78,22 @@ namespace giskard_core
         return root_link_;
       }
 
-      std::vector<ControllableConstraintSpecPtr> get_controllable_constraints() const
+      std::vector<ControllableConstraintSpec> get_controllable_constraints() const
       {
-        std::vector<ControllableConstraintSpecPtr> specs;
+        std::vector<ControllableConstraintSpec> specs;
 
-        for (std::map<std::string, ControllableConstraintSpecPtr>::const_iterator it=controllable_map_.begin();
-             it != controllable_map_.end(); ++it)
-          specs.push_back(it->second);
+        for (auto const & pair: controllable_map_)
+          specs.push_back(pair.second);
 
         return specs;
       }
 
-      std::vector<HardConstraintSpecPtr> get_hard_constraints() const
+      std::vector<HardConstraintSpec> get_hard_constraints() const
       {
-        std::vector<HardConstraintSpecPtr> specs;
+        std::vector<HardConstraintSpec> specs;
 
-        for (std::map<std::string, HardConstraintSpecPtr>::const_iterator it=hard_map_.begin(); it != hard_map_.end(); ++it)
-          specs.push_back(it->second);
+        for (auto const & pair: hard_map_)
+          specs.push_back(pair.second);
 
         return specs;
       }
@@ -122,13 +121,56 @@ namespace giskard_core
         return joint_map_.size();
       }
 
-      static const std::string default_joint_weight, default_joint_velocity;
+      static std::string& default_joint_weight_key()
+      {
+        static std::string result{"default-joint-weight"};
+        return result;
+      }
+
+      static std::string& default_joint_velocity_key()
+      {
+        static std::string result{"default-joint-velocity"};
+        return result;
+      }
+
+      std::vector<std::string> chain_joint_names(const std::string& root, const std::string& tip, bool add_fixed_joints=true) const
+      {
+        std::vector<std::string> chain_joints;
+
+        std::string current_link_name = tip;
+        while (current_link_name.compare(root) != 0)
+        {
+          if (robot_model_.links_.find(current_link_name) == robot_model_.links_.end() )
+            throw std::runtime_error("Could not find link with name '" + current_link_name + "'.");
+
+          if (!robot_model_.links_.find(current_link_name)->second)
+            throw std::runtime_error("Link associated with name '" + current_link_name + "' is an empty shared_ptr.");
+
+          urdf::JointSharedPtr parent_joint =
+            robot_model_.links_.find(current_link_name)->second->parent_joint;
+
+          if (!parent_joint)
+            throw std::runtime_error("Parent joint of link with name '" + current_link_name + "' is an empty shared_ptr.");
+
+          if (add_fixed_joints || (parent_joint->type != urdf::Joint::FIXED))
+            chain_joints.push_back(parent_joint->name);
+
+          if (parent_link_tree_.find(current_link_name) == parent_link_tree_.end())
+            throw std::runtime_error("Could not find parent link of link with name '" + current_link_name + "'.");
+
+          current_link_name = parent_link_tree_.find(current_link_name)->second;
+        }
+
+        std::reverse(chain_joints.begin(), chain_joints.end());
+        return chain_joints;
+      }
+
     protected:
       urdf::Model robot_model_;
       std::map<std::string, std::string> parent_link_tree_;
       std::map<std::string, FrameSpecPtr> fk_map_;
-      std::map<std::string, ControllableConstraintSpecPtr> controllable_map_; 
-      std::map<std::string, HardConstraintSpecPtr> hard_map_; 
+      std::map<std::string, ControllableConstraintSpec> controllable_map_;
+      std::map<std::string, HardConstraintSpec> hard_map_;
       std::map<std::string, DoubleInputSpecPtr> joint_map_;
       std::map<std::string, double> weights_;
       std::map<std::string, double> thresholds_;
@@ -163,15 +205,15 @@ namespace giskard_core
         for (size_t i=0; i<moveable_joints_names.size(); ++i)
           if (controllable_map_.find(moveable_joints_names[i]) == controllable_map_.end())
           {
-            ControllableConstraintSpecPtr spec(new ControllableConstraintSpec);
-            spec->name_ = moveable_joints_names[i];
-            spec->input_number_ = get_joint(spec->name_)->get_input_num();
-            spec->weight_ = double_const_spec(get_weight(spec->name_));
-            double vel_limit = get_velocity_limit(spec->name_);
-            spec->lower_ = double_const_spec(-vel_limit);
-            spec->upper_ = double_const_spec(vel_limit);
+            ControllableConstraintSpec spec;
+            spec.name_ = moveable_joints_names[i];
+            spec.input_number_ = get_joint(spec.name_)->get_input_num();
+            spec.weight_ = double_const_spec(get_weight(spec.name_));
+            double vel_limit = get_velocity_limit(spec.name_);
+            spec.lower_ = double_const_spec(-vel_limit);
+            spec.upper_ = double_const_spec(vel_limit);
 
-            controllable_map_.insert(std::pair<std::string, ControllableConstraintSpecPtr>(spec->name_, spec));
+            controllable_map_.insert(std::make_pair(spec.name_, spec));
           }
 
         // create and new hard constraints
@@ -183,45 +225,13 @@ namespace giskard_core
             urdf::JointConstSharedPtr joint = robot_model_.joints_.find(moveable_joints_names[i])->second;
             if ( joint->type == urdf::Joint::REVOLUTE || joint->type == urdf::Joint::PRISMATIC )
             {
-              HardConstraintSpecPtr spec(new HardConstraintSpec);
-              spec->expression_ = get_joint(moveable_joints_names[i]);
-              spec->lower_ = double_sub_spec({double_const_spec(joint->limits->lower), spec->expression_});
-              spec->upper_ = double_sub_spec({double_const_spec(joint->limits->upper), spec->expression_});
+              HardConstraintSpec spec;
+              spec.expression_ = get_joint(moveable_joints_names[i]);
+              spec.lower_ = double_sub_spec({double_const_spec(joint->limits->lower), spec.expression_});
+              spec.upper_ = double_sub_spec({double_const_spec(joint->limits->upper), spec.expression_});
               hard_map_.insert(std::make_pair(moveable_joints_names[i], spec));
             }
           }
-      }
-
-      std::vector<std::string> chain_joint_names(const std::string& root, const std::string& tip, bool add_fixed_joints=true)
-      {
-        std::vector<std::string> chain_joints;
-
-        std::string current_link_name = tip;
-        while (current_link_name.compare(root) != 0)
-        {
-          if (robot_model_.links_.find(current_link_name) == robot_model_.links_.end() )
-            throw std::runtime_error("Could not find link with name '" + current_link_name + "'.");
-
-          if (!robot_model_.links_.find(current_link_name)->second)
-            throw std::runtime_error("Link associated with name '" + current_link_name + "' is an empty shared_ptr.");
-
-          urdf::JointSharedPtr parent_joint =
-            robot_model_.links_.find(current_link_name)->second->parent_joint;
-
-          if (!parent_joint)
-            throw std::runtime_error("Parent joint of link with name '" + current_link_name + "' is an empty shared_ptr.");
-
-          if (add_fixed_joints || (parent_joint->type != urdf::Joint::FIXED))
-            chain_joints.push_back(parent_joint->name);
-
-          if (parent_link_tree_.find(current_link_name) == parent_link_tree_.end())
-            throw std::runtime_error("Could not find parent link of link with name '" + current_link_name + "'.");
-
-          current_link_name = parent_link_tree_.find(current_link_name)->second;
-        }
-
-        std::reverse(chain_joints.begin(), chain_joints.end());
-        return chain_joints;
       }
 
       std::vector<FrameSpecPtr> extract_joint_transforms(urdf::JointSharedPtr& joint) 
@@ -251,10 +261,8 @@ namespace giskard_core
             break;
           case urdf::Joint::PLANAR: case urdf::Joint::FLOATING: case urdf::Joint::UNKNOWN:
             throw std::runtime_error("Joint with name '" + joint->name + "' has unsupported type.");
-            break;
           default:
             throw std::runtime_error("Joint with name '" + joint->name + "' has unmodeled type.");
-            break;
         }
 
         return frame_specs;
@@ -267,8 +275,8 @@ namespace giskard_core
         double result = urdf_limit;
         if (thresholds_.count(joint_name) != 0)
           result = thresholds_.find(joint_name)->second;
-        else if (thresholds_.count(default_joint_velocity) != 0)
-          result = thresholds_.find(default_joint_velocity)->second;
+        else if (thresholds_.count(default_joint_velocity_key()) != 0)
+          result = thresholds_.find(default_joint_velocity_key())->second;
 
         if (result > urdf_limit)
           throw std::runtime_error("Came up with velocity limit faster than limit from URDF for joint '" + joint_name + "'.");
@@ -281,8 +289,8 @@ namespace giskard_core
         double result = 0.0;
         if (weights_.find(joint_name) != weights_.end())
           result = weights_.find(joint_name)->second;
-        else if (weights_.find(default_joint_weight) != weights_.end())
-          result = weights_.find(default_joint_weight)->second;
+        else if (weights_.find(default_joint_weight_key()) != weights_.end())
+          result = weights_.find(default_joint_weight_key())->second;
         else
           throw std::runtime_error("Could not find weight for joint '" + joint_name + "'.");
 
@@ -292,8 +300,6 @@ namespace giskard_core
       }
   };
 
-  const std::string Robot::default_joint_velocity = "default-joint-velocity";
-  const std::string Robot::default_joint_weight = "default-joint-weight";
 }
 
 #endif // GISKARD_CORE_ROBOT_HPP
