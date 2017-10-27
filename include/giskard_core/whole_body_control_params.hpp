@@ -27,69 +27,132 @@ namespace giskard_core
     class ControlParams
     {
       public:
+        // TODO: add name?
         double p_gain, threshold, weight;
         bool threshold_error;
         std::string root_link, tip_link;
+        // TODO: add reference frame
+        enum ControlType {UNKNOWN, JOINT, CARTPOS, CARTROT};
+        ControlType type;
     };
-
-    class JointControlParams : public ControlParams {};
-    class CartPosControlParams : public ControlParams {};
-    class CartRotControlParams : public ControlParams {};
 
     class WholeBodyControlParams
     {
-    public:
-      urdf::Model& robot_model;
-      std::string root_link;
-      std::map<std::string, double> joint_weights;
-      std::map<std::string, double> joint_thresholds;
-      std::map<std::string, ControlParams>& control_params);
+      public:
+        WholeBodyControlParams(const urdf::Model& robot_model, const std::string& root_link,
+            const std::map<std::string, double>& joint_weights, const std::map<std::string, double>& joint_thresholds,
+            const std::map<std::string, ControlParams>& control_params) :
+          robot_model_(robot_model), root_link_(root_link), joint_weights_(joint_weights),
+          joint_thresholds_(joint_thresholds), control_params_(control_params) {}
 
-      Robot create_robot() const
-      {
-        std::vector<std::string> tip_links;
-        for(auto const & pair: control_params)
-          tip_links.push_back(pair.second.tip_link);
-        return Robot(robot_model, root_link, tip_links, joint_weights, joint_thresholds);
-      }
+        urdf::Model robot_model_;
+        std::string root_link_;
+        std::map<std::string, double> joint_weights_;
+        std::map<std::string, double> joint_thresholds_;
+        std::map<std::string, ControlParams> control_params_;
+
+        Robot create_robot() const
+        {
+          std::vector<std::string> tip_links;
+          for(auto const & pair: control_params_)
+            tip_links.push_back(pair.second.tip_link);
+          return Robot(robot_model_, root_link_, tip_links, joint_weights_, joint_thresholds_);
+        }
     };
 
     class ControllerSpecGenerator
     {
       public:
         ControllerSpecGenerator(const WholeBodyControlParams& params) :
-          robot_model_( params.create_robot() ), params_ (params)
+          robot_( params.create_robot() ), params_( params )
         {
           init();
         }
 
         const std::vector<DoubleInputSpecPtr>& get_goal_inputs(const std::string& control_name) const
         {
-          if (goal_inputs_.count(control_name) = 0)
+          if (goal_inputs_.count(control_name) == 0)
             throw std::runtime_error("Could not find goal inputs for control with name '" + control_name + "'.");
 
-          return goal_inputs_->find(control_name)->second;
+          return goal_inputs_.find(control_name)->second;
         }
 
-        const QPControllerSpecSpec& generate_spec() const
+        const QPControllerSpec& get_spec() const
         {
           return qp_spec_;
         }
 
-        const std::map<std::string, ControlParam>& get_control_params() const
+        const WholeBodyControlParams& get_control_params() const
         {
-          return control_params_;
+          return params_;
         }
 
       protected:
         Robot robot_;
         WholeBodyControlParams params_;
         QPControllerSpec qp_spec_;
+        // TODO: refactor this into map<string, map<string, DoubleInputSpecPtr> > by providing internal function to map to unique names
         std::map<std::string, std::vector<DoubleInputSpecPtr> > goal_inputs_;
 
         void init()
         {
-            // TODO: implement me
+          qp_spec_.scope_.clear();
+          init_goal_inputs();
+          init_soft_constraints();
+          qp_spec_.controllable_constraints_ = robot_.get_controllable_constraints();
+          qp_spec_.hard_constraints_ = robot_.get_hard_constraints();
+        }
+
+        void init_goal_inputs()
+        {
+          for (auto const & control : params_.control_params_)
+            goal_inputs_.insert(std::make_pair(control.first,
+                get_goal_inputs(control.second, robot_.get_number_of_joints() + goal_inputs_.size())));
+        }
+
+        // TODO: turns this into a map
+        std::vector<DoubleInputSpecPtr> get_goal_inputs(const ControlParams& params, size_t start_index) const
+        {
+          std::vector<DoubleInputSpecPtr> result;
+          switch(params.type)
+          {
+            case ControlParams::ControlType::JOINT:
+              for (auto const & joint_name : robot_.chain_joint_names(params.root_link, params.tip_link))
+                // TODO: use name of controller
+                result.push_back(input(start_index));
+              break;
+            //TODO: complete me
+            default:
+              throw std::runtime_error("Asked to create inputs for unsupported control type");
+          }
+
+          return result;
+        }
+
+        void init_soft_constraints()
+        {
+          for (auto const & control : params_.control_params_)
+          {
+            std::vector<SoftConstraintSpec> new_soft_constraints = get_soft_constraints(control);
+            qp_spec_.soft_constraints_.insert(qp_spec_.soft_constraints_.end(),
+                new_soft_constraints.begin(), new_soft_constraints.end());
+          }
+        }
+
+        std::vector<SoftConstraintSpec> get_soft_constraints(const std::pair<std::string, ControlParams>& params) const
+        {
+          std::vector<SoftConstraintSpec> result;
+          switch (params.second.type)
+          {
+            case ControlParams::ControlType::JOINT:
+              for (auto const & joint_name: robot_.chain_joint_names(params.second.root_link, params.second.tip_link))
+              {
+                  std::cout << "TODO\n";
+              }
+          }
+
+            // TODO: complete me
+            return {};
         }
     };
 
