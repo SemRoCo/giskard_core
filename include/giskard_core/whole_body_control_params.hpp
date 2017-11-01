@@ -27,7 +27,6 @@ namespace giskard_core
     class ControlParams
     {
       public:
-        // TODO: add name?
         double p_gain, threshold, weight;
         bool threshold_error;
         std::string root_link, tip_link;
@@ -69,7 +68,7 @@ namespace giskard_core
           init();
         }
 
-        const std::vector<DoubleInputSpecPtr>& get_goal_inputs(const std::string& control_name) const
+        const std::map<std::string, DoubleInputSpecPtr>& get_goal_inputs(const std::string& control_name) const
         {
           if (goal_inputs_.count(control_name) == 0)
             throw std::runtime_error("Could not find goal inputs for control with name '" + control_name + "'.");
@@ -91,8 +90,7 @@ namespace giskard_core
         Robot robot_;
         WholeBodyControlParams params_;
         QPControllerSpec qp_spec_;
-        // TODO: refactor this into map<string, map<string, DoubleInputSpecPtr> > by providing internal function to map to unique names
-        std::map<std::string, std::vector<DoubleInputSpecPtr> > goal_inputs_;
+        std::map<std::string, std::map<std::string, DoubleInputSpecPtr> > goal_inputs_;
 
         void init()
         {
@@ -110,18 +108,16 @@ namespace giskard_core
                 get_goal_inputs(control.second, robot_.get_number_of_joints() + goal_inputs_.size())));
         }
 
-        // TODO: turns this into a map
-        std::vector<DoubleInputSpecPtr> get_goal_inputs(const ControlParams& params, size_t start_index) const
+        std::map<std::string, DoubleInputSpecPtr> get_goal_inputs(const ControlParams& params, size_t start_index) const
         {
-          std::vector<DoubleInputSpecPtr> result;
+          std::map<std::string, DoubleInputSpecPtr> result;
           switch(params.type)
           {
             case ControlParams::ControlType::JOINT:
               for (auto const & joint_name : robot_.chain_joint_names(params.root_link, params.tip_link))
-                // TODO: use name of controller
-                result.push_back(input(start_index));
+                result.insert(std::make_pair(joint_name, input(start_index)));
               break;
-            //TODO: complete me
+            //TODO: complete me for other cases
             default:
               throw std::runtime_error("Asked to create inputs for unsupported control type");
           }
@@ -141,18 +137,40 @@ namespace giskard_core
 
         std::vector<SoftConstraintSpec> get_soft_constraints(const std::pair<std::string, ControlParams>& params) const
         {
-          std::vector<SoftConstraintSpec> result;
+          std::vector<SoftConstraintSpec> specs;
           switch (params.second.type)
           {
             case ControlParams::ControlType::JOINT:
-              for (auto const & joint_name: robot_.chain_joint_names(params.second.root_link, params.second.tip_link))
+              for (auto const & joint_name: robot_.chain_joint_names(params.second.root_link, params.second.tip_link, false))
               {
-                  std::cout << "TODO\n";
+                  SoftConstraintSpec spec;
+                  DoubleInputSpecPtr goal_spec = get_goal_inputs(params.first).find(joint_name)->second;
+                  DoubleInputSpecPtr joint_spec = robot_.get_joint(joint_name);
+                  spec.lower_ = control_spec(goal_spec, joint_spec, params.second, false);
+                  spec.upper_ = spec.lower_;
+                  spec.expression_ = joint_spec;
+                  spec.weight_ = double_const_spec(params.second.weight);
+                  spec.name_ = params.first + "_" + joint_name;
+                  specs.push_back(spec);
               }
+              break;
+            // TODO: cover other cases
+            default:
+              throw std::runtime_error("Could not generate soft constraint for unknown control type for control '" + params.first + "'.");
           }
 
-            // TODO: complete me
-            return {};
+          return specs;
+        }
+
+        DoubleSpecPtr control_spec(const DoubleSpecPtr& goal, const DoubleSpecPtr& state, const ControlParams& params,
+            bool limitless) const
+        {
+          // TODO: support limitless joints
+          DoubleSpecPtr error_exp = double_sub_spec({goal, state});
+          DoubleSpecPtr control_exp = double_mul_spec({double_const_spec(params.p_gain), error_exp});
+          if (params.threshold_error)
+            throw std::runtime_error("Thresholding not implemented.");
+          return control_exp;
         }
     };
 

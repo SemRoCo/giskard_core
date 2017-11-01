@@ -245,13 +245,13 @@ TEST_F(RobotTest, GetHardConstraints)
   for (auto const & pair: my_robot.get_hard_constraints_map())
   {
     ASSERT_NO_THROW(my_robot.get_joint(pair.first));
-    // TODO: refactor this into HardConstraintSpec::equals(other)
     ASSERT_TRUE(my_robot.get_joint(pair.first)->equals(*(pair.second.expression_)));
     EXPECT_TRUE(double_sub_spec({double_const_spec(urdf.getJoint(pair.first)->limits->lower),
                                  my_robot.get_joint(pair.first)})->equals(*(pair.second.lower_)));
     EXPECT_TRUE(double_sub_spec({double_const_spec(urdf.getJoint(pair.first)->limits->upper),
                                  my_robot.get_joint(pair.first)})->equals(*(pair.second.upper_)));
   }
+  // TODO: compare get_hard_constraints() and get_hard_constraints_map() this using HardConstraintSpec::equals(other)
 }
 
 TEST_F(RobotTest, GetControllableConstraints)
@@ -266,7 +266,6 @@ TEST_F(RobotTest, GetControllableConstraints)
   for (auto const & pair: my_robot.get_controllables_map())
   {
     ASSERT_NO_THROW(my_robot.get_joint(pair.first));
-    // TODO: refactor this into ControllableConstraintSpec::equals(other)
     EXPECT_STREQ(pair.first.c_str(), pair.second.name_.c_str());
     EXPECT_EQ(my_robot.get_joint(pair.first)->get_input_num(), pair.second.input_number_);
     ASSERT_NO_THROW(my_robot.test_get_velocity_limit(pair.first));
@@ -275,6 +274,7 @@ TEST_F(RobotTest, GetControllableConstraints)
     EXPECT_TRUE(double_const_spec(vel_limit)->equals(*(pair.second.upper_)));
     EXPECT_TRUE(double_const_spec(my_robot.test_get_weight(pair.first))->equals(*(pair.second.weight_)));
   }
+  // TODO: compare get_controllable_constraints() and get_controllables_map() using ControllableConstraintSpec::equals(other)
 }
 
 TEST_F(RobotTest, GetVelocityLimit) {
