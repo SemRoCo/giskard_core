@@ -265,6 +265,14 @@ namespace giskard_core
   class DoubleAdditionSpec: public DoubleSpec
   {
     public:
+      DoubleAdditionSpec() :
+        inputs_( {double_const_spec()} ) {}
+      DoubleAdditionSpec(const DoubleAdditionSpec& other) :
+        inputs_( other.get_inputs() ) {}
+      DoubleAdditionSpec(const std::vector<DoubleSpecPtr>& inputs) :
+        inputs_( inputs ) {}
+      ~DoubleAdditionSpec() {}
+
       const std::vector<DoubleSpecPtr>& get_inputs() const
       {
         return inputs_;
@@ -319,6 +327,11 @@ namespace giskard_core
    };
 
   typedef typename boost::shared_ptr<DoubleAdditionSpec> DoubleAdditionSpecPtr;
+
+  inline DoubleAdditionSpecPtr double_add_spec(const std::vector<DoubleSpecPtr>& inputs = {double_const_spec()})
+  {
+    return DoubleAdditionSpecPtr(new DoubleAdditionSpec(inputs));
+  }
 
   class DoubleSubtractionSpec: public DoubleSpec
   {
