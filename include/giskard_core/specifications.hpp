@@ -820,6 +820,14 @@ namespace giskard_core
   class DoubleIfSpec: public DoubleSpec
   {
     public:
+      DoubleIfSpec() :
+        condition_( double_const_spec() ), if_( double_const_spec() ), else_( double_const_spec() ) {}
+      DoubleIfSpec(const DoubleIfSpec& other) :
+        condition_( other.get_condition()), if_( other.get_if() ), else_( other.get_else() ) {}
+      DoubleIfSpec(const DoubleSpecPtr& condition, const DoubleSpecPtr& new_if, const DoubleSpecPtr& new_else ) :
+        condition_( condition ), if_( new_if ), else_( new_else ) {}
+      ~DoubleIfSpec() {}
+
       const DoubleSpecPtr& get_condition() const
       {
         return condition_;
@@ -874,6 +882,12 @@ namespace giskard_core
   };
 
   typedef typename boost::shared_ptr<DoubleIfSpec> DoubleIfSpecPtr;
+
+  inline DoubleSpecPtr double_if(const DoubleSpecPtr& condition_ =
+      double_const_spec(), const DoubleSpecPtr& if_ = double_const_spec(), const DoubleSpecPtr& else_ = double_const_spec())
+  {
+    return DoubleIfSpecPtr(new DoubleIfSpec(condition_, if_, else_));
+  }
 
   class FmodSpec: public DoubleSpec
   {
