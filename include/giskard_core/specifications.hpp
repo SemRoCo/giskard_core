@@ -892,6 +892,14 @@ namespace giskard_core
   class FmodSpec: public DoubleSpec
   {
     public:
+      FmodSpec() :
+        nominator_( double_const_spec() ), denominator_( double_const_spec() ) {}
+      FmodSpec(const FmodSpec& other) :
+        nominator_( other.get_nominator()), denominator_( other.get_denominator() ) {}
+      FmodSpec(const DoubleSpecPtr& nominator, const DoubleSpecPtr& denominator) :
+        nominator_( nominator ), denominator_( denominator ) {}
+      ~FmodSpec() {}
+
       const DoubleSpecPtr& get_nominator() const
       {
         return nominator_;
@@ -947,6 +955,11 @@ namespace giskard_core
 
   typedef typename boost::shared_ptr<FmodSpec> FmodSpecPtr;
 
+  inline DoubleSpecPtr fmod(const DoubleSpecPtr& nominator =
+      double_const_spec(), const DoubleSpecPtr& demoninator = double_const_spec())
+  {
+    return FmodSpecPtr(new FmodSpec(nominator, demoninator));
+  }
 
   class SinSpec: public DoubleSpec
   {
