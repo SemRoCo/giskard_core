@@ -165,6 +165,17 @@ namespace giskard_core
         return chain_joints;
       }
 
+      std::set<std::string> continuous_joints_names(const std::string& root, const std::string& tip) const
+      {
+        std::set<std::string> result;
+        std::vector<std::string> joint_names = chain_joint_names(root, tip, false);
+        for (const auto & joint_name: joint_names)
+          if (robot_model_.joints_.find(joint_name)->second->type == urdf::Joint::CONTINUOUS)
+            result.insert(joint_name);
+
+        return result;
+      }
+
     protected:
       urdf::Model robot_model_;
       std::map<std::string, std::string> parent_link_tree_;

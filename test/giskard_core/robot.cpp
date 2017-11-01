@@ -141,6 +141,7 @@ TEST_F(RobotTest, SaneConstructor)
   EXPECT_ANY_THROW(Robot(urdf, root_link, wrong_tip_links, weights, thresholds));
   EXPECT_ANY_THROW(Robot(urdf, root_link, wrong_tip_links, {}, thresholds));
   EXPECT_NO_THROW(Robot(urdf, root_link, tip_links, weights, {}));
+  EXPECT_NO_THROW(Robot(urdf, root_link, empty_tip_links, {}, {}));
 }
 
 TEST_F(RobotTest, GetEmptyScope)
@@ -320,4 +321,14 @@ TEST_F(RobotTest, GetWeight) {
 
 TEST_F(RobotTest, GetWeightNoDefaults) {
   EXPECT_ANY_THROW(TestRobot(urdf, root_link, tip_links, {}, thresholds));
+}
+
+TEST_F(RobotTest, ContinuousJointsNames) {
+  ASSERT_NO_THROW(Robot(urdf, root_link, empty_tip_links, {}, {}));
+  Robot my_robot(urdf, root_link, empty_tip_links, {}, {});
+  ASSERT_NO_THROW(my_robot.continuous_joints_names(root_link, tip_link));
+  std::set<std::string> joint_names = my_robot.continuous_joints_names(root_link, tip_link);
+  EXPECT_EQ(joint_names.size(), 2);
+  EXPECT_TRUE(joint_names.find("l_forearm_roll_joint") != joint_names.end());
+  EXPECT_TRUE(joint_names.find("l_wrist_roll_joint") != joint_names.end());
 }
