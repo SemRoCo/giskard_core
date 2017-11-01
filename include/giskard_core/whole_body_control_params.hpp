@@ -141,19 +141,25 @@ namespace giskard_core
           switch (params.second.type)
           {
             case ControlParams::ControlType::JOINT:
-              for (auto const & joint_name: robot_.chain_joint_names(params.second.root_link, params.second.tip_link, false))
+            {
+              std::set<std::string> continuous_joints_names =
+                  robot_.continuous_joints_names(params.second.root_link, params.second.tip_link);
+              for (auto const &joint_name: robot_.chain_joint_names(params.second.root_link, params.second.tip_link, false))
               {
-                  SoftConstraintSpec spec;
-                  DoubleInputSpecPtr goal_spec = get_goal_inputs(params.first).find(joint_name)->second;
-                  DoubleInputSpecPtr joint_spec = robot_.get_joint(joint_name);
-                  spec.lower_ = control_spec(goal_spec, joint_spec, params.second, false);
-                  spec.upper_ = spec.lower_;
-                  spec.expression_ = joint_spec;
-                  spec.weight_ = double_const_spec(params.second.weight);
-                  spec.name_ = params.first + "_" + joint_name;
-                  specs.push_back(spec);
+                SoftConstraintSpec spec;
+                DoubleInputSpecPtr goal_spec = get_goal_inputs(params.first).find(joint_name)->second;
+                DoubleInputSpecPtr joint_spec = robot_.get_joint(joint_name);
+                spec.lower_ = control_spec(goal_spec, joint_spec, params.second,
+                                           continuous_joints_names.find(joint_name) ==
+                                           continuous_joints_names.end());
+                spec.upper_ = spec.lower_;
+                spec.expression_ = joint_spec;
+                spec.weight_ = double_const_spec(params.second.weight);
+                spec.name_ = params.first + "_" + joint_name;
+                specs.push_back(spec);
               }
               break;
+            }
             // TODO: cover other cases
             default:
               throw std::runtime_error("Could not generate soft constraint for unknown control type for control '" + params.first + "'.");
@@ -163,9 +169,9 @@ namespace giskard_core
         }
 
         DoubleSpecPtr control_spec(const DoubleSpecPtr& goal, const DoubleSpecPtr& state, const ControlParams& params,
-            bool limitless) const
+            bool continuous_joint = false) const
         {
-          // TODO: support limitless joints
+          // TODO: support continuous joints
           DoubleSpecPtr error_exp = double_sub_spec({goal, state});
           DoubleSpecPtr control_exp = double_mul_spec({double_const_spec(params.p_gain), error_exp});
           if (params.threshold_error)
