@@ -323,15 +323,15 @@ namespace giskard_core
   class DoubleSubtractionSpec: public DoubleSpec
   {
     public:
-    DoubleSubtractionSpec() :
-      inputs_( {double_const_spec()} ) {}
-    DoubleSubtractionSpec(const DoubleSubtractionSpec& other) :
-      inputs_( other.get_inputs() ) {}
-    DoubleSubtractionSpec(const std::vector<DoubleSpecPtr>& inputs) :
-      inputs_( inputs ) {}
-    ~DoubleSubtractionSpec() {}
+      DoubleSubtractionSpec() :
+        inputs_( {double_const_spec()} ) {}
+      DoubleSubtractionSpec(const DoubleSubtractionSpec& other) :
+        inputs_( other.get_inputs() ) {}
+      DoubleSubtractionSpec(const std::vector<DoubleSpecPtr>& inputs) :
+        inputs_( inputs ) {}
+      ~DoubleSubtractionSpec() {}
 
-    const std::vector<DoubleSpecPtr>& get_inputs() const
+      const std::vector<DoubleSpecPtr>& get_inputs() const
       {
         return inputs_;
       }
@@ -439,6 +439,14 @@ namespace giskard_core
   class DoubleMultiplicationSpec: public DoubleSpec
   {
     public:
+      DoubleMultiplicationSpec() :
+        inputs_( {double_const_spec()} ) {}
+      DoubleMultiplicationSpec(const DoubleMultiplicationSpec& other) :
+        inputs_( other.get_inputs() ) {}
+      DoubleMultiplicationSpec(const std::vector<DoubleSpecPtr>& inputs) :
+        inputs_( inputs ) {}
+      ~DoubleMultiplicationSpec() {}
+
       const std::vector<DoubleSpecPtr>& get_inputs() const
       {
         return inputs_;
@@ -494,6 +502,11 @@ namespace giskard_core
   };
 
   typedef typename boost::shared_ptr<DoubleMultiplicationSpec> DoubleMultiplicationSpecPtr;
+
+  inline DoubleMultiplicationSpecPtr double_mul_spec(const std::vector<DoubleSpecPtr>& inputs = {double_const_spec()})
+  {
+    return DoubleMultiplicationSpecPtr(new DoubleMultiplicationSpec(inputs));
+  }
 
   class DoubleDivisionSpec: public DoubleSpec
   {
