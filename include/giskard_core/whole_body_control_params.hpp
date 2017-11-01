@@ -86,6 +86,12 @@ namespace giskard_core
           return params_;
         }
 
+        static double pi()
+        {
+          static double result = 3.14159265359;
+          return result;
+        }
+
       protected:
         Robot robot_;
         WholeBodyControlParams params_;
@@ -150,7 +156,7 @@ namespace giskard_core
                 DoubleInputSpecPtr goal_spec = get_goal_inputs(params.first).find(joint_name)->second;
                 DoubleInputSpecPtr joint_spec = robot_.get_joint(joint_name);
                 spec.lower_ = control_spec(goal_spec, joint_spec, params.second,
-                                           continuous_joints_names.find(joint_name) ==
+                                           continuous_joints_names.find(joint_name) !=
                                            continuous_joints_names.end());
                 spec.upper_ = spec.lower_;
                 spec.expression_ = joint_spec;
@@ -171,8 +177,15 @@ namespace giskard_core
         DoubleSpecPtr control_spec(const DoubleSpecPtr& goal, const DoubleSpecPtr& state, const ControlParams& params,
             bool continuous_joint = false) const
         {
-          // TODO: support continuous joints
           DoubleSpecPtr error_exp = double_sub_spec({goal, state});
+          if (continuous_joint)
+          {
+            DoubleSpecPtr pi= double_const_spec(ControllerSpecGenerator::pi())  ;
+            DoubleSpecPtr two_pi= double_const_spec(2.0*ControllerSpecGenerator::pi())  ;
+            DoubleSpecPtr error_unnormalized = error_exp;
+            DoubleSpecPtr error_normalized = fmod(double_add_spec({fmod(error_unnormalized, two_pi), two_pi}), two_pi);
+            error_exp = double_if(double_sub_spec({error_normalized, pi}), double_sub_spec({error_normalized, two_pi}), error_normalized);
+          }
           DoubleSpecPtr control_exp = double_mul_spec({double_const_spec(params.p_gain), error_exp});
           if (params.threshold_error)
             throw std::runtime_error("Thresholding not implemented.");
