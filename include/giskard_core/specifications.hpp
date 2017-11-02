@@ -139,6 +139,20 @@ namespace giskard_core
   typedef typename boost::shared_ptr<FrameSpec> FrameSpecPtr;
 
   ///
+  /// forward declarations of useful convenience functions to build default specifications
+  ///
+
+  inline DoubleSpecPtr double_const_spec(double value = 0.0);
+
+  inline VectorSpecPtr vector_constructor_spec(const DoubleSpecPtr& x = double_const_spec(),
+      const DoubleSpecPtr& y = double_const_spec(), const DoubleSpecPtr& z = double_const_spec());
+
+  inline RotationSpecPtr quaternion_spec(double x=0, double y=0, double z=0, double w=1);
+
+  inline FrameSpecPtr frame_constructor_spec(const VectorSpecPtr& translation =
+      vector_constructor_spec(), const RotationSpecPtr& rotation = quaternion_spec());
+
+  ///
   /// specifications of double expressions
   ///
 
@@ -180,7 +194,7 @@ namespace giskard_core
 
   typedef typename boost::shared_ptr<DoubleConstSpec> DoubleConstSpecPtr;
 
-  inline DoubleConstSpecPtr double_const_spec(double value = 0.0)
+  inline DoubleSpecPtr double_const_spec(double value)
   {
     return DoubleConstSpecPtr(new DoubleConstSpec(value));
   }
@@ -420,6 +434,14 @@ namespace giskard_core
   class DoubleNormOfSpec : public DoubleSpec
   {
     public:
+      DoubleNormOfSpec() :
+        vector_( vector_constructor_spec() ) {}
+      DoubleNormOfSpec(const DoubleNormOfSpec& other) :
+        vector_( other.get_vector() ) {}
+      DoubleNormOfSpec(const VectorSpecPtr& new_vector) :
+        vector_( new_vector ) {}
+      ~DoubleNormOfSpec() {}
+
       const giskard_core::VectorSpecPtr& get_vector() const
       {
         return vector_;
@@ -448,6 +470,11 @@ namespace giskard_core
   };
 
   typedef typename boost::shared_ptr<DoubleNormOfSpec> DoubleNormOfSpecPtr;
+
+  inline DoubleNormOfSpecPtr vector_norm(const VectorSpecPtr& new_vector = vector_constructor_spec())
+  {
+    return DoubleNormOfSpecPtr(new DoubleNormOfSpec(new_vector));
+  }
 
   class DoubleMultiplicationSpec: public DoubleSpec
   {
@@ -524,6 +551,14 @@ namespace giskard_core
   class DoubleDivisionSpec: public DoubleSpec
   {
     public:
+      DoubleDivisionSpec() :
+        inputs_( {double_const_spec()} ) {}
+      DoubleDivisionSpec(const DoubleDivisionSpec& other) :
+        inputs_( other.get_inputs() ) {}
+      DoubleDivisionSpec(const std::vector<DoubleSpecPtr>& inputs) :
+        inputs_( inputs ) {}
+      ~DoubleDivisionSpec() {}
+
       const std::vector<DoubleSpecPtr>& get_inputs() const
       {
         return inputs_;
@@ -592,9 +627,22 @@ namespace giskard_core
 
   typedef typename boost::shared_ptr<DoubleDivisionSpec> DoubleDivisionSpecPtr;
 
+  inline DoubleDivisionSpecPtr double_div(const std::vector<DoubleSpecPtr>& inputs = {double_const_spec()})
+  {
+    return DoubleDivisionSpecPtr(new DoubleDivisionSpec(inputs));
+  }
+
   class DoubleXCoordOfSpec : public DoubleSpec
   {
     public:
+      DoubleXCoordOfSpec() :
+        vector_( vector_constructor_spec() ) {}
+      DoubleXCoordOfSpec(const DoubleXCoordOfSpec& other) :
+        vector_( other.get_vector() ) {}
+      DoubleXCoordOfSpec(const VectorSpecPtr& new_vector) :
+        vector_( new_vector ) {}
+      ~DoubleXCoordOfSpec() {}
+
       const giskard_core::VectorSpecPtr& get_vector() const
       {
         return vector_;
@@ -624,9 +672,22 @@ namespace giskard_core
 
   typedef typename boost::shared_ptr<DoubleXCoordOfSpec> DoubleXCoordOfSpecPtr;
 
+  inline DoubleXCoordOfSpecPtr x_coord(const VectorSpecPtr vector_ = vector_constructor_spec())
+  {
+    return DoubleXCoordOfSpecPtr(new DoubleXCoordOfSpec(vector_));
+  }
+
   class DoubleYCoordOfSpec : public DoubleSpec
   {
     public:
+      DoubleYCoordOfSpec() :
+        vector_( vector_constructor_spec() ) {}
+      DoubleYCoordOfSpec(const DoubleYCoordOfSpec& other) :
+        vector_( other.get_vector() ) {}
+      DoubleYCoordOfSpec(const VectorSpecPtr& new_vector) :
+        vector_( new_vector ) {}
+      ~DoubleYCoordOfSpec() {}
+
       const giskard_core::VectorSpecPtr& get_vector() const
       {
         return vector_;
@@ -656,9 +717,22 @@ namespace giskard_core
 
   typedef typename boost::shared_ptr<DoubleYCoordOfSpec> DoubleYCoordOfSpecPtr;
 
+  inline DoubleYCoordOfSpecPtr y_coord(const VectorSpecPtr vector_ = vector_constructor_spec())
+  {
+    return DoubleYCoordOfSpecPtr(new DoubleYCoordOfSpec(vector_));
+  }
+
   class DoubleZCoordOfSpec : public DoubleSpec
   {
     public:
+      DoubleZCoordOfSpec() :
+        vector_( vector_constructor_spec() ) {}
+      DoubleZCoordOfSpec(const DoubleZCoordOfSpec& other) :
+        vector_( other.get_vector() ) {}
+      DoubleZCoordOfSpec(const VectorSpecPtr& new_vector) :
+        vector_( new_vector ) {}
+      ~DoubleZCoordOfSpec() {}
+
       const giskard_core::VectorSpecPtr& get_vector() const
       {
         return vector_;
@@ -687,6 +761,11 @@ namespace giskard_core
   };
 
   typedef typename boost::shared_ptr<DoubleZCoordOfSpec> DoubleZCoordOfSpecPtr;
+
+  inline DoubleZCoordOfSpecPtr z_coord(const VectorSpecPtr vector_ = vector_constructor_spec())
+  {
+    return DoubleZCoordOfSpecPtr(new DoubleZCoordOfSpec(vector_));
+  }
 
   class VectorDotSpec: public DoubleSpec
   {
@@ -1373,8 +1452,7 @@ namespace giskard_core
 
   typedef typename boost::shared_ptr<VectorConstructorSpec> VectorConstructorSpecPtr;
 
-  inline VectorConstructorSpecPtr vector_constructor_spec(const DoubleSpecPtr& x = double_const_spec(),
-      const DoubleSpecPtr& y = double_const_spec(), const DoubleSpecPtr& z = double_const_spec())
+  inline VectorSpecPtr vector_constructor_spec(const DoubleSpecPtr& x, const DoubleSpecPtr& y, const DoubleSpecPtr& z)
   {
     return VectorConstructorSpecPtr(new VectorConstructorSpec(x, y, z));
   }
@@ -1442,6 +1520,14 @@ namespace giskard_core
   class VectorSubtractionSpec: public VectorSpec
   {
     public:
+      VectorSubtractionSpec() :
+        inputs_( {vector_constructor_spec()} ) {}
+      VectorSubtractionSpec(const VectorSubtractionSpec& other) :
+        inputs_( other.get_inputs() ) {}
+      VectorSubtractionSpec(const std::vector<VectorSpecPtr>& inputs) :
+        inputs_( inputs ) {}
+      ~VectorSubtractionSpec() {}
+
       const std::vector<VectorSpecPtr>& get_inputs() const
       {
         return inputs_;
@@ -1510,6 +1596,11 @@ namespace giskard_core
 
   typedef typename boost::shared_ptr<VectorSubtractionSpec> VectorSubtractionSpecPtr;
 
+  inline VectorSubtractionSpecPtr vector_sub_spec(const std::vector<VectorSpecPtr>& inputs = {vector_constructor_spec()})
+  {
+    return VectorSubtractionSpecPtr(new VectorSubtractionSpec(inputs));
+  }
+
   class VectorReferenceSpec : public VectorSpec
   {
     public:
@@ -1545,6 +1636,14 @@ namespace giskard_core
   class VectorOriginOfSpec : public VectorSpec
   {
     public:
+      VectorOriginOfSpec() :
+        frame_( frame_constructor_spec()) {}
+      VectorOriginOfSpec(const VectorOriginOfSpec& other) :
+        frame_( other.get_frame() ) {}
+      VectorOriginOfSpec(const FrameSpecPtr& frame) :
+        frame_( frame ) {}
+      ~VectorOriginOfSpec() {}
+
       const giskard_core::FrameSpecPtr& get_frame() const
       {
         return frame_;
@@ -1573,6 +1672,11 @@ namespace giskard_core
   };
 
   typedef typename boost::shared_ptr<VectorOriginOfSpec> VectorOriginOfSpecPtr;
+
+  inline VectorOriginOfSpecPtr origin(const FrameSpecPtr& frame)
+  {
+    return VectorOriginOfSpecPtr(new VectorOriginOfSpec(frame));
+  }
 
   class VectorFrameMultiplicationSpec: public VectorSpec
   {
@@ -1891,7 +1995,7 @@ namespace giskard_core
 
   typedef typename boost::shared_ptr<RotationQuaternionConstructorSpec> RotationQuaternionConstructorSpecPtr;
 
-  inline RotationQuaternionConstructorSpecPtr quaternion_spec(double x=0, double y=0, double z=0, double w=1)
+  inline RotationSpecPtr quaternion_spec(double x, double y, double z, double w)
   {
     return RotationQuaternionConstructorSpecPtr(new RotationQuaternionConstructorSpec(x, y, z, w));
   }
@@ -2292,8 +2396,7 @@ namespace giskard_core
 
   typedef typename boost::shared_ptr<FrameConstructorSpec> FrameConstructorSpecPtr;
 
-  inline FrameConstructorSpecPtr frame_constructor_spec(const VectorSpecPtr& translation =
-      vector_constructor_spec(), const RotationSpecPtr& rotation = quaternion_spec())
+  inline FrameSpecPtr frame_constructor_spec(const VectorSpecPtr& translation, const RotationSpecPtr& rotation)
   {
     return FrameConstructorSpecPtr(new FrameConstructorSpec(translation, rotation));
   }
