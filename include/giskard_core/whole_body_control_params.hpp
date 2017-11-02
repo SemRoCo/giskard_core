@@ -120,8 +120,8 @@ namespace giskard_core
           switch(params.type)
           {
             case ControlParams::ControlType::JOINT:
-              for (auto const & joint_name : robot_.chain_joint_names(params.root_link, params.tip_link))
-                result.insert(std::make_pair(joint_name, input(start_index)));
+              for (auto const & joint_name : robot_.chain_joint_names(params.root_link, params.tip_link, false))
+                result.insert(std::make_pair(joint_name, input(start_index++)));
               break;
             //TODO: complete me for other cases
             default:
