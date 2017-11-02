@@ -170,7 +170,7 @@ TEST_F(WholeBodyControlParamsTest, LWristRollJoint)
 }
 
 // MULTI-DOF CONTROL
-TEST_F(WholeBodyControlParamsTest, RightArm)
+TEST_F(WholeBodyControlParamsTest, RightArmJoint)
 {
   // prepare necessary data
 
@@ -241,5 +241,73 @@ TEST_F(WholeBodyControlParamsTest, RightArm)
 }
 
 // CARTPOS CONTROL
+TEST_F(WholeBodyControlParamsTest, LeftArmCartPos)
+{
+  // prepare necessary data
+  int nWSR = 100;
+  ControlParams single_joint_params;
+  single_joint_params.root_link = root_link;
+  single_joint_params.tip_link = "l_gripper_tool_frame";
+  single_joint_params.p_gain = 1;
+  single_joint_params.threshold_error = true;
+  single_joint_params.threshold = 0.05;
+  single_joint_params.weight = 1.0;
+  single_joint_params.type = ControlParams::ControlType::CARTPOS;
+  std::string control_name = "left_arm_controller";
+  std::vector<std::string> joint_names = {
+        "torso_lift_joint", "l_shoulder_pan_joint", "l_shoulder_lift_joint","l_upper_arm_roll_joint",
+        "l_elbow_flex_joint", "l_forearm_roll_joint", "l_wrist_flex_joint", "l_wrist_roll_joint"};
+  std::set<std::string> limitless_joints = {"r_forearm_roll_joint", "r_wrist_roll_joint"};
+  WholeBodyControlParams params(urdf, root_link, weights, thresholds, {{control_name, single_joint_params}});
+//  using Eigen::operator<<;
+//  Eigen::VectorXd state;
+//  state.resize(joint_names.size() + controlled_joint_names.size());
+//  state << 0.1, 0.2,  0.4,  0.6,  -0.8,  1.0,  -1.2,  1.4, // start joint states
+//               -0.7, -0.5, -0.5, -0.4, -0.3, -0.2, -0.1; // goal joint states
+  // check that spec generation is ok
+  //ASSERT_NO_THROW(ControllerSpecGenerator gen(params));
+  ControllerSpecGenerator gen(params);
+  ASSERT_NO_THROW(gen.get_control_params());
+  ASSERT_NO_THROW(gen.get_goal_inputs(control_name));
+  ASSERT_EQ(gen.get_goal_inputs(control_name).size(), ControllerSpecGenerator::cart_names().size());
+  for (size_t i=0; i<ControllerSpecGenerator::cart_names().size(); ++i)
+  {
+    ASSERT_TRUE(gen.get_goal_inputs(control_name).find(ControllerSpecGenerator::cart_names()[i]) !=
+                        gen.get_goal_inputs(control_name).end());
+    EXPECT_TRUE(gen.get_goal_inputs(control_name).find(ControllerSpecGenerator::cart_names()[i])->second->equals(*(input(joint_names.size() + i))));
+  }
+  ASSERT_NO_THROW(gen.get_spec());
+  QPControllerSpec spec = gen.get_spec();
+  ASSERT_EQ(spec.controllable_constraints_.size(), joint_names.size());
+  ASSERT_EQ(spec.hard_constraints_.size(), joint_names.size() - limitless_joints.size());
+  ASSERT_EQ(spec.scope_.size(), 0);
+  ASSERT_EQ(spec.soft_constraints_.size(), ControllerSpecGenerator::cart_names().size());
+  for (size_t i=0; i<ControllerSpecGenerator::cart_names().size(); ++i)
+  {
+    std::string autogen_name = control_name + "_" + ControllerSpecGenerator::cart_names()[i];
+    EXPECT_STREQ(spec.soft_constraints_[i].name_.c_str(), autogen_name.c_str());
+    EXPECT_TRUE(spec.soft_constraints_[i].weight_->equals(*(double_const_spec(single_joint_params.weight))));
+    // TODO: check expression
+    // EXPECT_TRUE(spec.soft_constraints_[i].expression_->equals(*(input(i+1))));
+    EXPECT_TRUE(spec.soft_constraints_[i].lower_->equals(*(spec.soft_constraints_[i].upper_)));
+    // TODO: check upper
+  }
+
+  // check that resulting controller is ok
+  ASSERT_NO_THROW(generate(spec));
+  QPController control = generate(spec);
+//  EXPECT_TRUE(control.start(state, nWSR));
+//
+//  for (size_t i=0; i<4; ++i) {
+//    ASSERT_TRUE(control.update(state, nWSR));
+//    ASSERT_EQ(control.get_command().rows(), joint_names.size());
+//    for (size_t i = 0; i < joint_names.size(); ++i)
+//      state[i] += control.get_command()[i]; // simulating kinematics
+//  }
+//
+//
+//  for (size_t i=0; i<controlled_joint_names.size(); ++i)
+//    EXPECT_NEAR(state[1+i], state[joint_names.size() + i], 0.0001); // goal reached
+}
 
 // CARTROT CONTROL
