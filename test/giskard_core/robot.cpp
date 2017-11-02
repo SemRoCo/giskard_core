@@ -233,16 +233,21 @@ TEST_F(RobotTest, GetRootLink)
 
 TEST_F(RobotTest, GetHardConstraints)
 {
+  // check that constructor is sane
   ASSERT_NO_THROW(TestRobot(urdf, root_link, tip_links, weights, thresholds));
   TestRobot my_robot(urdf, root_link, tip_links, weights, thresholds);
   EXPECT_NO_THROW(my_robot.get_hard_constraints());
+  // check that numbers are correct
   EXPECT_EQ(my_robot.get_hard_constraints().size(), moveable_joints_names.size() - limitless_joints.size());
   EXPECT_EQ(my_robot.get_hard_constraints().size(), my_robot.get_hard_constraints_map().size());
+  // check that we have no constraints for limitless joints in the amp
   for (auto const & limitless_joint: limitless_joints)
     EXPECT_TRUE(my_robot.get_hard_constraints_map().find(limitless_joint) == my_robot.get_hard_constraints_map().end());
+  // check that we find all limited joints in the map
   for (auto const & joint_name: moveable_joints_names)
     ASSERT_TRUE((limitless_joints.find(joint_name) != limitless_joints.end()) ||
                         (my_robot.get_hard_constraints_map().find(joint_name) != my_robot.get_hard_constraints_map().end()));
+  // check contents of the constraints themselves
   for (auto const & pair: my_robot.get_hard_constraints_map())
   {
     ASSERT_NO_THROW(my_robot.get_joint(pair.first));
@@ -257,13 +262,17 @@ TEST_F(RobotTest, GetHardConstraints)
 
 TEST_F(RobotTest, GetControllableConstraints)
 {
+  // check that stuff does not break upon construction
   ASSERT_NO_THROW(TestRobot(urdf, root_link, tip_links, weights, thresholds));
   TestRobot my_robot(urdf, root_link, tip_links, weights, thresholds);
+  // check that number of constraints fit
   ASSERT_NO_THROW(my_robot.get_controllable_constraints());
   EXPECT_EQ(my_robot.get_controllable_constraints().size(), moveable_joints_names.size());
   EXPECT_EQ(my_robot.get_controllable_constraints().size(), my_robot.get_controllables_map().size());
+  // check that we can find all constraints by name in the map
   for (auto const & joint_name: moveable_joints_names)
     ASSERT_TRUE(my_robot.get_controllables_map().find(joint_name) != my_robot.get_controllables_map().end());
+  // check the content of the individual constraints
   for (auto const & pair: my_robot.get_controllables_map())
   {
     ASSERT_NO_THROW(my_robot.get_joint(pair.first));
@@ -275,6 +284,9 @@ TEST_F(RobotTest, GetControllableConstraints)
     EXPECT_TRUE(double_const_spec(vel_limit)->equals(*(pair.second.upper_)));
     EXPECT_TRUE(double_const_spec(my_robot.test_get_weight(pair.first))->equals(*(pair.second.weight_)));
   }
+  // check that controllable constraints appear ordered by input number
+  for (size_t i=0; i<my_robot.get_controllable_constraints().size(); ++i)
+    EXPECT_EQ(i, my_robot.get_controllable_constraints()[i].input_number_);
   // TODO: compare get_controllable_constraints() and get_controllables_map() using ControllableConstraintSpec::equals(other)
 }
 

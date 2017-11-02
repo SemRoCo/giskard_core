@@ -85,6 +85,12 @@ namespace giskard_core
         for (auto const & pair: controllable_map_)
           specs.push_back(pair.second);
 
+        std::sort(specs.begin(), specs.end(),
+             [](const ControllableConstraintSpec & a, const ControllableConstraintSpec & b) -> bool
+             {
+                 return a.input_number_ < b.input_number_;
+             });
+
         return specs;
       }
 
