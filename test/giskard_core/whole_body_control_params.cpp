@@ -24,15 +24,27 @@
 
 #include <gtest/gtest.h>
 #include <giskard_core/giskard_core.hpp>
+#include <kdl_parser/kdl_parser.hpp>
+#include <kdl/chainfksolverpos_recursive.hpp>
 
 using namespace giskard_core;
 
 class WholeBodyControlParamsTest : public ::testing::Test
 {
 protected:
+    Eigen::Vector3d to_eigen(const KDL::Vector& p)
+    {
+      Eigen::Vector3d result;
+      result[0] = p.x();
+      result[1] = p.y();
+      result[2] = p.z();
+      return result;
+    }
+
     virtual void SetUp()
     {
       ASSERT_TRUE(urdf.initFile("pr2.urdf"));
+      ASSERT_TRUE(kdl_parser::treeFromUrdfModel(urdf, tree));
       root_link = "base_footprint";
       weights = {{Robot::default_joint_weight_key(), 0.001}, {"torso_lift_joint", 0.01}};
       thresholds = {{Robot::default_joint_velocity_key(), 0.5}, {"torso_lift_joint", 0.01}};
@@ -40,8 +52,8 @@ protected:
 
     virtual void TearDown(){}
 
-
     urdf::Model urdf;
+    KDL::Tree tree;
     std::map<std::string, double> weights, thresholds;
     std::string root_link;
 
@@ -259,13 +271,23 @@ TEST_F(WholeBodyControlParamsTest, LeftArmCartPos)
         "l_elbow_flex_joint", "l_forearm_roll_joint", "l_wrist_flex_joint", "l_wrist_roll_joint"};
   std::set<std::string> limitless_joints = {"r_forearm_roll_joint", "r_wrist_roll_joint"};
   WholeBodyControlParams params(urdf, root_link, weights, thresholds, {{control_name, single_joint_params}});
-//  using Eigen::operator<<;
-//  Eigen::VectorXd state;
-//  state.resize(joint_names.size() + controlled_joint_names.size());
-//  state << 0.1, 0.2,  0.4,  0.6,  -0.8,  1.0,  -1.2,  1.4, // start joint states
-//               -0.7, -0.5, -0.5, -0.4, -0.3, -0.2, -0.1; // goal joint states
+  std::map<std::string, double> q_map;
+  q_map["l_elbow_flex_joint"] = -0.150245;
+  q_map["l_forearm_roll_joint"] = 2.05374;
+  q_map["l_shoulder_lift_joint"] = 1.29519;
+  q_map["l_shoulder_pan_joint"] = 1.85677;
+  q_map["l_upper_arm_roll_joint"] = 1.49425;
+  q_map["l_wrist_flex_joint"] = -0.240708;
+  q_map["l_wrist_roll_joint"] = 6.11928;
+  q_map["torso_lift_joint"] = 0.300026;
+  KDL::Vector goal = KDL::Vector(0.0834884427791, 0.505313166742, 0.176484549611);
+  Eigen::VectorXd state;
+  state.resize(joint_names.size() + ControllerSpecGenerator::cart_names().size());
+  for (size_t i=0; i<joint_names.size(); ++i)
+    state(i) = q_map.find(joint_names[i])->second;
+  state.block<3,1>(joint_names.size(), 0) = to_eigen(goal);
   // check that spec generation is ok
-  //ASSERT_NO_THROW(ControllerSpecGenerator gen(params));
+  ASSERT_NO_THROW(ControllerSpecGenerator gen(params));
   ControllerSpecGenerator gen(params);
   ASSERT_NO_THROW(gen.get_control_params());
   ASSERT_NO_THROW(gen.get_goal_inputs(control_name));
@@ -296,18 +318,28 @@ TEST_F(WholeBodyControlParamsTest, LeftArmCartPos)
   // check that resulting controller is ok
   ASSERT_NO_THROW(generate(spec));
   QPController control = generate(spec);
-//  EXPECT_TRUE(control.start(state, nWSR));
-//
-//  for (size_t i=0; i<4; ++i) {
-//    ASSERT_TRUE(control.update(state, nWSR));
-//    ASSERT_EQ(control.get_command().rows(), joint_names.size());
-//    for (size_t i = 0; i < joint_names.size(); ++i)
-//      state[i] += control.get_command()[i]; // simulating kinematics
-//  }
-//
-//
-//  for (size_t i=0; i<controlled_joint_names.size(); ++i)
-//    EXPECT_NEAR(state[1+i], state[joint_names.size() + i], 0.0001); // goal reached
+  ASSERT_TRUE(control.start(state, nWSR));
+
+  for (size_t i=0; i<10; ++i) {
+    ASSERT_TRUE(control.update(state, nWSR));
+    ASSERT_EQ(control.get_command().rows(), joint_names.size());
+    for (size_t i = 0; i < joint_names.size(); ++i)
+      state[i] += control.get_command()[i]; // simulating kinematics
+  }
+
+  KDL::Chain chain;
+  ASSERT_TRUE(tree.getChain(single_joint_params.root_link, single_joint_params.tip_link, chain));
+  ASSERT_EQ(chain.getNrOfJoints(), joint_names.size());
+
+  KDL::ChainFkSolverPos_recursive fk_solver(chain);
+  KDL::JntArray q_in(joint_names.size());
+  for (size_t i=0; i<joint_names.size(); ++i)
+    q_in(i) = state(i);
+  KDL::Frame solver_frame;
+  ASSERT_GE(fk_solver.JntToCart(q_in, solver_frame), 0);
+  EXPECT_TRUE(KDL::Equal(solver_frame.p, goal));
 }
 
 // CARTROT CONTROL
+
+// CART6D
