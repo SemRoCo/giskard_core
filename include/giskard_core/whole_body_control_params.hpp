@@ -92,6 +92,12 @@ namespace giskard_core
           return result;
         }
 
+        static std::vector<std::string> cart_names()
+        {
+          static std::vector<std::string> result = {"x", "y", "z"};
+          return result;
+        }
+
       protected:
         Robot robot_;
         WholeBodyControlParams params_;
@@ -122,6 +128,10 @@ namespace giskard_core
             case ControlParams::ControlType::JOINT:
               for (auto const & joint_name : robot_.chain_joint_names(params.root_link, params.tip_link, false))
                 result.insert(std::make_pair(joint_name, input(start_index++)));
+              break;
+            case ControlParams::ControlType::CARTPOS:
+              for (auto const & cart_name : ControllerSpecGenerator::cart_names())
+                result.insert(std::make_pair(cart_name, input(start_index++)));
               break;
             //TODO: complete me for other cases
             default:
@@ -155,7 +165,7 @@ namespace giskard_core
                 SoftConstraintSpec spec;
                 DoubleInputSpecPtr goal_spec = get_goal_inputs(params.first).find(joint_name)->second;
                 DoubleInputSpecPtr joint_spec = robot_.get_joint(joint_name);
-                spec.lower_ = control_spec(goal_spec, joint_spec, params.second,
+                spec.lower_ = joint_control_spec(goal_spec, joint_spec, params.second,
                                            continuous_joints_names.find(joint_name) !=
                                            continuous_joints_names.end());
                 spec.upper_ = spec.lower_;
@@ -166,6 +176,44 @@ namespace giskard_core
               }
               break;
             }
+              case ControlParams::ControlType::CARTPOS:
+              {
+                VectorSpecPtr goal_spec = vector_constructor_spec(
+                    get_goal_inputs(params.first).find(cart_names()[0])->second,
+                    get_goal_inputs(params.first).find(cart_names()[1])->second,
+                    get_goal_inputs(params.first).find(cart_names()[2])->second);
+                VectorSpecPtr fk_spec = origin(robot_.get_fk_spec(params.second.root_link, params.second.tip_link));
+                VectorSpecPtr control_spec = cart_pos_control_spec(goal_spec, fk_spec, params.second);
+                for (auto const & cart_name: ControllerSpecGenerator::cart_names())
+                {
+                  SoftConstraintSpec spec;
+                  spec.name_ = params.first + "_" + cart_name;
+                  spec.weight_ = double_const_spec(params.second.weight);
+                  if (cart_name.compare("x") == 0)
+                  {
+                    spec.expression_ = x_coord(fk_spec);
+                    spec.lower_ = x_coord(control_spec);
+                    spec.upper_ = spec.lower_;
+                  }
+                  else if (cart_name.compare("y") == 0)
+                  {
+                    spec.expression_ = y_coord(fk_spec);
+                    spec.lower_ = y_coord(control_spec);
+                    spec.upper_ = spec.lower_;
+                  }
+                  else if (cart_name.compare("z") == 0)
+                  {
+                    spec.expression_ = z_coord(fk_spec);
+                    spec.lower_ = z_coord(control_spec);
+                    spec.upper_ = spec.lower_;
+                  }
+                  else
+                    throw std::runtime_error("Could not generate soft constraint for unknown Cartesian position name '"
+                                             + cart_name + "'.");
+                  specs.push_back(spec);
+                }
+                break;
+              }
             // TODO: cover other cases
             default:
               throw std::runtime_error("Could not generate soft constraint for unknown control type for control '" + params.first + "'.");
@@ -174,7 +222,22 @@ namespace giskard_core
           return specs;
         }
 
-        DoubleSpecPtr control_spec(const DoubleSpecPtr& goal, const DoubleSpecPtr& state, const ControlParams& params,
+        VectorSpecPtr cart_pos_control_spec(const VectorSpecPtr& goal, const VectorSpecPtr& state,
+            const ControlParams& params) const
+        {
+            VectorSpecPtr error_vector = vector_sub_spec({goal, state});
+            if (params.threshold_error)
+            {
+              DoubleSpecPtr threshold = double_const_spec(params.threshold);
+              DoubleSpecPtr error = vector_norm(error_vector);
+              DoubleSpecPtr scale = double_if(double_sub_spec({threshold, error}), double_const_spec(1.0), double_div({threshold, error}));
+              error_vector = vector_double_mul(error_vector, scale);
+            }
+
+            return vector_double_mul(error_vector, double_const_spec(params.p_gain));
+        }
+
+        DoubleSpecPtr joint_control_spec(const DoubleSpecPtr& goal, const DoubleSpecPtr& state, const ControlParams& params,
             bool continuous_joint = false) const
         {
           DoubleSpecPtr error_exp = double_sub_spec({goal, state});
@@ -188,7 +251,7 @@ namespace giskard_core
           }
           DoubleSpecPtr control_exp = double_mul_spec({double_const_spec(params.p_gain), error_exp});
           if (params.threshold_error)
-            throw std::runtime_error("Thresholding not implemented.");
+            throw std::runtime_error("Thresholding of joint controllers not implemented, yet.");
           return control_exp;
         }
     };
