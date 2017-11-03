@@ -41,6 +41,13 @@ protected:
       return result;
     }
 
+    Eigen::Vector4d to_eigen(const KDL::Rotation& M)
+    {
+      Eigen::Vector4d result;
+      M.GetQuaternion(result[0], result[1], result[2], result[3]);
+      return result;
+    }
+
     virtual void SetUp()
     {
       ASSERT_TRUE(urdf.initFile("pr2.urdf"));
@@ -252,8 +259,8 @@ TEST_F(WholeBodyControlParamsTest, RightArmJoint)
     EXPECT_NEAR(state[1+i], state[joint_names.size() + i], 0.0001); // goal reached
 }
 
-// CARTPOS CONTROL
-TEST_F(WholeBodyControlParamsTest, LeftArmCartPos)
+// Translation3D CONTROL
+TEST_F(WholeBodyControlParamsTest, LeftArmTranslation3D)
 {
   // prepare necessary data
   int nWSR = 100;
@@ -264,7 +271,7 @@ TEST_F(WholeBodyControlParamsTest, LeftArmCartPos)
   single_joint_params.threshold_error = true;
   single_joint_params.threshold = 0.05;
   single_joint_params.weight = 1.0;
-  single_joint_params.type = ControlParams::ControlType::CARTPOS;
+  single_joint_params.type = ControlParams::ControlType::Translation3D;
   std::string control_name = "left_arm_controller";
   std::vector<std::string> joint_names = {
         "torso_lift_joint", "l_shoulder_pan_joint", "l_shoulder_lift_joint","l_upper_arm_roll_joint",
@@ -282,7 +289,7 @@ TEST_F(WholeBodyControlParamsTest, LeftArmCartPos)
   q_map["torso_lift_joint"] = 0.300026;
   KDL::Vector goal = KDL::Vector(0.0834884427791, 0.505313166742, 0.176484549611);
   Eigen::VectorXd state;
-  state.resize(joint_names.size() + ControllerSpecGenerator::cart_names().size());
+  state.resize(joint_names.size() + ControllerSpecGenerator::translation3d_names().size());
   for (size_t i=0; i<joint_names.size(); ++i)
     state(i) = q_map.find(joint_names[i])->second;
   state.block<3,1>(joint_names.size(), 0) = to_eigen(goal);
@@ -291,22 +298,22 @@ TEST_F(WholeBodyControlParamsTest, LeftArmCartPos)
   ControllerSpecGenerator gen(params);
   ASSERT_NO_THROW(gen.get_control_params());
   ASSERT_NO_THROW(gen.get_goal_inputs(control_name));
-  ASSERT_EQ(gen.get_goal_inputs(control_name).size(), ControllerSpecGenerator::cart_names().size());
-  for (size_t i=0; i<ControllerSpecGenerator::cart_names().size(); ++i)
+  ASSERT_EQ(gen.get_goal_inputs(control_name).size(), ControllerSpecGenerator::translation3d_names().size());
+  for (size_t i=0; i<ControllerSpecGenerator::translation3d_names().size(); ++i)
   {
-    ASSERT_TRUE(gen.get_goal_inputs(control_name).find(ControllerSpecGenerator::cart_names()[i]) !=
+    ASSERT_TRUE(gen.get_goal_inputs(control_name).find(ControllerSpecGenerator::translation3d_names()[i]) !=
                         gen.get_goal_inputs(control_name).end());
-    EXPECT_TRUE(gen.get_goal_inputs(control_name).find(ControllerSpecGenerator::cart_names()[i])->second->equals(*(input(joint_names.size() + i))));
+    EXPECT_TRUE(gen.get_goal_inputs(control_name).find(ControllerSpecGenerator::translation3d_names()[i])->second->equals(*(input(joint_names.size() + i))));
   }
   ASSERT_NO_THROW(gen.get_spec());
   QPControllerSpec spec = gen.get_spec();
   ASSERT_EQ(spec.controllable_constraints_.size(), joint_names.size());
   ASSERT_EQ(spec.hard_constraints_.size(), joint_names.size() - limitless_joints.size());
   ASSERT_EQ(spec.scope_.size(), 0);
-  ASSERT_EQ(spec.soft_constraints_.size(), ControllerSpecGenerator::cart_names().size());
-  for (size_t i=0; i<ControllerSpecGenerator::cart_names().size(); ++i)
+  ASSERT_EQ(spec.soft_constraints_.size(), ControllerSpecGenerator::translation3d_names().size());
+  for (size_t i=0; i<ControllerSpecGenerator::translation3d_names().size(); ++i)
   {
-    std::string autogen_name = control_name + "_" + ControllerSpecGenerator::cart_names()[i];
+    std::string autogen_name = control_name + "_" + ControllerSpecGenerator::translation3d_names()[i];
     EXPECT_STREQ(spec.soft_constraints_[i].name_.c_str(), autogen_name.c_str());
     EXPECT_TRUE(spec.soft_constraints_[i].weight_->equals(*(double_const_spec(single_joint_params.weight))));
     // TODO: check expression
@@ -340,6 +347,92 @@ TEST_F(WholeBodyControlParamsTest, LeftArmCartPos)
   EXPECT_TRUE(KDL::Equal(solver_frame.p, goal));
 }
 
-// CARTROT CONTROL
+// Rotation3D CONTROL
+TEST_F(WholeBodyControlParamsTest, LeftArmRotation3D)
+{
+  // prepare necessary data
+  int nWSR = 100;
+  ControlParams single_joint_params;
+  single_joint_params.root_link = root_link;
+  single_joint_params.tip_link = "l_gripper_tool_frame";
+  single_joint_params.p_gain = 1;
+  single_joint_params.threshold_error = true;
+  single_joint_params.threshold = 0.05;
+  single_joint_params.weight = 1.0;
+  single_joint_params.type = ControlParams::ControlType::Rotation3D;
+  std::string control_name = "left_arm_controller";
+  std::vector<std::string> joint_names = {
+        "torso_lift_joint", "l_shoulder_pan_joint", "l_shoulder_lift_joint","l_upper_arm_roll_joint",
+        "l_elbow_flex_joint", "l_forearm_roll_joint", "l_wrist_flex_joint", "l_wrist_roll_joint"};
+  std::set<std::string> limitless_joints = {"r_forearm_roll_joint", "r_wrist_roll_joint"};
+  WholeBodyControlParams params(urdf, root_link, weights, thresholds, {{control_name, single_joint_params}});
+  std::map<std::string, double> q_map;
+  q_map["l_elbow_flex_joint"] = -0.150245;
+  q_map["l_forearm_roll_joint"] = 2.05374;
+  q_map["l_shoulder_lift_joint"] = 1.29519;
+  q_map["l_shoulder_pan_joint"] = 1.85677;
+  q_map["l_upper_arm_roll_joint"] = 1.49425;
+  q_map["l_wrist_flex_joint"] = -0.240708;
+  q_map["l_wrist_roll_joint"] = 6.11928;
+  q_map["torso_lift_joint"] = 0.300026;
+  KDL::Rotation goal = KDL::Rotation::Quaternion(0.293821000071, 0.27801803703, -0.635756695443, 0.657410552874);
+  Eigen::VectorXd state;
+  state.resize(joint_names.size() + ControllerSpecGenerator::rotation3d_names().size());
+  for (size_t i=0; i<joint_names.size(); ++i)
+    state(i) = q_map.find(joint_names[i])->second;
+  state.block<4,1>(joint_names.size(), 0) = to_eigen(goal);
+  // check that spec generation is ok
+  ASSERT_NO_THROW(ControllerSpecGenerator gen(params));
+  ControllerSpecGenerator gen(params);
+  ASSERT_NO_THROW(gen.get_control_params());
+  ASSERT_NO_THROW(gen.get_goal_inputs(control_name));
+  ASSERT_EQ(gen.get_goal_inputs(control_name).size(), ControllerSpecGenerator::rotation3d_names().size());
+  for (size_t i=0; i<ControllerSpecGenerator::rotation3d_names().size(); ++i)
+  {
+    ASSERT_TRUE(gen.get_goal_inputs(control_name).find(ControllerSpecGenerator::rotation3d_names()[i]) !=
+                        gen.get_goal_inputs(control_name).end());
+    EXPECT_TRUE(gen.get_goal_inputs(control_name).find(ControllerSpecGenerator::rotation3d_names()[i])->second->equals(*(input(joint_names.size() + i))));
+  }
+  ASSERT_NO_THROW(gen.get_spec());
+  QPControllerSpec spec = gen.get_spec();
+  ASSERT_EQ(spec.controllable_constraints_.size(), joint_names.size());
+  ASSERT_EQ(spec.hard_constraints_.size(), joint_names.size() - limitless_joints.size());
+  ASSERT_EQ(spec.scope_.size(), 0);
+  ASSERT_EQ(spec.soft_constraints_.size(), ControllerSpecGenerator::rotation3d_names().size() - 1);
+  for (size_t i=0; i<(ControllerSpecGenerator::translation3d_names().size()-1); ++i)
+  {
+    std::string autogen_name = control_name + "_" + ControllerSpecGenerator::translation3d_names()[i];
+    EXPECT_STREQ(spec.soft_constraints_[i].name_.c_str(), autogen_name.c_str());
+    EXPECT_TRUE(spec.soft_constraints_[i].weight_->equals(*(double_const_spec(single_joint_params.weight))));
+    // TODO: check expression
+    // EXPECT_TRUE(spec.soft_constraints_[i].expression_->equals(*(input(i+1))));
+    EXPECT_TRUE(spec.soft_constraints_[i].lower_->equals(*(spec.soft_constraints_[i].upper_)));
+    // TODO: check upper
+  }
+
+  // check that resulting controller is ok
+  ASSERT_NO_THROW(generate(spec));
+  QPController control = generate(spec);
+  ASSERT_TRUE(control.start(state, nWSR));
+
+  for (size_t i=0; i<10; ++i) {
+    ASSERT_TRUE(control.update(state, nWSR));
+    ASSERT_EQ(control.get_command().rows(), joint_names.size());
+    for (size_t i = 0; i < joint_names.size(); ++i)
+      state[i] += control.get_command()[i]; // simulating kinematics
+  }
+
+  KDL::Chain chain;
+  ASSERT_TRUE(tree.getChain(single_joint_params.root_link, single_joint_params.tip_link, chain));
+  ASSERT_EQ(chain.getNrOfJoints(), joint_names.size());
+
+  KDL::ChainFkSolverPos_recursive fk_solver(chain);
+  KDL::JntArray q_in(joint_names.size());
+  for (size_t i=0; i<joint_names.size(); ++i)
+    q_in(i) = state(i);
+  KDL::Frame solver_frame;
+  ASSERT_GE(fk_solver.JntToCart(q_in, solver_frame), 0);
+  EXPECT_TRUE(KDL::Equal(solver_frame.M, goal));
+}
 
 // CART6D
