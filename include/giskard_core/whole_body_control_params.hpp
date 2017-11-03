@@ -31,7 +31,7 @@ namespace giskard_core
         bool threshold_error;
         std::string root_link, tip_link;
         // TODO: add reference frame
-        enum ControlType {UNKNOWN, JOINT, CARTPOS, CARTROT};
+        enum ControlType {UNKNOWN, JOINT, Translation3D, Rotation3D};
         ControlType type;
     };
 
@@ -92,7 +92,13 @@ namespace giskard_core
           return result;
         }
 
-        static std::vector<std::string> cart_names()
+        static std::vector<std::string> rotation3d_names()
+        {
+          static std::vector<std::string> result = {"x", "y", "z", "w"};
+          return result;
+        }
+
+        static std::vector<std::string> translation3d_names()
         {
           static std::vector<std::string> result = {"x", "y", "z"};
           return result;
@@ -129,9 +135,9 @@ namespace giskard_core
               for (auto const & joint_name : robot_.chain_joint_names(params.root_link, params.tip_link, false))
                 result.insert(std::make_pair(joint_name, input(start_index++)));
               break;
-            case ControlParams::ControlType::CARTPOS:
-              for (auto const & cart_name : ControllerSpecGenerator::cart_names())
-                result.insert(std::make_pair(cart_name, input(start_index++)));
+            case ControlParams::ControlType::Translation3D:
+              for (auto const & translation_name : ControllerSpecGenerator::translation3d_names())
+                result.insert(std::make_pair(translation_name, input(start_index++)));
               break;
             //TODO: complete me for other cases
             default:
@@ -176,32 +182,32 @@ namespace giskard_core
               }
               break;
             }
-              case ControlParams::ControlType::CARTPOS:
+              case ControlParams::ControlType::Translation3D:
               {
                 VectorSpecPtr goal_spec = vector_constructor_spec(
-                    get_goal_inputs(params.first).find(cart_names()[0])->second,
-                    get_goal_inputs(params.first).find(cart_names()[1])->second,
-                    get_goal_inputs(params.first).find(cart_names()[2])->second);
+                    get_goal_inputs(params.first).find(translation3d_names()[0])->second,
+                    get_goal_inputs(params.first).find(translation3d_names()[1])->second,
+                    get_goal_inputs(params.first).find(translation3d_names()[2])->second);
                 VectorSpecPtr fk_spec = origin(robot_.get_fk_spec(params.second.root_link, params.second.tip_link));
                 VectorSpecPtr control_spec = cart_pos_control_spec(goal_spec, fk_spec, params.second);
-                for (auto const & cart_name: ControllerSpecGenerator::cart_names())
+                for (auto const & translation_name: ControllerSpecGenerator::translation3d_names())
                 {
                   SoftConstraintSpec spec;
-                  spec.name_ = params.first + "_" + cart_name;
+                  spec.name_ = params.first + "_" + translation_name;
                   spec.weight_ = double_const_spec(params.second.weight);
-                  if (cart_name.compare("x") == 0)
+                  if (translation_name.compare("x") == 0)
                   {
                     spec.expression_ = x_coord(fk_spec);
                     spec.lower_ = x_coord(control_spec);
                     spec.upper_ = spec.lower_;
                   }
-                  else if (cart_name.compare("y") == 0)
+                  else if (translation_name.compare("y") == 0)
                   {
                     spec.expression_ = y_coord(fk_spec);
                     spec.lower_ = y_coord(control_spec);
                     spec.upper_ = spec.lower_;
                   }
-                  else if (cart_name.compare("z") == 0)
+                  else if (translation_name.compare("z") == 0)
                   {
                     spec.expression_ = z_coord(fk_spec);
                     spec.lower_ = z_coord(control_spec);
@@ -209,7 +215,7 @@ namespace giskard_core
                   }
                   else
                     throw std::runtime_error("Could not generate soft constraint for unknown Cartesian position name '"
-                                             + cart_name + "'.");
+                                             + translation_name + "'.");
                   specs.push_back(spec);
                 }
                 break;
