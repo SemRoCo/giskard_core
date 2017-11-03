@@ -1844,6 +1844,14 @@ namespace giskard_core
   class VectorRotationVectorSpec : public VectorSpec
   {
     public:
+      VectorRotationVectorSpec() :
+        rotation_( quaternion_spec() ) {}
+      VectorRotationVectorSpec(const VectorRotationVectorSpec& other) :
+        rotation_( other.get_rotation()) {}
+      VectorRotationVectorSpec(const RotationSpecPtr& rotation) :
+        rotation_ ( rotation ) {}
+      ~VectorRotationVectorSpec() {}
+
       const giskard_core::RotationSpecPtr& get_rotation() const
       {
         return rotation_;
@@ -1872,6 +1880,11 @@ namespace giskard_core
   };
 
   typedef typename boost::shared_ptr<VectorRotationVectorSpec> VectorRotationVectorSpecPtr;
+
+  inline VectorSpecPtr rot_vector(const RotationSpecPtr& rotation = quaternion_spec())
+  {
+    return VectorRotationVectorSpecPtr(new VectorRotationVectorSpec(rotation));
+  }
 
   class VectorCrossSpec: public VectorSpec
   {
@@ -1926,6 +1939,13 @@ namespace giskard_core
 
   class RotationQuaternionConstructorSpec : public RotationSpec
   {
+    /*
+     * TODO: turns this into a proper spec by
+     * - adding a Quaternion expression to expressiongraph (does not have a derivative, yet)
+     * - using it here
+     * - turning all of this inputs into DoubleSpecPtr
+     */
+
     public:
       RotationQuaternionConstructorSpec() : 
         x_( 0.0 ), y_( 0.0 ), z_( 0.0 ), w_( 1.0 ) {}
@@ -2054,6 +2074,8 @@ namespace giskard_core
       {
         // note: this type of rotation expressions only expect expressions for their axis, not
         //       the angle. while this my make sense, it does break code symmetry.
+
+        // TODO: reimplement using KDL::Expression<R>::NearZero 
         KDL::Expression<double>::Ptr angle = get_angle()->get_expression(scope);
         KDL::Vector axis = get_axis()->get_expression(scope)->value();
 
@@ -2076,6 +2098,14 @@ namespace giskard_core
   class SlerpSpec: public RotationSpec
   {
     public:
+      SlerpSpec() :
+        from_( quaternion_spec() ), to_( quaternion_spec() ), param_( double_const_spec() ) {}
+      SlerpSpec(const SlerpSpec& other) :
+        from_( other.get_from()), to_( other.get_to() ), param_( other.get_param() ) {}
+      SlerpSpec(const RotationSpecPtr& from, const RotationSpecPtr& to, const DoubleSpecPtr& param) :
+        from_( from ), to_( to ), param_( param ) {}
+      ~SlerpSpec() {}
+
       const RotationSpecPtr& get_from() const
       {
         return from_;
@@ -2141,6 +2171,11 @@ namespace giskard_core
   };
 
   typedef typename boost::shared_ptr<SlerpSpec> SlerpSpecPtr;
+
+  inline RotationSpecPtr slerp_spec(const RotationSpecPtr& from, const RotationSpecPtr& to, const DoubleSpecPtr& param)
+  {
+    return SlerpSpecPtr(new SlerpSpec(from, to, param));
+  }
 
   class RotationReferenceSpec : public RotationSpec
   {
