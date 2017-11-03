@@ -247,3 +247,18 @@ TEST_F(RotationGenerationTest, Slerp)
   r = exp->value();
   EXPECT_TRUE(KDL::Equal(r, KDL::Rotation::Quaternion(0.845, 0.262, 0.363, 0.293), eps));
 }
+
+TEST_F(RotationGenerationTest, NearZeroTest)
+{
+  KDL::Expression<KDL::Vector>::Ptr unit_x = KDL::vector(KDL::Constant(1.0), KDL::Constant(0.0), KDL::Constant(0.0));
+  KDL::Expression<KDL::Vector>::Ptr zero = KDL::vector(KDL::Constant(0.0), KDL::Constant(0.0), KDL::Constant(0.0));
+  KDL::Expression<KDL::Vector>::Ptr small = KDL::vector(KDL::Constant(0.00001), KDL::Constant(0.0), KDL::Constant(0.0));
+  KDL::Expression<KDL::Vector>::Ptr big = KDL::vector(KDL::Constant(1111.0), KDL::Constant(0.0), KDL::Constant(0.0));
+
+  double eps = 0.00000001;
+  using namespace KDL;
+  KDL::Expression<KDL::Vector>::Ptr test_zero =
+          KDL::near_zero(zero, eps, unit_x, zero / norm(zero));
+
+}
+
