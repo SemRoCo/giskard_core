@@ -44,7 +44,11 @@ protected:
     Eigen::Vector4d to_eigen(const KDL::Rotation& M)
     {
       Eigen::Vector4d result;
-      M.GetQuaternion(result[0], result[1], result[2], result[3]);
+      KDL::Vector vec = M.GetRot();
+      result[0] = vec.x();
+      result[1] = vec.y();
+      result[2] = vec.z();
+      result[3] = vec.Norm();
       return result;
     }
 

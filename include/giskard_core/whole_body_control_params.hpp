@@ -94,7 +94,7 @@ namespace giskard_core
 
         static std::vector<std::string> rotation3d_names()
         {
-          static std::vector<std::string> result = {"x", "y", "z", "w"};
+          static std::vector<std::string> result = {"axis-x", "axis-y", "axis-z", "angle"};
           return result;
         }
 
@@ -139,6 +139,10 @@ namespace giskard_core
               for (auto const & translation_name : ControllerSpecGenerator::translation3d_names())
                 result.insert(std::make_pair(translation_name, input(start_index++)));
               break;
+            case ControlParams::ControlType::Rotation3D:
+              for (auto const & rotation_name : ControllerSpecGenerator::rotation3d_names())
+                result.insert(std::make_pair(rotation_name, input(start_index++)));
+              break;
             //TODO: complete me for other cases
             default:
               throw std::runtime_error("Asked to create inputs for unsupported control type");
@@ -182,44 +186,83 @@ namespace giskard_core
               }
               break;
             }
-              case ControlParams::ControlType::Translation3D:
+            case ControlParams::ControlType::Translation3D:
+            {
+              VectorSpecPtr goal_spec = vector_constructor_spec(
+                  get_goal_inputs(params.first).find(translation3d_names()[0])->second,
+                  get_goal_inputs(params.first).find(translation3d_names()[1])->second,
+                  get_goal_inputs(params.first).find(translation3d_names()[2])->second);
+              VectorSpecPtr fk_spec = origin(robot_.get_fk_spec(params.second.root_link, params.second.tip_link));
+              VectorSpecPtr control_spec = translation3d_control_spec(goal_spec, fk_spec, params.second);
+              for (auto const & translation_name: ControllerSpecGenerator::translation3d_names())
               {
-                VectorSpecPtr goal_spec = vector_constructor_spec(
-                    get_goal_inputs(params.first).find(translation3d_names()[0])->second,
-                    get_goal_inputs(params.first).find(translation3d_names()[1])->second,
-                    get_goal_inputs(params.first).find(translation3d_names()[2])->second);
-                VectorSpecPtr fk_spec = origin(robot_.get_fk_spec(params.second.root_link, params.second.tip_link));
-                VectorSpecPtr control_spec = cart_pos_control_spec(goal_spec, fk_spec, params.second);
-                for (auto const & translation_name: ControllerSpecGenerator::translation3d_names())
+                SoftConstraintSpec spec;
+                spec.name_ = params.first + "_" + translation_name;
+                spec.weight_ = double_const_spec(params.second.weight);
+                if (translation_name.compare("x") == 0)
                 {
-                  SoftConstraintSpec spec;
-                  spec.name_ = params.first + "_" + translation_name;
-                  spec.weight_ = double_const_spec(params.second.weight);
-                  if (translation_name.compare("x") == 0)
-                  {
-                    spec.expression_ = x_coord(fk_spec);
-                    spec.lower_ = x_coord(control_spec);
-                    spec.upper_ = spec.lower_;
-                  }
-                  else if (translation_name.compare("y") == 0)
-                  {
-                    spec.expression_ = y_coord(fk_spec);
-                    spec.lower_ = y_coord(control_spec);
-                    spec.upper_ = spec.lower_;
-                  }
-                  else if (translation_name.compare("z") == 0)
-                  {
-                    spec.expression_ = z_coord(fk_spec);
-                    spec.lower_ = z_coord(control_spec);
-                    spec.upper_ = spec.lower_;
-                  }
-                  else
-                    throw std::runtime_error("Could not generate soft constraint for unknown Cartesian position name '"
-                                             + translation_name + "'.");
-                  specs.push_back(spec);
+                  spec.expression_ = x_coord(fk_spec);
+                  spec.lower_ = x_coord(control_spec);
+                  spec.upper_ = spec.lower_;
                 }
-                break;
+                else if (translation_name.compare("y") == 0)
+                {
+                  spec.expression_ = y_coord(fk_spec);
+                  spec.lower_ = y_coord(control_spec);
+                  spec.upper_ = spec.lower_;
+                }
+                else if (translation_name.compare("z") == 0)
+                {
+                  spec.expression_ = z_coord(fk_spec);
+                  spec.lower_ = z_coord(control_spec);
+                  spec.upper_ = spec.lower_;
+                }
+                else
+                  throw std::runtime_error("Could not generate soft constraint for unknown Cartesian position name '"
+                                           + translation_name + "'.");
+                specs.push_back(spec);
               }
+              break;
+            }
+            case ControlParams::ControlType::Rotation3D:
+            {
+              RotationSpecPtr goal_spec = axis_angle_spec(
+                  vector_constructor_spec(
+                      get_goal_inputs(params.first).find(rotation3d_names()[0])->second,
+                      get_goal_inputs(params.first).find(rotation3d_names()[1])->second,
+                      get_goal_inputs(params.first).find(rotation3d_names()[2])->second),
+                  get_goal_inputs(params.first).find(rotation3d_names()[3])->second);
+              RotationSpecPtr fk_spec = orientation_of_spec(robot_.get_fk_spec(params.second.root_link, params.second.tip_link));
+              VectorSpecPtr control_spec = rotation3d_control_spec(goal_spec, fk_spec, params.second);
+              for (auto const & rotation_name: ControllerSpecGenerator::rotation3d_names())
+              {
+                SoftConstraintSpec spec;
+                spec.name_ = params.first + "_" + rotation_name;
+                spec.weight_ = double_const_spec(params.second.weight);
+                if (rotation_name.compare("x") == 0)
+                {
+                  spec.expression_ = x_coord(rot_vector(fk_spec));
+                  spec.lower_ = x_coord(control_spec);
+                  spec.upper_ = spec.lower_;
+                }
+                else if (rotation_name.compare("y") == 0)
+                {
+                  spec.expression_ = y_coord(rot_vector(fk_spec));
+                  spec.lower_ = y_coord(control_spec);
+                  spec.upper_ = spec.lower_;
+                }
+                else if (rotation_name.compare("z") == 0)
+                {
+                  spec.expression_ = z_coord(rot_vector(fk_spec));
+                  spec.lower_ = z_coord(control_spec);
+                  spec.upper_ = spec.lower_;
+                }
+                else
+                  throw std::runtime_error("Could not generate soft constraint for unknown dimension '" + rotation_name + "'.");
+                specs.push_back(spec);
+              }
+              break;
+            }
             // TODO: cover other cases
             default:
               throw std::runtime_error("Could not generate soft constraint for unknown control type for control '" + params.first + "'.");
@@ -228,7 +271,7 @@ namespace giskard_core
           return specs;
         }
 
-        VectorSpecPtr cart_pos_control_spec(const VectorSpecPtr& goal, const VectorSpecPtr& state,
+        VectorSpecPtr translation3d_control_spec(const VectorSpecPtr& goal, const VectorSpecPtr& state,
             const ControlParams& params) const
         {
             VectorSpecPtr error_vector = vector_sub_spec({goal, state});
@@ -241,6 +284,35 @@ namespace giskard_core
             }
 
             return vector_double_mul(error_vector, double_const_spec(params.p_gain));
+        }
+
+        VectorSpecPtr rotation3d_control_spec(const RotationSpecPtr& goal, const RotationSpecPtr& state,
+            const ControlParams& params) const
+        {
+            // TODO: correct me
+//            - r_rot_error: {vector-norm: {rot-vector: {rotation-mul: [{inverse-rotation: r_rot}, r_goal_rot]}}}
+//            - r_rot_scaling:
+//            double-if:
+//            - {double-sub: [rot_thresh, r_rot_error]}
+//            - 1
+//            - {double-div: [rot_thresh, r_rot_error]}
+//            - r_intermediate_goal_rot:
+//            slerp:
+//            - r_rot
+//            - r_goal_rot
+//            - r_rot_scaling
+//            - r_rot_control:
+//            scale-vector: [rot_p_gain, {rotate-vector: [r_rot, {rot-vector: {rotation-mul: [{inverse-rotation: r_rot}, r_intermediate_goal_rot]}}]}]
+
+            DoubleSpecPtr interpolation_value = double_const_spec(1.0);
+            if (params.threshold_error)
+            {
+                // TODO: complete me
+            }
+            RotationSpecPtr intermediate_goal = slerp_spec(state, goal, interpolation_value);
+            DoubleSpecPtr p_gain = double_const_spec(params.p_gain);
+            VectorSpecPtr error_rot_vector = vector_constructor_spec(); // TODO: implement me
+            return vector_double_mul(error_rot_vector, p_gain);
         }
 
         DoubleSpecPtr joint_control_spec(const DoubleSpecPtr& goal, const DoubleSpecPtr& state, const ControlParams& params,
