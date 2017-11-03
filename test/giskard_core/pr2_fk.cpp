@@ -105,131 +105,134 @@ TEST_F(PR2FKTest, Scope)
   TestFrameExpression(exp, base, tip);
 }
 
-TEST_F(PR2FKTest, GeneratedFromUrdf)
-{
-  std::string base = "base_link";
-  std::string tip = "l_wrist_roll_link";
-  YAML::Node node = giskard_core::extract_expression(base, tip, "pr2.urdf");
+// TODO: get rid of this test case
+//TEST_F(PR2FKTest, GeneratedFromUrdf)
+//{
+//  std::string base = "base_link";
+//  std::string tip = "l_wrist_roll_link";
+//  YAML::Node node = giskard_core::extract_expression(base, tip, "pr2.urdf");
+//
+//  ASSERT_NO_THROW(node.as< giskard_core::ScopeSpec >());
+//  giskard_core::ScopeSpec scope_spec = node.as<giskard_core::ScopeSpec>();
+//
+//  ASSERT_NO_THROW(giskard_core::generate(scope_spec));
+//  giskard_core::Scope scope = giskard_core::generate(scope_spec);
+//
+//  ASSERT_TRUE(scope.has_frame_expression("fk"));
+//
+//  KDL::Expression<KDL::Frame>::Ptr exp = scope.find_frame_expression("fk");
+//  TestFrameExpression(exp, base, tip);
+//}
 
-  ASSERT_NO_THROW(node.as< giskard_core::ScopeSpec >());
-  giskard_core::ScopeSpec scope_spec = node.as<giskard_core::ScopeSpec>();
+// TODO: get rid of this test case
+//TEST_F(PR2FKTest, GeneratedFromTree)
+//{
+//  std::string base = "base_link";
+//  std::string tip = "l_wrist_roll_link";
+//  YAML::Node node = giskard_core::extract_expression(base, tip, tree);
+//
+//  ASSERT_NO_THROW(node.as< giskard_core::ScopeSpec >());
+//  giskard_core::ScopeSpec scope_spec = node.as<giskard_core::ScopeSpec>();
+//
+//  ASSERT_NO_THROW(giskard_core::generate(scope_spec));
+//  giskard_core::Scope scope = giskard_core::generate(scope_spec);
+//
+//  ASSERT_TRUE(scope.has_frame_expression("fk"));
 
-  ASSERT_NO_THROW(giskard_core::generate(scope_spec));
-  giskard_core::Scope scope = giskard_core::generate(scope_spec);
+//  KDL::Expression<KDL::Frame>::Ptr exp = scope.find_frame_expression("fk");
+//  TestFrameExpression(exp, base, tip);
+//}
 
-  ASSERT_TRUE(scope.has_frame_expression("fk"));
+// TODO: get rid of this these cases
+//TEST_F(PR2FKTest, TipToForearm)
+//{
+//  std::string base = "l_forearm_link";
+//  std::string tip = "l_wrist_flex_link";
+//  YAML::Node node = giskard_core::extract_expression(tip, base, tree);
+//
+//  ASSERT_NO_THROW(node.as< giskard_core::ScopeSpec >());
+//  giskard_core::ScopeSpec scope_spec = node.as<giskard_core::ScopeSpec>();
+//
+//  ASSERT_NO_THROW(giskard_core::generate(scope_spec));
+//  giskard_core::Scope scope = giskard_core::generate(scope_spec);
+//
+//  ASSERT_TRUE(scope.has_frame_expression("fk"));
+//
+//  KDL::Expression<KDL::Frame>::Ptr exp = scope.find_frame_expression("fk");
+//  TestFrameExpression(exp, tip, base);
+//}
+//
+//TEST_F(PR2FKTest, TipToBase)
+//{
+//  std::string base = "base_link";
+//  std::string tip = "l_wrist_flex_link";
+//  YAML::Node node = giskard_core::extract_expression(tip, base, tree);
+//
+//  ASSERT_NO_THROW(node.as< giskard_core::ScopeSpec >());
+//  giskard_core::ScopeSpec scope_spec = node.as<giskard_core::ScopeSpec>();
+//
+//  ASSERT_NO_THROW(giskard_core::generate(scope_spec));
+//  giskard_core::Scope scope = giskard_core::generate(scope_spec);
+//
+//  ASSERT_TRUE(scope.has_frame_expression("fk"));
+//
+//  KDL::Expression<KDL::Frame>::Ptr exp = scope.find_frame_expression("fk");
+//  TestFrameExpression(exp, tip, base);
+//}
+//
+//TEST_F(PR2FKTest, TipToTip)
+//{
+//  std::string base = "r_wrist_flex_link";
+//  std::string tip = "l_wrist_flex_link";
+//  YAML::Node node = giskard_core::extract_expression(tip, base, tree);
+//
+//  ASSERT_NO_THROW(node.as< giskard_core::ScopeSpec >());
+//  giskard_core::ScopeSpec scope_spec = node.as<giskard_core::ScopeSpec>();
+//
+//  ASSERT_NO_THROW(giskard_core::generate(scope_spec));
+//  giskard_core::Scope scope = giskard_core::generate(scope_spec);
+//
+//  ASSERT_TRUE(scope.has_frame_expression("fk"));
+//
+//  KDL::Expression<KDL::Frame>::Ptr exp = scope.find_frame_expression("fk");
+//  TestFrameExpression(exp, tip, base);
+//}
+//
+//TEST_F(PR2FKTest, BaseToCam)
+//{
+//  std::string base = "base_link";
+//  std::string tip = "l_forearm_cam_frame";
+//  YAML::Node node = giskard_core::extract_expression(tip, base, tree);
+//
+//  ASSERT_NO_THROW(node.as< giskard_core::ScopeSpec >());
+//  giskard_core::ScopeSpec scope_spec = node.as<giskard_core::ScopeSpec>();
+//
+//  ASSERT_NO_THROW(giskard_core::generate(scope_spec));
+//  giskard_core::Scope scope = giskard_core::generate(scope_spec);
 
-  KDL::Expression<KDL::Frame>::Ptr exp = scope.find_frame_expression("fk");
-  TestFrameExpression(exp, base, tip);
-}
-
-TEST_F(PR2FKTest, GeneratedFromTree)
-{
-  std::string base = "base_link";
-  std::string tip = "l_wrist_roll_link";
-  YAML::Node node = giskard_core::extract_expression(base, tip, tree);
-
-  ASSERT_NO_THROW(node.as< giskard_core::ScopeSpec >());
-  giskard_core::ScopeSpec scope_spec = node.as<giskard_core::ScopeSpec>();
-
-  ASSERT_NO_THROW(giskard_core::generate(scope_spec));
-  giskard_core::Scope scope = giskard_core::generate(scope_spec);
-
-  ASSERT_TRUE(scope.has_frame_expression("fk"));
-
-  KDL::Expression<KDL::Frame>::Ptr exp = scope.find_frame_expression("fk");
-  TestFrameExpression(exp, base, tip);
-}
-
-TEST_F(PR2FKTest, TipToForearm)
-{
-  std::string base = "l_forearm_link";
-  std::string tip = "l_wrist_flex_link";
-  YAML::Node node = giskard_core::extract_expression(tip, base, tree);
-
-  ASSERT_NO_THROW(node.as< giskard_core::ScopeSpec >());
-  giskard_core::ScopeSpec scope_spec = node.as<giskard_core::ScopeSpec>();
-
-  ASSERT_NO_THROW(giskard_core::generate(scope_spec));
-  giskard_core::Scope scope = giskard_core::generate(scope_spec);
-
-  ASSERT_TRUE(scope.has_frame_expression("fk"));
-
-  KDL::Expression<KDL::Frame>::Ptr exp = scope.find_frame_expression("fk");
-  TestFrameExpression(exp, tip, base);
-}
-
-TEST_F(PR2FKTest, TipToBase)
-{
-  std::string base = "base_link";
-  std::string tip = "l_wrist_flex_link";
-  YAML::Node node = giskard_core::extract_expression(tip, base, tree);
-
-  ASSERT_NO_THROW(node.as< giskard_core::ScopeSpec >());
-  giskard_core::ScopeSpec scope_spec = node.as<giskard_core::ScopeSpec>();
-
-  ASSERT_NO_THROW(giskard_core::generate(scope_spec));
-  giskard_core::Scope scope = giskard_core::generate(scope_spec);
-
-  ASSERT_TRUE(scope.has_frame_expression("fk"));
-
-  KDL::Expression<KDL::Frame>::Ptr exp = scope.find_frame_expression("fk");
-  TestFrameExpression(exp, tip, base);
-}
-
-TEST_F(PR2FKTest, TipToTip)
-{
-  std::string base = "r_wrist_flex_link";
-  std::string tip = "l_wrist_flex_link";
-  YAML::Node node = giskard_core::extract_expression(tip, base, tree);
-
-  ASSERT_NO_THROW(node.as< giskard_core::ScopeSpec >());
-  giskard_core::ScopeSpec scope_spec = node.as<giskard_core::ScopeSpec>();
-
-  ASSERT_NO_THROW(giskard_core::generate(scope_spec));
-  giskard_core::Scope scope = giskard_core::generate(scope_spec);
-
-  ASSERT_TRUE(scope.has_frame_expression("fk"));
-
-  KDL::Expression<KDL::Frame>::Ptr exp = scope.find_frame_expression("fk");
-  TestFrameExpression(exp, tip, base);
-}
-
-TEST_F(PR2FKTest, BaseToCam)
-{
-  std::string base = "base_link";
-  std::string tip = "l_forearm_cam_frame";
-  YAML::Node node = giskard_core::extract_expression(tip, base, tree);
-
-  ASSERT_NO_THROW(node.as< giskard_core::ScopeSpec >());
-  giskard_core::ScopeSpec scope_spec = node.as<giskard_core::ScopeSpec>();
-
-  ASSERT_NO_THROW(giskard_core::generate(scope_spec));
-  giskard_core::Scope scope = giskard_core::generate(scope_spec);
-
-  ASSERT_TRUE(scope.has_frame_expression("fk"));
-
-  KDL::Expression<KDL::Frame>::Ptr exp = scope.find_frame_expression("fk");
-  TestFrameExpression(exp, tip, base);
-}
-
-TEST_F(PR2FKTest, CamToBase)
-{
-  std::string base = "l_forearm_cam_frame";
-  std::string tip = "base_link";
-  YAML::Node node = giskard_core::extract_expression(tip, base, tree);
-
-  ASSERT_NO_THROW(node.as< giskard_core::ScopeSpec >());
-  giskard_core::ScopeSpec scope_spec = node.as<giskard_core::ScopeSpec>();
-
-  ASSERT_NO_THROW(giskard_core::generate(scope_spec));
-  giskard_core::Scope scope = giskard_core::generate(scope_spec);
-
-  ASSERT_TRUE(scope.has_frame_expression("fk"));
-
-  KDL::Expression<KDL::Frame>::Ptr exp = scope.find_frame_expression("fk");
-  TestFrameExpression(exp, tip, base);
-}
+//  ASSERT_TRUE(scope.has_frame_expression("fk"));
+//
+//  KDL::Expression<KDL::Frame>::Ptr exp = scope.find_frame_expression("fk");
+//  TestFrameExpression(exp, tip, base);
+//}
+//
+//TEST_F(PR2FKTest, CamToBase)
+//{
+//  std::string base = "l_forearm_cam_frame";
+//  std::string tip = "base_link";
+//  YAML::Node node = giskard_core::extract_expression(tip, base, tree);
+//
+//  ASSERT_NO_THROW(node.as< giskard_core::ScopeSpec >());
+//  giskard_core::ScopeSpec scope_spec = node.as<giskard_core::ScopeSpec>();
+//
+//  ASSERT_NO_THROW(giskard_core::generate(scope_spec));
+//  giskard_core::Scope scope = giskard_core::generate(scope_spec);
+//
+//  ASSERT_TRUE(scope.has_frame_expression("fk"));
+//
+//  KDL::Expression<KDL::Frame>::Ptr exp = scope.find_frame_expression("fk");
+//  TestFrameExpression(exp, tip, base);
+//}
 
 TEST_F(PR2FKTest, QPPositionControl)
 {

@@ -61,12 +61,12 @@ TEST_F(RotationGenerationTest, AxisAngle)
 
 TEST_F(RotationGenerationTest, AxisAngleEquality)
 {
-  VectorConstructorSpecPtr axis1 = 
+  VectorSpecPtr axis1 =
     vector_constructor_spec(double_const_spec(1.0), double_const_spec(0.0), double_const_spec(0.0));
-  VectorConstructorSpecPtr axis2 = 
+  VectorSpecPtr axis2 =
     vector_constructor_spec(double_const_spec(1.0), double_const_spec(1.0), double_const_spec(1.0));
-  DoubleConstSpecPtr angle = double_const_spec(M_PI/2.0);
-  DoubleConstSpecPtr x = double_const_spec(1.0);
+  DoubleSpecPtr angle = double_const_spec(M_PI/2.0);
+  DoubleSpecPtr x = double_const_spec(1.0);
 
   AxisAngleSpec s1, s2, s3, s4;
   s1.set_axis(axis1);
