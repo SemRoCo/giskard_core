@@ -1730,6 +1730,14 @@ namespace giskard_core
   class VectorRotationMultiplicationSpec: public VectorSpec
   {
     public:
+      VectorRotationMultiplicationSpec() :
+        vector_( vector_constructor_spec() ), rotation_( quaternion_spec() ) {}
+      VectorRotationMultiplicationSpec(const VectorRotationMultiplicationSpec& other) :
+        vector_( other.get_vector()), rotation_( other.get_rotation() ) {}
+      VectorRotationMultiplicationSpec(const RotationSpecPtr& new_rotation, const VectorSpecPtr& new_vector) :
+        vector_( new_vector ), rotation_( new_rotation ) {}
+      ~VectorRotationMultiplicationSpec() {}
+
       const VectorSpecPtr& get_vector() const
       {
         return vector_;
@@ -1776,6 +1784,11 @@ namespace giskard_core
 
   typedef typename boost::shared_ptr<VectorRotationMultiplicationSpec> VectorRotationMultiplicationSpecPtr;
 
+  inline VectorRotationMultiplicationSpecPtr rotate_vector(const RotationSpecPtr& new_rotation =
+      quaternion_spec(), const VectorSpecPtr& new_vector = vector_constructor_spec())
+  {
+    return VectorRotationMultiplicationSpecPtr(new VectorRotationMultiplicationSpec(new_rotation, new_vector));
+  }
 
   class VectorDoubleMultiplicationSpec: public VectorSpec
   {
