@@ -386,7 +386,7 @@ TEST_F(WholeBodyControlParamsTest, LeftArmRotation3D)
     state(i) = q_map.find(joint_names[i])->second;
   state.block<4,1>(joint_names.size(), 0) = to_eigen(goal);
   // check that spec generation is ok
-  ASSERT_NO_THROW(ControllerSpecGenerator gen(params));
+//  ASSERT_NO_THROW(ControllerSpecGenerator gen(params));
   ControllerSpecGenerator gen(params);
   ASSERT_NO_THROW(gen.get_control_params());
   ASSERT_NO_THROW(gen.get_goal_inputs(control_name));
@@ -403,9 +403,9 @@ TEST_F(WholeBodyControlParamsTest, LeftArmRotation3D)
   ASSERT_EQ(spec.hard_constraints_.size(), joint_names.size() - limitless_joints.size());
   ASSERT_EQ(spec.scope_.size(), 0);
   ASSERT_EQ(spec.soft_constraints_.size(), ControllerSpecGenerator::rotation3d_names().size() - 1);
-  for (size_t i=0; i<(ControllerSpecGenerator::translation3d_names().size()-1); ++i)
+  for (size_t i=0; i<(ControllerSpecGenerator::rotation3d_names().size()-1); ++i)
   {
-    std::string autogen_name = control_name + "_" + ControllerSpecGenerator::translation3d_names()[i];
+    std::string autogen_name = control_name + "_" + ControllerSpecGenerator::rotation3d_names()[i];
     EXPECT_STREQ(spec.soft_constraints_[i].name_.c_str(), autogen_name.c_str());
     EXPECT_TRUE(spec.soft_constraints_[i].weight_->equals(*(double_const_spec(single_joint_params.weight))));
     // TODO: check expression
@@ -419,7 +419,7 @@ TEST_F(WholeBodyControlParamsTest, LeftArmRotation3D)
   QPController control = generate(spec);
   ASSERT_TRUE(control.start(state, nWSR));
 
-  for (size_t i=0; i<10; ++i) {
+  for (size_t i=0; i<30; ++i) {
     ASSERT_TRUE(control.update(state, nWSR));
     ASSERT_EQ(control.get_command().rows(), joint_names.size());
     for (size_t i = 0; i < joint_names.size(); ++i)

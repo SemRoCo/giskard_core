@@ -226,6 +226,7 @@ namespace giskard_core
             }
             case ControlParams::ControlType::Rotation3D:
             {
+              // TODO: replace this by using a new expression similar to KDL::Rot(KDL::Vector)
               RotationSpecPtr goal_spec = axis_angle_spec(
                   vector_constructor_spec(
                       get_goal_inputs(params.first).find(rotation3d_names()[0])->second,
@@ -234,24 +235,25 @@ namespace giskard_core
                   get_goal_inputs(params.first).find(rotation3d_names()[3])->second);
               RotationSpecPtr fk_spec = orientation_of_spec(robot_.get_fk_spec(params.second.root_link, params.second.tip_link));
               VectorSpecPtr control_spec = rotation3d_control_spec(goal_spec, fk_spec, params.second);
-              for (auto const & rotation_name: ControllerSpecGenerator::rotation3d_names())
+              for (size_t i=0; i<ControllerSpecGenerator::rotation3d_names().size() -1; ++i)
               {
+                std::string rotation_name = ControllerSpecGenerator::rotation3d_names()[i];
                 SoftConstraintSpec spec;
                 spec.name_ = params.first + "_" + rotation_name;
                 spec.weight_ = double_const_spec(params.second.weight);
-                if (rotation_name.compare("x") == 0)
+                if (rotation_name.compare("axis-x") == 0)
                 {
                   spec.expression_ = x_coord(rot_vector(fk_spec));
                   spec.lower_ = x_coord(control_spec);
                   spec.upper_ = spec.lower_;
                 }
-                else if (rotation_name.compare("y") == 0)
+                else if (rotation_name.compare("axis-y") == 0)
                 {
                   spec.expression_ = y_coord(rot_vector(fk_spec));
                   spec.lower_ = y_coord(control_spec);
                   spec.upper_ = spec.lower_;
                 }
-                else if (rotation_name.compare("z") == 0)
+                else if (rotation_name.compare("axis-z") == 0)
                 {
                   spec.expression_ = z_coord(rot_vector(fk_spec));
                   spec.lower_ = z_coord(control_spec);
@@ -289,29 +291,27 @@ namespace giskard_core
         VectorSpecPtr rotation3d_control_spec(const RotationSpecPtr& goal, const RotationSpecPtr& state,
             const ControlParams& params) const
         {
-            // TODO: correct me
-//            - r_rot_error: {vector-norm: {rot-vector: {rotation-mul: [{inverse-rotation: r_rot}, r_goal_rot]}}}
-//            - r_rot_scaling:
-//            double-if:
-//            - {double-sub: [rot_thresh, r_rot_error]}
-//            - 1
-//            - {double-div: [rot_thresh, r_rot_error]}
-//            - r_intermediate_goal_rot:
-//            slerp:
-//            - r_rot
-//            - r_goal_rot
-//            - r_rot_scaling
-//            - r_rot_control:
-//            scale-vector: [rot_p_gain, {rotate-vector: [r_rot, {rot-vector: {rotation-mul: [{inverse-rotation: r_rot}, r_intermediate_goal_rot]}}]}]
-
             DoubleSpecPtr interpolation_value = double_const_spec(1.0);
             if (params.threshold_error)
             {
+              RotationSpecPtr delta_rot = rotation_multiplication_spec({inverse_rotation_spec(state), goal});
+              DoubleSpecPtr rot_error = vector_norm(rot_vector(delta_rot));
+              interpolation_value =
+                  double_if(double_sub_spec({double_const_spec(params.threshold), rot_error}),
+                            double_const_spec(1.0),
+                            double_div({double_const_spec(params.threshold), rot_error}));
                 // TODO: complete me
+//            - r_rot_error: {vector-norm: {rot-vector: {rotation-mul: [{inverse-rotation: r_rot}, r_goal_rot]}}}
+//            - r_rot_scaling:
+//                double-if:
+//                - {double-sub: [rot_thresh, r_rot_error]}
+//                - 1
+//                - {double-div: [rot_thresh, r_rot_error]}
             }
             RotationSpecPtr intermediate_goal = slerp_spec(state, goal, interpolation_value);
             DoubleSpecPtr p_gain = double_const_spec(params.p_gain);
-            VectorSpecPtr error_rot_vector = vector_constructor_spec(); // TODO: implement me
+            VectorSpecPtr error_rot_vector =
+                    rotate_vector(state, rot_vector(rotation_multiplication_spec({inverse_rotation_spec(state), intermediate_goal})));
             return vector_double_mul(error_rot_vector, p_gain);
         }
 
