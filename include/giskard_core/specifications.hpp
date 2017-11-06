@@ -2072,14 +2072,18 @@ namespace giskard_core
 
       virtual KDL::Expression<KDL::Rotation>::Ptr get_expression(const giskard_core::Scope& scope)
       {
-        // note: this type of rotation expressions only expect expressions for their axis, not
-        //       the angle. while this my make sense, it does break code symmetry.
-
-        // TODO: reimplement using KDL::Expression<R>::NearZero 
+        KDL::Expression<KDL::Vector>::Ptr axis = get_axis()->get_expression(scope);
         KDL::Expression<double>::Ptr angle = get_angle()->get_expression(scope);
-        KDL::Vector axis = get_axis()->get_expression(scope)->value();
+        KDL::Expression<double>::Ptr axis_norm = KDL::norm(axis);
 
-        return KDL::rot(axis, angle);
+        using KDL::operator/;
+        using KDL::operator*;
+        // TODO: expose normalization of vectors as operation with specification
+        KDL::Expression<KDL::Vector>::Ptr near_axis =
+            KDL::near_zero<KDL::Vector>(axis_norm, KDL::epsilon, KDL::Constant(KDL::Vector(1.0, 0.0, 0.0)), axis * (KDL::Constant(1.0)/axis_norm));
+        KDL::Expression<double>::Ptr near_angle =
+            KDL::near_zero<double>(axis_norm, KDL::epsilon, KDL::Constant(0.0), angle);
+        return KDL::rotVec(near_axis, near_angle);
       }
 
     private:

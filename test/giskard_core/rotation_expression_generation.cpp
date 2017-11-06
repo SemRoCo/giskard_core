@@ -250,15 +250,15 @@ TEST_F(RotationGenerationTest, Slerp)
 
 TEST_F(RotationGenerationTest, NearZeroTest)
 {
-  KDL::Expression<KDL::Vector>::Ptr unit_x = KDL::vector(KDL::Constant(1.0), KDL::Constant(0.0), KDL::Constant(0.0));
-  KDL::Expression<KDL::Vector>::Ptr zero = KDL::vector(KDL::Constant(0.0), KDL::Constant(0.0), KDL::Constant(0.0));
-  KDL::Expression<KDL::Vector>::Ptr small = KDL::vector(KDL::Constant(0.00001), KDL::Constant(0.0), KDL::Constant(0.0));
-  KDL::Expression<KDL::Vector>::Ptr big = KDL::vector(KDL::Constant(1111.0), KDL::Constant(0.0), KDL::Constant(0.0));
-
-  double eps = 0.00000001;
   using namespace KDL;
-  KDL::Expression<KDL::Vector>::Ptr test_zero =
-          KDL::near_zero(zero, eps, unit_x, zero / norm(zero));
+  KDL::Expression<double>::Ptr eps = KDL::Constant(0.00001);
+  KDL::Expression<double>::Ptr small = KDL::Constant(0.9) * eps;
+  KDL::Expression<double>::Ptr big = KDL::Constant(1.1) * eps;
+  KDL::Expression<double>::Ptr one = KDL::Constant(1.0);
+  KDL::Expression<double>::Ptr two = KDL::Constant(2.0);
 
+  KDL::Expression<double>::Ptr test_one = KDL::near_zero<double>(small, eps->value(), one, two);
+  KDL::Expression<double>::Ptr test_two = KDL::near_zero<double>(big, eps->value(), one, two);
+  EXPECT_DOUBLE_EQ(test_one->value(), one->value());
+  EXPECT_DOUBLE_EQ(test_two->value(), two->value());
 }
-

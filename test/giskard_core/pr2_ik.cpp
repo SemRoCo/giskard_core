@@ -127,6 +127,6 @@ TEST_F(PR2IKTest, SingleRowRotation)
     ASSERT_GE(jac_solver->JntToJac(solver_in, solver_jac), 0.0);
 
     for (size_t j=0; j<chain.getNrOfJoints(); ++j)
-      EXPECT_DOUBLE_EQ(solver_jac(3,j), exp->derivative(j));
+      EXPECT_NEAR(solver_jac(3,j), exp->derivative(j), KDL::epsilon);
   }
 }
