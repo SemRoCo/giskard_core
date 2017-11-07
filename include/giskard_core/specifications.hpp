@@ -2351,6 +2351,14 @@ namespace giskard_core
   class FrameCachedSpec: public FrameSpec
   {
     public:
+      FrameCachedSpec() :
+        frame_( frame_constructor_spec() ) {}
+      FrameCachedSpec(const FrameCachedSpec& other) :
+        frame_ ( other.get_frame() ) {}
+      FrameCachedSpec(const FrameSpecPtr& frame) :
+        frame_( frame ) {}
+      ~FrameCachedSpec() {}
+
       const giskard_core::FrameSpecPtr& get_frame() const
       {
         return frame_;
@@ -2382,6 +2390,12 @@ namespace giskard_core
   };
 
   typedef typename boost::shared_ptr<FrameCachedSpec> FrameCachedSpecPtr;
+
+  inline FrameSpecPtr cached_frame(const FrameSpecPtr& frame)
+  {
+    return FrameCachedSpecPtr(new FrameCachedSpec(frame));
+  }
+
 
   class FrameConstructorSpec: public FrameSpec
   {

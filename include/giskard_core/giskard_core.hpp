@@ -29,7 +29,7 @@
 #include <giskard_core/robot.hpp>
 #include <giskard_core/scope.hpp>
 #include <giskard_core/specifications.hpp>
-#include <giskard_core/whole_body_control_params.hpp>
+#include <giskard_core/qp_controller_spec_generator.hpp>
 #include <giskard_core/yaml_parser.hpp>
 
 #endif // GISKARD_CORE_GISKARD_CORE_HPP

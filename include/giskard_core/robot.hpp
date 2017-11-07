@@ -216,7 +216,7 @@ namespace giskard_core
           joint_transforms.insert(joint_transforms.end(), new_transforms.begin(), new_transforms.end());
         }
 
-        fk_map_.insert(std::pair<std::string, FrameSpecPtr>(tip, frame_multiplication_spec(joint_transforms)));
+        fk_map_.insert(std::pair<std::string, FrameSpecPtr>(tip, cached_frame(frame_multiplication_spec(joint_transforms))));
 
         // create and add new controllable constraints
         for (size_t i=0; i<moveable_joints_names.size(); ++i)
