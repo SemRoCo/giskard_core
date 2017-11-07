@@ -1,7 +1,3 @@
-//
-// Created by georg on 25.10.17.
-//
-
 /*
  * Copyright (C) 2017 Georg Bartels <georg.bartels@cs.uni-bremen.de>
  *

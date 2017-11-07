@@ -25,6 +25,7 @@
 #include <giskard_core/expression_extraction.hpp>
 #include <giskard_core/expressiontree.hpp>
 #include <giskard_core/qp_controller.hpp>
+#include <giskard_core/qp_controller_projection.hpp>
 #include <giskard_core/qp_problem_builder.hpp>
 #include <giskard_core/robot.hpp>
 #include <giskard_core/scope.hpp>
