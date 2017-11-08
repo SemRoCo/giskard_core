@@ -86,6 +86,34 @@ namespace giskard_core
           return params_;
         }
 
+        std::vector<std::string> get_controllable_names() const
+        {
+          std::vector<std::string> result;
+
+          for (auto const & controllable_constraint: get_spec().controllable_constraints_)
+          {
+            result.push_back(controllable_constraint.name_);
+          }
+
+          return result;
+        }
+
+        std::vector<std::string> get_observable_names() const
+        {
+          std::vector<std::string> observable_names(get_spec().controllable_constraints_.size() + get_spec().soft_constraints_.size());
+
+          // copy over controllable names
+          for (size_t i=0; i<get_spec().controllable_constraints_.size(); ++i)
+            observable_names[i] = get_spec().controllable_constraints_[i].name_;
+
+          // copy over input names
+          for (auto const & control_param: get_control_params().control_params_)
+            for (auto const& goal_input_pair: get_goal_inputs(control_param.first))
+              observable_names[goal_input_pair.second->get_input_num()] = create_input_name(control_param.first, goal_input_pair.first);
+
+          return observable_names;
+        }
+
         static double pi()
         {
           static double result = 3.14159265359;
@@ -102,6 +130,11 @@ namespace giskard_core
         {
           static std::vector<std::string> result = {"x", "y", "z"};
           return result;
+        }
+
+        static std::string create_input_name(const std::string& controller_name, const std::string& dimension_name)
+        {
+          return controller_name + "_goal_" + dimension_name;
         }
 
       protected:
@@ -181,7 +214,7 @@ namespace giskard_core
                 spec.upper_ = spec.lower_;
                 spec.expression_ = joint_spec;
                 spec.weight_ = double_const_spec(params.second.weight);
-                spec.name_ = params.first + "_" + joint_name;
+                spec.name_ = create_input_name(params.first, joint_name);
                 specs.push_back(spec);
               }
               break;
@@ -197,7 +230,7 @@ namespace giskard_core
               for (auto const & translation_name: QPControllerSpecGenerator::translation3d_names())
               {
                 SoftConstraintSpec spec;
-                spec.name_ = params.first + "_" + translation_name;
+                spec.name_ = create_input_name(params.first, translation_name);
                 spec.weight_ = double_const_spec(params.second.weight);
                 if (translation_name.compare("x") == 0)
                 {
@@ -239,7 +272,7 @@ namespace giskard_core
               {
                 std::string rotation_name = QPControllerSpecGenerator::rotation3d_names()[i];
                 SoftConstraintSpec spec;
-                spec.name_ = params.first + "_" + rotation_name;
+                spec.name_ = create_input_name(params.first, rotation_name);
                 spec.weight_ = double_const_spec(params.second.weight);
                 if (rotation_name.compare("axis-x") == 0)
                 {

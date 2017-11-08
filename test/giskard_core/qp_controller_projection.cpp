@@ -73,14 +73,7 @@ TEST_F(QPControllerProjectionTest, TorsoLiftJointControl)
   std::string joint_name = "torso_lift_joint";
   double convergence_threshold = 0.0001;
   std::map<std::string, double> convergence_thresholds = {{joint_name, convergence_threshold}};
-  // TODO: move this functionality into QPControllerSpecGenerator
-  std::vector< std::string > observable_names;
-  observable_names.resize(controller.num_observables());
-  for (size_t i=0; i<controller.num_controllables(); ++i)
-    observable_names[i] = controller.get_controllable_names()[i];
-  for (auto const & control_param: params.control_params_)
-    for (auto const& goal_input_pair: gen.get_goal_inputs(control_param.first))
-      observable_names[goal_input_pair.second->get_input_num()] = control_param.first + "_goal_" + goal_input_pair.first;
+  std::vector< std::string > observable_names = gen.get_observable_names();
 
   QPControllerProjectionParams projection_params(period, observable_names, convergence_thresholds,
       min_num_trajectory_points, max_num_trajectory_points, nWSR);

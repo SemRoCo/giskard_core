@@ -96,7 +96,7 @@ TEST_F(QPControllerSpecGeneratorTest, TorsoLiftJointControl)
   single_joint_params.type = ControlParams::ControlType::Joint;
   std::string control_name = "torso_controller";
   std::string joint_name = "torso_lift_joint";
-  std::string autgen_name = control_name + "_" + joint_name;
+  std::string autgen_name = QPControllerSpecGenerator::create_input_name(control_name, joint_name);
   QPControllerParams params(urdf, root_link, weights, thresholds, {{control_name, single_joint_params}});
   // check that spec generation is ok
   ASSERT_NO_THROW(QPControllerSpecGenerator gen(params));
@@ -121,6 +121,11 @@ TEST_F(QPControllerSpecGeneratorTest, TorsoLiftJointControl)
   else
     EXPECT_TRUE(spec.soft_constraints_[0].lower_->equals(*(double_mul_spec({double_const_spec(single_joint_params.p_gain),
                                                                        double_sub_spec({input(1), input(0)})}))));
+  ASSERT_EQ(1, gen.get_controllable_names().size());
+  EXPECT_STREQ(joint_name.c_str(), gen.get_controllable_names()[0].c_str());
+  ASSERT_EQ(2, gen.get_observable_names().size());
+  EXPECT_STREQ(joint_name.c_str(), gen.get_observable_names()[0].c_str());
+  EXPECT_STREQ(autgen_name.c_str(), gen.get_observable_names()[1].c_str());
   // check that resulting controller is ok
   ASSERT_NO_THROW(generate(spec));
   QPController control = generate(spec);
@@ -154,7 +159,7 @@ TEST_F(QPControllerSpecGeneratorTest, LWristRollJoint)
   single_joint_params.type = ControlParams::ControlType::Joint;
   std::string control_name = "arm_controller";
   std::string joint_name = "l_wrist_roll_joint";
-  std::string autgen_name = control_name + "_" + joint_name;
+  std::string autgen_name = QPControllerSpecGenerator::create_input_name(control_name, joint_name);
   QPControllerParams params(urdf, single_joint_params.root_link, weights, thresholds, {{control_name, single_joint_params}});
   // check that spec generation is ok
   ASSERT_NO_THROW(QPControllerSpecGenerator gen(params));
@@ -174,6 +179,11 @@ TEST_F(QPControllerSpecGeneratorTest, LWristRollJoint)
   EXPECT_TRUE(spec.soft_constraints_[0].weight_->equals(*(double_const_spec(single_joint_params.weight))));
   EXPECT_TRUE(spec.soft_constraints_[0].expression_->equals(*(input(0))));
   EXPECT_TRUE(spec.soft_constraints_[0].lower_->equals(*(spec.soft_constraints_[0].upper_)));
+  ASSERT_EQ(1, gen.get_controllable_names().size());
+  EXPECT_STREQ(joint_name.c_str(), gen.get_controllable_names()[0].c_str());
+  ASSERT_EQ(2, gen.get_observable_names().size());
+  EXPECT_STREQ(joint_name.c_str(), gen.get_observable_names()[0].c_str());
+  EXPECT_STREQ(autgen_name.c_str(), gen.get_observable_names()[1].c_str());
   // check that resulting controller is ok
   ASSERT_NO_THROW(generate(spec));
   QPController control = generate(spec);
@@ -235,12 +245,23 @@ TEST_F(QPControllerSpecGeneratorTest, RightArmJoint)
   ASSERT_EQ(spec.soft_constraints_.size(), controlled_joint_names.size());
   for (size_t i=0; i<controlled_joint_names.size(); ++i)
   {
-    std::string autogen_name = control_name + "_" + controlled_joint_names[i];
+    std::string autogen_name = QPControllerSpecGenerator::create_input_name(control_name, controlled_joint_names[i]);
     EXPECT_STREQ(spec.soft_constraints_[i].name_.c_str(), autogen_name.c_str());
     EXPECT_TRUE(spec.soft_constraints_[i].weight_->equals(*(double_const_spec(single_joint_params.weight))));
     EXPECT_TRUE(spec.soft_constraints_[i].expression_->equals(*(input(i+1))));
     EXPECT_TRUE(spec.soft_constraints_[i].lower_->equals(*(spec.soft_constraints_[i].upper_)));
   }
+
+  ASSERT_EQ(joint_names.size(), gen.get_controllable_names().size());
+  ASSERT_EQ(joint_names.size() + controlled_joint_names.size(), gen.get_observable_names().size());
+  for (size_t i=0; i<joint_names.size(); ++i)
+  {
+    EXPECT_STREQ(joint_names[i].c_str(), gen.get_controllable_names()[i].c_str());
+    EXPECT_STREQ(joint_names[i].c_str(), gen.get_observable_names()[i].c_str());
+  }
+  for (size_t i=0; i<controlled_joint_names.size(); ++i)
+    EXPECT_STREQ(QPControllerSpecGenerator::create_input_name(control_name, controlled_joint_names[i]).c_str(),
+              gen.get_observable_names()[joint_names.size() + i].c_str());
 
   // check that resulting controller is ok
   ASSERT_NO_THROW(generate(spec));
@@ -313,7 +334,7 @@ TEST_F(QPControllerSpecGeneratorTest, LeftArmTranslation3D)
   ASSERT_EQ(spec.soft_constraints_.size(), QPControllerSpecGenerator::translation3d_names().size());
   for (size_t i=0; i<QPControllerSpecGenerator::translation3d_names().size(); ++i)
   {
-    std::string autogen_name = control_name + "_" + QPControllerSpecGenerator::translation3d_names()[i];
+    std::string autogen_name = QPControllerSpecGenerator::create_input_name(control_name, QPControllerSpecGenerator::translation3d_names()[i]);
     EXPECT_STREQ(spec.soft_constraints_[i].name_.c_str(), autogen_name.c_str());
     EXPECT_TRUE(spec.soft_constraints_[i].weight_->equals(*(double_const_spec(single_joint_params.weight))));
     // TODO: check expression
@@ -401,7 +422,7 @@ TEST_F(QPControllerSpecGeneratorTest, LeftArmRotation3D)
   ASSERT_EQ(spec.soft_constraints_.size(), QPControllerSpecGenerator::rotation3d_names().size() - 1);
   for (size_t i=0; i<(QPControllerSpecGenerator::rotation3d_names().size()-1); ++i)
   {
-    std::string autogen_name = control_name + "_" + QPControllerSpecGenerator::rotation3d_names()[i];
+    std::string autogen_name = QPControllerSpecGenerator::create_input_name(control_name, QPControllerSpecGenerator::rotation3d_names()[i]);
     EXPECT_STREQ(spec.soft_constraints_[i].name_.c_str(), autogen_name.c_str());
     EXPECT_TRUE(spec.soft_constraints_[i].weight_->equals(*(double_const_spec(single_joint_params.weight))));
     // TODO: check expression
