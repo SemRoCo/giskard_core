@@ -83,8 +83,8 @@ class RobotTest : public ::testing::Test
         "l_forearm_roll_joint", "l_forearm_joint", "l_wrist_flex_joint", 
         "l_wrist_roll_joint", "l_gripper_palm_joint", "l_gripper_tool_joint"};
       limitless_joints = {"l_forearm_roll_joint", "l_wrist_roll_joint"};
-      weights = {{"default-joint-weight", 0.001}, {"torso_lift_joint", 0.01}};
-      thresholds = {{"default-joint-velocity", 0.6}, {"torso_lift_joint", 0.01}};
+      weights = {{giskard_core::Robot::default_joint_weight_key(), 0.001}, {"torso_lift_joint", 0.01}};
+      thresholds = {{giskard_core::Robot::default_joint_velocity_key(), 0.6}, {"torso_lift_joint", 0.01}};
     }
 
     virtual void TearDown(){}

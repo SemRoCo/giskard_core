@@ -129,13 +129,13 @@ namespace giskard_core
 
       static std::string& default_joint_weight_key()
       {
-        static std::string result{"default-joint-weight"};
+        static std::string result{"default_joint_weight"};
         return result;
       }
 
       static std::string& default_joint_velocity_key()
       {
-        static std::string result{"default-joint-velocity"};
+        static std::string result{"default_joint_velocity"};
         return result;
       }
 
