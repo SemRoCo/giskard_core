@@ -100,16 +100,28 @@ namespace giskard_core
 
         std::vector<std::string> get_observable_names() const
         {
-          std::vector<std::string> observable_names(get_spec().controllable_constraints_.size() + get_spec().soft_constraints_.size());
+          // calculate number of goal inputs
+          size_t num_goal_inputs = 0;
+          for (auto const & goal_input: goal_inputs_)
+            num_goal_inputs += goal_input.second.size();
+
+          // reserve space
+          std::vector<std::string> observable_names(get_spec().controllable_constraints_.size() + num_goal_inputs);
 
           // copy over controllable names
           for (size_t i=0; i<get_spec().controllable_constraints_.size(); ++i)
             observable_names[i] = get_spec().controllable_constraints_[i].name_;
 
           // copy over input names
-          for (auto const & control_param: get_control_params().control_params_)
-            for (auto const& goal_input_pair: get_goal_inputs(control_param.first))
-              observable_names[goal_input_pair.second->get_input_num()] = create_input_name(control_param.first, goal_input_pair.first);
+          for (auto const & control_goal_inputs: goal_inputs_)
+            for (auto const& goal_input: control_goal_inputs.second)
+            {
+               std::cout << "Adding observable '" << create_input_name(control_goal_inputs.first, goal_input.first) <<
+                         "' at index " << goal_input.second->get_input_num() << std::endl;
+               observable_names[goal_input.second->get_input_num()] =
+                  create_input_name(control_goal_inputs.first, goal_input.first);
+
+            }
 
           return observable_names;
         }
@@ -122,7 +134,7 @@ namespace giskard_core
 
         static std::vector<std::string> rotation3d_names()
         {
-          static std::vector<std::string> result = {"axis-x", "axis-y", "axis-z", "angle"};
+          static std::vector<std::string> result = {"axis_x", "axis_y", "axis_z", "angle"};
           return result;
         }
 
@@ -232,19 +244,19 @@ namespace giskard_core
                 SoftConstraintSpec spec;
                 spec.name_ = create_input_name(params.first, translation_name);
                 spec.weight_ = double_const_spec(params.second.weight);
-                if (translation_name.compare("x") == 0)
+                if (translation_name.compare(translation3d_names()[0]) == 0)
                 {
                   spec.expression_ = x_coord(fk_spec);
                   spec.lower_ = x_coord(control_spec);
                   spec.upper_ = spec.lower_;
                 }
-                else if (translation_name.compare("y") == 0)
+                else if (translation_name.compare(translation3d_names()[1]) == 0)
                 {
                   spec.expression_ = y_coord(fk_spec);
                   spec.lower_ = y_coord(control_spec);
                   spec.upper_ = spec.lower_;
                 }
-                else if (translation_name.compare("z") == 0)
+                else if (translation_name.compare(translation3d_names()[2]) == 0)
                 {
                   spec.expression_ = z_coord(fk_spec);
                   spec.lower_ = z_coord(control_spec);
@@ -274,19 +286,19 @@ namespace giskard_core
                 SoftConstraintSpec spec;
                 spec.name_ = create_input_name(params.first, rotation_name);
                 spec.weight_ = double_const_spec(params.second.weight);
-                if (rotation_name.compare("axis-x") == 0)
+                if (rotation_name.compare(rotation3d_names()[0]) == 0)
                 {
                   spec.expression_ = x_coord(rot_vector(fk_spec));
                   spec.lower_ = x_coord(control_spec);
                   spec.upper_ = spec.lower_;
                 }
-                else if (rotation_name.compare("axis-y") == 0)
+                else if (rotation_name.compare(rotation3d_names()[1]) == 0)
                 {
                   spec.expression_ = y_coord(rot_vector(fk_spec));
                   spec.lower_ = y_coord(control_spec);
                   spec.upper_ = spec.lower_;
                 }
-                else if (rotation_name.compare("axis-z") == 0)
+                else if (rotation_name.compare(rotation3d_names()[2]) == 0)
                 {
                   spec.expression_ = z_coord(rot_vector(fk_spec));
                   spec.lower_ = z_coord(control_spec);

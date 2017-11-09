@@ -343,6 +343,18 @@ TEST_F(QPControllerSpecGeneratorTest, LeftArmTranslation3D)
     // TODO: check upper
   }
 
+  // check that names of controllables and observables are fine
+  ASSERT_EQ(joint_names.size(), gen.get_controllable_names().size());
+  ASSERT_EQ(joint_names.size() + QPControllerSpecGenerator::translation3d_names().size(), gen.get_observable_names().size());
+  for (size_t i=0; i<joint_names.size(); ++i)
+  {
+    EXPECT_STREQ(joint_names[i].c_str(), gen.get_controllable_names()[i].c_str());
+    EXPECT_STREQ(joint_names[i].c_str(), gen.get_observable_names()[i].c_str());
+  }
+  for (size_t i=0; i<QPControllerSpecGenerator::translation3d_names().size(); ++i)
+    EXPECT_STREQ(QPControllerSpecGenerator::create_input_name(control_name, QPControllerSpecGenerator::translation3d_names()[i]).c_str(),
+              gen.get_observable_names()[joint_names.size() + i].c_str());
+
   // check that resulting controller is ok
   ASSERT_NO_THROW(generate(spec));
   QPController control = generate(spec);
@@ -403,7 +415,7 @@ TEST_F(QPControllerSpecGeneratorTest, LeftArmRotation3D)
     state(i) = q_map.find(joint_names[i])->second;
   state.block<4,1>(joint_names.size(), 0) = to_eigen(goal);
   // check that spec generation is ok
-//  ASSERT_NO_THROW(QPControllerSpecGenerator gen(params));
+  //ASSERT_NO_THROW(QPControllerSpecGenerator gen(params));
   QPControllerSpecGenerator gen(params);
   ASSERT_NO_THROW(gen.get_control_params());
   ASSERT_NO_THROW(gen.get_goal_inputs(control_name));
@@ -430,6 +442,18 @@ TEST_F(QPControllerSpecGeneratorTest, LeftArmRotation3D)
     EXPECT_TRUE(spec.soft_constraints_[i].lower_->equals(*(spec.soft_constraints_[i].upper_)));
     // TODO: check upper
   }
+
+  // check that names of controllables and observables are ok
+  ASSERT_EQ(joint_names.size(), gen.get_controllable_names().size());
+  ASSERT_EQ(joint_names.size() + QPControllerSpecGenerator::rotation3d_names().size(), gen.get_observable_names().size());
+  for (size_t i=0; i<joint_names.size(); ++i)
+  {
+    EXPECT_STREQ(joint_names[i].c_str(), gen.get_controllable_names()[i].c_str());
+    EXPECT_STREQ(joint_names[i].c_str(), gen.get_observable_names()[i].c_str());
+  }
+  for (size_t i=0; i<QPControllerSpecGenerator::rotation3d_names().size(); ++i)
+    EXPECT_STREQ(QPControllerSpecGenerator::create_input_name(control_name, QPControllerSpecGenerator::rotation3d_names()[i]).c_str(),
+              gen.get_observable_names()[joint_names.size() + i].c_str());
 
   // check that resulting controller is ok
   ASSERT_NO_THROW(generate(spec));
