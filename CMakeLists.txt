@@ -63,7 +63,7 @@ set(TEST_SRCS
   # test/${PROJECT_NAME}/scope.cpp
   # test/${PROJECT_NAME}/slerp.cpp
   # test/${PROJECT_NAME}/vector_expression_generation.cpp
-  test/${PROJECT_NAME}/qp_controller_projection.cpp
+  # test/${PROJECT_NAME}/qp_controller_projection.cpp
   test/${PROJECT_NAME}/qp_controller_spec_generator.cpp
   # test/${PROJECT_NAME}/yaml_parser.cpp
   )

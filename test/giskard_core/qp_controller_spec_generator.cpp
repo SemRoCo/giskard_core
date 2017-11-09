@@ -48,6 +48,16 @@ protected:
       return result;
     }
 
+    typedef Eigen::Matrix< double, 7, 1 > Vector7d;
+
+    Vector7d to_eigen(const KDL::Frame& f)
+    {
+      Vector7d result;
+      result.segment(0, 4) = to_eigen(f.M);
+      result.segment(4, 3) = to_eigen(f.p);
+      return result;
+    }
+
     virtual void SetUp()
     {
       ASSERT_TRUE(urdf.initFile("pr2.urdf"));
@@ -373,6 +383,7 @@ TEST_F(QPControllerSpecGeneratorTest, LeftArmTranslation3D)
 
   KDL::ChainFkSolverPos_recursive fk_solver(chain);
   KDL::JntArray q_in(joint_names.size());
+
   for (size_t i=0; i<joint_names.size(); ++i)
     q_in(i) = state(i);
   KDL::Frame solver_frame;
@@ -383,7 +394,7 @@ TEST_F(QPControllerSpecGeneratorTest, LeftArmTranslation3D)
 // Rotation3D CONTROL
 TEST_F(QPControllerSpecGeneratorTest, LeftArmRotation3D)
 {
-  // prepare necessary data
+  // prepare necessary parameters
   int nWSR = 100;
   ControlParams single_joint_params;
   single_joint_params.root_link = root_link;
@@ -399,6 +410,8 @@ TEST_F(QPControllerSpecGeneratorTest, LeftArmRotation3D)
         "l_elbow_flex_joint", "l_forearm_roll_joint", "l_wrist_flex_joint", "l_wrist_roll_joint"};
   std::set<std::string> limitless_joints = {"r_forearm_roll_joint", "r_wrist_roll_joint"};
   QPControllerParams params(urdf, root_link, weights, thresholds, {{control_name, single_joint_params}});
+
+  // prepare initial state and goal
   std::map<std::string, double> q_map;
   q_map["l_elbow_flex_joint"] = -0.150245;
   q_map["l_forearm_roll_joint"] = 2.05374;
@@ -413,9 +426,10 @@ TEST_F(QPControllerSpecGeneratorTest, LeftArmRotation3D)
   state.resize(joint_names.size() + QPControllerSpecGenerator::rotation3d_names().size());
   for (size_t i=0; i<joint_names.size(); ++i)
     state(i) = q_map.find(joint_names[i])->second;
-  state.block<4,1>(joint_names.size(), 0) = to_eigen(goal);
+  state.segment(joint_names.size(), QPControllerSpecGenerator::rotation3d_names().size()) = to_eigen(goal);
+
   // check that spec generation is ok
-  //ASSERT_NO_THROW(QPControllerSpecGenerator gen(params));
+  ASSERT_NO_THROW(QPControllerSpecGenerator gen(params));
   QPControllerSpecGenerator gen(params);
   ASSERT_NO_THROW(gen.get_control_params());
   ASSERT_NO_THROW(gen.get_goal_inputs(control_name));
@@ -480,4 +494,144 @@ TEST_F(QPControllerSpecGeneratorTest, LeftArmRotation3D)
   EXPECT_TRUE(KDL::Equal(solver_frame.M, goal));
 }
 
-// CART6D
+// Translation3DAndRotation3D
+TEST_F(QPControllerSpecGeneratorTest, LeftArmTranslation3DAndRotation3D)
+{
+  // prepare necessary parameters
+  int nWSR = 100;
+  ControlParams trans3d_params;
+  trans3d_params.root_link = root_link;
+  trans3d_params.tip_link = "l_gripper_tool_frame";
+  trans3d_params.p_gain = 1;
+  trans3d_params.threshold_error = true;
+  trans3d_params.threshold = 0.05;
+  trans3d_params.weight = 1.0;
+  trans3d_params.type = ControlParams::ControlType::Translation3D;
+  std::string control_name_trans3d = "left_arm_trans3D";
+  std::string control_name_rot3d = "left_arm_rot3D";
+  ControlParams rot3d_params = trans3d_params;
+  rot3d_params.threshold = 0.1;
+  rot3d_params.type = ControlParams::ControlType::Rotation3D;
+  QPControllerParams params(urdf, root_link, weights, thresholds,
+      {{control_name_trans3d, trans3d_params}, {control_name_rot3d, rot3d_params}});
+  std::vector<std::string> joint_names = {
+        "torso_lift_joint", "l_shoulder_pan_joint", "l_shoulder_lift_joint","l_upper_arm_roll_joint",
+        "l_elbow_flex_joint", "l_forearm_roll_joint", "l_wrist_flex_joint", "l_wrist_roll_joint"};
+  std::set<std::string> limitless_joints = {"r_forearm_roll_joint", "r_wrist_roll_joint"};
+
+  // prepare initial state and goal state
+  std::map<std::string, double> q_map;
+  q_map["l_elbow_flex_joint"] = -0.150245;
+  q_map["l_forearm_roll_joint"] = 2.05374;
+  q_map["l_shoulder_lift_joint"] = 1.29519;
+  q_map["l_shoulder_pan_joint"] = 1.85677;
+  q_map["l_upper_arm_roll_joint"] = 1.49425;
+  q_map["l_wrist_flex_joint"] = -0.240708;
+  q_map["l_wrist_roll_joint"] = 6.11928;
+  q_map["torso_lift_joint"] = 0.300026;
+  KDL::Frame goal = KDL::Frame(KDL::Rotation::Quaternion(0.293821000071, 0.27801803703, -0.635756695443, 0.657410552874),
+                               KDL::Vector(0.0834884427791, 0.505313166742, 0.176484549611));
+  Eigen::VectorXd state;
+  state.resize(joint_names.size() + QPControllerSpecGenerator::translation3d_names().size() +
+                       QPControllerSpecGenerator::rotation3d_names().size());
+  for (size_t i=0; i<joint_names.size(); ++i)
+    state(i) = q_map.find(joint_names[i])->second;
+  state.segment(joint_names.size(), QPControllerSpecGenerator::translation3d_names().size() +
+      QPControllerSpecGenerator::rotation3d_names().size()) = to_eigen(goal);
+
+  // check that constructor is OK
+  ASSERT_NO_THROW(QPControllerSpecGenerator gen(params));
+  QPControllerSpecGenerator gen(params);
+  ASSERT_NO_THROW(gen.get_control_params());
+
+  // check that names of controllables and observables are ok
+  ASSERT_EQ(joint_names.size(), gen.get_controllable_names().size());
+  ASSERT_EQ(joint_names.size() + QPControllerSpecGenerator::translation3d_names().size() +
+            QPControllerSpecGenerator::rotation3d_names().size(), gen.get_observable_names().size());
+  for (size_t i=0; i<joint_names.size(); ++i)
+  {
+    EXPECT_STREQ(joint_names[i].c_str(), gen.get_controllable_names()[i].c_str());
+    EXPECT_STREQ(joint_names[i].c_str(), gen.get_observable_names()[i].c_str());
+  }
+  for (size_t i=0; i<QPControllerSpecGenerator::rotation3d_names().size(); ++i)
+    EXPECT_STREQ(QPControllerSpecGenerator::create_input_name(control_name_rot3d,
+        QPControllerSpecGenerator::rotation3d_names()[i]).c_str(),
+        gen.get_observable_names()[joint_names.size() + i].c_str());
+
+  for (size_t i=0; i<QPControllerSpecGenerator::translation3d_names().size(); ++i)
+    EXPECT_STREQ(QPControllerSpecGenerator::create_input_name(control_name_trans3d,
+        QPControllerSpecGenerator::translation3d_names()[i]).c_str(),
+        gen.get_observable_names()[joint_names.size() + QPControllerSpecGenerator::rotation3d_names().size() + i].c_str());
+
+  // check that size getters are OK
+  EXPECT_EQ(joint_names.size(), gen.num_controllables());
+  EXPECT_EQ(QPControllerSpecGenerator::translation3d_names().size() + QPControllerSpecGenerator::rotation3d_names().size(),
+            gen.num_goal_inputs());
+  EXPECT_EQ(gen.num_observables(), gen.num_controllables() + gen.num_goal_inputs());
+
+  // check that goal inputs are OK
+  ASSERT_NO_THROW(gen.get_goal_inputs(control_name_rot3d));
+  ASSERT_EQ(gen.get_goal_inputs(control_name_rot3d).size(), QPControllerSpecGenerator::rotation3d_names().size());
+  for (size_t i=0; i<QPControllerSpecGenerator::rotation3d_names().size(); ++i)
+  {
+    ASSERT_NO_THROW(gen.get_goal_input(control_name_rot3d, QPControllerSpecGenerator::rotation3d_names()[i]));
+    DoubleInputSpecPtr goal_input = gen.get_goal_input(control_name_rot3d, QPControllerSpecGenerator::rotation3d_names()[i]);
+    EXPECT_EQ(goal_input->get_input_num(), joint_names.size() + i);
+    EXPECT_TRUE(gen.get_goal_inputs(control_name_rot3d).find(
+        QPControllerSpecGenerator::rotation3d_names()[i])->second->equals(*goal_input));
+  }
+  ASSERT_NO_THROW(gen.get_goal_inputs(control_name_trans3d));
+  ASSERT_EQ(gen.get_goal_inputs(control_name_trans3d).size(), QPControllerSpecGenerator::translation3d_names().size());
+  for (size_t i=0; i<QPControllerSpecGenerator::translation3d_names().size(); ++i)
+  {
+    ASSERT_NO_THROW(gen.get_goal_input(control_name_trans3d, QPControllerSpecGenerator::translation3d_names()[i]));
+    DoubleInputSpecPtr goal_input = gen.get_goal_input(control_name_trans3d, QPControllerSpecGenerator::translation3d_names()[i]);
+    EXPECT_EQ(goal_input->get_input_num(), joint_names.size() + QPControllerSpecGenerator::rotation3d_names().size() + i);
+    EXPECT_TRUE(gen.get_goal_inputs(control_name_trans3d).find(
+        QPControllerSpecGenerator::translation3d_names()[i])->second->equals(*goal_input));
+  }
+
+  // check that the actual generation is OK
+  ASSERT_NO_THROW(gen.get_spec());
+  QPControllerSpec spec = gen.get_spec();
+  ASSERT_EQ(spec.controllable_constraints_.size(), joint_names.size());
+  ASSERT_EQ(spec.hard_constraints_.size(), joint_names.size() - limitless_joints.size());
+  ASSERT_EQ(spec.scope_.size(), 0);
+  ASSERT_EQ(spec.soft_constraints_.size(), QPControllerSpecGenerator::translation3d_names().size() +
+          QPControllerSpecGenerator::rotation3d_names().size() - 1);
+  for (size_t i=0; i<(QPControllerSpecGenerator::rotation3d_names().size()-1); ++i)
+  {
+    std::string autogen_name = QPControllerSpecGenerator::create_input_name(control_name_rot3d, QPControllerSpecGenerator::rotation3d_names()[i]);
+    EXPECT_STREQ(spec.soft_constraints_[i].name_.c_str(), autogen_name.c_str());
+    EXPECT_TRUE(spec.soft_constraints_[i].weight_->equals(*(double_const_spec(trans3d_params.weight))));
+    // TODO: check expression
+    // EXPECT_TRUE(spec.soft_constraints_[i].expression_->equals(*(input(i+1))));
+    EXPECT_TRUE(spec.soft_constraints_[i].lower_->equals(*(spec.soft_constraints_[i].upper_)));
+    // TODO: check upper
+  }
+
+  // check that resulting controller is ok
+  ASSERT_NO_THROW(generate(spec));
+  QPController control = generate(spec);
+  ASSERT_TRUE(control.start(state, nWSR));
+
+  for (size_t i=0; i<25; ++i) {
+    ASSERT_TRUE(control.update(state, nWSR));
+    ASSERT_EQ(control.get_command().rows(), joint_names.size());
+    for (size_t i = 0; i < joint_names.size(); ++i)
+      state[i] += control.get_command()[i]; // simulating kinematics
+  }
+
+  // check that we reached goal in the end
+  KDL::Chain chain;
+  ASSERT_TRUE(tree.getChain(trans3d_params.root_link, trans3d_params.tip_link, chain));
+  ASSERT_EQ(chain.getNrOfJoints(), joint_names.size());
+
+  KDL::ChainFkSolverPos_recursive fk_solver(chain);
+  KDL::JntArray q_in(joint_names.size());
+  for (size_t i=0; i<joint_names.size(); ++i)
+    q_in(i) = state(i);
+  KDL::Frame solver_frame;
+  ASSERT_GE(fk_solver.JntToCart(q_in, solver_frame), 0);
+  EXPECT_TRUE(KDL::Equal(solver_frame, goal));
+}

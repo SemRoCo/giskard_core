@@ -76,6 +76,16 @@ namespace giskard_core
           return goal_inputs_.find(control_name)->second;
         }
 
+        const DoubleInputSpecPtr& get_goal_input(const std::string& control_name, const std::string& dim_name) const
+        {
+          const std::map<std::string, DoubleInputSpecPtr> goal_inputs = get_goal_inputs(control_name);
+
+          if (goal_inputs.count(dim_name) == 0)
+            throw std::runtime_error("Could not find goal input for dimension '" + dim_name + "' of control '" + control_name + "'.");
+
+          return goal_inputs.find(dim_name)->second;
+        }
+
         const QPControllerSpec& get_spec() const
         {
           return qp_spec_;
@@ -100,13 +110,8 @@ namespace giskard_core
 
         std::vector<std::string> get_observable_names() const
         {
-          // calculate number of goal inputs
-          size_t num_goal_inputs = 0;
-          for (auto const & goal_input: goal_inputs_)
-            num_goal_inputs += goal_input.second.size();
-
           // reserve space
-          std::vector<std::string> observable_names(get_spec().controllable_constraints_.size() + num_goal_inputs);
+          std::vector<std::string> observable_names(get_spec().controllable_constraints_.size() + num_goal_inputs());
 
           // copy over controllable names
           for (size_t i=0; i<get_spec().controllable_constraints_.size(); ++i)
@@ -116,14 +121,33 @@ namespace giskard_core
           for (auto const & control_goal_inputs: goal_inputs_)
             for (auto const& goal_input: control_goal_inputs.second)
             {
-               std::cout << "Adding observable '" << create_input_name(control_goal_inputs.first, goal_input.first) <<
-                         "' at index " << goal_input.second->get_input_num() << std::endl;
+//               std::cout << "Adding observable '" << create_input_name(control_goal_inputs.first, goal_input.first) <<
+//                         "' at index " << goal_input.second->get_input_num() << std::endl;
                observable_names[goal_input.second->get_input_num()] =
                   create_input_name(control_goal_inputs.first, goal_input.first);
 
             }
 
           return observable_names;
+        }
+
+        size_t num_controllables() const
+        {
+          return qp_spec_.controllable_constraints_.size();
+        }
+
+        size_t num_goal_inputs() const
+        {
+          size_t num_goal_inputs = 0;
+          for (auto const & goal_input: goal_inputs_)
+            num_goal_inputs += goal_input.second.size();
+
+          return num_goal_inputs;
+        }
+
+        size_t num_observables() const
+        {
+          return num_controllables() + num_goal_inputs();
         }
 
         static double pi()
@@ -158,20 +182,21 @@ namespace giskard_core
         void init()
         {
           qp_spec_.scope_.clear();
-          init_goal_inputs();
-          init_soft_constraints();
           qp_spec_.controllable_constraints_ = robot_.get_controllable_constraints();
           qp_spec_.hard_constraints_ = robot_.get_hard_constraints();
+          init_goal_inputs();
+          init_soft_constraints();
         }
 
         void init_goal_inputs()
         {
           for (auto const & control : params_.control_params_)
             goal_inputs_.insert(std::make_pair(control.first,
-                get_goal_inputs(control.second, robot_.get_number_of_joints() + goal_inputs_.size())));
+//                create_goal_inputs(control.second, robot_.get_number_of_joints() + goal_inputs_.size())));
+                create_goal_inputs(control.second, num_observables())));
         }
 
-        std::map<std::string, DoubleInputSpecPtr> get_goal_inputs(const ControlParams& params, size_t start_index) const
+        std::map<std::string, DoubleInputSpecPtr> create_goal_inputs(const ControlParams& params, size_t start_index) const
         {
           std::map<std::string, DoubleInputSpecPtr> result;
           switch(params.type)
