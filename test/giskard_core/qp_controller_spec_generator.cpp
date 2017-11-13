@@ -28,6 +28,7 @@ using namespace giskard_core;
 class QPControllerSpecGeneratorTest : public ::testing::Test
 {
 protected:
+    // TODO: move these conversions to somewhere usable
     Eigen::Vector3d to_eigen(const KDL::Vector& p)
     {
       Eigen::Vector3d result;

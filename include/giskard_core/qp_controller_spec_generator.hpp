@@ -173,6 +173,33 @@ namespace giskard_core
           return controller_name + "_goal_" + dimension_name;
         }
 
+        static std::vector<std::string> create_input_names(const std::string& controller_name, const ControlParams::ControlType& type)
+        {
+            std::vector<std::string> result;
+            switch (type)
+            {
+                case ControlParams::ControlType::Joint:
+                  throw std::runtime_error("Function create_input_names does not support ControlType Joint.");
+                case ControlParams::ControlType::Unknown:
+                  throw std::runtime_error("Function create_input_names does not support ControlType Unknown.");
+                case ControlParams::ControlType::Translation3D:
+                {
+                  for (auto const & trans_name: translation3d_names())
+                    result.push_back(create_input_name(controller_name, trans_name));
+                  break;
+                }
+                case ControlParams::ControlType::Rotation3D:
+                {
+                  for (auto const & rot_name: rotation3d_names())
+                    result.push_back(create_input_name(controller_name, rot_name));
+                  break;
+                }
+                default:
+                  throw std::runtime_error("Function create_input_names ran into unsupported ControlType.");
+            }
+            return result;
+        };
+
       protected:
         Robot robot_;
         QPControllerParams params_;
