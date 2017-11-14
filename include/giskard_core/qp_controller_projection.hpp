@@ -53,9 +53,16 @@ namespace giskard_core
           if (controllable_names[i].compare(observable_names_[i]) != 0)
             throw std::runtime_error("Controllable name at index " + std::to_string(i) + " does not match observable name at the same index.");
 
-        for (auto const & controllable_name: controllable_names)
-          if (convergence_thresholds_.count(controllable_name) == 0)
-            throw std::runtime_error("Could not find convergence threshold for controllable '" + controllable_name + "'.");
+        if (convergence_thresholds_.count(default_joint_convergence_threshold_key()) == 0)
+          for (auto const & controllable_name: controllable_names)
+            if (convergence_thresholds_.count(controllable_name) == 0)
+              throw std::runtime_error("Neither '" + default_joint_convergence_threshold_key() + " nor convergence " +
+                                       "threshold for controllable '" + controllable_name + "' given.");
+      }
+
+      static std::string default_joint_convergence_threshold_key()
+      {
+        return "default_joint_convergence_threshold"  ;
       }
 
       double period_;
@@ -64,6 +71,7 @@ namespace giskard_core
       size_t min_num_trajectory_points_, max_num_trajectory_points_;
       int nWSR_;
   };
+
   class QPControllerProjection
   {
     public:
@@ -121,10 +129,12 @@ namespace giskard_core
       {
         convergence_thresholds_.resize(get_controllable_names().size());
         for (size_t i=0; i<get_controllable_names().size(); ++i)
-          if (thresholds.count(get_controllable_names()[i]) == 0)
-            throw std::runtime_error("Could not find convergence threshold for '" + get_controllable_names()[i] + "'.");
-          else
+          if (thresholds.count(get_controllable_names()[i]) != 0)
             convergence_thresholds_(i) = thresholds.find(get_controllable_names()[i])->second;
+          else if (thresholds.count(QPControllerProjectionParams::default_joint_convergence_threshold_key()) != 0)
+            convergence_thresholds_(i) = thresholds.find(QPControllerProjectionParams::default_joint_convergence_threshold_key())->second;
+          else
+            throw std::runtime_error("No '" + QPControllerProjectionParams::default_joint_convergence_threshold_key() + "' given.");
       }
 
       void init_controller(const std::map<std::string, double>& start_observables)
