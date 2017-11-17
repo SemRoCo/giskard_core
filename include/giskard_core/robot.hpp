@@ -171,6 +171,11 @@ namespace giskard_core
         return chain_joints;
       }
 
+      bool is_continuous_joint(const std::string& joint_name) const
+      {
+        return robot_model_.joints_.find(joint_name)->second->type == urdf::Joint::CONTINUOUS;
+      }
+
       std::set<std::string> continuous_joints_names(const std::string& root, const std::string& tip) const
       {
         std::set<std::string> result;
