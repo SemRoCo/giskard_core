@@ -212,15 +212,15 @@ namespace giskard_core
           return result;
         }
 
-      protected:
-        QPControllerParams params_;
-        QPControllerSpec qp_spec_;
-        std::map<std::string, std::map<std::string, DoubleInputSpecPtr> > goal_inputs_;
-
         const Robot& get_robot() const
         {
           return params_.robot_;
         }
+
+      protected:
+        QPControllerParams params_;
+        QPControllerSpec qp_spec_;
+        std::map<std::string, std::map<std::string, DoubleInputSpecPtr> > goal_inputs_;
 
         void init()
         {
