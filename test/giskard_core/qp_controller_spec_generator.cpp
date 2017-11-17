@@ -107,7 +107,7 @@ TEST_F(QPControllerSpecGeneratorTest, TorsoLiftJointControl)
   single_joint_params.type = ControlParams::ControlType::Joint;
   std::string control_name = "torso_controller";
   std::string joint_name = "torso_lift_joint";
-  std::string autgen_name = QPControllerSpecGenerator::create_input_name(control_name, joint_name);
+  std::string autgen_name = create_input_name(control_name, joint_name);
   QPControllerParams params(urdf, root_link, weights, thresholds, {{control_name, single_joint_params}});
   // check that spec generation is ok
   ASSERT_NO_THROW(QPControllerSpecGenerator gen(params));
@@ -170,7 +170,7 @@ TEST_F(QPControllerSpecGeneratorTest, LWristRollJoint)
   single_joint_params.type = ControlParams::ControlType::Joint;
   std::string control_name = "arm_controller";
   std::string joint_name = "l_wrist_roll_joint";
-  std::string autgen_name = QPControllerSpecGenerator::create_input_name(control_name, joint_name);
+  std::string autgen_name = create_input_name(control_name, joint_name);
   QPControllerParams params(urdf, single_joint_params.root_link, weights, thresholds, {{control_name, single_joint_params}});
   // check that spec generation is ok
   ASSERT_NO_THROW(QPControllerSpecGenerator gen(params));
@@ -256,7 +256,7 @@ TEST_F(QPControllerSpecGeneratorTest, RightArmJoint)
   ASSERT_EQ(spec.soft_constraints_.size(), controlled_joint_names.size());
   for (size_t i=0; i<controlled_joint_names.size(); ++i)
   {
-    std::string autogen_name = QPControllerSpecGenerator::create_input_name(control_name, controlled_joint_names[i]);
+    std::string autogen_name = create_input_name(control_name, controlled_joint_names[i]);
     EXPECT_STREQ(spec.soft_constraints_[i].name_.c_str(), autogen_name.c_str());
     EXPECT_TRUE(spec.soft_constraints_[i].weight_->equals(*(double_const_spec(single_joint_params.weight))));
     EXPECT_TRUE(spec.soft_constraints_[i].expression_->equals(*(input(i+1))));
@@ -271,7 +271,7 @@ TEST_F(QPControllerSpecGeneratorTest, RightArmJoint)
     EXPECT_STREQ(joint_names[i].c_str(), gen.get_observable_names()[i].c_str());
   }
   for (size_t i=0; i<controlled_joint_names.size(); ++i)
-    EXPECT_STREQ(QPControllerSpecGenerator::create_input_name(control_name, controlled_joint_names[i]).c_str(),
+    EXPECT_STREQ(create_input_name(control_name, controlled_joint_names[i]).c_str(),
               gen.get_observable_names()[joint_names.size() + i].c_str());
 
   // check that resulting controller is ok
@@ -321,7 +321,7 @@ TEST_F(QPControllerSpecGeneratorTest, LeftArmTranslation3D)
   q_map["torso_lift_joint"] = 0.300026;
   KDL::Vector goal = KDL::Vector(0.0834884427791, 0.505313166742, 0.176484549611);
   Eigen::VectorXd state;
-  state.resize(joint_names.size() + QPControllerSpecGenerator::translation3d_names().size());
+  state.resize(joint_names.size() + translation3d_names().size());
   for (size_t i=0; i<joint_names.size(); ++i)
     state(i) = q_map.find(joint_names[i])->second;
   state.block<3,1>(joint_names.size(), 0) = to_eigen(goal);
@@ -330,22 +330,22 @@ TEST_F(QPControllerSpecGeneratorTest, LeftArmTranslation3D)
   QPControllerSpecGenerator gen(params);
   ASSERT_NO_THROW(gen.get_control_params());
   ASSERT_NO_THROW(gen.get_goal_inputs(control_name));
-  ASSERT_EQ(gen.get_goal_inputs(control_name).size(), QPControllerSpecGenerator::translation3d_names().size());
-  for (size_t i=0; i<QPControllerSpecGenerator::translation3d_names().size(); ++i)
+  ASSERT_EQ(gen.get_goal_inputs(control_name).size(), translation3d_names().size());
+  for (size_t i=0; i<translation3d_names().size(); ++i)
   {
-    ASSERT_TRUE(gen.get_goal_inputs(control_name).find(QPControllerSpecGenerator::translation3d_names()[i]) !=
+    ASSERT_TRUE(gen.get_goal_inputs(control_name).find(translation3d_names()[i]) !=
                         gen.get_goal_inputs(control_name).end());
-    EXPECT_TRUE(gen.get_goal_inputs(control_name).find(QPControllerSpecGenerator::translation3d_names()[i])->second->equals(*(input(joint_names.size() + i))));
+    EXPECT_TRUE(gen.get_goal_inputs(control_name).find(translation3d_names()[i])->second->equals(*(input(joint_names.size() + i))));
   }
   ASSERT_NO_THROW(gen.get_spec());
   QPControllerSpec spec = gen.get_spec();
   ASSERT_EQ(spec.controllable_constraints_.size(), joint_names.size());
   ASSERT_EQ(spec.hard_constraints_.size(), joint_names.size() - limitless_joints.size());
   ASSERT_EQ(spec.scope_.size(), 0);
-  ASSERT_EQ(spec.soft_constraints_.size(), QPControllerSpecGenerator::translation3d_names().size());
-  for (size_t i=0; i<QPControllerSpecGenerator::translation3d_names().size(); ++i)
+  ASSERT_EQ(spec.soft_constraints_.size(), translation3d_names().size());
+  for (size_t i=0; i<translation3d_names().size(); ++i)
   {
-    std::string autogen_name = QPControllerSpecGenerator::create_input_name(control_name, QPControllerSpecGenerator::translation3d_names()[i]);
+    std::string autogen_name = create_input_name(control_name, translation3d_names()[i]);
     EXPECT_STREQ(spec.soft_constraints_[i].name_.c_str(), autogen_name.c_str());
     EXPECT_TRUE(spec.soft_constraints_[i].weight_->equals(*(double_const_spec(single_joint_params.weight))));
     // TODO: check expression
@@ -356,14 +356,14 @@ TEST_F(QPControllerSpecGeneratorTest, LeftArmTranslation3D)
 
   // check that names of controllables and observables are fine
   ASSERT_EQ(joint_names.size(), gen.get_controllable_names().size());
-  ASSERT_EQ(joint_names.size() + QPControllerSpecGenerator::translation3d_names().size(), gen.get_observable_names().size());
+  ASSERT_EQ(joint_names.size() + translation3d_names().size(), gen.get_observable_names().size());
   for (size_t i=0; i<joint_names.size(); ++i)
   {
     EXPECT_STREQ(joint_names[i].c_str(), gen.get_controllable_names()[i].c_str());
     EXPECT_STREQ(joint_names[i].c_str(), gen.get_observable_names()[i].c_str());
   }
-  for (size_t i=0; i<QPControllerSpecGenerator::translation3d_names().size(); ++i)
-    EXPECT_STREQ(QPControllerSpecGenerator::create_input_name(control_name, QPControllerSpecGenerator::translation3d_names()[i]).c_str(),
+  for (size_t i=0; i<translation3d_names().size(); ++i)
+    EXPECT_STREQ(create_input_name(control_name, translation3d_names()[i]).c_str(),
               gen.get_observable_names()[joint_names.size() + i].c_str());
 
   // check that resulting controller is ok
@@ -424,32 +424,32 @@ TEST_F(QPControllerSpecGeneratorTest, LeftArmRotation3D)
   q_map["torso_lift_joint"] = 0.300026;
   KDL::Rotation goal = KDL::Rotation::Quaternion(0.293821000071, 0.27801803703, -0.635756695443, 0.657410552874);
   Eigen::VectorXd state;
-  state.resize(joint_names.size() + QPControllerSpecGenerator::rotation3d_names().size());
+  state.resize(joint_names.size() + rotation3d_names().size());
   for (size_t i=0; i<joint_names.size(); ++i)
     state(i) = q_map.find(joint_names[i])->second;
-  state.segment(joint_names.size(), QPControllerSpecGenerator::rotation3d_names().size()) = to_eigen(goal);
+  state.segment(joint_names.size(), rotation3d_names().size()) = to_eigen(goal);
 
   // check that spec generation is ok
   ASSERT_NO_THROW(QPControllerSpecGenerator gen(params));
   QPControllerSpecGenerator gen(params);
   ASSERT_NO_THROW(gen.get_control_params());
   ASSERT_NO_THROW(gen.get_goal_inputs(control_name));
-  ASSERT_EQ(gen.get_goal_inputs(control_name).size(), QPControllerSpecGenerator::rotation3d_names().size());
-  for (size_t i=0; i<QPControllerSpecGenerator::rotation3d_names().size(); ++i)
+  ASSERT_EQ(gen.get_goal_inputs(control_name).size(), rotation3d_names().size());
+  for (size_t i=0; i<rotation3d_names().size(); ++i)
   {
-    ASSERT_TRUE(gen.get_goal_inputs(control_name).find(QPControllerSpecGenerator::rotation3d_names()[i]) !=
+    ASSERT_TRUE(gen.get_goal_inputs(control_name).find(rotation3d_names()[i]) !=
                         gen.get_goal_inputs(control_name).end());
-    EXPECT_TRUE(gen.get_goal_inputs(control_name).find(QPControllerSpecGenerator::rotation3d_names()[i])->second->equals(*(input(joint_names.size() + i))));
+    EXPECT_TRUE(gen.get_goal_inputs(control_name).find(rotation3d_names()[i])->second->equals(*(input(joint_names.size() + i))));
   }
   ASSERT_NO_THROW(gen.get_spec());
   QPControllerSpec spec = gen.get_spec();
   ASSERT_EQ(spec.controllable_constraints_.size(), joint_names.size());
   ASSERT_EQ(spec.hard_constraints_.size(), joint_names.size() - limitless_joints.size());
   ASSERT_EQ(spec.scope_.size(), 0);
-  ASSERT_EQ(spec.soft_constraints_.size(), QPControllerSpecGenerator::rotation3d_names().size() - 1);
-  for (size_t i=0; i<(QPControllerSpecGenerator::rotation3d_names().size()-1); ++i)
+  ASSERT_EQ(spec.soft_constraints_.size(), rotation3d_names().size() - 1);
+  for (size_t i=0; i<(rotation3d_names().size()-1); ++i)
   {
-    std::string autogen_name = QPControllerSpecGenerator::create_input_name(control_name, QPControllerSpecGenerator::rotation3d_names()[i]);
+    std::string autogen_name = create_input_name(control_name, rotation3d_names()[i]);
     EXPECT_STREQ(spec.soft_constraints_[i].name_.c_str(), autogen_name.c_str());
     EXPECT_TRUE(spec.soft_constraints_[i].weight_->equals(*(double_const_spec(single_joint_params.weight))));
     // TODO: check expression
@@ -460,14 +460,14 @@ TEST_F(QPControllerSpecGeneratorTest, LeftArmRotation3D)
 
   // check that names of controllables and observables are ok
   ASSERT_EQ(joint_names.size(), gen.get_controllable_names().size());
-  ASSERT_EQ(joint_names.size() + QPControllerSpecGenerator::rotation3d_names().size(), gen.get_observable_names().size());
+  ASSERT_EQ(joint_names.size() + rotation3d_names().size(), gen.get_observable_names().size());
   for (size_t i=0; i<joint_names.size(); ++i)
   {
     EXPECT_STREQ(joint_names[i].c_str(), gen.get_controllable_names()[i].c_str());
     EXPECT_STREQ(joint_names[i].c_str(), gen.get_observable_names()[i].c_str());
   }
-  for (size_t i=0; i<QPControllerSpecGenerator::rotation3d_names().size(); ++i)
-    EXPECT_STREQ(QPControllerSpecGenerator::create_input_name(control_name, QPControllerSpecGenerator::rotation3d_names()[i]).c_str(),
+  for (size_t i=0; i<rotation3d_names().size(); ++i)
+    EXPECT_STREQ(create_input_name(control_name, rotation3d_names()[i]).c_str(),
               gen.get_observable_names()[joint_names.size() + i].c_str());
 
   // check that resulting controller is ok
@@ -533,12 +533,10 @@ TEST_F(QPControllerSpecGeneratorTest, LeftArmTranslation3DAndRotation3D)
   KDL::Frame goal = KDL::Frame(KDL::Rotation::Quaternion(0.293821000071, 0.27801803703, -0.635756695443, 0.657410552874),
                                KDL::Vector(0.0834884427791, 0.505313166742, 0.176484549611));
   Eigen::VectorXd state;
-  state.resize(joint_names.size() + QPControllerSpecGenerator::translation3d_names().size() +
-                       QPControllerSpecGenerator::rotation3d_names().size());
+  state.resize(joint_names.size() + translation3d_names().size() + rotation3d_names().size());
   for (size_t i=0; i<joint_names.size(); ++i)
     state(i) = q_map.find(joint_names[i])->second;
-  state.segment(joint_names.size(), QPControllerSpecGenerator::translation3d_names().size() +
-      QPControllerSpecGenerator::rotation3d_names().size()) = to_eigen(goal);
+  state.segment(joint_names.size(), translation3d_names().size() + rotation3d_names().size()) = to_eigen(goal);
 
   // check that constructor is OK
   ASSERT_NO_THROW(QPControllerSpecGenerator gen(params));
@@ -547,49 +545,46 @@ TEST_F(QPControllerSpecGeneratorTest, LeftArmTranslation3DAndRotation3D)
 
   // check that names of controllables and observables are ok
   ASSERT_EQ(joint_names.size(), gen.get_controllable_names().size());
-  ASSERT_EQ(joint_names.size() + QPControllerSpecGenerator::translation3d_names().size() +
-            QPControllerSpecGenerator::rotation3d_names().size(), gen.get_observable_names().size());
+  ASSERT_EQ(joint_names.size() + translation3d_names().size() +
+            rotation3d_names().size(), gen.get_observable_names().size());
   for (size_t i=0; i<joint_names.size(); ++i)
   {
     EXPECT_STREQ(joint_names[i].c_str(), gen.get_controllable_names()[i].c_str());
     EXPECT_STREQ(joint_names[i].c_str(), gen.get_observable_names()[i].c_str());
   }
-  for (size_t i=0; i<QPControllerSpecGenerator::rotation3d_names().size(); ++i)
-    EXPECT_STREQ(QPControllerSpecGenerator::create_input_name(control_name_rot3d,
-        QPControllerSpecGenerator::rotation3d_names()[i]).c_str(),
+  for (size_t i=0; i<rotation3d_names().size(); ++i)
+    EXPECT_STREQ(create_input_name(control_name_rot3d,
+        rotation3d_names()[i]).c_str(),
         gen.get_observable_names()[joint_names.size() + i].c_str());
 
-  for (size_t i=0; i<QPControllerSpecGenerator::translation3d_names().size(); ++i)
-    EXPECT_STREQ(QPControllerSpecGenerator::create_input_name(control_name_trans3d,
-        QPControllerSpecGenerator::translation3d_names()[i]).c_str(),
-        gen.get_observable_names()[joint_names.size() + QPControllerSpecGenerator::rotation3d_names().size() + i].c_str());
+  for (size_t i=0; i<translation3d_names().size(); ++i)
+    EXPECT_STREQ(create_input_name(control_name_trans3d,
+        translation3d_names()[i]).c_str(),
+        gen.get_observable_names()[joint_names.size() + rotation3d_names().size() + i].c_str());
 
   // check that size getters are OK
   EXPECT_EQ(joint_names.size(), gen.num_controllables());
-  EXPECT_EQ(QPControllerSpecGenerator::translation3d_names().size() + QPControllerSpecGenerator::rotation3d_names().size(),
-            gen.num_goal_inputs());
+  EXPECT_EQ(translation3d_names().size() + rotation3d_names().size(), gen.num_goal_inputs());
   EXPECT_EQ(gen.num_observables(), gen.num_controllables() + gen.num_goal_inputs());
 
   // check that goal inputs are OK
   ASSERT_NO_THROW(gen.get_goal_inputs(control_name_rot3d));
-  ASSERT_EQ(gen.get_goal_inputs(control_name_rot3d).size(), QPControllerSpecGenerator::rotation3d_names().size());
-  for (size_t i=0; i<QPControllerSpecGenerator::rotation3d_names().size(); ++i)
+  ASSERT_EQ(gen.get_goal_inputs(control_name_rot3d).size(), rotation3d_names().size());
+  for (size_t i=0; i<rotation3d_names().size(); ++i)
   {
-    ASSERT_NO_THROW(gen.get_goal_input(control_name_rot3d, QPControllerSpecGenerator::rotation3d_names()[i]));
-    DoubleInputSpecPtr goal_input = gen.get_goal_input(control_name_rot3d, QPControllerSpecGenerator::rotation3d_names()[i]);
+    ASSERT_NO_THROW(gen.get_goal_input(control_name_rot3d, rotation3d_names()[i]));
+    DoubleInputSpecPtr goal_input = gen.get_goal_input(control_name_rot3d, rotation3d_names()[i]);
     EXPECT_EQ(goal_input->get_input_num(), joint_names.size() + i);
-    EXPECT_TRUE(gen.get_goal_inputs(control_name_rot3d).find(
-        QPControllerSpecGenerator::rotation3d_names()[i])->second->equals(*goal_input));
+    EXPECT_TRUE(gen.get_goal_inputs(control_name_rot3d).find(rotation3d_names()[i])->second->equals(*goal_input));
   }
   ASSERT_NO_THROW(gen.get_goal_inputs(control_name_trans3d));
-  ASSERT_EQ(gen.get_goal_inputs(control_name_trans3d).size(), QPControllerSpecGenerator::translation3d_names().size());
-  for (size_t i=0; i<QPControllerSpecGenerator::translation3d_names().size(); ++i)
+  ASSERT_EQ(gen.get_goal_inputs(control_name_trans3d).size(), translation3d_names().size());
+  for (size_t i=0; i<translation3d_names().size(); ++i)
   {
-    ASSERT_NO_THROW(gen.get_goal_input(control_name_trans3d, QPControllerSpecGenerator::translation3d_names()[i]));
-    DoubleInputSpecPtr goal_input = gen.get_goal_input(control_name_trans3d, QPControllerSpecGenerator::translation3d_names()[i]);
-    EXPECT_EQ(goal_input->get_input_num(), joint_names.size() + QPControllerSpecGenerator::rotation3d_names().size() + i);
-    EXPECT_TRUE(gen.get_goal_inputs(control_name_trans3d).find(
-        QPControllerSpecGenerator::translation3d_names()[i])->second->equals(*goal_input));
+    ASSERT_NO_THROW(gen.get_goal_input(control_name_trans3d, translation3d_names()[i]));
+    DoubleInputSpecPtr goal_input = gen.get_goal_input(control_name_trans3d, translation3d_names()[i]);
+    EXPECT_EQ(goal_input->get_input_num(), joint_names.size() + rotation3d_names().size() + i);
+    EXPECT_TRUE(gen.get_goal_inputs(control_name_trans3d).find(translation3d_names()[i])->second->equals(*goal_input));
   }
 
   // check that the actual generation is OK
@@ -598,11 +593,10 @@ TEST_F(QPControllerSpecGeneratorTest, LeftArmTranslation3DAndRotation3D)
   ASSERT_EQ(spec.controllable_constraints_.size(), joint_names.size());
   ASSERT_EQ(spec.hard_constraints_.size(), joint_names.size() - limitless_joints.size());
   ASSERT_EQ(spec.scope_.size(), 0);
-  ASSERT_EQ(spec.soft_constraints_.size(), QPControllerSpecGenerator::translation3d_names().size() +
-          QPControllerSpecGenerator::rotation3d_names().size() - 1);
-  for (size_t i=0; i<(QPControllerSpecGenerator::rotation3d_names().size()-1); ++i)
+  ASSERT_EQ(spec.soft_constraints_.size(), translation3d_names().size() + rotation3d_names().size() - 1);
+  for (size_t i=0; i<(rotation3d_names().size()-1); ++i)
   {
-    std::string autogen_name = QPControllerSpecGenerator::create_input_name(control_name_rot3d, QPControllerSpecGenerator::rotation3d_names()[i]);
+    std::string autogen_name = create_input_name(control_name_rot3d, rotation3d_names()[i]);
     EXPECT_STREQ(spec.soft_constraints_[i].name_.c_str(), autogen_name.c_str());
     EXPECT_TRUE(spec.soft_constraints_[i].weight_->equals(*(double_const_spec(trans3d_params.weight))));
     // TODO: check expression

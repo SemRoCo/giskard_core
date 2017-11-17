@@ -24,6 +24,21 @@
 
 namespace giskard_core
 {
+    inline std::vector<std::string> rotation3d_names()
+    {
+      return {"axis_x", "axis_y", "axis_z", "angle"};
+    }
+
+    inline std::vector<std::string> translation3d_names()
+    {
+      return {"x", "y", "z"};
+    }
+
+    inline std::string create_input_name(const std::string& controller_name, const std::string& dimension_name)
+    {
+      return controller_name + "_goal_" + dimension_name;
+    }
+
     class ControlParams
     {
       public:
@@ -47,6 +62,36 @@ namespace giskard_core
 
         Robot robot_;
         std::map<std::string, ControlParams> control_params_;
+
+        std::vector<std::string> create_input_names(const std::string& controller_name) const //, const ControlParams::ControlType& type)
+        {
+          if (control_params_.count(controller_name) == 0)
+            throw std::runtime_error("Could not create input names for unknown controller '" + controller_name + "'.");
+
+            std::vector<std::string> result;
+            switch (control_params_.find(controller_name)->second.type)
+            {
+                case ControlParams::ControlType::Joint:
+                  throw std::runtime_error("Function create_input_names does not support ControlType Joint.");
+                case ControlParams::ControlType::Unknown:
+                  throw std::runtime_error("Function create_input_names does not support ControlType Unknown.");
+                case ControlParams::ControlType::Translation3D:
+                {
+                  for (auto const & trans_name: translation3d_names())
+                    result.push_back(create_input_name(controller_name, trans_name));
+                  break;
+                }
+                case ControlParams::ControlType::Rotation3D:
+                {
+                  for (auto const & rot_name: rotation3d_names())
+                    result.push_back(create_input_name(controller_name, rot_name));
+                  break;
+                }
+                default:
+                  throw std::runtime_error("Function create_input_names ran into unsupported ControlType.");
+            }
+            return result;
+        };
 
       protected:
         static std::vector<std::string> get_tip_links(const std::map<std::string, ControlParams>& control_params)
@@ -149,55 +194,14 @@ namespace giskard_core
           return num_controllables() + num_goal_inputs();
         }
 
+        // TODO: refactor me into a standalone inline function
         static double pi()
         {
           static double result = 3.14159265359;
           return result;
         }
 
-        static std::vector<std::string> rotation3d_names()
-        {
-          static std::vector<std::string> result = {"axis_x", "axis_y", "axis_z", "angle"};
-          return result;
-        }
 
-        static std::vector<std::string> translation3d_names()
-        {
-          static std::vector<std::string> result = {"x", "y", "z"};
-          return result;
-        }
-
-        static std::string create_input_name(const std::string& controller_name, const std::string& dimension_name)
-        {
-          return controller_name + "_goal_" + dimension_name;
-        }
-
-        static std::vector<std::string> create_input_names(const std::string& controller_name, const ControlParams::ControlType& type)
-        {
-            std::vector<std::string> result;
-            switch (type)
-            {
-                case ControlParams::ControlType::Joint:
-                  throw std::runtime_error("Function create_input_names does not support ControlType Joint.");
-                case ControlParams::ControlType::Unknown:
-                  throw std::runtime_error("Function create_input_names does not support ControlType Unknown.");
-                case ControlParams::ControlType::Translation3D:
-                {
-                  for (auto const & trans_name: translation3d_names())
-                    result.push_back(create_input_name(controller_name, trans_name));
-                  break;
-                }
-                case ControlParams::ControlType::Rotation3D:
-                {
-                  for (auto const & rot_name: rotation3d_names())
-                    result.push_back(create_input_name(controller_name, rot_name));
-                  break;
-                }
-                default:
-                  throw std::runtime_error("Function create_input_names ran into unsupported ControlType.");
-            }
-            return result;
-        };
 
       protected:
         QPControllerParams params_;
@@ -231,11 +235,11 @@ namespace giskard_core
                 result.insert(std::make_pair(joint_name, input(start_index++)));
               break;
             case ControlParams::ControlType::Translation3D:
-              for (auto const & translation_name : QPControllerSpecGenerator::translation3d_names())
+              for (auto const & translation_name : translation3d_names())
                 result.insert(std::make_pair(translation_name, input(start_index++)));
               break;
             case ControlParams::ControlType::Rotation3D:
-              for (auto const & rotation_name : QPControllerSpecGenerator::rotation3d_names())
+              for (auto const & rotation_name : rotation3d_names())
                 result.insert(std::make_pair(rotation_name, input(start_index++)));
               break;
             //TODO: complete me for other cases
@@ -289,7 +293,7 @@ namespace giskard_core
                   get_goal_inputs(params.first).find(translation3d_names()[2])->second);
               VectorSpecPtr fk_spec = origin(params_.robot_.get_fk_spec(params.second.root_link, params.second.tip_link));
               VectorSpecPtr control_spec = translation3d_control_spec(goal_spec, fk_spec, params.second);
-              for (auto const & translation_name: QPControllerSpecGenerator::translation3d_names())
+              for (auto const & translation_name: translation3d_names())
               {
                 SoftConstraintSpec spec;
                 spec.name_ = create_input_name(params.first, translation_name);
@@ -330,9 +334,9 @@ namespace giskard_core
                   get_goal_inputs(params.first).find(rotation3d_names()[3])->second);
               RotationSpecPtr fk_spec = orientation_of_spec(params_.robot_.get_fk_spec(params.second.root_link, params.second.tip_link));
               VectorSpecPtr control_spec = rotation3d_control_spec(goal_spec, fk_spec, params.second);
-              for (size_t i=0; i<QPControllerSpecGenerator::rotation3d_names().size() -1; ++i)
+              for (size_t i=0; i<rotation3d_names().size() -1; ++i)
               {
-                std::string rotation_name = QPControllerSpecGenerator::rotation3d_names()[i];
+                std::string rotation_name = rotation3d_names()[i];
                 SoftConstraintSpec spec;
                 spec.name_ = create_input_name(params.first, rotation_name);
                 spec.weight_ = double_const_spec(params.second.weight);
