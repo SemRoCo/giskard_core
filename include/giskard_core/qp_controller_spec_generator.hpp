@@ -41,21 +41,20 @@ namespace giskard_core
         QPControllerParams(const urdf::Model& robot_model, const std::string& root_link,
             const std::map<std::string, double>& joint_weights, const std::map<std::string, double>& joint_thresholds,
             const std::map<std::string, ControlParams>& control_params) :
-          robot_model_(robot_model), root_link_(root_link), joint_weights_(joint_weights),
-          joint_thresholds_(joint_thresholds), control_params_(control_params) {}
+          robot_(robot_model, root_link, get_tip_links(control_params), joint_weights, joint_thresholds),
+          control_params_(control_params)
+        {}
 
-        urdf::Model robot_model_;
-        std::string root_link_;
-        std::map<std::string, double> joint_weights_;
-        std::map<std::string, double> joint_thresholds_;
+        Robot robot_;
         std::map<std::string, ControlParams> control_params_;
 
-        Robot create_robot() const
+      protected:
+        static std::vector<std::string> get_tip_links(const std::map<std::string, ControlParams>& control_params)
         {
           std::vector<std::string> tip_links;
-          for(auto const & pair: control_params_)
+          for(auto const & pair: control_params)
             tip_links.push_back(pair.second.tip_link);
-          return Robot(robot_model_, root_link_, tip_links, joint_weights_, joint_thresholds_);
+          return tip_links;
         }
     };
 
@@ -63,7 +62,7 @@ namespace giskard_core
     {
       public:
         QPControllerSpecGenerator(const QPControllerParams& params) :
-          robot_( params.create_robot() ), params_( params )
+          params_( params )
         {
           init();
         }
@@ -201,7 +200,6 @@ namespace giskard_core
         };
 
       protected:
-        Robot robot_;
         QPControllerParams params_;
         QPControllerSpec qp_spec_;
         std::map<std::string, std::map<std::string, DoubleInputSpecPtr> > goal_inputs_;
@@ -209,8 +207,8 @@ namespace giskard_core
         void init()
         {
           qp_spec_.scope_.clear();
-          qp_spec_.controllable_constraints_ = robot_.get_controllable_constraints();
-          qp_spec_.hard_constraints_ = robot_.get_hard_constraints();
+          qp_spec_.controllable_constraints_ = params_.robot_.get_controllable_constraints();
+          qp_spec_.hard_constraints_ = params_.robot_.get_hard_constraints();
           init_goal_inputs();
           init_soft_constraints();
         }
@@ -219,7 +217,7 @@ namespace giskard_core
         {
           for (auto const & control : params_.control_params_)
             goal_inputs_.insert(std::make_pair(control.first,
-//                create_goal_inputs(control.second, robot_.get_number_of_joints() + goal_inputs_.size())));
+//                create_goal_inputs(control.second, params_.robot_.get_number_of_joints() + goal_inputs_.size())));
                 create_goal_inputs(control.second, num_observables())));
         }
 
@@ -229,7 +227,7 @@ namespace giskard_core
           switch(params.type)
           {
             case ControlParams::ControlType::Joint:
-              for (auto const & joint_name : robot_.chain_joint_names(params.root_link, params.tip_link, false))
+              for (auto const & joint_name : params_.robot_.chain_joint_names(params.root_link, params.tip_link, false))
                 result.insert(std::make_pair(joint_name, input(start_index++)));
               break;
             case ControlParams::ControlType::Translation3D:
@@ -266,12 +264,12 @@ namespace giskard_core
             case ControlParams::ControlType::Joint:
             {
               std::set<std::string> continuous_joints_names =
-                  robot_.continuous_joints_names(params.second.root_link, params.second.tip_link);
-              for (auto const &joint_name: robot_.chain_joint_names(params.second.root_link, params.second.tip_link, false))
+                  params_.robot_.continuous_joints_names(params.second.root_link, params.second.tip_link);
+              for (auto const &joint_name: params_.robot_.chain_joint_names(params.second.root_link, params.second.tip_link, false))
               {
                 SoftConstraintSpec spec;
                 DoubleInputSpecPtr goal_spec = get_goal_inputs(params.first).find(joint_name)->second;
-                DoubleInputSpecPtr joint_spec = robot_.get_joint(joint_name);
+                DoubleInputSpecPtr joint_spec = params_.robot_.get_joint(joint_name);
                 spec.lower_ = joint_control_spec(goal_spec, joint_spec, params.second,
                                            continuous_joints_names.find(joint_name) !=
                                            continuous_joints_names.end());
@@ -289,7 +287,7 @@ namespace giskard_core
                   get_goal_inputs(params.first).find(translation3d_names()[0])->second,
                   get_goal_inputs(params.first).find(translation3d_names()[1])->second,
                   get_goal_inputs(params.first).find(translation3d_names()[2])->second);
-              VectorSpecPtr fk_spec = origin(robot_.get_fk_spec(params.second.root_link, params.second.tip_link));
+              VectorSpecPtr fk_spec = origin(params_.robot_.get_fk_spec(params.second.root_link, params.second.tip_link));
               VectorSpecPtr control_spec = translation3d_control_spec(goal_spec, fk_spec, params.second);
               for (auto const & translation_name: QPControllerSpecGenerator::translation3d_names())
               {
@@ -330,7 +328,7 @@ namespace giskard_core
                       get_goal_inputs(params.first).find(rotation3d_names()[1])->second,
                       get_goal_inputs(params.first).find(rotation3d_names()[2])->second),
                   get_goal_inputs(params.first).find(rotation3d_names()[3])->second);
-              RotationSpecPtr fk_spec = orientation_of_spec(robot_.get_fk_spec(params.second.root_link, params.second.tip_link));
+              RotationSpecPtr fk_spec = orientation_of_spec(params_.robot_.get_fk_spec(params.second.root_link, params.second.tip_link));
               VectorSpecPtr control_spec = rotation3d_control_spec(goal_spec, fk_spec, params.second);
               for (size_t i=0; i<QPControllerSpecGenerator::rotation3d_names().size() -1; ++i)
               {
