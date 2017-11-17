@@ -92,13 +92,19 @@ TEST_F(QPControllerProjectionTest, TorsoLiftJointControl)
   for (size_t i=0; i<projection_params.observable_names_.size(); ++i)
     EXPECT_STREQ(projection_params.observable_names_[i].c_str(), projection.get_observable_names()[i].c_str());
 
+  // check that controllable and observable names are OK
+  ASSERT_EQ(projection.get_controllable_names().size(), 1);
+  EXPECT_STREQ(joint_name.c_str(), projection.get_controllable_names()[0].c_str());
+  ASSERT_EQ(projection.get_observable_names().size(), 2);
+  EXPECT_STREQ(joint_name.c_str(), projection.get_observable_names()[0].c_str());
+  EXPECT_STREQ(create_input_name(control_name, joint_name).c_str(), projection.get_observable_names()[1].c_str());
+
   // run projection
   double start_config = 0.2;
   double goal_config = 0.05;
   std::map< std::string, double > initial_state =
-          {{joint_name, start_config}, {"torso_controller_goal_torso_lift_joint", goal_config}};
+          {{joint_name, start_config}, {create_input_name(control_name, joint_name), goal_config}};
   ASSERT_NO_THROW(projection.run(initial_state));
-
   // check trajectory
   EXPECT_EQ(projection.get_position_trajectories().size(), projection.get_velocity_trajectories().size());
   // minimum length OK
