@@ -217,14 +217,14 @@ TEST_F(QPControllerSpecGeneratorTest, LWristRollJoint)
   EXPECT_NEAR(state[0], 2.0*QPControllerSpecGenerator::pi() +state[1], 0.001); // goal reached
 }
 
-// MULTI-DOF CONTROL
-TEST_F(QPControllerSpecGeneratorTest, RightArmJoint)
+// MULTI-DOF CONTROL FROM ROOT_LINK
+TEST_F(QPControllerSpecGeneratorTest, RightArmWithTorsoJoint)
 {
   // prepare necessary data
 
   int nWSR = 100;
   ControlParams single_joint_params;
-  single_joint_params.root_link = "torso_lift_link";
+  single_joint_params.root_link = root_link;
   single_joint_params.tip_link = "r_gripper_tool_frame";
   single_joint_params.p_gain = 1;
   single_joint_params.threshold_error = false;
@@ -236,15 +236,15 @@ TEST_F(QPControllerSpecGeneratorTest, RightArmJoint)
         "torso_lift_joint", "r_shoulder_pan_joint", "r_shoulder_lift_joint","r_upper_arm_roll_joint",
         "r_elbow_flex_joint", "r_forearm_roll_joint", "r_wrist_flex_joint", "r_wrist_roll_joint"};
   std::vector<std::string> controlled_joint_names = {
-        "r_shoulder_pan_joint", "r_shoulder_lift_joint","r_upper_arm_roll_joint",
+        "torso_lift_joint", "r_shoulder_pan_joint", "r_shoulder_lift_joint","r_upper_arm_roll_joint",
         "r_elbow_flex_joint", "r_forearm_roll_joint", "r_wrist_flex_joint", "r_wrist_roll_joint"};
   std::set<std::string> limitless_joints = {"r_forearm_roll_joint", "r_wrist_roll_joint"};
   QPControllerParams params(urdf, root_link, weights, thresholds, {{control_name, single_joint_params}});
   using Eigen::operator<<;
   Eigen::VectorXd state;
   state.resize(joint_names.size() + controlled_joint_names.size());
-  state << 0.1, 0.2,  0.4,  0.6,  -0.8,  1.0,  -1.2,  1.4, // start joint states
-               -0.7, -0.5, -0.5, -0.4, -0.3, -0.2, -0.1; // goal joint states
+  state << 0.1,   0.2,  0.4,  0.6, -0.8,  1.0, -1.2,  1.4, // start joint states
+           0.15, -0.7, -0.5, -0.5, -0.4, -0.3, -0.2, -0.1; // goal joint states
   // check that spec generator is ok
   ASSERT_NO_THROW(QPControllerSpecGenerator gen(params));
   QPControllerSpecGenerator gen(params);
@@ -270,7 +270,7 @@ TEST_F(QPControllerSpecGeneratorTest, RightArmJoint)
     std::string autogen_name = create_input_name(control_name, controlled_joint_names[i]);
     EXPECT_STREQ(spec.soft_constraints_[i].name_.c_str(), autogen_name.c_str());
     EXPECT_TRUE(spec.soft_constraints_[i].weight_->equals(*(double_const_spec(single_joint_params.weight))));
-    EXPECT_TRUE(spec.soft_constraints_[i].expression_->equals(*(input(i+1))));
+    EXPECT_TRUE(spec.soft_constraints_[i].expression_->equals(*(input(i))));
     EXPECT_TRUE(spec.soft_constraints_[i].lower_->equals(*(spec.soft_constraints_[i].upper_)));
   }
 
@@ -290,7 +290,7 @@ TEST_F(QPControllerSpecGeneratorTest, RightArmJoint)
   QPController control = generate(spec);
   EXPECT_TRUE(control.start(state, nWSR));
 
-  for (size_t i=0; i<4; ++i) {
+  for (size_t i=0; i<5; ++i) {
     ASSERT_TRUE(control.update(state, nWSR));
     ASSERT_EQ(control.get_command().rows(), joint_names.size());
     for (size_t i = 0; i < joint_names.size(); ++i)
@@ -299,7 +299,90 @@ TEST_F(QPControllerSpecGeneratorTest, RightArmJoint)
 
 
   for (size_t i=0; i<controlled_joint_names.size(); ++i)
-    EXPECT_NEAR(state[1+i], state[joint_names.size() + i], 0.0001); // goal reached
+    EXPECT_NEAR(state[i], state[joint_names.size() + i], 0.0001); // goal reached
+}
+
+// MULTI-DOF CONTROL NOT FROM ROOT_LINK
+TEST_F(QPControllerSpecGeneratorTest, RightArmWithoutTorsoJoint)
+{
+  // prepare necessary data
+
+  int nWSR = 100;
+  ControlParams single_joint_params;
+  single_joint_params.root_link = "torso_lift_link";
+  single_joint_params.tip_link = "r_gripper_tool_frame";
+  single_joint_params.p_gain = 1;
+  single_joint_params.threshold_error = false;
+  single_joint_params.threshold = 0.2;
+  single_joint_params.weight = 1.0;
+  single_joint_params.type = ControlParams::ControlType::Joint;
+  std::string control_name = "right_arm_controller";
+  std::vector<std::string> joint_names = {
+        "torso_lift_joint", "r_shoulder_pan_joint", "r_shoulder_lift_joint","r_upper_arm_roll_joint",
+        "r_elbow_flex_joint", "r_forearm_roll_joint", "r_wrist_flex_joint", "r_wrist_roll_joint"};
+  std::vector<std::string> controlled_joint_names = {
+        "r_shoulder_pan_joint", "r_shoulder_lift_joint","r_upper_arm_roll_joint",
+        "r_elbow_flex_joint", "r_forearm_roll_joint", "r_wrist_flex_joint", "r_wrist_roll_joint"};
+  std::set<std::string> limitless_joints = {"r_forearm_roll_joint", "r_wrist_roll_joint"};
+  QPControllerParams params(urdf, root_link, weights, thresholds, {{control_name, single_joint_params}});
+  using Eigen::operator<<;
+  Eigen::VectorXd state;
+  state.resize(2 * controlled_joint_names.size());
+  state << 0.2,  0.4,  0.6,  -0.8,  1.0,  -1.2,  1.4, // start joint states
+          -0.7, -0.5, -0.5, -0.4, -0.3, -0.2, -0.1; // goal joint states
+  // check that spec generator is ok
+  ASSERT_NO_THROW(QPControllerSpecGenerator gen(params));
+  QPControllerSpecGenerator gen(params);
+  ASSERT_NO_THROW(gen.get_control_params());
+  ASSERT_NO_THROW(gen.get_goal_inputs(control_name));
+  ASSERT_EQ(gen.get_goal_inputs(control_name).size(), controlled_joint_names.size());
+  for (size_t i=0; i<controlled_joint_names.size(); ++i)
+  {
+    std::string autgen_name = create_input_name(control_name, controlled_joint_names[i]);
+    ASSERT_TRUE(gen.get_goal_inputs(control_name).find(autgen_name) != gen.get_goal_inputs(control_name).end());
+    EXPECT_TRUE(gen.get_goal_inputs(control_name).find(autgen_name)->second->equals(*(input(controlled_joint_names.size() + i))));
+  }
+
+  // check that spec generation is OK
+  ASSERT_NO_THROW(gen.get_spec());
+  QPControllerSpec spec = gen.get_spec();
+  ASSERT_EQ(spec.controllable_constraints_.size(), controlled_joint_names.size());
+  ASSERT_EQ(spec.hard_constraints_.size(), controlled_joint_names.size() - limitless_joints.size());
+  ASSERT_EQ(spec.scope_.size(), 0);
+  ASSERT_EQ(spec.soft_constraints_.size(), controlled_joint_names.size());
+  for (size_t i=0; i<controlled_joint_names.size(); ++i)
+  {
+    std::string autogen_name = create_input_name(control_name, controlled_joint_names[i]);
+    EXPECT_STREQ(spec.soft_constraints_[i].name_.c_str(), autogen_name.c_str());
+    EXPECT_TRUE(spec.soft_constraints_[i].weight_->equals(*(double_const_spec(single_joint_params.weight))));
+    EXPECT_TRUE(spec.soft_constraints_[i].expression_->equals(*(input(i))));
+    EXPECT_TRUE(spec.soft_constraints_[i].lower_->equals(*(spec.soft_constraints_[i].upper_)));
+  }
+
+  ASSERT_EQ(controlled_joint_names.size(), gen.get_controllable_names().size());
+  ASSERT_EQ(2 * controlled_joint_names.size(), gen.get_observable_names().size());
+  for (size_t i=0; i<controlled_joint_names.size(); ++i)
+  {
+    EXPECT_STREQ(controlled_joint_names[i].c_str(), gen.get_controllable_names()[i].c_str());
+    EXPECT_STREQ(controlled_joint_names[i].c_str(), gen.get_observable_names()[i].c_str());
+    EXPECT_STREQ(create_input_name(control_name, controlled_joint_names[i]).c_str(),
+                 gen.get_observable_names()[controlled_joint_names.size() + i].c_str());
+  }
+
+  // check that resulting controller is ok
+  ASSERT_NO_THROW(generate(spec));
+  QPController control = generate(spec);
+  EXPECT_TRUE(control.start(state, nWSR));
+
+  for (size_t i=0; i<4; ++i) {
+    ASSERT_TRUE(control.update(state, nWSR));
+    ASSERT_EQ(control.get_command().rows(), controlled_joint_names.size());
+    state.segment(0, controlled_joint_names.size()) += control.get_command();
+  }
+
+
+  for (size_t i=0; i<controlled_joint_names.size(); ++i)
+    EXPECT_NEAR(state[i], state[controlled_joint_names.size() + i], 0.0001); // goal reached
 }
 
 // Translation3D CONTROL
