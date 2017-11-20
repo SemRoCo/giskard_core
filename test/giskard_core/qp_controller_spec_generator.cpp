@@ -732,3 +732,53 @@ TEST_F(QPControllerSpecGeneratorTest, LeftArmTranslation3DAndRotation3D)
   ASSERT_GE(fk_solver.JntToCart(q_in, solver_frame), 0);
   EXPECT_TRUE(KDL::Equal(solver_frame, goal));
 }
+
+// Issue: With two joint controllers, there observables names that belong to TRANS3D_GOALS and ROT3D_GOALS
+TEST_F(QPControllerSpecGeneratorTest, IssueJointControllersProduceIncorrectObservables)
+{
+  // prepare necessary parameters
+  ControlParams left_arm_params;
+  left_arm_params.root_link = "torso_lift_link";
+  left_arm_params.tip_link = "l_gripper_tool_frame";
+  left_arm_params.p_gain = 1;
+  left_arm_params.threshold_error = false;
+  left_arm_params.threshold = 0.05;
+  left_arm_params.weight = 1.0;
+  left_arm_params.type = ControlParams::ControlType::Joint;
+  std::string control_name_left_arm = "left_arm_controller";
+  std::string control_name_right_arm = "right_arm_controller";
+  ControlParams right_arm_params = left_arm_params;
+  right_arm_params.tip_link = "r_gripper_tool_frame";
+  QPControllerParams params(urdf, root_link, weights, thresholds,
+      {{control_name_left_arm, left_arm_params}, {control_name_right_arm, right_arm_params}});
+
+  std::vector<std::string> left_arm_joint_names = {
+        "l_shoulder_pan_joint", "l_shoulder_lift_joint","l_upper_arm_roll_joint",
+        "l_elbow_flex_joint", "l_forearm_roll_joint", "l_wrist_flex_joint", "l_wrist_roll_joint"};
+  std::vector<std::string> right_arm_joint_names = {
+        "r_shoulder_pan_joint", "r_shoulder_lift_joint","r_upper_arm_roll_joint",
+        "r_elbow_flex_joint", "r_forearm_roll_joint", "r_wrist_flex_joint", "r_wrist_roll_joint"};
+  std::vector<std::string> joint_names = left_arm_joint_names;
+  joint_names.insert(joint_names.end(), right_arm_joint_names.begin(), right_arm_joint_names.end());
+
+  ASSERT_NO_THROW(QPControllerSpecGenerator gen(params));
+  QPControllerSpecGenerator gen(params);
+
+  // check that controllable and observable names are OK
+  ASSERT_EQ(joint_names.size(), gen.get_controllable_names().size());
+  ASSERT_EQ(joint_names.size(), gen.num_goal_inputs());
+  ASSERT_EQ(2 * joint_names.size(), gen.get_observable_names().size());
+  for (size_t i=0; i<joint_names.size(); ++i)
+  {
+    EXPECT_STREQ(joint_names[i].c_str(), gen.get_controllable_names()[i].c_str());
+    EXPECT_STREQ(joint_names[i].c_str(), gen.get_observable_names()[i].c_str());
+  }
+
+  for (size_t i=0; i<left_arm_joint_names.size(); ++i)
+    EXPECT_STREQ(create_input_name(control_name_left_arm, left_arm_joint_names[i]).c_str(),
+                 gen.get_observable_names()[joint_names.size() + i].c_str());
+  for (size_t i=0; i<right_arm_joint_names.size(); ++i)
+    EXPECT_STREQ(create_input_name(control_name_right_arm, right_arm_joint_names[i]).c_str(),
+                 gen.get_observable_names()[joint_names.size() + left_arm_joint_names.size() + i].c_str());
+}
+
