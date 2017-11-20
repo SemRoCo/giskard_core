@@ -62,15 +62,29 @@ namespace giskard_core
           init_kinematic_chain(root_link, tip_links[i]);
       }
 
+      Robot(const urdf::Model& robot_model, const std::string& root_link,
+          const std::vector< std::pair<std::string, std::string> >& chain_links,
+          const std::map<std::string, double> weights,
+          const std::map<std::string, double> thresholds) :
+        robot_model_( robot_model ), weights_( weights ), thresholds_( thresholds ),
+        root_link_( root_link )
+      {
+        robot_model_.initTree(parent_link_tree_);
+        for (auto const & chain: chain_links)
+          init_kinematic_chain(chain.first, chain.second);
+      }
+
       FrameSpecPtr get_fk_spec(const std::string& root_link, const std::string& tip_link) const
       {
-        if (root_link_.compare(root_link) != 0)
-          throw std::runtime_error("Expected root link '" + root_link_ + "', instead got '" + root_link + "'.");
+        return get_fk_spec(std::make_pair(root_link, tip_link));
+      }
 
-        if (fk_map_.find(tip_link) == fk_map_.end())
-          throw std::runtime_error("Could not find fk specification for tip link '" + tip_link + "'.");
+      FrameSpecPtr get_fk_spec(const std::pair<std::string, std::string>& chain_links) const
+      {
+        if (fk_map_.find(chain_links) == fk_map_.end())
+          throw std::runtime_error("Could not find fk specification for chain ('" + chain_links.first + ", " + chain_links.second + ").");
 
-        return fk_map_.find(tip_link)->second;
+        return fk_map_.find(chain_links)->second;
       }
 
       const std::string& get_root_link() const
@@ -108,8 +122,8 @@ namespace giskard_core
       {
         std::vector<ScopeEntry> scope;
         
-        for (std::map<std::string, FrameSpecPtr>::const_iterator it=fk_map_.begin(); it!=fk_map_.end(); ++it)
-          scope.push_back(ScopeEntry(it->first, it->second));
+        for (auto const & fk_entry: fk_map_)
+          scope.push_back(ScopeEntry(fk_entry.first.second, fk_entry.second));
 
         return scope;
       }
@@ -190,7 +204,7 @@ namespace giskard_core
     protected:
       urdf::Model robot_model_;
       std::map<std::string, std::string> parent_link_tree_;
-      std::map<std::string, FrameSpecPtr> fk_map_;
+      std::map< std::pair<std::string, std::string>, FrameSpecPtr> fk_map_;
       std::map<std::string, ControllableConstraintSpec> controllable_map_;
       std::map<std::string, HardConstraintSpec> hard_map_;
       std::map<std::string, DoubleInputSpecPtr> joint_map_;
@@ -202,12 +216,10 @@ namespace giskard_core
       {
         std::vector<std::string> moveable_joints_names = chain_joint_names(root, tip, false);
         std::vector<std::string> all_joints_names = chain_joint_names(root, tip, true);
-
         // create and add input expressions for new moveable joints
         for (size_t i=0; i<moveable_joints_names.size(); ++i)
           if (joint_map_.find(moveable_joints_names[i]) == joint_map_.end())
             joint_map_.insert(std::pair<std::string, DoubleInputSpecPtr>(moveable_joints_names[i], input(joint_map_.size())));
-
         // create and add frame expression for new kinematic chain
         std::vector<FrameSpecPtr> joint_transforms = { frame_constructor_spec() };
         for (size_t i=0; i<all_joints_names.size(); ++i)
@@ -220,9 +232,7 @@ namespace giskard_core
 
           joint_transforms.insert(joint_transforms.end(), new_transforms.begin(), new_transforms.end());
         }
-
-        fk_map_.insert(std::pair<std::string, FrameSpecPtr>(tip, cached_frame(frame_multiplication_spec(joint_transforms))));
-
+        fk_map_.insert(std::make_pair(std::make_pair(root, tip), cached_frame(frame_multiplication_spec(joint_transforms))));
         // create and add new controllable constraints
         for (size_t i=0; i<moveable_joints_names.size(); ++i)
           if (controllable_map_.find(moveable_joints_names[i]) == controllable_map_.end())
@@ -237,7 +247,6 @@ namespace giskard_core
 
             controllable_map_.insert(std::make_pair(spec.name_, spec));
           }
-
         // create and new hard constraints
         for (size_t i=0; i<moveable_joints_names.size(); ++i)
           if (hard_map_.find(moveable_joints_names[i]) == hard_map_.end())
@@ -254,6 +263,7 @@ namespace giskard_core
               hard_map_.insert(std::make_pair(moveable_joints_names[i], spec));
             }
           }
+
       }
 
       std::vector<FrameSpecPtr> extract_joint_transforms(urdf::JointSharedPtr& joint) 

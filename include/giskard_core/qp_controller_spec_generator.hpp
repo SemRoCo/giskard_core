@@ -56,7 +56,7 @@ namespace giskard_core
         QPControllerParams(const urdf::Model& robot_model, const std::string& root_link,
             const std::map<std::string, double>& joint_weights, const std::map<std::string, double>& joint_thresholds,
             const std::map<std::string, ControlParams>& control_params) :
-          robot_(robot_model, root_link, get_tip_links(control_params), joint_weights, joint_thresholds),
+          robot_(robot_model, root_link, get_chains(control_params), joint_weights, joint_thresholds),
           control_params_(control_params)
         {}
 
@@ -99,6 +99,14 @@ namespace giskard_core
         }
 
       protected:
+        static std::vector< std::pair<std::string, std::string> > get_chains(const std::map<std::string, ControlParams>& control_params)
+        {
+          std::vector< std::pair<std::string, std::string> > chains;
+          for(auto const & pair: control_params)
+            chains.push_back(std::make_pair(pair.second.root_link, pair.second.tip_link));
+          return chains;
+        }
+
         static std::vector<std::string> get_tip_links(const std::map<std::string, ControlParams>& control_params)
         {
           std::vector<std::string> tip_links;
@@ -176,12 +184,7 @@ namespace giskard_core
           // copy over input names
           for (auto const & control_goal_inputs: goal_inputs_)
             for (auto const& goal_input: control_goal_inputs.second)
-            {
-//               std::cout << "Adding observable '" << create_input_name(control_goal_inputs.first, goal_input.first) <<
-//                         "' at index " << goal_input.second->get_input_num() << std::endl;
                observable_names[goal_input.second->get_input_num()] = goal_input.first;
-
-            }
 
           return observable_names;
         }
