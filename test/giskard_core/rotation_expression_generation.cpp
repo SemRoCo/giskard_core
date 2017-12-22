@@ -61,12 +61,12 @@ TEST_F(RotationGenerationTest, AxisAngle)
 
 TEST_F(RotationGenerationTest, AxisAngleEquality)
 {
-  VectorConstructorSpecPtr axis1 = 
+  VectorSpecPtr axis1 =
     vector_constructor_spec(double_const_spec(1.0), double_const_spec(0.0), double_const_spec(0.0));
-  VectorConstructorSpecPtr axis2 = 
+  VectorSpecPtr axis2 =
     vector_constructor_spec(double_const_spec(1.0), double_const_spec(1.0), double_const_spec(1.0));
-  DoubleConstSpecPtr angle = double_const_spec(M_PI/2.0);
-  DoubleConstSpecPtr x = double_const_spec(1.0);
+  DoubleSpecPtr angle = double_const_spec(M_PI/2.0);
+  DoubleSpecPtr x = double_const_spec(1.0);
 
   AxisAngleSpec s1, s2, s3, s4;
   s1.set_axis(axis1);
@@ -246,4 +246,19 @@ TEST_F(RotationGenerationTest, Slerp)
   ASSERT_TRUE(exp.get());
   r = exp->value();
   EXPECT_TRUE(KDL::Equal(r, KDL::Rotation::Quaternion(0.845, 0.262, 0.363, 0.293), eps));
+}
+
+TEST_F(RotationGenerationTest, NearZeroTest)
+{
+  using namespace KDL;
+  KDL::Expression<double>::Ptr eps = KDL::Constant(0.00001);
+  KDL::Expression<double>::Ptr small = KDL::Constant(0.9) * eps;
+  KDL::Expression<double>::Ptr big = KDL::Constant(1.1) * eps;
+  KDL::Expression<double>::Ptr one = KDL::Constant(1.0);
+  KDL::Expression<double>::Ptr two = KDL::Constant(2.0);
+
+  KDL::Expression<double>::Ptr test_one = KDL::near_zero<double>(small, eps->value(), one, two);
+  KDL::Expression<double>::Ptr test_two = KDL::near_zero<double>(big, eps->value(), one, two);
+  EXPECT_DOUBLE_EQ(test_one->value(), one->value());
+  EXPECT_DOUBLE_EQ(test_two->value(), two->value());
 }

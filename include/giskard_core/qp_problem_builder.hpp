@@ -152,7 +152,22 @@ namespace giskard_core
       {
         return soft_weights_.get_expressions();
       }
-    
+
+      const DoubleExpressionVector& get_hard_expressions() const
+      {
+        return hard_expressions_.get_expressions();
+      }
+
+      const DoubleExpressionVector& get_hard_lower_bounds() const
+      {
+        return hard_lower_bounds_.get_expressions();
+      }
+
+      const DoubleExpressionVector& get_hard_upper_bounds() const
+      {
+        return hard_upper_bounds_.get_expressions();
+      }
+
       void print_internals() const
       {
         print_matrix("H", get_H());

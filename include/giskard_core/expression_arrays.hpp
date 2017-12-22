@@ -129,6 +129,8 @@ namespace KDL
       Eigen::Matrix<ResultType, Eigen::Dynamic, 1> values_;
       Eigen::Matrix<DerivType, Eigen::Dynamic, Eigen::Dynamic> derivatives_;
       std::vector< ExpressionTypePtr > expressions_;
+      // TODO: Each ExpressionArray has its own optimizer. That is not ideal w.r.t. runtime. One could try to speed
+      //       up the runtime of QPController by having all ExpressionArray share one ExpressionOptimizer object.
       KDL::ExpressionOptimizer optimizer_;
 
       void prepare_internals()

@@ -72,20 +72,21 @@ class BoxyFKTest : public ::testing::Test
     KDL::Tree tree;
 };
 
-TEST_F(BoxyFKTest, GeneratedFromUrdf)
-{
-  std::string base = "base_footprint";
-  std::string tip = "left_gripper_tool_frame";
-  YAML::Node node = giskard_core::extract_expression(base, tip, "boxy.urdf");
-
-  ASSERT_NO_THROW(node.as< giskard_core::ScopeSpec >());
-  giskard_core::ScopeSpec scope_spec = node.as<giskard_core::ScopeSpec>();
-
-  ASSERT_NO_THROW(giskard_core::generate(scope_spec));
-  giskard_core::Scope scope = giskard_core::generate(scope_spec);
-
-  ASSERT_TRUE(scope.has_frame_expression("fk"));
-
-  KDL::Expression<KDL::Frame>::Ptr exp = scope.find_frame_expression("fk");
-  TestFrameExpression(exp, base, tip);
-}
+// TODO: get rid of this test case
+//TEST_F(BoxyFKTest, GeneratedFromUrdf)
+//{
+//  std::string base = "base_footprint";
+//  std::string tip = "left_gripper_tool_frame";
+//  YAML::Node node = giskard_core::extract_expression(base, tip, "boxy.urdf");
+//
+//  ASSERT_NO_THROW(node.as< giskard_core::ScopeSpec >());
+//  giskard_core::ScopeSpec scope_spec = node.as<giskard_core::ScopeSpec>();
+//
+//  ASSERT_NO_THROW(giskard_core::generate(scope_spec));
+//  giskard_core::Scope scope = giskard_core::generate(scope_spec);
+//
+//  ASSERT_TRUE(scope.has_frame_expression("fk"));
+//
+//  KDL::Expression<KDL::Frame>::Ptr exp = scope.find_frame_expression("fk");
+//  TestFrameExpression(exp, base, tip);
+//}

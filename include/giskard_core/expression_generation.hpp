@@ -85,6 +85,7 @@ namespace giskard_core
     for(size_t i=0; i<spec.controllable_constraints_.size(); ++i)
     {
       if(spec.controllable_constraints_[i].input_number_ != i)
+        // TODO: replace boost::lexical_cast<std::string>() with std::to_string() that is available as of C++11
         throw std::invalid_argument("QPController generation: controllable constraint at position " + 
             boost::lexical_cast<std::string>(i) + " has not input number " + 
             boost::lexical_cast<std::string>(i) + ". Instead it has incorrect input number: " +
