@@ -372,8 +372,7 @@ namespace giskard_core
             const ControlParams& params) const
         {
             if (params.max_speed <= 0.0)
-              throw std::runtime_error("Translation 3D control needs a max speed greater 0.");
-
+              throw std::runtime_error("Translation 3D control needs a max speed greater 0 m/s.");
 
             VectorSpecPtr error_vector = vector_sub_spec({goal, state});
             VectorSpecPtr control_vector = vector_double_mul(error_vector, double_const_spec(params.p_gain));
@@ -388,21 +387,23 @@ namespace giskard_core
         VectorSpecPtr rotation3d_control_spec(const RotationSpecPtr& goal, const RotationSpecPtr& state,
             const ControlParams& params) const
         {
-            DoubleSpecPtr interpolation_value = double_const_spec(1.0);
-            if (params.threshold_error)
-            {
-              RotationSpecPtr delta_rot = rotation_multiplication_spec({inverse_rotation_spec(state), goal});
-              DoubleSpecPtr rot_error = vector_norm(rot_vector(delta_rot));
-              interpolation_value =
-                  double_if(double_sub_spec({double_const_spec(params.threshold), rot_error}),
-                            double_const_spec(1.0),
-                            double_div({double_const_spec(params.threshold), rot_error}));
-            }
-            RotationSpecPtr intermediate_goal = slerp_spec(state, goal, interpolation_value);
+            if (params.max_speed <= 0.0)
+              throw std::runtime_error("Rotation 3D control needs a max speed greater 0 rad/s.");
+
             DoubleSpecPtr p_gain = double_const_spec(params.p_gain);
-            VectorSpecPtr error_rot_vector =
-                    rotate_vector(state, rot_vector(rotation_multiplication_spec({inverse_rotation_spec(state), intermediate_goal})));
-            return vector_double_mul(error_rot_vector, p_gain);
+            DoubleSpecPtr max_speed = double_const_spec(params.max_speed);
+            RotationSpecPtr delta_rot = rotation_multiplication_spec({inverse_rotation_spec(state), goal});
+            DoubleSpecPtr rot_error = vector_norm(rot_vector(delta_rot));
+            DoubleSpecPtr control = double_mul_spec({p_gain, control});
+
+            DoubleSpecPtr interpolation_value =
+                double_if(double_sub_spec({max_speed, rot_error}),
+                          double_const_spec(1.0),
+                          double_div({max_speed, rot_error}));
+
+            RotationSpecPtr intermediate_goal = slerp_spec(state, goal, interpolation_value);
+            return rotate_vector(state, rot_vector(rotation_multiplication_spec({inverse_rotation_spec(state),
+                                                                                 intermediate_goal})));
         }
 
         DoubleSpecPtr joint_control_spec(const DoubleSpecPtr& goal, const DoubleSpecPtr& state, const ControlParams& params,
@@ -421,7 +422,7 @@ namespace giskard_core
           DoubleSpecPtr control_exp = double_mul_spec({double_const_spec(params.p_gain), error_exp});
 
           if (params.max_speed <= 0.0)
-              throw std::runtime_error("Joint control needs a max speed greater 0.");
+              throw std::runtime_error("Joint control needs a max speed greater 0 rad/s.");
 
           DoubleSpecPtr max_speed = double_const_spec(params.max_speed);
           DoubleSpecPtr abs_error = double_abs(control_exp);
