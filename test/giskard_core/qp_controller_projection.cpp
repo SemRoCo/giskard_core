@@ -50,8 +50,7 @@ TEST_F(QPControllerProjectionTest, TorsoLiftJointControl)
   single_joint_params.root_link = "base_link";
   single_joint_params.tip_link = "torso_lift_link";
   single_joint_params.p_gain = 10;
-  single_joint_params.threshold_error = false;
-  single_joint_params.threshold = 0.2;
+  single_joint_params.max_speed = 0.2;
   single_joint_params.weight = 1.0;
   single_joint_params.type = ControlParams::ControlType::Joint;
   std::string control_name = "torso_controller";
