@@ -415,10 +415,16 @@ namespace giskard_core
             DoubleSpecPtr error_normalized = fmod(double_add_spec({fmod(error_unnormalized, two_pi), two_pi}), two_pi);
             error_exp = double_if(double_sub_spec({error_normalized, pi}), double_sub_spec({error_normalized, two_pi}), error_normalized);
           }
+
           DoubleSpecPtr control_exp = double_mul_spec({double_const_spec(params.p_gain), error_exp});
-          if (params.threshold_error)
-            throw std::runtime_error("Thresholding of joint controllers not implemented, yet.");
-          return control_exp;
+
+          if (params.max_speed <= 0.0)
+              throw std::runtime_error("Max speed has to be greater 0.");
+
+          DoubleSpecPtr max_speed = double_const_spec(params.max_speed);
+          DoubleSpecPtr abs_error = double_abs(control_exp);
+          DoubleSpecPtr scale = double_if(double_sub_spec({max_speed, abs_error}), double_const_spec(1.0), double_div({max_speed, abs_error}));
+          return double_mul_spec({scale, control_exp});
         }
     };
 
