@@ -904,7 +904,7 @@ namespace giskard_core
 
   typedef typename boost::shared_ptr<AbsSpec> AbsSpecPtr;
 
-  inline AbsSpecPtt double_abs(const DoubleSpecPtr& value = double_const_spec())
+  inline AbsSpecPtr double_abs(const DoubleSpecPtr& value = double_const_spec())
   {
     return AbsSpecPtr(new AbsSpec(value));
   }
