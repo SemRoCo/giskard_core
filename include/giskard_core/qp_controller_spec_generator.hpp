@@ -42,8 +42,7 @@ namespace giskard_core
     class ControlParams
     {
       public:
-        double p_gain, threshold, weight;
-        bool threshold_error;
+        double p_gain, weight, max_speed;
         std::string root_link, tip_link;
         // TODO: add reference frame
         enum ControlType {Unknown, Joint, Translation3D, Rotation3D};
