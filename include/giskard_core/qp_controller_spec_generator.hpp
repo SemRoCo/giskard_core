@@ -371,16 +371,18 @@ namespace giskard_core
         VectorSpecPtr translation3d_control_spec(const VectorSpecPtr& goal, const VectorSpecPtr& state,
             const ControlParams& params) const
         {
-            VectorSpecPtr error_vector = vector_sub_spec({goal, state});
-            if (params.threshold_error)
-            {
-              DoubleSpecPtr threshold = double_const_spec(params.threshold);
-              DoubleSpecPtr error = vector_norm(error_vector);
-              DoubleSpecPtr scale = double_if(double_sub_spec({threshold, error}), double_const_spec(1.0), double_div({threshold, error}));
-              error_vector = vector_double_mul(error_vector, scale);
-            }
+            if (params.max_speed <= 0.0)
+              throw std::runtime_error("Translation 3D control needs a max speed greater 0.");
 
-            return vector_double_mul(error_vector, double_const_spec(params.p_gain));
+
+            VectorSpecPtr error_vector = vector_sub_spec({goal, state});
+            VectorSpecPtr control_vector = vector_double_mul(error_vector, double_const_spec(params.p_gain));
+            DoubleSpecPtr control_norm = vector_norm(control_vector);
+
+            DoubleSpecPtr max_speed = double_const_spec(params.max_speed);
+            DoubleSpecPtr scale = double_if(double_sub_spec({max_speed, control_norm}), double_const_spec(1.0), double_div({max_speed, control_norm}));
+
+            return vector_double_mul(control_vector, scale);
         }
 
         VectorSpecPtr rotation3d_control_spec(const RotationSpecPtr& goal, const RotationSpecPtr& state,
@@ -419,7 +421,7 @@ namespace giskard_core
           DoubleSpecPtr control_exp = double_mul_spec({double_const_spec(params.p_gain), error_exp});
 
           if (params.max_speed <= 0.0)
-              throw std::runtime_error("Max speed has to be greater 0.");
+              throw std::runtime_error("Joint control needs a max speed greater 0.");
 
           DoubleSpecPtr max_speed = double_const_spec(params.max_speed);
           DoubleSpecPtr abs_error = double_abs(control_exp);
