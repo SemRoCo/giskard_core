@@ -124,20 +124,6 @@ TEST_F(QPControllerProjectionTest, TorsoLiftJointControl)
   for (size_t i=0; i<projection.get_position_trajectories().size() -1; ++i)
     EXPECT_NEAR((projection.get_position_trajectories()[i+1](0) - projection.get_position_trajectories()[i](0))/period,
                 projection.get_velocity_trajectories()[i+1](0), KDL::epsilon);
-
-  std::cout << "position trajectory: " << projection.get_position_trajectories().size() << std::endl;
-  for (auto const & trajectory_pos: projection.get_position_trajectories())
-  {
-    using namespace Eigen;
-    std::cout << trajectory_pos << ",  ";
-  }
-  std::cout << "\nvelocity trajectory: " << projection.get_velocity_trajectories().size() << std::endl;
-  for (auto const & trajectory_vel: projection.get_velocity_trajectories())
-  {
-    using namespace Eigen;
-    std::cout << trajectory_vel << ", ";
-  }
-  std::cout << std::endl;
 }
 
 // N-DOF Control
