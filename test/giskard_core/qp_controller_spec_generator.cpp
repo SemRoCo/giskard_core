@@ -566,6 +566,7 @@ TEST_F(QPControllerSpecGeneratorTest, LeftArmRotation3D)
   QPController control = generate(spec);
   ASSERT_TRUE(control.start(state, nWSR));
 
+  // run the controller a couple of time with naive kinematics
   for (size_t i=0; i<30; ++i) {
     ASSERT_TRUE(control.update(state, nWSR));
     ASSERT_EQ(control.get_command().rows(), joint_names.size());
@@ -573,6 +574,7 @@ TEST_F(QPControllerSpecGeneratorTest, LeftArmRotation3D)
       state[i] += control.get_command()[i]; // simulating kinematics
   }
 
+  // compare the result with the goal
   KDL::Chain chain;
   ASSERT_TRUE(tree.getChain(single_joint_params.root_link, single_joint_params.tip_link, chain));
   ASSERT_EQ(chain.getNrOfJoints(), joint_names.size());

@@ -394,14 +394,14 @@ namespace giskard_core
             DoubleSpecPtr max_speed = double_const_spec(params.max_speed);
             RotationSpecPtr delta_rot = rotation_multiplication_spec({inverse_rotation_spec(state), goal});
             DoubleSpecPtr rot_error = vector_norm(rot_vector(delta_rot));
-            DoubleSpecPtr control = double_mul_spec({p_gain, control});
+            DoubleSpecPtr control = double_mul_spec({p_gain, rot_error});
 
             DoubleSpecPtr interpolation_value =
-                double_if(double_sub_spec({max_speed, rot_error}),
+                double_if(double_sub_spec({max_speed, control}),
                           double_const_spec(1.0),
-                          double_div({max_speed, rot_error}));
-
+                          double_div({max_speed, control}));
             RotationSpecPtr intermediate_goal = slerp_spec(state, goal, interpolation_value);
+
             return rotate_vector(state, rot_vector(rotation_multiplication_spec({inverse_rotation_spec(state),
                                                                                  intermediate_goal})));
         }
