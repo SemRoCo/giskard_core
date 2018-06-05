@@ -864,6 +864,14 @@ namespace giskard_core
   class AbsSpec: public DoubleSpec
   {
     public:
+      AbsSpec() :
+        value_( double_const_spec() ) {}
+      AbsSpec(const AbsSpec& other) :
+        value_( other.get_value()) {}
+      AbsSpec(const DoubleSpecPtr& value) :
+        value_( value ) {}
+      ~AbsSpec() {}
+
       const DoubleSpecPtr& get_value() const
       {
         return value_;
@@ -895,6 +903,11 @@ namespace giskard_core
   };
 
   typedef typename boost::shared_ptr<AbsSpec> AbsSpecPtr;
+
+  inline AbsSpecPtr double_abs(const DoubleSpecPtr& value = double_const_spec())
+  {
+    return AbsSpecPtr(new AbsSpec(value));
+  }
 
   class DoubleIfSpec: public DoubleSpec
   {
