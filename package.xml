@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package format="2">
   <name>giskard_core</name>
-  <version>0.1.4</version>
+  <version>0.2.0</version>
   <description>
     This package provides the core C++ library of giskard, a constraint and
     optimization-based framework for robot motion control.
